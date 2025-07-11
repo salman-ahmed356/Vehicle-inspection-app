@@ -1,22 +1,24 @@
 import os
 import sys
+import logging
+from logging.handlers import RotatingFileHandler
 
 from dotenv import load_dotenv
 from flask import Flask
+
 from .database import db, migrate
 from .models import (
-    Address,    Agent, Appointment, Branch, Company,
-    Customer, Package, Report, Staff, Vehicle, VehicleOwner,
-    ExpertiseType, ExpertiseFeature, ExpertiseReport, PackageExpertise)
-import logging
-from logging.handlers import RotatingFileHandler
+    Address, Agent, Appointment, Branch, Company, Customer, Package,
+    Report, Staff, Vehicle, VehicleOwner, ExpertiseType,
+    ExpertiseFeature, ExpertiseReport, PackageExpertise
+)
 from .services.commands import register_commands
 from .services.expertise_initializer import ExpertiseInitializer
 from .tests.test_config import TestConfig
 from .services.company_service import create_default_company
 from .services.package_service import create_default_package
 
-# Import blueprints
+# Blueprints
 from .routes.appointments import appointments as appointments_bp
 from .routes.customers import customers as customers_bp
 from .routes.reports import reports as reports_bp
@@ -30,45 +32,71 @@ from .routes.pdfs import pdfs as pdfs_bp
 
 
 def create_app(config_object=None):
+    # 1) Load .env into os.environ
     load_dotenv()
-    app = Flask(__name__, static_url_path='/static', static_folder='static')
+
+    # 2) Create Flask app
+    app = Flask(
+        __name__,
+        static_url_path='/static',
+        static_folder='static'
+    )
+
+    # 3) Configuration
     if config_object == 'testing':
         app.config.from_object(TestConfig)
         app.logger.setLevel(logging.DEBUG)
-
     else:
-        app.config.from_object('config.Config')
+        # Base config (you can also move these defaults into config.Config)
+        app.config['SECRET_KEY'] = os.getenv(
+            'SECRET_KEY',
+            'fallback-secret-key'
+        )
+        app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
+            'DATABASE_URL',
+            'sqlite:///data.db'
+        )
+        app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+        # Logging
         if not os.path.exists('logs'):
             os.mkdir('logs')
-        app.logger.setLevel(logging.DEBUG)
-        file_handler = RotatingFileHandler('logs/error.log', maxBytes=10240, backupCount=10)
+
+        file_handler = RotatingFileHandler(
+            'logs/error.log',
+            maxBytes=10_240,
+            backupCount=10
+        )
         file_handler.setFormatter(logging.Formatter(
-            '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
+            '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+        ))
         file_handler.setLevel(logging.INFO)
         app.logger.addHandler(file_handler)
 
         stream_handler = logging.StreamHandler(sys.stdout)
         stream_handler.setLevel(logging.DEBUG)
-        stream_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+        stream_handler.setFormatter(logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        ))
         app.logger.addHandler(stream_handler)
 
-
+    # Suppress noisy fontTools subset logs
     logging.getLogger('fontTools.subset').setLevel(logging.WARNING)
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI', 'mysql+pymysql://dbms:dbms123@localhost/flask_app')
-    db.init_app(app)
 
+    # 4) Initialize extensions
+    db.init_app(app)
     migrate.init_app(app, db)
 
-    with app.app_context():
-        db.create_all()
-        db.session.commit()
-        ExpertiseInitializer.initialize_expertise_reports()  # Initialize expertise reports
-        create_default_company() 
-        create_default_package()
-
+    # 5) Register CLI commands
     register_commands(app)
 
-    # Register blueprints here
+    # 6) App context for startup tasks (migrations should be run separately)
+    with app.app_context():
+        ExpertiseInitializer.initialize_expertise_reports()
+        create_default_company()
+        create_default_package()
+
+    # 7) Register blueprints
     app.register_blueprint(pdfs_bp)
     app.register_blueprint(packages_bp)
     app.register_blueprint(errors_bp)
