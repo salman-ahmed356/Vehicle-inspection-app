@@ -1,4 +1,3 @@
-FLASK_APP=run.py
-FLASK_ENV=development
-SECRET_KEY=vQfK3iZ8xN6bJwP0sTm9HdG2lUa5rYvW4qXyC7zV6nPtR8mZp
-DATABASE_URL=sqlite:///data.db
+export FLASK_APP=run.py
+export FLASK_ENV=development
+export DATABASE_URL=sqlite:///data.db
