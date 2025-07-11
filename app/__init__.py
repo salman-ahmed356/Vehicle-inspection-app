@@ -5,7 +5,8 @@ from logging.handlers import RotatingFileHandler
 import click
 
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, request
+from flask_babel import Babel
 
 from .database import db, migrate
 from .models import (
@@ -43,7 +44,15 @@ def create_app(config_object=None):
         static_folder='static'
     )
 
-    # 3) Configure app
+    # 3) Initialize Flask-Babel for i18n
+    babel = Babel(app)
+
+    @babel.localeselector
+    def get_locale():
+        # read ?lang=en or default to 'en'
+        return request.args.get('lang', 'en')
+
+    # 4) Configure app
     if config_object == 'testing':
         app.config.from_object(TestConfig)
         app.logger.setLevel(logging.DEBUG)
@@ -83,14 +92,14 @@ def create_app(config_object=None):
     # Silence verbose fontTools  
     logging.getLogger('fontTools.subset').setLevel(logging.WARNING)
 
-    # 4) Initialize extensions
+    # 5) Initialize extensions
     db.init_app(app)
     migrate.init_app(app, db)
 
-    # 5) Register any custom CLI commands
+    # 6) Register any custom CLI commands
     register_commands(app)
 
-    # 6) Add on‐demand seeding command
+    # 7) Add on-demand seeding command
     @app.cli.command("seed-data")
     def seed_data():
         """Populate expertise types, default company & package."""
@@ -99,7 +108,7 @@ def create_app(config_object=None):
         create_default_package()
         click.echo("✔️  Database seeded")
 
-    # 7) Register blueprints
+    # 8) Register blueprints
     app.register_blueprint(pdfs_bp)
     app.register_blueprint(packages_bp)
     app.register_blueprint(errors_bp)
