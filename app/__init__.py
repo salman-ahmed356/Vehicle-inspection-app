@@ -2,6 +2,7 @@ import os
 import sys
 import logging
 from logging.handlers import RotatingFileHandler
+import click
 
 from dotenv import load_dotenv
 from flask import Flask
@@ -32,22 +33,21 @@ from .routes.pdfs import pdfs as pdfs_bp
 
 
 def create_app(config_object=None):
-    # 1) Load .env into os.environ
+    # 1) Load environment variables from .env / .flaskenv
     load_dotenv()
 
-    # 2) Create Flask app
+    # 2) Create the Flask app
     app = Flask(
         __name__,
         static_url_path='/static',
         static_folder='static'
     )
 
-    # 3) Configuration
+    # 3) Configure app
     if config_object == 'testing':
         app.config.from_object(TestConfig)
         app.logger.setLevel(logging.DEBUG)
     else:
-        # Base config (you can also move these defaults into config.Config)
         app.config['SECRET_KEY'] = os.getenv(
             'SECRET_KEY',
             'fallback-secret-key'
@@ -58,7 +58,7 @@ def create_app(config_object=None):
         )
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-        # Logging
+        # Logging setup
         if not os.path.exists('logs'):
             os.mkdir('logs')
 
@@ -80,21 +80,24 @@ def create_app(config_object=None):
         ))
         app.logger.addHandler(stream_handler)
 
-    # Suppress noisy fontTools subset logs
+    # Silence verbose fontTools  
     logging.getLogger('fontTools.subset').setLevel(logging.WARNING)
 
     # 4) Initialize extensions
     db.init_app(app)
     migrate.init_app(app, db)
 
-    # 5) Register CLI commands
+    # 5) Register any custom CLI commands
     register_commands(app)
 
-    # 6) App context for startup tasks (migrations should be run separately)
-    with app.app_context():
+    # 6) Add on‐demand seeding command
+    @app.cli.command("seed-data")
+    def seed_data():
+        """Populate expertise types, default company & package."""
         ExpertiseInitializer.initialize_expertise_reports()
         create_default_company()
         create_default_package()
+        click.echo("✔️  Database seeded")
 
     # 7) Register blueprints
     app.register_blueprint(pdfs_bp)
