@@ -1,46 +1,96 @@
-<html>
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Randevu Güncelle</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-
-    <style>
-        .modal.active {
-            display: flex;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ _('Update Appointment') }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    .modal.active { display: flex; }
+  </style>
 </head>
 <body>
-<div id="updateModal" class="modal fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-75 flex justify-center items-center">
+  <div id="updateModal"
+       class="modal fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center">
     <div class="modal-content bg-white p-6 rounded-lg shadow-lg w-1/3">
-        <span id="closeUpdateModalBtn" class="close cursor-pointer text-red-500 float-right text-lg">&times;</span>
-        <h2 class="text-2xl mb-4">Randevu Güncelle</h2>
-        <form id="updateAppointmentForm" action="{{ url_for('appointments.update_appointment', appointment_id=appointment.id) }}" method="POST">
-            {{ form.hidden_tag() }}
+      <span id="closeUpdateModalBtn"
+            class="close cursor-pointer text-red-500 float-right text-lg">&times;</span>
+      <h2 class="text-2xl mb-4">{{ _('Update Appointment') }}</h2>
 
-            <label for="customer_name" class="block text-sm font-medium text-gray-700">Müşteri Adı</label>
-            <input type="text" name="customer_name" id="customer_name" class="mt-1 p-2 border border-gray-300 rounded w-full" value="{{ appointment.customer.full_name }}" required>
+      <form id="updateAppointmentForm"
+            action="{{ url_for('appointments.update_appointment', appointment_id=appointment.id) }}"
+            method="POST">
+        {{ form.hidden_tag() }}
 
-            <label for="phone_number" class="block text-sm font-medium text-gray-700 mt-4">Telefon Numarası</label>
-            <input type="text" name="phone_number" id="phone_number" class="mt-1 p-2 border border-gray-300 rounded w-full" value="{{ appointment.customer.phone_number }}" required>
+        <label for="customer_name" class="block text-sm font-medium text-gray-700">
+          {{ _('Customer Name') }}
+        </label>
+        <input type="text" name="customer_name" id="customer_name"
+               class="mt-1 p-2 border border-gray-300 rounded w-full"
+               value="{{ appointment.customer.full_name }}"
+               required
+               oninvalid="this.setCustomValidity('{{ _('Please enter a name.') }}')"
+               oninput="setCustomValidity('')" />
 
-            <label for="date" class="block text-sm font-medium text-gray-700 mt-4">Tarih</label>
-            <input type="date" name="date" id="date" class="mt-1 p-2 border border-gray-300 rounded w-full" value="{{ appointment.date }}" required>
+        <label for="phone_number"
+               class="block text-sm font-medium text-gray-700 mt-4">
+          {{ _('Phone Number') }}
+        </label>
+        <input type="text" name="phone_number" id="phone_number"
+               class="mt-1 p-2 border border-gray-300 rounded w-full"
+               value="{{ appointment.customer.phone_number }}"
+               required
+               oninvalid="this.setCustomValidity('{{ _('Please enter a valid phone number.') }}')"
+               oninput="setCustomValidity('')" />
 
-            <label for="time" class="block text-sm font-medium text-gray-700 mt-4">Saat</label>
-            <input type="time" name="time" id="time" class="mt-1 p-2 border border-gray-300 rounded w-full" value="{{ appointment.time.strftime('%H:%M') }}" required>
+        <label for="date" class="block text-sm font-medium text-gray-700 mt-4">
+          {{ _('Date') }}
+        </label>
+        <input type="date" name="date" id="date"
+               class="mt-1 p-2 border border-gray-300 rounded w-full"
+               value="{{ appointment.date }}"
+               required
+               oninvalid="this.setCustomValidity('{{ _('Please enter a valid date.') }}')"
+               oninput="setCustomValidity('')" />
 
-            <label for="brand" class="block text-sm font-medium text-gray-700 mt-4">Marka</label>
-            <input type="text" name="brand" id="brand" class="mt-1 p-2 border border-gray-300 rounded w-full" value="{{ appointment.brand }}" required>
+        <label for="time" class="block text-sm font-medium text-gray-700 mt-4">
+          {{ _('Time') }}
+        </label>
+        <input type="time" name="time" id="time"
+               class="mt-1 p-2 border border-gray-300 rounded w-full"
+               value="{{ appointment.time.strftime('%H:%M') }}"
+               required
+               oninvalid="this.setCustomValidity('{{ _('Please enter a valid time.') }}')"
+               oninput="setCustomValidity('')" />
 
-            <label for="model" class="block text-sm font-medium text-gray-700 mt-4">Model</label>
-            <input type="text" name="model" id="model" class="mt-1 p-2 border border-gray-300 rounded w-full" value="{{ appointment.model }}" required>
+        <label for="brand" class="block text-sm font-medium text-gray-700 mt-4">
+          {{ _('Brand') }}
+        </label>
+        <input type="text" name="brand" id="brand"
+               class="mt-1 p-2 border border-gray-300 rounded w-full"
+               value="{{ appointment.brand }}"
+               required
+               oninvalid="this.setCustomValidity('{{ _('Please enter a brand.') }}')"
+               oninput="setCustomValidity('')" />
 
-            <button type="submit" class="mt-6 bg-blue-500 text-white px-4 py-2 rounded">Güncelle</button>
-        </form>
+        <label for="model" class="block text-sm font-medium text-gray-700 mt-4">
+          {{ _('Model') }}
+        </label>
+        <input type="text" name="model" id="model"
+               class="mt-1 p-2 border border-gray-300 rounded w-full"
+               value="{{ appointment.model }}"
+               required
+               oninvalid="this.setCustomValidity('{{ _('Please enter a model.') }}')"
+               oninput="setCustomValidity('')" />
+
+        <button type="submit"
+                class="mt-6 bg-blue-500 text-white px-4 py-2 rounded">
+          {{ _('Update') }}
+        </button>
+      </form>
     </div>
-</div>
+  </div>
 </body>
 </html>
