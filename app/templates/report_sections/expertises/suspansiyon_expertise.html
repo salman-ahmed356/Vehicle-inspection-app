@@ -34,58 +34,89 @@
 
 {% include 'report_sections/expertises/vehicle_header.html' %}
 
-<!-- templates/expertises/suspansiyon_expertise.html -->
-<h2 class="text-lg font-semibold mb-4">{{ expertise_report.expertise_type.name }} Testi</h2>
-<p>Lütfen araçta kontrol ettiğiniz bölgelerin durumunu belirtin!</p>
+<h2 class="text-lg font-semibold mb-4">
+  {{ expertise_report.expertise_type.name }} {{ _('Test') }}
+</h2>
+<p>{{ _('Please specify the status of each inspected area!') }}</p>
+
 <form id="expertiseForm" method="POST">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-    {% for feature in expertise_report.features %}
+  {% for feature in expertise_report.features %}
     {% if feature.name == 'SOL ÖN' %}
-    <div class="mb-4">
-        <label for="sol_on" class="block text-gray-700 font-semibold mb-2">SOL ÖN</label>
-        <input type="number" id="sol_on" name="feature_{{ feature.id }}" value="{{ feature.status }}">
-    </div>
+      <div class="mb-4">
+        <label for="sol_on" class="block text-gray-700 font-semibold mb-2">
+          {{ _('Front Left') }}
+        </label>
+        <input
+          type="number"
+          id="sol_on"
+          name="feature_{{ feature.id }}"
+          value="{{ feature.status }}"
+        >
+      </div>
     {% elif feature.name == 'SAĞ ÖN' %}
-    <div class="mb-4">
-        <label for="sag_on" class="block text-gray-700 font-semibold mb-2">SAĞ ÖN</label>
-        <input type="number" id="sag_on" name="feature_{{ feature.id }}" value="{{ feature.status }}">
-    </div>
+      <div class="mb-4">
+        <label for="sag_on" class="block text-gray-700 font-semibold mb-2">
+          {{ _('Front Right') }}
+        </label>
+        <input
+          type="number"
+          id="sag_on"
+          name="feature_{{ feature.id }}"
+          value="{{ feature.status }}"
+        >
+      </div>
     {% elif feature.name == 'SOL ARKA' %}
-    <div class="mb-4">
-        <label for="sol_arka" class="block text-gray-700 font-semibold mb-2">SOL ARKA</label>
-        <input type="number" id="sol_arka" name="feature_{{ feature.id }}" value="{{ feature.status }}">
-    </div>
+      <div class="mb-4">
+        <label for="sol_arka" class="block text-gray-700 font-semibold mb-2">
+          {{ _('Rear Left') }}
+        </label>
+        <input
+          type="number"
+          id="sol_arka"
+          name="feature_{{ feature.id }}"
+          value="{{ feature.status }}"
+        >
+      </div>
     {% elif feature.name == 'SAĞ ARKA' %}
-    <div class="mb-4">
-        <label for="sag_arka" class="block text-gray-700 font-semibold mb-2">SAĞ ARKA</label>
-        <input type="number" id="sag_arka" name="feature_{{ feature.id }}" value="{{ feature.status }}">
-    </div>
+      <div class="mb-4">
+        <label for="sag_arka" class="block text-gray-700 font-semibold mb-2">
+          {{ _('Rear Right') }}
+        </label>
+        <input
+          type="number"
+          id="sag_arka"
+          name="feature_{{ feature.id }}"
+          value="{{ feature.status }}"
+        >
+      </div>
     {% endif %}
-    {% endfor %}
+  {% endfor %}
 
-    <div class="flex justify-end mt-4">
-        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">KAYDET</button>
-    </div>
+  <div class="flex justify-end mt-4">
+    <button type="submit">
+      {{ _('Save') }}
+    </button>
+  </div>
 </form>
 
-
 <script>
-    $(document).ready(function() {
-        $('#expertiseForm').on('submit', function(event) {
-            event.preventDefault();  // Prevent the form from submitting in the traditional way
-            $.ajax({
-                url: "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}",
-                type: "POST",
-                data: $(this).serialize(),
-                success: function(response) {
-                    alert("Ekspertiz durumu başarıyla güncellendi!");
-                },
-                error: function(error) {
-                    console.log("Error:", error);
-                    alert("Rapor güncellenemedi. Bir sorun olmadığına emin olun!");
-                }
-            });
-        });
+  $(document).ready(function() {
+    $('#expertiseForm').on('submit', function(event) {
+      event.preventDefault();
+      $.ajax({
+        url: "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}",
+        type: "POST",
+        data: $(this).serialize(),
+        success: function(response) {
+          alert("{{ _('Expertise status updated successfully!') }}");
+        },
+        error: function(error) {
+          console.log("Error:", error);
+          alert("{{ _('Report could not be updated. Please ensure there are no issues!') }}");
+        }
+      });
     });
+  });
 </script>

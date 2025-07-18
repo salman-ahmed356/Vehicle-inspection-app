@@ -6,7 +6,7 @@
         -moz-appearance: none;
         width: 24px;
         height: 24px;
-        border: 2px solid #4A5568; /* Border color */
+        border: 2px solid #4A5568;
         border-radius: 50%;
         outline: none;
         cursor: pointer;
@@ -14,8 +14,8 @@
     }
 
     input[type="radio"]:checked {
-        border-color: #38B2AC; /* Border color when checked */
-        background-color: #38B2AC; /* Background color when checked */
+        border-color: #38B2AC;
+        background-color: #38B2AC;
     }
 
     input[type="radio"]:checked::before {
@@ -24,83 +24,120 @@
         width: 12px;
         height: 12px;
         margin: 4px;
-        background-color: #38B2AC; /* Inner circle color when checked */
+        background-color: #38B2AC;
         border-radius: 50%;
     }
 
     input[type="radio"]:hover {
-        border-color: #68D391; /* Border color on hover */
+        border-color: #68D391;
     }
 </style>
 
 {% include 'report_sections/expertises/vehicle_header.html' %}
 
-<!-- templates/expertises/motor_expertise.html -->
-<h2 class="text-lg font-semibold mb-4">{{ expertise_report.expertise_type.name }} Ekspertiz Detayı</h2>
-<p>Lütfen motorla ilgili durumu belirtin!</p>
+<h2 class="text-lg font-semibold mb-4">
+  {{ expertise_report.expertise_type.name }} {{ _('Expertise Details') }}
+</h2>
+<p>{{ _('Please indicate the engine condition!') }}</p>
 
 <form id="expertiseForm" method="POST">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-    <!-- Table for Features -->
-    <table class="min-w-full table-auto bg-white shadow-md rounded-lg mb-4">
-        <thead class="bg-gray-200">
-        <tr>
-            <th class="px-4 py-2 text-left">Kontrol Edilen</th>
-            <th class="px-4 py-2 text-center">YOK</th>
-            <th class="px-4 py-2 text-center">Kontrolden Geçti</th>
-            <th class="px-4 py-2 text-center">Sorun Çıkarabilir</th>
-            <th class="px-4 py-2 text-center">Bakım Gerekli</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for feature in expertise_report.features %}
-        <tr class="border-b">
-            <td class="px-4 py-2">{{ feature.name }}</td>
-            <td class="px-4 py-2 text-center">
-                <input type="radio" name="feature_{{ feature.id }}" value="YOK" {% if feature.status == 'YOK' %}checked{% endif %}>
-            </td>
-            <td class="px-4 py-2 text-center">
-                <input type="radio" name="feature_{{ feature.id }}" value="Kontrolden Geçti" {% if feature.status == 'Kontrolden Geçti' %}checked{% endif %}>
-            </td>
-            <td class="px-4 py-2 text-center">
-                <input type="radio" name="feature_{{ feature.id }}" value="Sorun Çıkarabilir" {% if feature.status == 'Sorun Çıkarabilir' %}checked{% endif %}>
-            </td>
-            <td class="px-4 py-2 text-center">
-                <input type="radio" name="feature_{{ feature.id }}" value="Bakım Gerekli" {% if feature.status == 'Bakım Gerekli' %}checked{% endif %}>
-            </td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+  <!-- Table for Features -->
+  <table class="min-w-full table-auto bg-white shadow-md rounded-lg mb-4">
+    <thead class="bg-gray-200">
+      <tr>
+        <th class="px-4 py-2 text-left">{{ _('Checked Feature') }}</th>
+        <th class="px-4 py-2 text-center">{{ _('NONE') }}</th>
+        <th class="px-4 py-2 text-center">{{ _('(GOOD) PASSED INSPECTION') }}</th>
+        <th class="px-4 py-2 text-center">{{ _('(MODERATE) MAY CAUSE ISSUES') }}</th>
+        <th class="px-4 py-2 text-center">{{ _('(BAD) MAINTENANCE REQUIRED') }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for feature in expertise_report.features %}
+      <tr class="border-b">
+        <td class="px-4 py-2">{{ feature.name }}</td>
+        <td class="px-4 py-2 text-center">
+          <input
+            type="radio"
+            name="feature_{{ feature.id }}"
+            value="{{ _('NONE') }}"
+            {% if feature.status == _('NONE') %}checked{% endif %}
+          >
+        </td>
+        <td class="px-4 py-2 text-center">
+          <input
+            type="radio"
+            name="feature_{{ feature.id }}"
+            value="{{ _('(GOOD) PASSED INSPECTION') }}"
+            {% if feature.status == _('(GOOD) PASSED INSPECTION') %}checked{% endif %}
+          >
+        </td>
+        <td class="px-4 py-2 text-center">
+          <input
+            type="radio"
+            name="feature_{{ feature.id }}"
+            value="{{ _('(MODERATE) MAY CAUSE ISSUES') }}"
+            {% if feature.status == _('(MODERATE) MAY CAUSE ISSUES') %}checked{% endif %}
+          >
+        </td>
+        <td class="px-4 py-2 text-center">
+          <input
+            type="radio"
+            name="feature_{{ feature.id }}"
+            value="{{ _('(BAD) MAINTENANCE REQUIRED') }}"
+            {% if feature.status == _('(BAD) MAINTENANCE REQUIRED') %}checked{% endif %}
+          >
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 
-    <!-- Technician Comment Section -->
-    <div class="mb-4">
-        <label for="technician_comment" class="block text-gray-700 font-semibold mb-2">TEKNİSYEN YORUMU</label>
-        <textarea id="technician_comment" name="technician_comment" rows="4" class="w-full p-2 border border-gray-300 rounded" placeholder="Teknisyenin yorumunu buraya yazın...">{{ expertise_report.comment }}</textarea>
-    </div>
+  <!-- Technician Comment Section -->
+  <div class="mb-4">
+    <label for="technician_comment"
+           class="block text-gray-700 font-semibold mb-2">
+      {{ _('Technician Comment') }}
+    </label>
+    <textarea
+      id="technician_comment"
+      name="technician_comment"
+      rows="4"
+      class="w-full p-2 border border-gray-300 rounded"
+      placeholder="{{ _('Enter technician comment here...') }}"
+    >{{ expertise_report.comment }}</textarea>
+  </div>
 
-    <div class="flex justify-end mt-4">
-        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Güncelle</button>
-    </div>
+  <div class="flex justify-end mt-4">
+    <button type="submit"
+            class="bg-blue-500 text-white px-4 py-2 rounded">
+      {{ _('Update') }}
+    </button>
+  </div>
 </form>
 
 <script>
-    $(document).ready(function() {
-        $('#expertiseForm').on('submit', function(event) {
-            event.preventDefault();  // Prevent the form from submitting in the traditional way
-            $.ajax({
-                url: "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}",
-                type: "POST",
-                data: $(this).serialize(),
-                success: function(response) {
-                    alert("Ekspertiz durumu başarıyla güncellendi!");
-                },
-                error: function(error) {
-                    console.log("Error:", error);
-                    alert("Rapor güncellenemedi. Bir sorun olmadığına emin olun!");
-                }
-            });
-        });
+  $(document).ready(function() {
+    $('#expertiseForm').on('submit', function(event) {
+      event.preventDefault();
+      $.ajax({
+        url: "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}",
+        type: "POST",
+        data: $(this).serialize(),
+        success: function(response) {
+          if (response.success) {
+            alert("{{ _('Expertise status updated successfully!') }}");
+          } else {
+            alert("{{ _('An error occurred during update.') }}");
+          }
+        },
+        error: function(error) {
+          console.log("Error:", error);
+          alert("{{ _('Report could not be updated. Please make sure there are no issues!') }}");
+        }
+      });
     });
+  });
 </script>

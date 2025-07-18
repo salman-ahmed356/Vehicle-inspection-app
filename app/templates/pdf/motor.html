@@ -81,154 +81,198 @@
 </style>
 
 
-<div class="title-large primary-color primary-bg-color" style="position: relative; padding: 15px;">
-    <span style="color: white;">MOTOR EKSPERTİZ RAPORU</span>
-    <div class="sasi-wrapper" style="position: absolute; right: 1%; top: 50%; transform: translateY(-50%); padding: 0 10px; background-color: white; border-left: 0;">
-        <table width="100%">
-            <tbody>
-            <tr>
-                <td class="" style="font-size: 12px; font-weight: bold; ">
-                    ŞASİ NO<span style="font-size: 14px; ">:</span>
-                </td>
-                <td class=" text-medium" rowspan="2" style="font-size: 20px; font-weight: bold;">
-                    {{ vehicle.chassis_number[-6:] }}
-                </td>
-            </tr>
-            <tr>
-                <td class=" text-small" style="font-size: 8px; text-align:center;  ">
-                    SON 6 HANE
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+<style>
+    .title-large.primary-color.primary-bg-color {
+        position: relative;
+        padding: 15px;
+    }
+    .sasi-wrapper {
+        position: absolute;
+        right: 1%;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 0 10px;
+        background-color: white;
+        border-left: 0;
+    }
+    .footer-motor {
+        font-size: 12px;
+        color: #333;
+    }
+    .footer-expertise {
+        font-size: 12px;
+        color: #333;
+    }
+    .footer-warning {
+        margin-top: 8px;
+        font-weight: bold;
+        color: #a82b2e;
+    }
+</style>
 
+<div class="title-large primary-color primary-bg-color">
+  <span style="color: white;">
+    {{ _('ENGINE INSPECTION REPORT') }}
+  </span>
+  <div class="sasi-wrapper">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="font-size: 12px; font-weight: bold;">
+            {{ _('CHASSIS NO') }}<span style="font-size: 14px;">:</span>
+          </td>
+          <td rowspan="2" style="font-size: 20px; font-weight: bold;">
+            {{ vehicle.chassis_number[-6:] }}
+          </td>
+        </tr>
+        <tr>
+          <td style="font-size: 8px; text-align:center;">
+            {{ _('LAST 6 DIGITS') }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
 <table cellspacing="0" cellpadding="0" width="100%">
-    <tbody><tr>
-        <td style="padding: 10px 20px;">
-            <img src="{{ motor_image_url }}" alt="Motor Image" style="width: 425px; height: auto;">
-        </td>
-        <td>
-            <table class="color-description" cellpadding="0" cellspacing="0">
-                <tbody><tr>
-                    <td valign="center" align="left"><div class="status-box status-good filled"></div></td>
-                    <td>(İYİ) KONTROLDEN GEÇTİ</td>
-                </tr>
-                <tr>
-                    <td valign="center" align="left"><div class="status-box status-warning filled"></div></td>
-                    <td>(ORTA) SORUN ÇIKARABİLİR</td>
-                </tr>
-                <tr>
-                    <td valign="center" align="left"><div class="status-box status-red filled"></div></td>
-                    <td>(KÖTÜ) BAKIM GEREKLİ</td>
-                </tr>
-                </tbody></table>
-
-        </td>
-    </tr>
-
-    </tbody></table>
-
-
-<div class="table-container" style="display: flex; justify-content: space-between; margin-bottom:5px;">
-    <table class="inspection-table" style="width: 100%; border-collapse: collapse;">
+  <tr>
+    <td style="padding: 10px 20px;">
+      <img src="{{ motor_image_url }}" 
+           alt="{{ _('Engine Image') }}" 
+           style="width: 425px; height: auto;">
+    </td>
+    <td>
+      <table class="color-description" cellpadding="0" cellspacing="0">
         <tr>
-            <!-- First Column -->
-            <td style="vertical-align: top; width: 50%;">
-                <table class="inspection-table-inner" style="width: 100%; border-collapse: collapse;">
-                    {% for feature in pckg_report.features[:pckg_report.features|length // 2] %}
-                    <tr>
-                        <th style="text-align: left; padding: 8px;">{{ feature.name }}</th>
-                        <td>
-                            {% if feature.status == 'YOK' %}
-                            <div class="status-container">
-                                <span class="status-box status-black filled">YOK</span>
-                            </div>
-                            {% else %}
-                            <div class="status-container">
-                                <span class="status-box status-good {% if feature.status == 'Kontrolden Geçti' %}filled{% endif %}"></span>
-                                <span class="status-box status-warning {% if feature.status == 'Sorun Çıkarabilir' %}filled{% endif %}"></span>
-                                <span class="status-box status-red {% if feature.status == 'Bakım Gerekli' %}filled{% endif %}"></span>
-                            </div>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </table>
-            </td>
-
-            <!-- Second Column -->
-            <td style="vertical-align: top; width: 50%;">
-                <table class="inspection-table-inner" style="width: 100%; border-collapse: collapse;">
-                    {% for feature in pckg_report.features[pckg_report.features|length // 2:] %}
-                    <tr>
-                        <th style="text-align: left; padding: 8px;">{{ feature.name }}</th>
-                        <td>
-                            {% if feature.status == 'YOK' %}
-                            <div class="status-container">
-                                <span class="status-box status-black filled">YOK</span>
-                            </div>
-                            {% else %}
-                            <div class="status-container">
-                                <span class="status-box status-good {% if feature.status == 'Kontrolden Geçti' %}filled{% endif %}"></span>
-                                <span class="status-box status-warning {% if feature.status == 'Sorun Çıkarabilir' %}filled{% endif %}"></span>
-                                <span class="status-box status-red {% if feature.status == 'Bakım Gerekli' %}filled{% endif %}"></span>
-                            </div>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </table>
-            </td>
+          <td valign="center" align="left">
+            <div class="status-box status-good filled"></div>
+          </td>
+          <td>
+            {{ _('(GOOD) PASSED INSPECTION') }}
+          </td>
         </tr>
-    </table>
+        <tr>
+          <td valign="center" align="left">
+            <div class="status-box status-warning filled"></div>
+          </td>
+          <td>
+            {{ _('(MODERATE) MAY CAUSE ISSUES') }}
+          </td>
+        </tr>
+        <tr>
+          <td valign="center" align="left">
+            <div class="status-box status-red filled"></div>
+          </td>
+          <td>
+            {{ _('(BAD) MAINTENANCE REQUIRED') }}
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+<div class="table-container" 
+     style="display: flex; justify-content: space-between; margin-bottom:5px;">
+  <table class="inspection-table" 
+         style="width: 100%; border-collapse: collapse;">
+    <tr>
+      <!-- First Column -->
+      <td style="vertical-align: top; width: 50%;">
+        <table class="inspection-table-inner" 
+               style="width: 100%; border-collapse: collapse;">
+          {% for feature in pckg_report.features[:(pckg_report.features|length // 2)] %}
+          <tr>
+            <th style="text-align: left; padding: 8px;">
+              {{ _(feature.name) }}
+            </th>
+            <td>
+              {% if feature.status == 'YOK' %}
+                <div class="status-container">
+                  <span class="status-box status-black filled">
+                    {{ _('NONE') }}
+                  </span>
+                </div>
+              {% else %}
+                <div class="status-container">
+                  <span class="status-box status-good {% if feature.status == 'Kontrolden Geçti' %}filled{% endif %}"></span>
+                  <span class="status-box status-warning {% if feature.status == 'Sorun Çıkarabilir' %}filled{% endif %}"></span>
+                  <span class="status-box status-red {% if feature.status == 'Bakım Gerekli' %}filled{% endif %}"></span>
+                </div>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+      </td>
+
+      <!-- Second Column -->
+      <td style="vertical-align: top; width: 50%;">
+        <table class="inspection-table-inner" 
+               style="width: 100%; border-collapse: collapse;">
+          {% for feature in pckg_report.features[(pckg_report.features|length // 2):] %}
+          <tr>
+            <th style="text-align: left; padding: 8px;">
+              {{ _(feature.name) }}
+            </th>
+            <td>
+              {% if feature.status == 'YOK' %}
+                <div class="status-container">
+                  <span class="status-box status-black filled">
+                    {{ _('NONE') }}
+                  </span>
+                </div>
+              {% else %}
+                <div class="status-container">
+                  <span class="status-box status-good {% if feature.status == 'Kontrolden Geçti' %}filled{% endif %}"></span>
+                  <span class="status-box status-warning {% if feature.status == 'Sorun Çıkarabilir' %}filled{% endif %}"></span>
+                  <span class="status-box status-red {% if feature.status == 'Bakım Gerekli' %}filled{% endif %}"></span>
+                </div>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+      </td>
+    </tr>
+  </table>
 </div>
-
-
-
-
 
 <div class="flex-container">
-    <div class="footer-motor" >
-            Bu rapor şase numarasının aynı olduğu İŞ EMRİ / ARAÇ KABUL / TESLİM / BİLGİ FORMU ile bir bütündür ve raporun devamıdır.
-            Araç kabul bilgi formunda bulunan imza ile hizmet sözleşmesinde yer alan tüm şartları kabul etmiş olursunuz.
-
+  <div class="footer-motor">
+    {{ _('This report is an integral part and continuation of the Job Order / Vehicle Acceptance / Delivery / Information Form with the same chassis number.') }}<br>
+    {{ _('By signing the Vehicle Acceptance Information Form, you agree to all the terms in the Service Agreement.') }}
+  </div>
+  <div class="footer-space"></div>
+  <div class="footer-expertise">
+    <div class="section-title">
+      {{ _('ENGINE INSPECTION SUMMARY') }}
     </div>
-
-    <div class="footer-space"></div>
-    <div class="footer-expertise">
-        <div class="section-title">
-            MOTOR EKSPERTİZ ÖZETİ
-        </div>
-        {% if pckg_report.comment|length > 230 %}
-        <div class="summary-text summary-text-small">
-            {{ pckg_report.comment }}
-        </div>
-        {% else %}
-        <div class="summary-text summary-text-normal">
-            {{ pckg_report.comment }}
-        </div>
-        {% endif %}
-        <div class="footer-warning">
-            DİKKAT: Triger seti ve ön zincir seti kapalı kutu olduğundan dolayı kontrol edilmemiştir.
-        </div>
+    {% if pckg_report.comment|length > 230 %}
+      <div class="summary-text summary-text-small">
+        {{ pckg_report.comment }}
+      </div>
+    {% else %}
+      <div class="summary-text summary-text-normal">
+        {{ pckg_report.comment }}
+      </div>
+    {% endif %}
+    <div class="footer-warning">
+      {{ _('WARNING: The timing belt and front chain are in sealed casings and have not been inspected.') }}
     </div>
-
+  </div>
 </div>
 
-
-
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const commentText = `{{ pckg_report.comment }}`; // Escape the comment text for safe JavaScript usage
-        const summaryText = document.querySelector('.summary-text');
-
-        if (commentText.length > 230) {
-            summaryText.style.fontSize = '3px'; // Reduce font size if text exceeds 230 characters
-        } else {
-            summaryText.style.fontSize = '12px'; // Default font size
-        }
-    });
+  document.addEventListener("DOMContentLoaded", function() {
+    const commentText = `{{ pckg_report.comment }}`;
+    const summaryText = document.querySelector('.summary-text');
+    if (commentText.length > 230) {
+      summaryText.style.fontSize = '3px';
+    } else {
+      summaryText.style.fontSize = '12px';
+    }
+  });
 </script>
+

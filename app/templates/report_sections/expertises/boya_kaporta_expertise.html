@@ -107,88 +107,126 @@
     }
 
     /* Custom option colors based on value */
-    .form-column select option[value="ORİJİNAL"] {
-        color: #48BB78;
-        font-weight: bold;
-    }
+    .form-column select option[value="ORIGINAL"] {
+  color: #48BB78; /* green */
+  font-weight: bold;
+}
 
-    .form-column select option[value="PLASTİK"],
-    .form-column select option[value="LOKAL BOYALI"],
-    .form-column select option[value="KAPLAMA"],
-    .form-column select option[value="SÖKÜLMÜŞ / TAKILMIŞ"] {
-        color: #3182CE;
-        font-weight: bold;
-    }
+.form-column select option[value="PLASTIC"],
+.form-column select option[value="LOCAL PAINTED"],
+.form-column select option[value="COATED"],
+.form-column select option[value="DISASSEMBLED / REASSEMBLED"] {
+  color: #3182CE; /* blue */
+  font-weight: bold;
+}
 
-    .form-column select option[value="BOYALI"],
-    .form-column select option[value="DEĞİŞMİŞ"] {
-        color: #E53E3E;
-        font-weight: bold;
-    }
+.form-column select option[value="PAINTED"],
+.form-column select option="REPLACED"] {
+  color: #E53E3E; /* red */
+  font-weight: bold;
+}
 
-    .form-column select option[value="BOYASIZ GÖÇÜK"] {
-        color: #38B2AC;
-        font-weight: bold;
-    }
+.form-column select option[value="PAINTLESS DENT"] {
+  color: #38B2AC; /* teal */
+  font-weight: bold;
+}
 
-    .form-column select option[value="EZİK-ÇİZİK"],
-    .form-column select option[value="VERNİK"] {
-        color: #805AD5;
-        font-weight: bold;
-    }
+.form-column select option[value="DENT/SCRATCH"],
+.form-column select option[value="CLEARCOAT"] {
+  color: #805AD5; /* purple */
+  font-weight: bold;
+}
 
-    .form-column select option[value="YOK"] {
-        color: #718096;
-        font-weight: bold;
-    }
+.form-column select option[value="NONE"] {
+  color: #718096; /* gray */
+  font-weight: bold;
+}
 
-    /* Image section for the car diagram */
-    .image-section {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+/* Image section for the car diagram */
+.image-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-    .image-container img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
+.image-container img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
 </style>
 
 {% include 'report_sections/expertises/vehicle_header.html' %}
 
-<h2 class="text-lg font-semibold mb-4">Ekspertiz</h2>
-<p>Lütfen araçta kontrol ettiğiniz bölgelerin durumunu belirtin!</p>
+<h2 class="text-lg font-semibold mb-4">{{ _('Expertise') }}</h2>
+<p>{{ _('Please indicate the condition of each inspected area!') }}</p>
 
 <form id="expertiseForm" method="POST">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <input type="hidden" name="expertise_report2_id" value="{{ expertise_report2.id if expertise_report2 else '' }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input
+    type="hidden"
+    name="expertise_report2_id"
+    value="{{ expertise_report2.id if expertise_report2 else '' }}"
+  >
 
-    <!-- Boya Ekspertizi -->
-           {% if expertise_report %}
-            <h3 class="text-md font-semibold mb-4">{{ expertise_report.expertise_type.name }}</h3>
-            <div class="form-section">
-                <div class="form-column">
-                    {% for feature in expertise_report.features %}
-                    <div class="mb-4">
-                        <label for="feature_{{ feature.id }}" class="block text-gray-700 font-semibold mb-2">{{ feature.name }}</label>
-                        <select id="select_{{ feature.id }}" name="feature_{{ feature.id }}" class="dropdown" onchange="updateImage({{ feature.id }}, this.value)">
-                            <optgroup label="Durum">
-                                <option value="ORİJİNAL" {% if feature.status == 'ORİJİNAL' %}selected{% endif %}>ORİJİNAL</option>
-                                <option value="PLASTİK" {% if feature.status == 'PLASTİK' %}selected{% endif %}>PLASTİK</option>
-                                <option value="BOYALI" {% if feature.status == 'BOYALI' %}selected{% endif %}>BOYALI</option>
-                                <option value="LOKAL BOYALI" {% if feature.status == 'LOKAL BOYALI' %}selected{% endif %}>LOKAL BOYALI</option>
-                                <option value="DEĞİŞMİŞ" {% if feature.status == 'DEĞİŞMİŞ' %}selected{% endif %}>DEĞİŞMİŞ</option>
-                                <option value="KAPLAMA" {% if feature.status == 'KAPLAMA' %}selected{% endif %}>KAPLAMA</option>
-                                <option value="YOK" {% if feature.status == 'YOK' %}selected{% endif %}>YOK</option>
-                            </optgroup>
-                        </select>
-                    </div>
-                    {% endfor %}
-                </div>
+  <!-- Paint Expertise -->
+  {% if expertise_report %}
+    <h3 class="text-md font-semibold mb-4">
+      {{ expertise_report.expertise_type.name }}
+    </h3>
+    <div class="form-section">
+      <div class="form-column">
+        {% for feature in expertise_report.features %}
+        <div class="mb-4">
+          <label
+            for="feature_{{ feature.id }}"
+            class="block text-gray-700 font-semibold mb-2"
+          >
+            {{ feature.name }}
+          </label>
+          <select
+            id="select_{{ feature.id }}"
+            name="feature_{{ feature.id }}"
+            class="dropdown"
+            onchange="updateImage({{ feature.id }}, this.value)"
+          >
+            <optgroup label="{{ _('Condition') }}">
+              <option
+                value="{{ _('ORIGINAL') }}"
+                {% if feature.status == _('ORIGINAL') %}selected{% endif %}
+              >{{ _('ORIGINAL') }}</option>
+              <option
+                value="{{ _('PLASTIC') }}"
+                {% if feature.status == _('PLASTIC') %}selected{% endif %}
+              >{{ _('PLASTIC') }}</option>
+              <option
+                value="{{ _('PAINTED') }}"
+                {% if feature.status == _('PAINTED') %}selected{% endif %}
+              >{{ _('PAINTED') }}</option>
+              <option
+                value="{{ _('LOCAL PAINTED') }}"
+                {% if feature.status == _('LOCAL PAINTED') %}selected{% endif %}
+              >{{ _('LOCAL PAINTED') }}</option>
+              <option
+                value="{{ _('REPLACED') }}"
+                {% if feature.status == _('REPLACED') %}selected{% endif %}
+              >{{ _('REPLACED') }}</option>
+              <option
+                value="{{ _('COATED') }}"
+                {% if feature.status == _('COATED') %}selected{% endif %}
+              >{{ _('COATED') }}</option>
+              <option
+                value="{{ _('NONE') }}"
+                {% if feature.status == _('NONE') %}selected{% endif %}
+              >{{ _('NONE') }}</option>
+            </optgroup>
+          </select>
+        </div>
+        {% endfor %}
+      </div>
 
                 <!-- Image Section -->
                 <!--<div class="form-column image-section">
@@ -253,120 +291,152 @@
             </div>
             {% endif %}
 
- <!-- Kaporta Ekspertizi -->
-    {% if expertise_report2 %}
-    <h3 class="text-md font-semibold mb-4">{{ expertise_report2.expertise_type.name }}</h3>
+ {% include 'report_sections/expertises/vehicle_header.html' %}
+
+<h2 class="text-lg font-semibold mb-4">{{ _('Expertise') }}</h2>
+<p>{{ _('Please specify the condition of each inspected area!') }}</p>
+
+<form id="expertiseForm" method="POST">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input
+    type="hidden"
+    name="expertise_report2_id"
+    value="{{ expertise_report2.id if expertise_report2 else '' }}"
+  >
+
+  <!-- Bodywork Expertise -->
+  {% if expertise_report2 %}
+    <h3 class="text-md font-semibold mb-4">
+      {{ expertise_report2.expertise_type.name }}
+    </h3>
     <table class="min-w-full bg-white shadow-md rounded-lg mb-4">
-        <thead>
+      <thead>
         <tr>
-            <th class="text-left">KONTROL EDİLEN</th>
-            <th>SORUNSUZ</th>
-            <th>ÇİZİK</th>
-            <th>EZİK / KIRIK / GÖÇÜK</th>
-            <th>İŞLEMLİ / BOYALI</th>
+          <th class="text-left">{{ _('Checked Feature') }}</th>
+          <th>{{ _('No Damage') }}</th>
+          <th>{{ _('Scratch') }}</th>
+          <th>{{ _('Dent / Crack / Deformation') }}</th>
+          <th>{{ _('Repaired / Painted') }}</th>
         </tr>
-        </thead>
-        <tbody>
+      </thead>
+      <tbody>
         {% for feature in expertise_report2.features %}
         <tr>
-            <td class="text-left">{{ feature.name }}</td>
-            <td>
-                <input type="radio" name="feature_{{ feature.id }}" value="SORUNSUZ" {% if feature.status == 'SORUNSUZ' %}checked{% endif %}>
-            </td>
-            <td>
-                <input type="radio" name="feature_{{ feature.id }}" value="ÇİZİK" {% if feature.status == 'ÇİZİK' %}checked{% endif %}>
-            </td>
-            <td>
-                <input type="radio" name="feature_{{ feature.id }}" value="EZİK / KIRIK / GÖÇÜK" {% if feature.status == 'EZİK / KIRIK / GÖÇÜK' %}checked{% endif %}>
-            </td>
-            <td>
-                <input type="radio" name="feature_{{ feature.id }}" value="İŞLEMLİ / BOYALI" {% if feature.status == 'İŞLEMLİ / BOYALI' %}checked{% endif %}>
-            </td>
+          <td class="text-left">{{ feature.name }}</td>
+          <td>
+            <input
+              type="radio"
+              name="feature_{{ feature.id }}"
+              value="{{ _('No Damage') }}"
+              {% if feature.status == _('No Damage') %}checked{% endif %}
+            >
+          </td>
+          <td>
+            <input
+              type="radio"
+              name="feature_{{ feature.id }}"
+              value="{{ _('Scratch') }}"
+              {% if feature.status == _('Scratch') %}checked{% endif %}
+            >
+          </td>
+          <td>
+            <input
+              type="radio"
+              name="feature_{{ feature.id }}"
+              value="{{ _('Dent / Crack / Deformation') }}"
+              {% if feature.status == _('Dent / Crack / Deformation') %}checked{% endif %}
+            >
+          </td>
+          <td>
+            <input
+              type="radio"
+              name="feature_{{ feature.id }}"
+              value="{{ _('Repaired / Painted') }}"
+              {% if feature.status == _('Repaired / Painted') %}checked{% endif %}
+            >
+          </td>
         </tr>
         {% endfor %}
-        </tbody>
+      </tbody>
     </table>
-    {% endif %}
+  {% endif %}
 
-    <!-- Technician Comment Section for Boya Ekspertizi -->
-    <div class="mb-4">
-        <label for="technician_comment" class="block text-gray-700 font-semibold mb-2"> Teknisyen Yorumu</label>
-        <textarea id="technician_comment" name="technician_comment" rows="4" class="w-full p-2 border border-gray-300 rounded" placeholder="Teknisyenin yorumunu buraya yazın...">{{ expertise_report.comment if expertise_report else '' }}</textarea>
-    </div>
+  <!-- Technician Comment Section -->
+  <div class="mb-4">
+    <label
+      for="technician_comment"
+      class="block text-gray-700 font-semibold mb-2"
+    >{{ _('Technician Comment') }}</label>
+    <textarea
+      id="technician_comment"
+      name="technician_comment"
+      rows="4"
+      class="w-full p-2 border border-gray-300 rounded"
+      placeholder="{{ _('Enter technician comment here...') }}"
+    >{{ expertise_report.comment if expertise_report else '' }}</textarea>
+  </div>
 
-    <div class="flex justify-end mt-4">
-        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Güncelle</button>
-    </div>
-        </form>
-    </div>
+  <div class="flex justify-end mt-4">
+    <button
+      type="submit"
+      class="bg-blue-500 text-white px-4 py-2 rounded"
+    >{{ _('Update') }}</button>
+  </div>
+</form>
 
-    <script>
+<script>
+function updateImage(featureId, status) {
+  console.log("Feature ID:", featureId);
+  console.log("Selected Status:", status);
 
-        function updateImage(featureId, status) {
-    // Debug: Log featureId and status
-    console.log("Feature ID:", featureId);
-    console.log("Selected Status:", status);
+  const baseDirectory = {
+    '{{ _("ORIGINAL") }}': 'orijinal',
+    '{{ _("PLASTIC") }}': 'plastik',
+    '{{ _("PAINTED") }}': 'boyalı',
+    '{{ _("LOCAL PAINTED") }}': 'lokal_boyalı',
+    '{{ _("REPLACED") }}': 'değişmiş',
+    '{{ _("COATED") }}': 'kaplama',
+    '{{ _("NONE") }}': 'yok'
+  };
 
-    // Define the base directory for each status
-    const baseDirectory = {
-        'ORİJİNAL': 'orijinal',
-        'PLASTİK': 'plastik',
-        'BOYALI': 'boyalı',
-        'LOKAL BOYALI': 'lokal_boyalı',
-        'DEĞİŞMİŞ': 'değişmiş',
-        'KAPLAMA': 'kaplama',
-        'YOK': 'yok'
-    };
+  const img = document.getElementById(`image_${featureId}`);
+  if (!img) {
+    console.error(`Image #image_${featureId} not found.`);
+    return;
+  }
 
-    // Select the image element by its ID
-    const imageElement = document.getElementById(`image_${featureId}`);
-
-    // Debug: Log image element
-    console.log("Image Element:", imageElement);
-
-    // Check if the image element exists
-    if (imageElement) {
-        // Get the image's current file name from the alt attribute
-        const currentFilename = imageElement.alt;
-
-        // Debug: Log current filename
-        console.log("Current Filename (alt):", currentFilename);
-
-        // Update the image source, preserving %20 for spaces
-        imageElement.src = `../../../static/assets/${baseDirectory[status]}/${currentFilename}`;
-
-        // Debug: Log updated image source
-        console.log("Updated Image Source:", imageElement.src);
-    } else {
-        console.error(`Image element with id 'image_${featureId}' not found.`);
-    }
+  const filename = img.alt;
+  img.src = `../../../static/assets/${baseDirectory[status]}/${filename}`;
+  console.log("Updated src:", img.src);
 }
 
-
-
-         $(document).ready(function() {
-        $('#expertiseForm').on('submit', function(event) {
-            event.preventDefault();  // Formun geleneksel yöntemle gönderilmesini engelle
-
-            // expertise_report2_id'yi kontrol et ve ayarla
-            let expertiseReport2Id = $('input[name="expertise_report2_id"]').val();
-            if (!expertiseReport2Id) {
-                expertiseReport2Id = "{{ expertise_report2.id if expertise_report2 else '' }}";
-                $('input[name="expertise_report2_id"]').val(expertiseReport2Id);
-            }
-
-            $.ajax({
-                url: "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}",
-                type: "POST",
-                data: $(this).serialize(),
-                success: function(response) {
-                    alert("Ekspertiz durumu başarıyla güncellendi!");
-                },
-                error: function(error) {
-                    console.log("Error:", error);
-                    alert("Rapor güncellenemedi. Bir sorun olmadığına emin olun!");
-                }
-            });
-        });
+$(document).ready(function() {
+  // Bind AJAX submit
+  $('#expertiseForm').on('submit', function(e) {
+    e.preventDefault();
+    let report2Id = $('input[name="expertise_report2_id"]').val();
+    if (!report2Id) {
+      report2Id = "{{ expertise_report2.id if expertise_report2 else '' }}";
+      $('input[name="expertise_report2_id"]').val(report2Id);
+    }
+    $.ajax({
+      url: "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}",
+      type: "POST",
+      data: $(this).serialize(),
+      success: function() {
+        alert("{{ _('Expertise status updated successfully!') }}");
+      },
+      error: function() {
+        console.log("Error");
+        alert("{{ _('Report could not be updated. Please ensure there are no issues!') }}");
+      }
     });
-    </script>
+  });
+
+  // Initialize images
+  $('select').each(function() {
+    const id = this.id.split('_')[1];
+    updateImage(id, this.value);
+  });
+});
+</script>

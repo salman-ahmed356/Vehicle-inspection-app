@@ -70,69 +70,109 @@
 </style>
 
 <div class="expertise-section">
-    <!-- Form Section -->
-    <div class="form-section">
-        {% for feature in expertise_report.features %}
-        <div class="form-group" id="feature-{{ feature.id }}">
-            <label for="feature-status-{{ feature.id }}">{{ feature.name }}</label>
-            <select class="dropdown" id="feature-status-{{ feature.id }}" name="feature_{{ feature.id }}">
-                <option value="ORİJİNAL" {% if feature.status == 'ORİJİNAL' %}selected{% endif %}>ORİJİNAL</option>
-                <option value="PLASTİK" {% if feature.status == 'PLASTİK' %}selected{% endif %}>PLASTİK</option>
-                <option value="BOYALI" {% if feature.status == 'BOYALI' %}selected{% endif %}>BOYALI</option>
-                <option value="LOKAL BOYALI" {% if feature.status == 'LOKAL BOYALI' %}selected{% endif %}>LOKAL BOYALI</option>
-                <option value="DEĞİŞMİŞ" {% if feature.status == 'DEĞİŞMİŞ' %}selected{% endif %}>DEĞİŞMİŞ</option>
-                <option value="KAPLAMA" {% if feature.status == 'KAPLAMA' %}selected{% endif %}>KAPLAMA</option>
-                <option value="YOK" {% if feature.status == 'YOK' %}selected{% endif %}>YOK</option>
-            </select>
-            <div class="extra-conditions" id="extra-conditions-{{ feature.id }}">
-                <!-- Selected extra conditions will appear here -->
-            </div>
-        </div>
-        {% endfor %}
-    </div>
+  <!-- Form Section -->
+  <div class="form-section">
+    {% for feature in expertise_report.features %}
+    <div class="form-group" id="feature-{{ feature.id }}">
+      <label for="feature-status-{{ feature.id }}">
+        {{ feature.name }}
+      </label>
+      <select
+        class="dropdown"
+        id="feature-status-{{ feature.id }}"
+        name="feature_{{ feature.id }}"
+      >
+        <option
+          value="{{ _('ORIGINAL') }}"
+          {% if feature.status == _('ORIGINAL') %}selected{% endif %}
+        >{{ _('ORIGINAL') }}</option>
+        <option
+          value="{{ _('PLASTIC') }}"
+          {% if feature.status == _('PLASTIC') %}selected{% endif %}
+        >{{ _('PLASTIC') }}</option>
+        <option
+          value="{{ _('PAINTED') }}"
+          {% if feature.status == _('PAINTED') %}selected{% endif %}
+        >{{ _('PAINTED') }}</option>
+        <option
+          value="{{ _('LOCAL PAINTED') }}"
+          {% if feature.status == _('LOCAL PAINTED') %}selected{% endif %}
+        >{{ _('LOCAL PAINTED') }}</option>
+        <option
+          value="{{ _('REPLACED') }}"
+          {% if feature.status == _('REPLACED') %}selected{% endif %}
+        >{{ _('REPLACED') }}</option>
+        <option
+          value="{{ _('COATED') }}"
+          {% if feature.status == _('COATED') %}selected{% endif %}
+        >{{ _('COATED') }}</option>
+        <option
+          value="{{ _('NONE') }}"
+          {% if feature.status == _('NONE') %}selected{% endif %}
+        >{{ _('NONE') }}</option>
+      </select>
 
-    <!-- Car Image Section -->
-    <div class="car-image-section">
-        <img src="https://placehold.co/400x300" alt="Car Image" class="car-image">
+      <div class="extra-conditions" id="extra-conditions-{{ feature.id }}">
+        <!-- Selected extra conditions will appear here -->
+      </div>
     </div>
+    {% endfor %}
+  </div>
+
+  <!-- Car Image Section -->
+  <div class="car-image-section">
+    <img
+      src="https://placehold.co/400x300"
+      alt="{{ _('Car Image') }}"
+      class="car-image"
+    >
+  </div>
 </div>
 
 <div class="flex justify-end mt-4">
-    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">KAYDET</button>
+  <button
+    type="submit"
+    class="bg-blue-500 text-white px-4 py-2 rounded"
+  >{{ _('Save') }}</button>
 </div>
 
 <script>
-    // JavaScript to handle dropdown selections and extra conditions
-    document.addEventListener("DOMContentLoaded", function() {
-        const featureElements = document.querySelectorAll(".form-group");
+  document.addEventListener("DOMContentLoaded", function() {
+    const featureElements = document.querySelectorAll(".form-group");
 
-        featureElements.forEach(function(element) {
-            const dropdown = element.querySelector(".dropdown");
-            const extraConditionsDiv = element.querySelector(".extra-conditions");
+    featureElements.forEach(function(element) {
+      const dropdown = element.querySelector(".dropdown");
+      const extraConditionsDiv = element.querySelector(".extra-conditions");
 
-            dropdown.addEventListener("change", function() {
-                const selectedValue = dropdown.value;
-                const extraConditions = ["SÖKÜLMÜŞ / TAKILMIŞ", "BOYASIZ GÖÇÜK", "EZİK-ÇİZİK", "VERNİK"];
-                let selectedExtras = [];
+      dropdown.addEventListener("change", function() {
+        const selectedValue = dropdown.value;
+        const extraConditions = [
+          '{{ _("DISASSEMBLED / REASSEMBLED") }}',
+          '{{ _("PAINTLESS DENT") }}',
+          '{{ _("DENT/SCRATCH") }}',
+          '{{ _("CLEARCOAT") }}'
+        ];
+        let selectedExtras = [];
 
-                // Simulate selecting extra conditions based on the selected value
-                if (selectedValue !== "ORİJİNAL") {
-                    selectedExtras = extraConditions.slice(0, Math.floor(Math.random() * extraConditions.length) + 1);
-                }
+        if (selectedValue !== '{{ _("ORIGINAL") }}') {
+          selectedExtras = extraConditions.slice(
+            0,
+            Math.floor(Math.random() * extraConditions.length) + 1
+          );
+        }
 
-                // Update the extra conditions div
-                extraConditionsDiv.innerHTML = selectedExtras.map(extra => `<span>${extra}</span>`).join("");
+        extraConditionsDiv.innerHTML = 
+          selectedExtras.map(extra => `<span>${extra}</span>`).join("");
 
-                // Change the appearance of the feature based on the selection
-                if (selectedValue !== "ORİJİNAL") {
-                    element.classList.add("feature-selected");
-                } else {
-                    element.classList.remove("feature-selected");
-                }
-            });
+        if (selectedValue !== '{{ _("ORIGINAL") }}') {
+          element.classList.add("feature-selected");
+        } else {
+          element.classList.remove("feature-selected");
+        }
+      });
 
-            // Trigger the change event on load to apply the correct styles
-            dropdown.dispatchEvent(new Event("change"));
-        });
+      // Apply initial state
+      dropdown.dispatchEvent(new Event("change"));
     });
+  });
 </script>

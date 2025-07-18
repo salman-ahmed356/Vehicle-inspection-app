@@ -57,66 +57,68 @@
 
 {% include 'report_sections/expertises/vehicle_header.html' %}
 
-<!-- templates/expertises/dis_expertise.html -->
-<h2 class="text-lg font-semibold mb-4">Dış Ekspertiz</h2>
-<p>Lütfen araçta kontrol ettiğiniz bölgelerin durumunu belirtin!</p>
+<h2 class="text-lg font-semibold mb-4">{{ _('Exterior Inspection') }}</h2>
+<p>{{ _('Please specify the condition of the areas you inspected on the vehicle!') }}</p>
 
 <form id="expertiseForm" method="POST">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-    <!-- Table for Dış Ekspertiz Features -->
-    <table class="min-w-full bg-white shadow-md rounded-lg mb-4">
-        <thead>
-        <tr>
-            <th class="text-left">KONTROL EDİLEN</th>
-            <th>YOK</th>
-            <th>(İYİ) KONTROLDEN GEÇTİ</th>
-            <th>(ORTA) SORUN ÇIKARABİLİR</th>
-            <th>(KÖTÜ) BAKIM GEREKLİ</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for feature in expertise_report.features %}
-        <tr>
-            <td class="text-left">{{ feature.name }}</td>
-            <td>
-                <input type="radio" name="feature_{{ feature.id }}" value="YOK" {% if feature.status == 'YOK' %}checked{% endif %}>
-            </td>
-            <td>
-                <input type="radio" name="feature_{{ feature.id }}" value="(İYİ) KONTROLDEN GEÇTİ" {% if feature.status == '(İYİ) KONTROLDEN GEÇTİ' %}checked{% endif %}>
-            </td>
-            <td>
-                <input type="radio" name="feature_{{ feature.id }}" value="(ORTA) SORUN ÇIKARABİLİR" {% if feature.status == '(ORTA) SORUN ÇIKARABİLİR' %}checked{% endif %}>
-            </td>
-            <td>
-                <input type="radio" name="feature_{{ feature.id }}" value="(KÖTÜ) BAKIM GEREKLİ" {% if feature.status == '(KÖTÜ) BAKIM GEREKLİ' %}checked{% endif %}>
-            </td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+  <!-- Table for Exterior Inspection Features -->
+  <table class="min-w-full bg-white shadow-md rounded-lg mb-4">
+    <thead>
+      <tr>
+        <th class="text-left">{{ _('Checked Feature') }}</th>
+        <th>{{ _('NONE') }}</th>
+        <th>{{ _('(GOOD) PASSED INSPECTION') }}</th>
+        <th>{{ _('(MODERATE) MAY CAUSE ISSUES') }}</th>
+        <th>{{ _('(BAD) MAINTENANCE REQUIRED') }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for feature in expertise_report.features %}
+      <tr>
+        <td class="text-left">{{ feature.name }}</td>
+        <td>
+          <input
+            type="radio"
+            name="feature_{{ feature.id }}"
+            value="{{ _('NONE') }}"
+            {% if feature.status == _('NONE') %}checked{% endif %}
+          >
+        </td>
+        <td>
+          <input
+            type="radio"
+            name="feature_{{ feature.id }}"
+            value="{{ _('(GOOD) PASSED INSPECTION') }}"
+            {% if feature.status == _('(GOOD) PASSED INSPECTION') %}checked{% endif %}
+          >
+        </td>
+        <td>
+          <input
+            type="radio"
+            name="feature_{{ feature.id }}"
+            value="{{ _('(MODERATE) MAY CAUSE ISSUES') }}"
+            {% if feature.status == _('(MODERATE) MAY CAUSE ISSUES') %}checked{% endif %}
+          >
+        </td>
+        <td>
+          <input
+            type="radio"
+            name="feature_{{ feature.id }}"
+            value="{{ _('(BAD) MAINTENANCE REQUIRED') }}"
+            {% if feature.status == _('(BAD) MAINTENANCE REQUIRED') %}checked{% endif %}
+          >
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 
-    <div class="flex justify-end mt-4">
-        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Güncelle</button>
-    </div>
+  <div class="flex justify-end mt-4">
+    <button
+      type="submit"
+      class="bg-blue-500 text-white px-4 py-2 rounded"
+    >{{ _('Update') }}</button>
+  </div>
 </form>
-
-<script>
-    $(document).ready(function() {
-        $('#expertiseForm').on('submit', function(event) {
-            event.preventDefault();  // Prevent the form from submitting in the traditional way
-            $.ajax({
-                url: "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}",
-                type: "POST",
-                data: $(this).serialize(),
-                success: function(response) {
-                    alert("Ekspertiz durumu başarıyla güncellendi!");
-                },
-                error: function(error) {
-                    console.log("Error:", error);
-                    alert("Rapor güncellenemedi. Bir sorun olmadığına emin olun!");
-                }
-            });
-        });
-    });
-</script>

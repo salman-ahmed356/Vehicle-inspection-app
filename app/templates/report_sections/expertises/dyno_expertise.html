@@ -90,139 +90,207 @@
 
 {% include 'report_sections/expertises/vehicle_header.html' %}
 
-<h2 class="text-lg font-semibold mb-4">Dyno / Yol Testi</h2>
-<p>Lütfen araçta kontrol ettiğiniz bölgelerin durumunu belirtin!</p>
+<h2 class="text-lg font-semibold mb-4">{{ _('Dyno / Road Test') }}</h2>
+<p>{{ _('Please specify the status of the areas you inspected!') }}</p>
 <form id="expertiseForm" method="POST">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <input type="hidden" name="expertise_report2_id" value="{{ expertise_report2.id if expertise_report2 else '' }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input
+    type="hidden"
+    name="expertise_report2_id"
+    value="{{ expertise_report2.id if expertise_report2 else '' }}"
+  >
 
-    <!-- Test Type Selection -->
-    <div class="form-section">
-        <label class="red-text">Hangi Test Yapıldı?</label>
-        <input type="radio" id="dyno_test" name="test_type" value="dyno" onclick="showTestTypeOptions('dyno')" required {% if test_type == 'dyno' %}checked{% endif %}>
-        <label for="dyno_test">DYNO TESTİ</label>
+  <!-- Test Type Selection -->
+  <div class="form-section">
+    <label class="red-text">{{ _('Which test was performed?') }}</label>
+    <input
+      type="radio"
+      id="dyno_test"
+      name="test_type"
+      value="dyno"
+      onclick="showTestTypeOptions('dyno')"
+      required
+      {% if test_type == 'dyno' %}checked{% endif %}
+    >
+    <label for="dyno_test">{{ _('Dyno Test') }}</label>
 
-        <input type="radio" id="yol_test" name="test_type" value="yol" onclick="showTestTypeOptions('yol')" {% if test_type == 'yol' %}checked{% endif %}>
-        <label for="yol_test">YOL TESTİ</label>
+    <input
+      type="radio"
+      id="yol_test"
+      name="test_type"
+      value="yol"
+      onclick="showTestTypeOptions('yol')"
+      {% if test_type == 'yol' %}checked{% endif %}
+    >
+    <label for="yol_test">{{ _('Road Test') }}</label>
+  </div>
+
+  <!-- Dyno Test Sections -->
+  <div
+    id="dynoTestType"
+    class="form-section {% if test_type != 'dyno' %}hidden{% endif %}"
+  >
+    <label class="red-text">{{ _('Which unit for engine power?') }}</label>
+    <input
+      type="radio"
+      id="hp_test"
+      name="dyno_type"
+      value="hp"
+      onclick="showDynoOptions('hp')"
+      {% if dyno_type == 'hp' %}checked{% endif %}
+    >
+    <label for="hp_test">HP</label>
+
+    <input
+      type="radio"
+      id="kw_test"
+      name="dyno_type"
+      value="kw"
+      onclick="showDynoOptions('kw')"
+      {% if dyno_type == 'kw' %}checked{% endif %}
+    >
+    <label for="kw_test">KW</label>
+  </div>
+
+  <div id="defaultSection" class="hidden">
+    {% for feature in expertise_report.features %}
+      {% if feature.name == 'Motor gücü' %}
+      <div class="mb-4 hidden" id="kwDiv">
+        <label
+          for="motor_gucu_{{ feature.id }}"
+          class="block text-gray-700 font-semibold mb-2"
+        >{{ _('Engine Power (KW)') }}</label>
+        <input
+          type="number"
+          id="motor_gucu"
+          name="feature_{{ feature.id }}"
+          value="{{ feature.status }}"
+        >
+      </div>
+      {% elif feature.name == 'Beygir gücü' %}
+      <div class="mb-4">
+        <label
+          for="beygir_gucu_{{ feature.id }}"
+          class="block text-gray-700 font-semibold mb-2"
+        >{{ _('Original Horsepower (HP)') }}</label>
+        <input
+          type="number"
+          id="beygir_gucu"
+          name="feature_{{ feature.id }}"
+          value="{{ feature.status }}"
+        >
+      </div>
+      {% elif feature.name == 'Performans' %}
+      <div class="mb-4">
+        <label
+          for="performans_{{ feature.id }}"
+          class="block text-gray-700 font-semibold mb-2"
+        >{{ _('Performance Value (HP)') }}</label>
+        <input
+          type="number"
+          id="performans_{{ feature.id }}"
+          name="feature_{{ feature.id }}"
+          value="{{ feature.status }}"
+        >
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <!-- Road Test Technician Comment Section -->
+  <div id="yolSection" class="{% if test_type != 'yol' %}hidden{% endif %}">
+    <div class="mb-4">
+      <label
+        for="technician_comment"
+        class="block text-gray-700 font-semibold mb-2"
+      >{{ _('Technician Comment') }}</label>
+      <textarea
+        id="technician_comment"
+        name="technician_comment"
+        rows="4"
+        class="w-full p-2 border border-gray-300 rounded"
+      >{{ expertise_report2.comment }}</textarea>
     </div>
+  </div>
 
-    <!-- Dyno Test Sections -->
-    <div id="dynoTestType" class="form-section {% if test_type != 'dyno' %}hidden{% endif %}">
-        <label class="red-text">Motor gücü hangi cinsten?</label>
-        <input type="radio" id="hp_test" name="dyno_type" value="hp" onclick="showDynoOptions('hp')" {% if dyno_type == 'hp' %}checked{% endif %}>
-        <label for="hp_test">HP</label>
-
-        <input type="radio" id="kw_test" name="dyno_type" value="kw" onclick="showDynoOptions('kw')" {% if dyno_type == 'kw' %}checked{% endif %}>
-        <label for="kw_test">KW</label>
-    </div>
-
-    <div id="defaultSection" class="hidden">
-        {% for feature in expertise_report.features %}
-        {% if feature.name == 'Motor gücü' %}
-        <div class="mb-4 hidden" id="kwDiv">
-            <label for="motor_gucu_{{ feature.id }}" class="block text-gray-700 font-semibold mb-2">Motor Gücü (KW)</label>
-            <input type="number" id="motor_gucu" name="feature_{{ feature.id }}" value="{{ feature.status }}">
-        </div>
-        {% elif feature.name == 'Beygir gücü' %}
-        <div class="mb-4">
-            <label for="beygir_gucu_{{ feature.id }}" class="block text-gray-700 font-semibold mb-2">Aracın Orijinal Beygir Gücü (HP)</label>
-            <input type="number" id="beygir_gucu" name="feature_{{ feature.id }}" value="{{ feature.status }}">
-        </div>
-        {% elif feature.name == 'Performans' %}
-        <div class="mb-4">
-            <label for="performans_{{ feature.id }}" class="block text-gray-700 font-semibold mb-2">Aracın Verdiği Performans Değeri (HP)</label>
-            <input type="number" id="performans_{{ feature.id }}" name="feature_{{ feature.id }}" value="{{ feature.status }}">
-        </div>
-        {% endif %}
-        {% endfor %}
-    </div>
-
-    <!-- Yol Test Technician Comment Section -->
-    <div id="yolSection" class="{% if test_type != 'yol' %}hidden{% endif %}">
-        <div class="mb-4">
-            <label for="technician_comment" class="block text-gray-700 font-semibold mb-2">TEKNİSYEN YORUMU</label>
-            <textarea id="technician_comment" name="technician_comment" rows="4" class="w-full p-2 border border-gray-300 rounded">{{ expertise_report2.comment }}</textarea>
-        </div>
-    </div>
-
-    <div class="flex justify-end mt-4">
-        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Güncelle</button>
-    </div>
+  <div class="flex justify-end mt-4">
+    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
+      {{ _('Update') }}
+    </button>
+  </div>
 </form>
 
 <script>
-    document.getElementById('motor_gucu').addEventListener('input', function() {
+  document.getElementById('motor_gucu').addEventListener('input', function() {
+    const kwValue = parseFloat(this.value) || 0;
+    const hpValue = Math.ceil((kwValue * 1.341).toFixed(2));
+    document.getElementById('original_hp').value = hpValue;
+  });
+
+  $(document).ready(function() {
+    $('#expertiseForm').on('submit', function(event) {
+      event.preventDefault();
+      $.ajax({
+        url: "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}",
+        type: "POST",
+        data: $(this).serialize(),
+        success: function(response) {
+          alert("{{ _('Expertise status updated successfully!') }}");
+        },
+        error: function(error) {
+          console.log("Error:", error);
+          alert("{{ _('Report could not be updated. Please ensure there are no issues!') }}");
+        }
+      });
+    });
+
+    const testType = '{{ test_type }}';
+    if (testType === 'dyno') {
+      document.getElementById('dynoTestType').classList.remove('hidden');
+    } else if (testType === 'yol') {
+      document.getElementById('yolSection').classList.remove('hidden');
+    }
+
+    const dynoType = '{{ dyno_type }}';
+    if (dynoType === 'hp' || dynoType === 'kw') {
+      document.getElementById('defaultSection').classList.remove('hidden');
+      if (dynoType === 'kw') {
+        document.getElementById('kwDiv').classList.remove('hidden');
+      }
+    }
+  });
+
+  function showTestTypeOptions(testType) {
+    document.getElementById('dynoTestType').classList.add('hidden');
+    document.getElementById('defaultSection').classList.add('hidden');
+    document.getElementById('yolSection').classList.add('hidden');
+
+    if (testType === 'dyno') {
+      document.getElementById('dynoTestType').classList.remove('hidden');
+    } else if (testType === 'yol') {
+      document.getElementById('yolSection').classList.remove('hidden');
+    }
+  }
+
+  function showDynoOptions(dynoType) {
+    const defaultSection = document.getElementById('defaultSection');
+    defaultSection.classList.remove('hidden');
+    const motorGucuInput = document.getElementById('motor_gucu');
+    const beygirGucuInput = document.getElementById('beygir_gucu');
+
+    if (dynoType === 'hp') {
+      document.getElementById('kwDiv').classList.add('hidden');
+      beygirGucuInput.readOnly = false;
+      beygirGucuInput.style.backgroundColor = "";
+    } else if (dynoType === 'kw') {
+      document.getElementById('kwDiv').classList.remove('hidden');
+      motorGucuInput.addEventListener('input', function() {
         const kwValue = parseFloat(this.value) || 0;
         const hpValue = Math.ceil((kwValue * 1.341).toFixed(2));
-        document.getElementById('original_hp').value = hpValue;
-    });
-
-    $(document).ready(function() {
-        $('#expertiseForm').on('submit', function(event) {
-            event.preventDefault();  // Prevent the form from submitting in the traditional way
-            $.ajax({
-                url: "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}",
-                type: "POST",
-                data: $(this).serialize(),
-                success: function(response) {
-                    alert("Ekspertiz durumu başarıyla güncellendi!");
-                },
-                error: function(error) {
-                    console.log("Error:", error);
-                    alert("Rapor güncellenemedi. Bir sorun olmadığına emin olun!");
-                }
-            });
-        });
-
-        // Show the appropriate sections based on initial form state
-        const testType = '{{ test_type }}';
-        if (testType === 'dyno') {
-            document.getElementById('dynoTestType').classList.remove('hidden');
-        } else if (testType === 'yol') {
-            document.getElementById('yolSection').classList.remove('hidden');
-        }
-
-        const dynoType = '{{ dyno_type }}';
-        if (dynoType === 'hp' || dynoType === 'kw') {
-            document.getElementById('defaultSection').classList.remove('hidden');
-            if (dynoType === 'kw') {
-                document.getElementById('kwDiv').classList.remove('hidden');
-            }
-        }
-    });
-
-    function showTestTypeOptions(testType) {
-        document.getElementById('dynoTestType').classList.add('hidden');
-        document.getElementById('defaultSection').classList.add('hidden');
-        document.getElementById('yolSection').classList.add('hidden');
-
-        if (testType === 'dyno') {
-            document.getElementById('dynoTestType').classList.remove('hidden');
-        } else if (testType === 'yol') {
-            document.getElementById('yolSection').classList.remove('hidden');
-        }
+        beygirGucuInput.value = hpValue;
+      });
+      beygirGucuInput.readOnly = true;
+      beygirGucuInput.style.backgroundColor = "#E2E8F0";
     }
-
-    function showDynoOptions(dynoType) {
-        const defaultSection = document.getElementById('defaultSection');
-        defaultSection.classList.remove('hidden');
-        const motorGucuInput = document.getElementById('motor_gucu');
-        const beygirGucuInput = document.getElementById('beygir_gucu');
-
-        if (dynoType === 'hp') {
-            document.getElementById('kwDiv').classList.add('hidden');
-            beygirGucuInput.readOnly = false;
-            beygirGucuInput.style.backgroundColor = "";
-        } else if (dynoType === 'kw') {
-            document.getElementById('kwDiv').classList.remove('hidden');
-            motorGucuInput.addEventListener('input', function() {
-                const kwValue = parseFloat(this.value) || 0;
-                const hpValue = Math.ceil((kwValue * 1.341).toFixed(2));
-                beygirGucuInput.value = hpValue;
-            });
-            beygirGucuInput.readOnly = true;
-            beygirGucuInput.style.backgroundColor = "#E2E8F0";
-        }
-    }
-
+  }
 </script>
