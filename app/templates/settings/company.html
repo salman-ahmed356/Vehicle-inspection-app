@@ -1,65 +1,93 @@
 <!-- Main Content -->
 <main class="container mx-auto px-4 py-6">
-    <div class="bg-white p-6 rounded-lg shadow">
+  <div class="bg-white p-6 rounded-lg shadow">
+    <form action="{{ url_for('companies.update_company') }}"
+          method="POST"
+          class="space-y-4">
+      {{ form.hidden_tag() }}
 
-        <form action="{{ url_for('companies.update_company') }}" method="POST" class="space-y-4">
-            {{ form.hidden_tag() }}
+      <div>
+        <div class="border-b border-gray-200 pb-4">
+          <h3 class="text-lg font-medium text-gray-900">
+            {{ _('Company Information') }}
+          </h3>
+        </div>
+        <div class="grid grid-cols-1 gap-6 mt-4">
+          <div>
+            <label for="name" class="block text-sm font-medium text-gray-700">
+              {{ _('Company Name') }}
+            </label>
+            {{ form.name(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
+          </div>
+          <div>
+            <label for="phone" class="block text-sm font-medium text-gray-700">
+              {{ _('Phone') }}
+            </label>
+            {{ form.phone(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
+          </div>
+          <div>
+            <label for="fax" class="block text-sm font-medium text-gray-700">
+              {{ _('Fax') }}
+            </label>
+            {{ form.fax(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
+          </div>
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700">
+              {{ _('Email') }}
+            </label>
+            {{ form.email(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
+          </div>
+          <div>
+            <label for="website" class="block text-sm font-medium text-gray-700">
+              {{ _('Website') }}
+            </label>
+            {{ form.website(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
+          </div>
+          <div>
+            <label for="street_address" class="block text-sm font-medium text-gray-700">
+              {{ _('Address') }}
+            </label>
+            {{ form.street_address(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
+          </div>
+          <div>
+            <label for="city" class="block text-sm font-medium text-gray-700">
+              {{ _('City') }}
+            </label>
+            {{ form.city(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
+          </div>
+          <div>
+            <label for="state" class="block text-sm font-medium text-gray-700">
+              {{ _('State') }}
+            </label>
+            {{ form.state(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
+          </div>
+          <div>
+            <label for="postal_code" class="block text-sm font-medium text-gray-700">
+              {{ _('Postal Code') }}
+            </label>
+            {{ form.postal_code(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
+          </div>
+          <div>
+            <label for="my_business_address_link" class="block text-sm font-medium text-gray-700">
+              {{ _('My Business Address Link') }}
+            </label>
+            {{ form.my_business_address_link(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
+          </div>
+        </div>
+      </div>
 
-            <div>
-                <div class="border-b border-gray-200 pb-4">
-                    <h3 class="text-lg font-medium text-gray-900">Firma Bilgileri</h3>
-                </div>
-                <div class="grid grid-cols-1 gap-6 mt-4">
-                    <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700">Firma Adı</label>
-                        {{ form.name(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
-                    </div>
-                    <div>
-                        <label for="phone" class="block text-sm font-medium text-gray-700">Telefon</label>
-                        {{ form.phone(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
-                    </div>
-                    <div>
-                        <label for="fax" class="block text-sm font-medium text-gray-700">Faks</label>
-                        {{ form.fax(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
-                    </div>
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700">E-posta</label>
-                        {{ form.email(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
-                    </div>
-                    <div>
-                        <label for="website" class="block text-sm font-medium text-gray-700">Web Site</label>
-                        {{ form.website(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
-                    </div>
-                    <div>
-                        <label for="street_address" class="block text-sm font-medium text-gray-700">Adres</label>
-                        {{ form.street_address(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
-                    </div>
-                    <div>
-                        <label for="city" class="block text-sm font-medium text-gray-700">Şehir</label>
-                        {{ form.city(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
-                    </div>
-                    <div>
-                        <label for="state" class="block text-sm font-medium text-gray-700">Eyalet</label>
-                        {{ form.state(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
-                    </div>
-                    <div>
-                        <label for="postal_code" class="block text-sm font-medium text-gray-700">Posta Kodu</label>
-                        {{ form.postal_code(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
-                    </div>
-                    <div>
-                        <label for="my_business_address_link" class="block text-sm font-medium text-gray-700">My Business Adres Linki</label>
-                        {{ form.my_business_address_link(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm") }}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Submit and Cancel Buttons -->
-            <div class="flex justify-end space-x-4 mt-6">
-                <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded shadow">KAYDET</button>
-                <a href="{{ url_for('companies.company_detail') }}" class="bg-gray-500 text-white px-4 py-2 rounded shadow">VAZGEÇ</a>
-            </div>
-        </form>
-    </div>
+      <!-- Submit and Cancel Buttons -->
+      <div class="flex justify-end space-x-4 mt-6">
+        <button type="submit"
+                class="bg-orange-500 text-white px-4 py-2 rounded shadow">
+          {{ _('Save') }}
+        </button>
+        <a href="{{ url_for('companies.company_detail') }}"
+           class="bg-gray-500 text-white px-4 py-2 rounded shadow">
+          {{ _('Cancel') }}
+        </a>
+      </div>
+    </form>
+  </div>
 </main>
 <script src="{{ url_for('static', filename='../static/js/settings.js') }}"></script>
-

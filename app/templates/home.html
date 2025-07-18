@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ get_locale() }}">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ana Sayfa</title>
+    <title>{{ _('Home') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
@@ -17,95 +17,93 @@
     <div id="createAppointmentModal"></div>
 
 
-<div class="container mx-auto mt-8">
-    <div class="grid grid-cols-4 gap-4">
-        <div class="bg-white p-6 rounded-lg shadow">
-            <div class="text-blue-500 text-2xl">
-                <i class="fas fa-car"></i>
+    <div class="container mx-auto mt-8">
+        <div class="grid grid-cols-4 gap-4">
+            <div class="bg-white p-6 rounded-lg shadow">
+                <div class="text-blue-500 text-2xl">
+                    <i class="fas fa-car"></i>
+                </div>
+                <div class="mt-4 text-gray-600 text-sm">{{ _('Inspections Completed Today') }}</div>
+                <div class="mt-2 text-3xl text-gray-800">0</div>
             </div>
-            <div class="mt-4 text-gray-600 text-sm">Bugün Yapılan Ekspertizler</div>
-            <div class="mt-2 text-3xl text-gray-800">0</div>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <div class="text-blue-500 text-2xl">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="mt-4 text-gray-600 text-sm">{{ _('Revenue Earned Today') }}</div>
+                <div class="mt-2 text-3xl text-gray-800">₺0</div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <div class="text-pink-500 text-2xl">
+                    <i class="fas fa-car"></i>
+                </div>
+                <div class="mt-4 text-gray-600 text-sm">{{ _('Inspections Completed This Month') }}</div>
+                <div class="mt-2 text-3xl text-gray-800">0</div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <div class="text-blue-500 text-2xl">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="mt-4 text-gray-600 text-sm">{{ _('Revenue Earned This Month') }}</div>
+                <div class="mt-2 text-3xl text-gray-800">₺0</div>
+            </div>
         </div>
-        <div class="bg-white p-6 rounded-lg shadow">
-            <div class="text-blue-500 text-2xl">
-                <i class="fas fa-coins"></i>
+
+        <div class="grid grid-cols-3 gap-4 mt-8">
+            <div class="bg-white p-6 rounded-lg shadow">
+                <div class="text-gray-600">{{ _('Open Work Orders') }}</div>
+                <div class="flex items-center mt-4">
+                    <div class="text-4xl text-orange-500">1</div>
+                    <div class="ml-4 text-gray-600">{{ _('Open Expertise Reports') }}</div>
+                </div>
+                <div class="mt-4 flex space-x-4">
+                    <button class="bg-teal-500 text-white px-4 py-2 rounded">{{ _('Create New Report') }}</button>
+                    <button class="bg-orange-500 text-white px-4 py-2 rounded">{{ _('Manage Open Reports') }}</button>
+                </div>
             </div>
-            <div class="mt-4 text-gray-600 text-sm">Bugün Elde Edilen Kazanç</div>
-            <div class="mt-2 text-3xl text-gray-800">₺0</div>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <div class="text-gray-600">{{ _("This Week's Statistics") }}</div>
+                <div class="flex items-center mt-4">
+                    <div class="text-4xl text-teal-500">0</div>
+                    <div class="ml-4 text-gray-600">{{ _('Inspection report results for this week.') }}</div>
+                </div>
+                <div class="mt-4">
+                    <button class="bg-teal-500 text-white px-4 py-2 rounded">{{ _('Completed Reports') }}</button>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <div class="text-gray-600">{{ _('Upcoming Appointments') }}</div>
+                <div class="flex items-center mt-4">
+                    <div class="text-4xl text-red-500">0</div>
+                    <div class="ml-4 text-gray-600">{{ _('No pending appointments yet.') }}</div>
+                </div>
+                <div class="mt-4">
+                    <button class="bg-red-500 text-white px-4 py-2 rounded">{{ _('Manage Appointments') }}</button>
+                </div>
+            </div>
         </div>
-        <div class="bg-white p-6 rounded-lg shadow">
-            <div class="text-pink-500 text-2xl">
-                <i class="fas fa-car"></i>
+
+        <div class="grid grid-cols-2 gap-4 mt-8">
+            <!--<div class="bg-white p-6 rounded-lg shadow">
+                <div class="text-center">
+                    <img src="https://placehold.co/300x200" alt="HASAR ve KM Sorgulama Kullanıma Açıldı!" class="mx-auto">
+                    <div class="mt-4 text-blue-500 text-lg font-bold">HASAR ve KM SORGULAMA KULLANIMA AÇILDI!</div>
+                    <p class="mt-2 text-gray-600">Bakiye İşlemleri menüsünden yükleme yapabilir ve TEK TUŞLA sorgulamalarınızı raporlarınıza ekleyebilirsiniz.</p>
+                    <button class="bg-teal-500 text-white px-4 py-2 mt-4 rounded">Şimdi Bakiye Yükle</button>
+                </div>
+            </div>-->
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-lg font-bold text-gray-700">{{ _('Updates & Enhancements') }}</h2>
+                <p class="text-sm text-gray-600">{{ _('Track program updates and enhancements here.') }}</p>
+                <ul class="mt-4 text-gray-700 space-y-2">
+                    <li class="text-xs text-gray-500">{{ _('June 30, 2024 Sunday') }}</li>
+                    <li class="text-red-500">{{ _('Varius ferri magna detracto malorum') }}</li>
+                </ul>
             </div>
-            <div class="mt-4 text-gray-600 text-sm">Bu Ay Yapılan Ekspertizler</div>
-            <div class="mt-2 text-3xl text-gray-800">0</div>
-        </div>
-        <div class="bg-white p-6 rounded-lg shadow">
-            <div class="text-blue-500 text-2xl">
-                <i class="fas fa-coins"></i>
-            </div>
-            <div class="mt-4 text-gray-600 text-sm">Bu Ay Elde Edilen Kazanç</div>
-            <div class="mt-2 text-3xl text-gray-800">₺0</div>
         </div>
     </div>
-
-    <div class="grid grid-cols-3 gap-4 mt-8">
-        <div class="bg-white p-6 rounded-lg shadow">
-            <div class="text-gray-600">Açık İş Emirleri</div>
-            <div class="flex items-center mt-4">
-                <div class="text-4xl text-orange-500">1</div>
-                <div class="ml-4 text-gray-600">Açık ekspertiz raporları</div>
-            </div>
-            <div class="mt-4 flex space-x-4">
-                <button class="bg-teal-500 text-white px-4 py-2 rounded">Yeni Rapor Oluştur</button>
-                <button class="bg-orange-500 text-white px-4 py-2 rounded">Açık Raporları Yönet</button>
-            </div>
-        </div>
-        <div class="bg-white p-6 rounded-lg shadow">
-            <div class="text-gray-600">Bu Haftanın İstatistikleri</div>
-            <div class="flex items-center mt-4">
-                <div class="text-4xl text-teal-500">0</div>
-                <div class="ml-4 text-gray-600">Bu hafta yapılan ekspertiz raporu sonuçları.</div>
-            </div>
-            <div class="mt-4">
-                <button class="bg-teal-500 text-white px-4 py-2 rounded">Tamamlanmış Raporlar</button>
-            </div>
-        </div>
-        <div class="bg-white p-6 rounded-lg shadow">
-            <div class="text-gray-600">Beklenen Randevular</div>
-            <div class="flex items-center mt-4">
-                <div class="text-4xl text-red-500">0</div>
-                <div class="ml-4 text-gray-600">Henüz bekleyen randevu yok.</div>
-            </div>
-            <div class="mt-4">
-                <button class="bg-red-500 text-white px-4 py-2 rounded">Randevuları Yönet</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="grid grid-cols-2 gap-4 mt-8">
-        <!--<div class="bg-white p-6 rounded-lg shadow">
-            <div class="text-center">
-                <img src="https://placehold.co/300x200" alt="HASAR ve KM Sorgulama Kullanıma Açıldı!" class="mx-auto">
-                <div class="mt-4 text-blue-500 text-lg font-bold">HASAR ve KM SORGULAMA KULLANIMA AÇILDI!</div>
-                <p class="mt-2 text-gray-600">Bakiye İşlemleri menüsünden yükleme yapabilir ve TEK TUŞLA sorgulamalarınızı raporlarınıza ekleyebilirsiniz.</p>
-                <button class="bg-teal-500 text-white px-4 py-2 mt-4 rounded">Şimdi Bakiye Yükle</button>
-            </div>
-        </div>-->
-        <div class="bg-white p-6 rounded-lg shadow">
-            <h2 class="text-lg font-bold text-gray-700">Geliştirmeler ve Güncellemeler</h2>
-            <p class="text-sm text-gray-600">Bu alandan programın geliştirmeleri ve güncellemelerini takip edebilirsiniz.</p>
-            <ul class="mt-4 text-gray-700 space-y-2">
-                <li class="text-xs text-gray-500">30 Haziran 2024 Pazar</li>
-                <li class="text-red-500">Varius ferri magna detracto malorum</li>
-            </ul>
-        </div>
-    </div>
-
-
-</div>
 </body>
-    <script src="../static/js/script.js"></script>
-    <script src="../static/js/appointment.js"></script>
-    <script src="../static/js/navbar.js"></script>
+<script src="../static/js/script.js"></script>
+<script src="../static/js/appointment.js"></script>
+<script src="../static/js/navbar.js"></script>
 </html>

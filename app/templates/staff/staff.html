@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ get_locale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personel Listesi</title>
+    <title>{{ _('Staff List') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
@@ -11,19 +11,19 @@
 {% include 'navbar.html' %}
 
 <div class="container mx-auto p-4">
-    <h1 class="text-xl font-semibold mb-4">Personel Listesi</h1>
+    <h1 class="text-xl font-semibold mb-4">{{ _('Staff List') }}</h1>
     <button id="openModalBtn" class="bg-teal-500 text-white px-4 py-2 rounded inline-block mb-4">
-        <i class="fas fa-plus mr-2"></i>Yeni Personel Tanımla
+        <i class="fas fa-plus mr-2"></i> {{ _('Add New Staff') }}
     </button>
     <div class="bg-white shadow-md rounded-lg">
         <table class="min-w-full table-auto">
             <thead class="bg-gray-200">
             <tr>
-                <th class="px-4 py-2 text-left">Adı ve Soyadı</th>
-                <th class="px-4 py-2 text-left">Telefon Numarası</th>
-                <th class="px-4 py-2 text-left">Rolü</th>
-                <th class="px-4 py-2 text-left">Durum</th>
-                <th class="px-4 py-2 text-left">İşlem</th>
+                <th class="px-4 py-2 text-left">{{ _('Full Name') }}</th>
+                <th class="px-4 py-2 text-left">{{ _('Phone Number') }}</th>
+                <th class="px-4 py-2 text-left">{{ _('Role') }}</th>
+                <th class="px-4 py-2 text-left">{{ _('Status') }}</th>
+                <th class="px-4 py-2 text-left">{{ _('Action') }}</th>
             </tr>
             </thead>
             <tbody>
@@ -33,21 +33,31 @@
                 <td class="px-4 py-2">{{ member.phone_number }}</td>
                 <td class="px-4 py-2">{{ member.role }}</td>
                 <td class="px-4 py-2">
-                    <span class="bg-teal-500 text-white px-2 py-1 rounded-full text-xs">Aktif</span>
+                    <span class="bg-teal-500 text-white px-2 py-1 rounded-full text-xs">{{ _('Active') }}</span>
                 </td>
                 <td class="px-4 py-2">
-                    <button class="bg-orange-500 text-white px-3 py-1 rounded editBtn" 
-                            data-id="{{ member.id }}" 
-                            data-first_name="{{ member.first_name }}" 
-                            data-last_name="{{ member.last_name }}" 
-                            data-phone_number="{{ member.phone_number }}" 
-                            data-role="{{ member.role }}">
-                        <i class="fas fa-edit"></i> Düzenle
+                    <button
+                        class="bg-orange-500 text-white px-3 py-1 rounded editBtn"
+                        data-id="{{ member.id }}"
+                        data-first_name="{{ member.first_name }}"
+                        data-last_name="{{ member.last_name }}"
+                        data-phone_number="{{ member.phone_number }}"
+                        data-role="{{ member.role }}"
+                    >
+                        <i class="fas fa-edit"></i> {{ _('Edit') }}
                     </button>
-                    <form action="{{ url_for('staff.delete_staff', id=member.id) }}" method="POST" style="display:inline;">
+                    <form
+                        action="{{ url_for('staff.delete_staff', id=member.id) }}"
+                        method="POST"
+                        class="inline-block"
+                    >
                         {{ form.hidden_tag() }}
-                        <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded ml-2" onclick="return confirm('Bu personeli silmek istediğinize emin misiniz?')">
-                            <i class="fas fa-trash-alt"></i> Sil
+                        <button
+                            type="submit"
+                            class="bg-red-500 text-white px-3 py-1 rounded ml-2"
+                            onclick="return confirm('{{ _('Are you sure you want to delete this staff member?') }}')"
+                        >
+                            <i class="fas fa-trash-alt"></i> {{ _('Delete') }}
                         </button>
                     </form>
                 </td>
@@ -56,10 +66,14 @@
             </tbody>
         </table>
         <div class="p-4">
-            <div class="flex justify-end mt-2">
-                <button class="bg-gray-300 px-3 py-1 rounded text-gray-700">Geri</button>
-                <span class="mx-2 text-blue-500">1</span>
-                <button class="bg-gray-300 px-3 py-1 rounded text-gray-700">İleri</button>
+            <div class="flex justify-end mt-2 space-x-2">
+                <button class="bg-gray-300 px-3 py-1 rounded text-gray-700">
+                    {{ _('Previous') }}
+                </button>
+                <span class="mx-2 text-blue-500">{{ pagination.page }}</span>
+                <button class="bg-gray-300 px-3 py-1 rounded text-gray-700">
+                    {{ _('Next') }}
+                </button>
             </div>
         </div>
     </div>
@@ -69,7 +83,7 @@
 <div id="myModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden">
     <div class="bg-white rounded-lg shadow-lg w-1/3">
         <div class="border-b px-4 py-2 flex justify-between items-center">
-            <h2 class="text-xl font-semibold">Yeni Personel Tanımla</h2>
+            <h2 class="text-xl font-semibold">{{ _('Add New Staff') }}</h2>
             <button id="closeModalBtn" class="text-gray-600 hover:text-gray-900">
                 <i class="fas fa-times"></i>
             </button>
@@ -78,50 +92,85 @@
             <form action="{{ url_for('staff.add_staff') }}" method="POST">
                 {{ form.hidden_tag() }}
                 <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="first_name">
-                        Adı
+                    <label for="first_name" class="block text-gray-700 text-sm font-bold mb-2">
+                        {{ _('First Name') }}
                     </label>
-                    <input type="text" id="first_name" name="first_name" placeholder="Örn: Ali" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="{{ form.first_name.data | skip_none }}">
+                    <input
+                        type="text"
+                        id="first_name"
+                        name="first_name"
+                        placeholder="{{ _('E.g., John') }}"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        value="{{ form.first_name.data | skip_none }}"
+                    >
                     {% if form.first_name.errors %}
                     <p class="text-red-500 text-xs italic">{{ form.first_name.errors[0] }}</p>
                     {% endif %}
                 </div>
                 <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="last_name">
-                        Soyadı
+                    <label for="last_name" class="block text-gray-700 text-sm font-bold mb-2">
+                        {{ _('Last Name') }}
                     </label>
-                    <input type="text" id="last_name" name="last_name" placeholder="Örn: Altun" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="{{ form.last_name.data | skip_none }}">
+                    <input
+                        type="text"
+                        id="last_name"
+                        name="last_name"
+                        placeholder="{{ _('E.g., Doe') }}"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        value="{{ form.last_name.data | skip_none }}"
+                    >
                     {% if form.last_name.errors %}
                     <p class="text-red-500 text-xs italic">{{ form.last_name.errors[0] }}</p>
                     {% endif %}
                 </div>
                 <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="phone_number">
-                        Cep Telefonu
+                    <label for="phone_number" class="block text-gray-700 text-sm font-bold mb-2">
+                        {{ _('Mobile Phone') }}
                     </label>
-                    <input type="text" id="phone_number" name="phone_number" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="{{ form.phone_number.data | skip_none }}">
+                    <input
+                        type="text"
+                        id="phone_number"
+                        name="phone_number"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        value="{{ form.phone_number.data | skip_none }}"
+                    >
                     {% if form.phone_number.errors %}
                     <p class="text-red-500 text-xs italic">{{ form.phone_number.errors[0] }}</p>
                     {% endif %}
                 </div>
                 <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
-                        Şifre
+                    <label for="password" class="block text-gray-700 text-sm font-bold mb-2">
+                        {{ _('Password') }}
                     </label>
-                    <input type="password" id="password" name="password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
                     {% if form.password.errors %}
                     <p class="text-red-500 text-xs italic">{{ form.password.errors[0] }}</p>
                     {% endif %}
                 </div>
                 <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="role">
-                        Rolü
+                    <label for="role" class="block text-gray-700 text-sm font-bold mb-2">
+                        {{ _('Role') }}
                     </label>
-                    <select id="role" name="role" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                        <option value="">--Seçiniz--</option>
-                        <option value="Yönetici" {% if form.role.data == 'Yönetici' %}selected{% endif %}>Yönetici</option>
-                        <option value="Teknik Sorumlu" {% if form.role.data == 'Teknik Sorumlu' %}selected{% endif %}>Teknik Sorumlu</option>
-                        <option value="Personel" {% if form.role.data == 'Personel' %}selected{% endif %}>Personel</option>
+                    <select
+                        id="role"
+                        name="role"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                        <option value="">{{ _('--Select--') }}</option>
+                        <option value="Admin" {% if form.role.data == 'Admin' %}selected{% endif %}>
+                            {{ _('Admin') }}
+                        </option>
+                        <option value="Manager" {% if form.role.data == 'Manager' %}selected{% endif %}>
+                            {{ _('Manager') }}
+                        </option>
+                        <option value="Staff" {% if form.role.data == 'Staff' %}selected{% endif %}>
+                            {{ _('Staff') }}
+                        </option>
                     </select>
                     {% if form.role.errors %}
                     <p class="text-red-500 text-xs italic">{{ form.role.errors[0] }}</p>
@@ -129,8 +178,12 @@
                 </div>
 
                 <div class="flex justify-end">
-                    <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded mr-2">Kaydet</button>
-                    <button type="button" id="cancelBtn" class="bg-blue-500 text-white px-4 py-2 rounded">Vazgeç</button>
+                    <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded mr-2">
+                        {{ _('Save') }}
+                    </button>
+                    <button type="button" id="cancelBtn" class="bg-blue-500 text-white px-4 py-2 rounded">
+                        {{ _('Cancel') }}
+                    </button>
                 </div>
             </form>
         </div>
@@ -141,7 +194,7 @@
 <div id="editModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden">
     <div class="bg-white rounded-lg shadow-lg w-1/3">
         <div class="border-b px-4 py-2 flex justify-between items-center">
-            <h2 class="text-xl font-semibold">Personel Düzenle</h2>
+            <h2 class="text-xl font-semibold">{{ _('Edit Staff') }}</h2>
             <button id="closeEditModalBtn" class="text-gray-600 hover:text-gray-900">
                 <i class="fas fa-times"></i>
             </button>
@@ -151,57 +204,87 @@
                 {{ form.hidden_tag() }}
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="edit_first_name">
-                        Adı
+                        {{ _('First Name') }}
                     </label>
-                    <input type="text" id="edit_first_name" name="first_name" placeholder="Örn: Ali" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <input
+                        type="text"
+                        id="edit_first_name"
+                        name="first_name"
+                        placeholder="{{ _('E.g., Ali') }}"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
                     {% if form.first_name.errors %}
                     <p class="text-red-500 text-xs italic">{{ form.first_name.errors[0] }}</p>
                     {% endif %}
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="edit_last_name">
-                        Soyadı
+                        {{ _('Last Name') }}
                     </label>
-                    <input type="text" id="edit_last_name" name="last_name" placeholder="Örn: Altun" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <input
+                        type="text"
+                        id="edit_last_name"
+                        name="last_name"
+                        placeholder="{{ _('E.g., Altun') }}"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
                     {% if form.last_name.errors %}
                     <p class="text-red-500 text-xs italic">{{ form.last_name.errors[0] }}</p>
                     {% endif %}
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="edit_phone_number">
-                        Cep Telefonu
+                        {{ _('Phone') }}
                     </label>
-                    <input type="text" id="edit_phone_number" name="phone_number" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <input
+                        type="text"
+                        id="edit_phone_number"
+                        name="phone_number"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
                     {% if form.phone_number.errors %}
                     <p class="text-red-500 text-xs italic">{{ form.phone_number.errors[0] }}</p>
                     {% endif %}
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="edit_password">
-                        Şifre
+                        {{ _('Password') }}
                     </label>
-                    <input type="password" id="edit_password" name="password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <input
+                        type="password"
+                        id="edit_password"
+                        name="password"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
                     {% if form.password.errors %}
                     <p class="text-red-500 text-xs italic">{{ form.password.errors[0] }}</p>
                     {% endif %}
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="edit_role">
-                        Rolü
+                        {{ _('Role') }}
                     </label>
-                    <select id="edit_role" name="role" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                        <option value="">--Seçiniz--</option>
-                        <option value="Yönetici">Yönetici</option>
-                        <option value="Teknik Sorumlu">Teknik Sorumlu</option>
-                        <option value="Personel">Personel</option>
+                    <select
+                        id="edit_role"
+                        name="role"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    >
+                        <option value="">{{ _('--Select--') }}</option>
+                        <option value="Admin">{{ _('Admin') }}</option>
+                        <option value="Manager">{{ _('Manager') }}</option>
+                        <option value="Staff">{{ _('Staff') }}</option>
                     </select>
                     {% if form.role.errors %}
                     <p class="text-red-500 text-xs italic">{{ form.role.errors[0] }}</p>
                     {% endif %}
                 </div>
                 <div class="flex justify-end">
-                    <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded mr-2">Güncelle</button>
-                    <button type="button" id="cancelEditBtn" class="bg-blue-500 text-white px-4 py-2 rounded">Vazgeç</button>
+                    <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded mr-2">
+                        {{ _('Update') }}
+                    </button>
+                    <button type="button" id="cancelEditBtn" class="bg-blue-500 text-white px-4 py-2 rounded">
+                        {{ _('Cancel') }}
+                    </button>
                 </div>
             </form>
         </div>

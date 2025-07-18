@@ -1,83 +1,84 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ get_locale() }}">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ekspertiz</title>
+    <title>{{ _('Expertise') }}</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body >
+<body>
 <div class="bg-blue-500 p-4">
     <div class="container mx-auto flex justify-between items-center">
-        <div class="text-white text-lg font-bold">Başlangıç</div>
+        <div class="text-white text-lg font-bold">{{ _('Start') }}</div>
         <div class="flex space-x-4 text-white">
-            <!-- Ekspertiz Dropdown -->
+            <!-- Expertise Dropdown -->
             <div class="relative group">
-                <a href="#" class="hover:underline">Ekspertiz</a>
+                <a href="#" class="hover:underline">{{ _('Expertise') }}</a>
                 <div class="absolute left-0 mt-2 w-48 bg-white border rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Yeni Rapor Oluştur</a>
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Açık Ekspertiz Raporları</a>
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Tamamlanmış Ekspertiz Raporları</a>
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">İptal Edilen Ekspertiz Raporları</a>
+                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Create New Report') }}</a>
+                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Open Expertise Reports') }}</a>
+                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Completed Expertise Reports') }}</a>
+                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Cancelled Expertise Reports') }}</a>
                 </div>
             </div>
 
-            <!-- Randevular Dropdown -->
+            <!-- Appointments Dropdown -->
             <div class="relative group">
-                <a href="{{ url_for('appointments.appointment_list') }}" class="hover:underline">Randevular</a>
+                <a href="{{ url_for('appointments.appointment_list') }}" class="hover:underline">{{ _('Appointments') }}</a>
                 <div class="absolute left-0 mt-2 w-48 bg-white border rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                    <a href="#" id="openCreateAppointmentModal" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Randevu Oluştur</a>
-                    <a href="{{ url_for('appointments.appointment_list') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Randevuları Görüntüle</a>
+                    <a href="#" id="openCreateAppointmentModal" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Create Appointment') }}</a>
+                    <a href="{{ url_for('appointments.appointment_list') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('View Appointments') }}</a>
                 </div>
             </div>
 
-            <!-- İstatistikler Dropdown -->
+            <!-- Statistics Dropdown -->
             <div class="relative group">
-                <a href="#" class="hover:underline">İstatistikler</a>
+                <a href="#" class="hover:underline">{{ _('Statistics') }}</a>
                 <div class="absolute left-0 mt-2 w-48 bg-white border rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Genel Ayarlar</a>
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Müşteriler</a>
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Bayilik</a>
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Personel Yönetimi</a>
+                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('General Settings') }}</a>
+                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Customers') }}</a>
+                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Dealership') }}</a>
+                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Staff Management') }}</a>
                 </div>
             </div>
-            <!-- Ayarlar Dropdown -->
+
+            <!-- Settings Dropdown -->
             <div class="relative group">
-                <a href="#" class="hover:underline">Ayarlar</a>
+                <a href="#" class="hover:underline">{{ _('Settings') }}</a>
                 <div class="absolute left-0 mt-2 w-48 bg-white border rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
                     <div class="relative group">
-                        <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Genel Ayarlar</a>
-                        <!-- Nested Dropdown for Genel Ayarlar -->
+                        <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('General Settings') }}</a>
+                        <!-- Nested Dropdown for General Settings -->
                         <div class="absolute left-full top-0 ml-2 w-48 bg-white border rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Firma Ayarları</a>
-                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Ekspertiz Paketleri</a>
+                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Company Settings') }}</a>
+                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Expertise Packages') }}</a>
                         </div>
                     </div>
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Müşteriler</a>
+                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Customers') }}</a>
                     <div class="relative group">
-                        <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Bayilik</a>
-                        <!-- Nested Dropdown for Bayilik -->
+                        <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Dealership') }}</a>
+                        <!-- Nested Dropdown for Dealership -->
                         <div class="absolute left-full top-0 ml-2 w-48 bg-white border rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Bayilik Ayarları</a>
-                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Bayilik Paketleri</a>
+                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Dealership Settings') }}</a>
+                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Dealership Packages') }}</a>
                         </div>
                     </div>
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Personel Yönetimi</a>
+                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Staff Management') }}</a>
                 </div>
             </div>
 
-
             <div class="relative group">
-                <a href="#" class="hover:underline">Ayarlar</a>
-                <!-- Nested Dropdown for Bayilik -->
+                <a href="#" class="hover:underline">{{ _('Settings') }}</a>
+                <!-- Nested Dropdown for Balance -->
                 <div class="absolute left-0 mt-2 w-48 bg-white border rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Bakiye Yükle</a>
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Bakiye Yüklemelerim</a>
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Geçmiş Sorgularım</a>
+                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Load Balance') }}</a>
+                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('My Balance Top-ups') }}</a>
+                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('My Previous Queries') }}</a>
                 </div>
             </div>
         </div>
-        <div class="bg-red-500 px-3 py-1 text-white rounded">BORÇ</div>
+        <div class="bg-red-500 px-3 py-1 text-white rounded">{{ _('DEBT') }}</div>
     </div>
 </div>
 

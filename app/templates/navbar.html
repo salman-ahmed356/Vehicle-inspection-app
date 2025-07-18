@@ -4,31 +4,30 @@
 <div class="bg-blue-500 p-4">
     <div class="container mx-auto flex justify-between items-center">
         <div class="text-white text-lg font-bold">
-            <i class="fas fa-th-large">
-            </i>
-            <a href="home.html"> </a>
+            <i class="fas fa-th-large"></i>
+            <a href="home.html"></a>
         </div>
         <div class="flex space-x-8 text-white">
             <!-- Ekspertiz Dropdown -->
             <div class="navbar flex items-center space-x-2">
                 <i class="fas fa-car"></i>
-                <a href="#" class="hover:underline uppercase">Ekspertiz</a>
+                <a href="#" class="hover:underline uppercase">{{ _('Expertise') }}</a>
                 <!-- Dropdown Menu -->
                 <div class="dropdown-menu">
-                    <a href="{{ url_for('reports.add_report') }}">Yeni Rapor Oluştur</a>
-                    <a href="{{ url_for('reports.report_list') }}">Açık Ekspertiz Raporları</a>
-                    <a href="#">Tamamlanmış Ekspertiz Raporları</a>
-                    <a href="#">İptal Edilen Ekspertiz Raporları</a>
+                    <a href="{{ url_for('reports.add_report') }}">{{ _('Create New Report') }}</a>
+                    <a href="{{ url_for('reports.report_list') }}">{{ _('Open Expertise Reports') }}</a>
+                    <a href="#">{{ _('Completed Expertise Reports') }}</a>
+                    <a href="#">{{ _('Cancelled Expertise Reports') }}</a>
                 </div>
             </div>
 
             <!-- Randevular Dropdown -->
             <div class="navbar flex items-center space-x-2">
                 <i class="fas fa-calendar-alt"></i>
-                <a href="{{ url_for('appointments.appointment_list') }}" class="hover:underline uppercase">Randevular</a>
+                <a href="{{ url_for('appointments.appointment_list') }}" class="hover:underline uppercase">{{ _('Appointments') }}</a>
                 <div class="dropdown-menu">
-                    <a href="#" id="openCreateAppointmentModal">Randevu Oluştur</a>
-                    <a href="{{ url_for('appointments.appointment_list') }}">Randevuları Görüntüle</a>
+                    <a href="#" id="openCreateAppointmentModal">{{ _('Create Appointment') }}</a>
+                    <a href="{{ url_for('appointments.appointment_list') }}">{{ _('View Appointments') }}</a>
                 </div>
             </div>
 
@@ -45,12 +44,12 @@
             <!-- Ayarlar Dropdown -->
             <div class="navbar flex items-center space-x-2">
                 <i class="fas fa-cog"></i>
-                <a href="#" class="hover:underline uppercase">Ayarlar</a>
+                <a href="#" class="hover:underline uppercase">{{ _('Settings') }}</a>
                 <div class="dropdown-menu">
-                    <a href="{{ url_for('companies.company_detail') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Firma Ayarları</a>
-                    <a href="{{ url_for('packages.packages_list') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Ekspertiz Paketleri</a>
-                    <a href="{{ url_for('customers.customer_list') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Müşteriler</a>
-                    <a href="{{ url_for('staff.staff_list') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Personel Yönetimi</a>
+                    <a href="{{ url_for('companies.company_detail') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Company Settings') }}</a>
+                    <a href="{{ url_for('packages.packages_list') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Expertise Packages') }}</a>
+                    <a href="{{ url_for('customers.customer_list') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Customers') }}</a>
+                    <a href="{{ url_for('staff.staff_list') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Staff Management') }}</a>
                 </div>
             </div>
 
@@ -68,7 +67,6 @@
         <div></div>
     </div>
 </div>
-
 
 <style>
     /* Navbar container styling */
@@ -109,8 +107,6 @@
     .dropdown-menu a:hover {
         background-color: #f1f1f1;
     }
-
-
 </style>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">

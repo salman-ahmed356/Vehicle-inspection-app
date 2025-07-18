@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ get_locale() }}">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Firma Ayarları</title>
+    <title>{{ _('Company Settings') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
@@ -24,43 +24,41 @@
 <!-- Main Content -->
 <main class="container mx-auto px-4 py-6">
     <div class="bg-white p-6 rounded-lg shadow">
-        <h2 class="text-xl font-semibold mb-4">Firma Ayarları</h2>
+        <h2 class="text-xl font-semibold mb-4">{{ _('Company Settings') }}</h2>
 
         <!-- Tabs Navigation -->
         {% include 'settings/tabs.html' %}
 
-        <form action="{{ url_for('companies.update_company', company_id=company.id) }}" method="POST" class="space-y-4">
+        <form action="{{ url_for('companies.update_company', company_id=company.id) }}"
+              method="POST"
+              class="space-y-4">
             {{ form.hidden_tag() }}
 
-            <!-- Tab 1: Firma Bilgileri -->
+            <!-- Tab 1: Company Information -->
             <div id="tab1" class="tab-content active">
                 {% include 'settings/company.html' %}
             </div>
 
-            <!-- Tab 2: Yetkili Bilgileri -->
+            <!-- Tab 2: Staff Information -->
             <div id="tab2" class="tab-content">
                 {% include 'settings/staff.html' %}
             </div>
 
-            <!-- Tab 3: Fatura Bilgileri -->
+            <!-- Tab 3: Invoice Information -->
             <div id="tab3" class="tab-content">
                 {% include 'settings/receipt.html' %}
             </div>
 
-
-            <!-- Tab 4: Rapor Tasarımı -->
+            <!-- Tab 4: Report Design -->
             <div id="tab4" class="tab-content">
-                <!-- Content for Rapor Tasarımı -->
+                <!-- Content for Report Design -->
                 <!-- ... (Rest of the form content) -->
             </div>
 
-            <!-- Tab 4: Rapor Ayarları -->
+            <!-- Tab 5: Report Settings -->
             <div id="tab5" class="tab-content">
                 {% include 'settings/report.html' %}
             </div>
-
-
-
         </form>
     </div>
 </main>
@@ -68,5 +66,4 @@
 <!-- Include the settings.js file -->
 <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
 </body>
-
 </html>
