@@ -83,9 +83,9 @@
     <tr>
       <td class="beyin-td">
         {% set image_url = obd_mapping.get(feature.name, default_image_url) %}
-        <img style="width: 60px;" src="{{ image_url }}" alt="{{ feature.name }}">
+        <img style="width: 60px;" src="{{ image_url }}" alt="{{ _(feature.name) }}">
       </td>
-      <td class="beyin-td">{{ feature.name }}</td>
+      <td class="beyin-td">{{ _(feature.name) }}</td>
       <td class="beyin-td">
         <div class="beyin-status-container">
           {% if feature.status == 'ARIZA KAYDI YOK' %}
@@ -102,7 +102,7 @@
             <span class="beyin-status-icon" style="color: #c91d1d;">
               <i class="fas fa-times"></i>
             </span>
-            <span class="beyin-status-text">{{ feature.status }}</span>
+            <span class="beyin-status-text">{{ _(feature.status) }}</span>
           {% endif %}
         </div>
       </td>

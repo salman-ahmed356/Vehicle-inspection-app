@@ -1,161 +1,128 @@
 <style>
-    .suspansiyonTable {
-        width: 100%;
-        height: 40vh;
-        border-collapse: collapse;
-    }
-
-    .suspansiyonTable td {
-        height: 100px; /* Set height */
-        overflow: hidden; /* Prevent overflow */
-        vertical-align: middle; /* Vertically center content */
-    }
-
-    .first-column {
-        width: 3%;
-    }
-
-    .extraSuspansiyon {
-        width: 60%; /* Remainder width */
-        padding: 50px 100px; /* Add padding around the image */
-        text-align: center; /* Center the image horizontally */
-    }
-
-    .suspansiyonImg {
-        max-height: 30%; /* Ensure the image fits within the available space */
-        width: auto; /* Maintain the aspect ratio */
-    }
-    /* Style for the labels and scale */
-    .scale-container {
-        text-align: center;
-        margin-top: 10px;
-    }
-
-    .scale {
-        display: inline-block;
-        font-size: 14px;
-        letter-spacing: 2px;
-    }
-
-    .status-labels {
-        display: flex;
-        justify-content: center;
-        margin-top: 10px;
-    }
-
-    .status-label {
-        padding: 5px 10px;
-        color: white;
-        border-radius: 10px;
-        margin: 0 5px;
-        font-size: 14px;
-        font-weight: bold;
-    }
-
-    .arizali {
-        background-color: #ff4d4d; /* Red */
-    }
-
-    .kontrol {
-        background-color: #ffcc00; /* Yellow */
-    }
-
-    .iyi {
-        background-color: #9933ff; /* Purple */
-    }
-
-    .cokiyi {
-        background-color: #33ccff; /* Light Blue */
-    }
-
-    .mukemmel {
-        background-color: #33cc33; /* Green */
-    }
-    .olcum.solOnSuspansiyon {
-        top: 3%;
-        left: 1%;
-        text-align:center;
-        color:white;
-    }
-    .olcum.sagOnSuspansiyon {
-        top: 3%;
-        right: 1%;
-        text-align:center;
-        color:white;
-    }
-    .olcum.solArkaSuspansiyon {
-        bottom: 10%;
-        left: 1%;
-        text-align:center;
-        color:white;
-    }
-    .olcum.sagArkaSuspansiyon{
-        bottom: 10%;
-        right: 1%;
-        text-align:center;
-        color:white;
-    }
-    .suspansiyonSpan{
-        display: flex;
-        justify-content: center;
-        align-content: center;
-        align-items: center;
-        font-size: 10px;
-        font-weight: bold;
-        border: 2px solid black;
-        color: white;
-        border-radius: 13px;
-        width: 100px;
-        height: 30px;
-        text-align: center;
-        line-height: 15px;
-    }
-    .yon.bottom.suspansiyon {
-        bottom: 10px;
-        left: 50%;
-        transform: translateX(-50%);
-    }
+  .suspansiyonTable {
+    width: 100%;
+    height: 40vh;
+    border-collapse: collapse;
+  }
+  .suspansiyonTable td {
+    height: 100px;
+    overflow: hidden;
+    vertical-align: middle;
+  }
+  .first-column {
+    width: 3%;
+  }
+  .extraSuspansiyon {
+    width: 60%;
+    padding: 50px 100px;
+    text-align: center;
+  }
+  .suspansiyonImg {
+    max-height: 30%;
+    width: auto;
+  }
+  .scale-container {
+    text-align: center;
+    margin-top: 10px;
+  }
+  .scale {
+    display: inline-block;
+    font-size: 14px;
+    letter-spacing: 2px;
+  }
+  .status-labels {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+  }
+  .status-label {
+    padding: 5px 10px;
+    color: white;
+    border-radius: 10px;
+    margin: 0 5px;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  .arizali { background-color: #ff4d4d; }
+  .kontrol { background-color: #ffcc00; }
+  .iyi { background-color: #9933ff; }
+  .cokiyi { background-color: #33ccff; }
+  .mukemmel { background-color: #33cc33; }
+  .olcum.solOnSuspansiyon {
+    top: 3%;
+    left: 1%;
+    text-align: center;
+    color: white;
+  }
+  .olcum.sagOnSuspansiyon {
+    top: 3%;
+    right: 1%;
+    text-align: center;
+    color: white;
+  }
+  .olcum.solArkaSuspansiyon {
+    bottom: 10%;
+    left: 1%;
+    text-align: center;
+    color: white;
+  }
+  .olcum.sagArkaSuspansiyon {
+    bottom: 10%;
+    right: 1%;
+    text-align: center;
+    color: white;
+  }
+  .suspansiyonSpan {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
+    font-weight: bold;
+    border: 2px solid black;
+    color: white;
+    border-radius: 13px;
+    width: 100px;
+    height: 30px;
+    text-align: center;
+    line-height: 15px;
+  }
+  .yon.bottom.suspansiyon {
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 </style>
 
-
-{% macro get_feature_value(features, name) %}
+{% macro get_feature_value(features, name) -%}
   {% for feature in features %}
     {% if feature.name == name %}
       {{ feature.status }}
     {% endif %}
   {% endfor %}
-{% endmacro %}
+{%- endmacro %}
 
-{% set on_sol_fren = get_feature_value(pckg_report.features, 'SOL ÖN')|float %}
-{% set on_sag_fren = get_feature_value(pckg_report.features, 'SAĞ ÖN')|float %}
+{% set on_sol_fren   = get_feature_value(pckg_report.features, 'SOL ÖN')|float %}
+{% set on_sag_fren   = get_feature_value(pckg_report.features, 'SAĞ ÖN')|float %}
 {% set arka_sag_fren = get_feature_value(pckg_report.features, 'SAĞ ARKA')|float %}
 {% set arka_sol_fren = get_feature_value(pckg_report.features, 'SOL ARKA')|float %}
 
-<div class="title-large primary-color primary-bg-color" 
-     style="position: relative; padding: 15px;">
-  <span style="color: white;">
-    {{ _('SUSPENSION & LATERAL DRIFT INSPECTION REPORT') }}
-  </span>
-  <div class="sasi-wrapper" 
-       style="position: absolute; right: 1%; top: 50%; 
-              transform: translateY(-50%); padding: 0 10px; 
-              background-color: white; border-left: 0;">
+<div class="title-large primary-color primary-bg-color" style="position: relative; padding: 15px;">
+  <span style="color: white;">{{ _('SUSPENSION & LATERAL DRIFT INSPECTION REPORT') }}</span>
+  <div class="sasi-wrapper" style="position: absolute; right: 1%; top: 50%; transform: translateY(-50%); padding: 0 10px; background-color: white; border-left: 0;">
     <table width="100%">
-      <tbody>
-        <tr>
-          <td style="font-size: 12px; font-weight: bold;">
-            {{ _('CHASSIS NO') }}<span style="font-size: 14px;">:</span>
-          </td>
-          <td rowspan="2" style="font-size: 20px; font-weight: bold;">
-            {{ vehicle.chassis_number[-6:] }}
-          </td>
-        </tr>
-        <tr>
-          <td style="font-size: 8px; text-align:center;">
-            {{ _('LAST 6 DIGITS') }}
-          </td>
-        </tr>
-      </tbody>
+      <tr>
+        <td style="font-size: 12px; font-weight: bold;">
+          {{ _('CHASSIS NO') }}<span style="font-size: 14px;">:</span>
+        </td>
+        <td rowspan="2" style="font-size: 20px; font-weight: bold;">
+          {{ vehicle.chassis_number[-6:] }}
+        </td>
+      </tr>
+      <tr>
+        <td style="font-size: 8px; text-align:center;">
+          {{ _('LAST 6 DIGITS') }}
+        </td>
+      </tr>
     </table>
   </div>
 </div>
@@ -165,139 +132,129 @@
     <td class="first-column frentd hTitle">
       <span class="rotate-text">{{ _('SUSPENSION TEST') }}</span>
     </td>
-    <td class="extraSuspansiyon frentd" rowspan="2" width="350" valign="top">
+    <td class="extraSuspansiyon frentd" rowspan="2" valign="top">
       <div class="aracgovde fren">
-        <div class="bg">
-          <img class="suspansiyonImg" src="{{ fren_image_url }}" alt="{{ _('Suspension') }}">
-          <span class="yon top">{{ _('FRONT') }}</span>
-          <span class="yon right">{{ _('RIGHT') }}</span>
-          <span class="yon bottom suspansiyon">{{ _('REAR') }}</span>
-          <span class="yon left">{{ _('LEFT') }}</span>
+        <img class="suspansiyonImg" src="{{ fren_image_url }}" alt="{{ _('Suspension') }}">
+        <span class="yon top">{{ _('FRONT') }}</span>
+        <span class="yon right">{{ _('RIGHT') }}</span>
+        <span class="yon bottom suspansiyon">{{ _('REAR') }}</span>
+        <span class="yon left">{{ _('LEFT') }}</span>
 
-          <div class="olcum solOnSuspansiyon suspansiyonSpan
-            {% if on_sol_fren <= 20 %}arizali
-            {% elif on_sol_fren <= 40 %}kontrol
-            {% elif on_sol_fren <= 60 %}iyi
-            {% elif on_sol_fren <= 80 %}cokiyi
-            {% else %}mukemmel{% endif %}">
-            <div class="suspansiyonStatus">
-              {% if on_sol_fren <= 20 %}
-                {{ _('DEFECTIVE') }}
-              {% elif on_sol_fren <= 40 %}
-                {{ _('CHECK') }}
-              {% elif on_sol_fren <= 60 %}
-                {{ _('GOOD') }}
-              {% elif on_sol_fren <= 80 %}
-                {{ _('VERY GOOD') }}
-              {% else %}
-                {{ _('EXCELLENT') }}
-              {% endif %}
-            </div>
-          </div>
-
-          <span class="olcum solOn">
-            <span class="deger">
-              <span class="fren-span">%{{ on_sol_fren|int }}</span>
-            </span>
-          </span>
-
-          <div class="olcum sagOnSuspansiyon suspansiyonSpan
-            {% if on_sag_fren <= 20 %}arizali
-            {% elif on_sag_fren <= 40 %}kontrol
-            {% elif on_sag_fren <= 60 %}iyi
-            {% elif on_sag_fren <= 80 %}cokiyi
-            {% else %}mukemmel{% endif %}">
-            <div class="suspansiyonStatus">
-              {% if on_sag_fren <= 20 %}
-                {{ _('DEFECTIVE') }}
-              {% elif on_sag_fren <= 40 %}
-                {{ _('CHECK') }}
-              {% elif on_sag_fren <= 60 %}
-                {{ _('GOOD') }}
-              {% elif on_sag_fren <= 80 %}
-                {{ _('VERY GOOD') }}
-              {% else %}
-                {{ _('EXCELLENT') }}
-              {% endif %}
-            </div>
-          </div>
-
-          <span class="olcum sagOn">
-            <span class="deger">
-              <span class="fren-span">%{{ on_sag_fren|int }}</span>
-            </span>
-          </span>
-
-          <div class="olcum solArkaSuspansiyon suspansiyonSpan
-            {% if arka_sol_fren <= 20 %}arizali
-            {% elif arka_sol_fren <= 40 %}kontrol
-            {% elif arka_sol_fren <= 60 %}iyi
-            {% elif arka_sol_fren <= 80 %}cokiyi
-            {% else %}mukemmel{% endif %}">
-            <div class="suspansiyonStatus">
-              {% if arka_sol_fren <= 20 %}
-                {{ _('DEFECTIVE') }}
-              {% elif arka_sol_fren <= 40 %}
-                {{ _('CHECK') }}
-              {% elif arka_sol_fren <= 60 %}
-                {{ _('GOOD') }}
-              {% elif arka_sol_fren <= 80 %}
-                {{ _('VERY GOOD') }}
-              {% else %}
-                {{ _('EXCELLENT') }}
-              {% endif %}
-            </div>
-          </div>
-
-          <span class="olcum solArka">
-            <span class="deger">
-              <span class="fren-span">%{{ arka_sol_fren|int }}</span>
-            </span>
-          </span>
-
-          <div class="olcum sagArkaSuspansiyon suspansiyonSpan
-            {% if arka_sag_fren <= 20 %}arizali
-            {% elif arka_sag_fren <= 40 %}kontrol
-            {% elif arka_sag_fren <= 60 %}iyi
-            {% elif arka_sag_fren <= 80 %}cokiyi
-            {% else %}mukemmel{% endif %}">
-            <div class="suspansiyonStatus">
-              {% if arka_sag_fren <= 20 %}
-                {{ _('DEFECTIVE') }}
-              {% elif arka_sag_fren <= 40 %}
-                {{ _('CHECK') }}
-              {% elif arka_sag_fren <= 60 %}
-                {{ _('GOOD') }}
-              {% elif arka_sag_fren <= 80 %}
-                {{ _('VERY GOOD') }}
-              {% else %}
-                {{ _('EXCELLENT') }}
-              {% endif %}
-            </div>
-          </div>
-
-          <span class="olcum sagArka">
-            <span class="deger">
-              <span class="fren-span">%{{ arka_sag_fren|int }}</span>
-            </span>
+        <div class="olcum solOnSuspansiyon suspansiyonSpan
+                    {% if on_sol_fren <= 20 %}arizali
+                    {% elif on_sol_fren <= 40 %}kontrol
+                    {% elif on_sol_fren <= 60 %}iyi
+                    {% elif on_sol_fren <= 80 %}cokiyi
+                    {% else %}mukemmel{% endif %}">
+          <span>
+            {% if on_sol_fren <= 20 %}
+              {{ _('DEFECTIVE') }}
+            {% elif on_sol_fren <= 40 %}
+              {{ _('CHECK') }}
+            {% elif on_sol_fren <= 60 %}
+              {{ _('GOOD') }}
+            {% elif on_sol_fren <= 80 %}
+              {{ _('VERY GOOD') }}
+            {% else %}
+              {{ _('EXCELLENT') }}
+            {% endif %}
           </span>
         </div>
-      </div>
+        <span class="olcum solOn">
+          <span class="deger">
+            <span class="fren-span">%{{ on_sol_fren|int }}</span>
+          </span>
+        </span>
 
-      <div class="scale-container">
-        <div class="scale">
-          0---10---20---30---40---50---60---70---80---90---100
+        <div class="olcum sagOnSuspansiyon suspansiyonSpan
+                    {% if on_sag_fren <= 20 %}arizali
+                    {% elif on_sag_fren <= 40 %}kontrol
+                    {% elif on_sag_fren <= 60 %}iyi
+                    {% elif on_sag_fren <= 80 %}cokiyi
+                    {% else %}mukemmel{% endif %}">
+          <span>
+            {% if on_sag_fren <= 20 %}
+              {{ _('DEFECTIVE') }}
+            {% elif on_sag_fren <= 40 %}
+              {{ _('CHECK') }}
+            {% elif on_sag_fren <= 60 %}
+              {{ _('GOOD') }}
+            {% elif on_sag_fren <= 80 %}
+              {{ _('VERY GOOD') }}
+            {% else %}
+              {{ _('EXCELLENT') }}
+            {% endif %}
+          </span>
         </div>
-        <div class="status-labels">
-          <span class="status-label arizali">{{ _('DEFECTIVE') }}</span>
-          <span class="status-label kontrol">{{ _('CHECK') }}</span>
-          <span class="status-label iyi">{{ _('GOOD') }}</span>
-          <span class="status-label cokiyi">{{ _('VERY GOOD') }}</span>
-          <span class="status-label mukemmel">{{ _('EXCELLENT') }}</span>
+        <span class="olcum sagOn">
+          <span class="deger">
+            <span class="fren-span">%{{ on_sag_fren|int }}</span>
+          </span>
+        </span>
+
+        <div class="olcum solArkaSuspansiyon suspansiyonSpan
+                    {% if arka_sol_fren <= 20 %}arizali
+                    {% elif arka_sol_fren <= 40 %}kontrol
+                    {% elif arka_sol_fren <= 60 %}iyi
+                    {% elif arka_sol_fren <= 80 %}cokiyi
+                    {% else %}mukemmel{% endif %}">
+          <span>
+            {% if arka_sol_fren <= 20 %}
+              {{ _('DEFECTIVE') }}
+            {% elif arka_sol_fren <= 40 %}
+              {{ _('CHECK') }}
+            {% elif arka_sol_fren <= 60 %}
+              {{ _('GOOD') }}
+            {% elif arka_sol_fren <= 80 %}
+              {{ _('VERY GOOD') }}
+            {% else %}
+              {{ _('EXCELLENT') }}
+            {% endif %}
+          </span>
         </div>
+        <span class="olcum solArka">
+          <span class="deger">
+            <span class="fren-span">%{{ arka_sol_fren|int }}</span>
+          </span>
+        </span>
+
+        <div class="olcum sagArkaSuspansiyon suspansiyonSpan
+                    {% if arka_sag_fren <= 20 %}arizali
+                    {% elif arka_sag_fren <= 40 %}kontrol
+                    {% elif arka_sag_fren <= 60 %}iyi
+                    {% elif arka_sag_fren <= 80 %}cokiyi
+                    {% else %}mukemmel{% endif %}">
+          <span>
+            {% if arka_sag_fren <= 20 %}
+              {{ _('DEFECTIVE') }}
+            {% elif arka_sag_fren <= 40 %}
+              {{ _('CHECK') }}
+            {% elif arka_sag_fren <= 60 %}
+              {{ _('GOOD') }}
+            {% elif arka_sag_fren <= 80 %}
+              {{ _('VERY GOOD') }}
+            {% else %}
+              {{ _('EXCELLENT') }}
+            {% endif %}
+          </span>
+        </div>
+        <span class="olcum sagArka">
+          <span class="deger">
+            <span class="fren-span">%{{ arka_sag_fren|int }}</span>
+          </span>
+        </span>
       </div>
     </td>
   </tr>
 </table>
 
-
+<div class="scale-container">
+  <div class="scale">0---10---20---30---40---50---60---70---80---90---100</div>
+  <div class="status-labels">
+    <span class="status-label arizali">{{ _('DEFECTIVE') }}</span>
+    <span class="status-label kontrol">{{ _('CHECK') }}</span>
+    <span class="status-label iyi">{{ _('GOOD') }}</span>
+    <span class="status-label cokiyi">{{ _('VERY GOOD') }}</span>
+    <span class="status-label mukemmel">{{ _('EXCELLENT') }}</span>
+  </div>
+</div>

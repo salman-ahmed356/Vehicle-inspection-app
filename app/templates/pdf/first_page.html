@@ -1,188 +1,210 @@
-<div class="header-section">
-  {{ _('JOB ORDER / VEHICLE ACCEPTANCE / DELIVERY / INFORMATION FORM') }}
-</div>
+<style>
+  .beyin-bordered-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+  }
+  .beyin-bordered-table th,
+  .beyin-bordered-table td {
+    border: 1px solid #dcdcdc;
+    padding: 15px;
+  }
+  .beyin-status-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+  }
+  .beyin-status-icon {
+    font-size: 24px;
+    color: black;
+    background-color: white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .beyin-status-text {
+    margin-top: 5px;
+    font-weight: bold;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  .beyin-td {
+    vertical-align: middle;
+    text-align: center;
+    font-size: 14px;
+  }
+  .beyin-td:nth-child(2) {
+    text-align: left;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  .beyin-td img {
+    display: block;
+    margin: 0 auto;
+  }
+</style>
 
-<div class="main-container">
-  <!-- Left‐side table -->
-  <div class="table-container">
-    <table class="bordered-table">
-      <tr>
-        <th>{{ _('Opened By') }}</th>
-        <td>{{ staff.full_name }}</td>
-      </tr>
-      <tr>
-        <th>{{ _('Acceptance Date') }}</th>
-        <td>{{ report.created_at }}</td>
-      </tr>
-      <tr>
-        <th>{{ _('Acceptance Time') }}</th>
-        <td>{{ report.created_at }}</td>
-      </tr>
-      <tr>
-        <th>{{ _('Delivery Time') }}</th>
-        <td>{{ report.finished_at }}</td>
-      </tr>
-      <tr>
-        <th>{{ _('Entry Mileage (km/mi)') }}</th>
-        <td>{{ vehicle.mileage }}</td>
-      </tr>
-      <tr>
-        <th>{{ _('Exit Mileage (km/mi)') }}</th>
-        <td>{{ vehicle.mileage + 1 }}</td>
-      </tr>
+<div class="title-large primary-color primary-bg-color" style="position: relative; padding: 15px;">
+  <span style="color: white;">{{ _('Paint & Body Inspection') }}</span>
+  <div class="sasi-wrapper"
+       style="position: absolute; right: 1%; top: 50%; transform: translateY(-50%); padding: 0 10px; background-color: white;">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="font-size: 12px; font-weight: bold;">
+            {{ _('Chassis No') }}<span style="font-size: 14px;">:</span>
+          </td>
+          <td class="text-medium" rowspan="2"
+              style="font-size: 20px; font-weight: bold;">
+            {{ vehicle.chassis_number[-6:] }}
+          </td>
+        </tr>
+        <tr>
+          <td style="font-size: 8px; text-align: center;">
+            {{ _('Last 6 Digits') }}
+          </td>
+        </tr>
+      </tbody>
     </table>
   </div>
+</div>
 
-  <!-- Right‐side “Requested Tests & Controls” -->
-  <div class="table-container">
-    <div class="section-title" style="background-color: #a82b2e; color: white; padding: 5px;">
-      {{ _('REQUESTED INSPECTION TESTS & CONTROLS') }}
+{% set boya_features = pckg_report.boya_features %}
+{% set kaporta_features = pckg_report.kaporta_features %}
+
+<div class="form-column image-section">
+  <div class="image-container w-full max-w-4xl mx-auto">
+    <table class="car-table min-w-full">
+      <!-- image grid here -->
+    </table>
+  </div>
+</div>
+
+<div class="info-section">
+  <div class="info-table">
+    <img src="{{ info_image_url }}" alt="{{ _('Information') }}">
+  </div>
+  <div class="boya-comment">
+    <div class="footer-expertise">
+      <div class="section-title">
+        {{ _('Body & Paint Inspection Summary') }}
+      </div>
+      {% if boya_comment|length > 230 %}
+      <div class="summary-text summary-text-small">
+        {{ boya_comment }}
+      </div>
+      {% else %}
+      <div class="summary-text summary-text-normal">
+        {{ boya_comment }}
+      </div>
+      {% endif %}
     </div>
-    <table class="checkbox-table">
-      <tr>
-        <td style="width: 50%; vertical-align: top;">
-          <table style="width: 100%;">
-            {% set left_tests = [
-              _('Engine Inspection'),
-              _('Lateral Drift Inspection'),
-              _('Suspension Inspection'),
-              _('Brake Inspection'),
-              _('ECU Inspection')
-            ] %}
-            {% for test in left_tests %}
-            <tr>
-              <td style="padding: 5px 0;">
-                <div class="checkbox {% if test in package_expertise_reports | map(attribute='expertise_type_name') %}checked{% endif %}"></div>
-                <span style="font-size: 12px; font-weight: bold;">
-                  {{ test }}
+  </div>
+</div>
+
+<div class="table-container boya-table" style="display: flex; justify-content: space-between; margin-bottom:5px;">
+  <table class="inspection-table" style="width:100%; border-collapse:collapse;">
+    <tr>
+      <!-- First Column -->
+      <td style="vertical-align: top; width: 33.33%;">
+        <table class="inspection-table-inner" style="width:100%; border-collapse:collapse;">
+          {% for feature in kaporta_features[:kaporta_features|length // 3] %}
+          <tr>
+            <th style="text-align:left; padding:8px;">{{ _(feature.name) }}</th>
+            <td>
+              {% if feature.status == 'YOK' %}
+              <div class="status-container">
+                <span class="status-box status-black filled">
+                  {{ _('None') }}
                 </span>
-              </td>
-            </tr>
-            {% endfor %}
-          </table>
-        </td>
-        <td style="width: 50%; vertical-align: top;">
-          <table style="width: 100%;">
-            {% set right_tests = [
-              _('Mechanical Inspection'),
-              _('Interior & Exterior Inspection'),
-              _('On-Road & Dyno Inspection'),
-              _('Paint & Body Inspection')
-            ] %}
-            {% for test in right_tests %}
-            <tr>
-              <td style="padding: 5px 0;">
-                <div class="checkbox {% if test in package_expertise_reports | map(attribute='expertise_type_name') %}checked{% endif %}"></div>
-                <span style="font-size: 12px; font-weight: bold;">
-                  {{ test }}
+              </div>
+              {% else %}
+              <div class="status-container">
+                <span class="status-box status-good {% if feature.status == 'Kontrolden Geçti' %}filled{% endif %}">
+                  {{ _('Passed Inspection') }}
                 </span>
-              </td>
-            </tr>
-            {% endfor %}
-          </table>
-        </td>
-      </tr>
-    </table>
-  </div>
+                <span class="status-box status-warning {% if feature.status == 'Sorun Çıkarabilir' %}filled{% endif %}">
+                  {{ _('Potential Issue') }}
+                </span>
+                <span class="status-box status-red {% if feature.status == 'Bakım Gerekli' %}filled{% endif %}">
+                  {{ _('Maintenance Needed') }}
+                </span>
+              </div>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+      </td>
+
+      <!-- Second Column -->
+      <td style="vertical-align: top; width: 33.33%;">
+        <table class="inspection-table-inner" style="width:100%; border-collapse:collapse;">
+          {% for feature in kaporta_features[kaporta_features|length // 3 : kaporta_features|length // 3 * 2] %}
+          <tr>
+            <th style="text-align:left; padding:8px;">{{ _(feature.name) }}</th>
+            <td>
+              {% if feature.status == 'YOK' %}
+              <div class="status-container">
+                <span class="status-box status-black filled">
+                  {{ _('None') }}
+                </span>
+              </div>
+              {% else %}
+              <div class="status-container">
+                <span class="status-box status-good {% if feature.status == 'ÇİZİK' %}filled{% endif %}">
+                  {{ _('Scratch') }}
+                </span>
+                <span class="status-box status-warning {% if feature.status == 'EZİK / KIRIK / GÖÇÜK' %}filled{% endif %}">
+                  {{ _('Dent / Crack / Damage') }}
+                </span>
+                <span class="status-box status-red {% if feature.status == 'İŞLEMLİ / BOYALI' %}filled{% endif %}">
+                  {{ _('Repaired / Painted') }}
+                </span>
+              </div>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+      </td>
+
+      <!-- Third Column -->
+      <td style="vertical-align: top; width: 33.33%;">
+        <table class="inspection-table-inner" style="width:100%; border-collapse:collapse;">
+          {% for feature in kaporta_features[kaporta_features|length // 3 * 2 :] %}
+          <tr>
+            <th style="text-align:left; padding:8px;">{{ _(feature.name) }}</th>
+            <td>
+              {% if feature.status == 'YOK' %}
+              <div class="status-container">
+                <span class="status-box status-black filled">
+                  {{ _('None') }}
+                </span>
+              </div>
+              {% else %}
+              <div class="status-container">
+                <span class="status-box status-good {% if feature.status == 'ÇİZİK' %}filled{% endif %}">
+                  {{ _('Scratch') }}
+                </span>
+                <span class="status-box status-warning {% if feature.status == 'EZİK / KIRIK / GÖÇÜK' %}filled{% endif %}">
+                  {{ _('Dent / Crack / Damage') }}
+                </span>
+                <span class="status-box status-red {% if feature.status == 'İŞLEMLİ / BOYALI' %}filled{% endif %}">
+                  {{ _('Repaired / Painted') }}
+                </span>
+              </div>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+      </td>
+    </tr>
+  </table>
 </div>
-
-<div class="section-title">
-  {{ _('VEHICLE INFORMATION') }}
-</div>
-
-<table class="bordered-table">
-  <tr>
-    <th>{{ _('Brand') }}</th>
-    <td>{{ vehicle.brand }}</td>
-  </tr>
-  <tr>
-    <th>{{ _('Model') }}</th>
-    <td>
-      {{ vehicle.model }} ({{ vehicle.transmission_type.value }}) ({{ vehicle.color.value }})
-    </td>
-  </tr>
-  <tr>
-    <th>{{ _('Year') }}</th>
-    <td>{{ vehicle.model_year }}</td>
-  </tr>
-  <tr>
-    <th>{{ _('License Plate') }}</th>
-    <td>{{ vehicle.plate }}</td>
-  </tr>
-  <tr>
-    <th>{{ _('Engine Number') }}</th>
-    <td>{{ vehicle.engine_number }}</td>
-  </tr>
-  <tr>
-    <th>{{ _('Chassis Number') }}</th>
-    <td>{{ vehicle.chassis_number or '—' }}</td>
-  </tr>
-  <tr>
-    <th>{{ _('Fuel Type') }}</th>
-    <td>{{ vehicle.fuel_type.value }}</td>
-  </tr>
-</table>
-
-<div class="section-title">
-  {{ _('CUSTOMER DETAILS REQUESTING INSPECTION') }}
-</div>
-
-<table class="bordered-table">
-  <tr>
-    <th>{{ _('Full Name') }}</th>
-    <td>{{ customer.full_name }}</td>
-    <th>{{ _('Phone') }}</th>
-    <td>{{ customer.phone }}</td>
-  </tr>
-  <tr>
-    <th>{{ _('ID / Tax No') }}</th>
-    <td>{{ customer.tax_id }}</td>
-    <th>{{ _('Email') }}</th>
-    <td>{{ customer.email }}</td>
-  </tr>
-  <tr>
-    <th>{{ _('Address') }}</th>
-    <td colspan="3">{{ customer.address }}</td>
-  </tr>
-</table>
-
-<table class="bordered-table">
-  <tr>
-    <td style="text-align: center; color:#A82B2E; font-weight: bold;">
-      {{ _('WAS ORIGINAL REGISTRATION DOCUMENT SEEN?') }}
-    </td>
-    <td style="text-align: center;">
-      <div class="checkbox {% if report.registration_document_seen %}checked{% endif %}"></div> {{ _('YES') }}
-      <div class="checkbox {% if not report.registration_document_seen %}checked{% endif %}" style="margin-left:20px;"></div> {{ _('NO') }}
-    </td>
-  </tr>
-</table>
-
-<div class="signature-section" style="display: table; width: 100%; table-layout: fixed; border-collapse: collapse;">
-  <div class="signature-box" style="display: table-cell; width: 25%; font-weight: bold; color: white; border: 1px solid #dcdcdc;">
-    <h1 style="background-color: #a82b2e; margin:0; font-size:10px; padding:6px; text-align: center;">
-      {{ _('COMPANY') }}
-    </h1>
-    <p style="color: #d3d3d3; text-align:center; margin:0; padding-top:5px;">{{ _('Name & Signature') }}</p>
-  </div>
-
-  <div style="display: table-cell; width: 40%; padding: 10px 15px; border: 1px solid #dcdcdc; font-size: 10px; vertical-align: top;">
-    {{ _('I authorize {company} service center to perform the operations specified in this work order. I have read and accept the terms on the service agreement page. I will be informed and collect the vehicle once the inspection is complete. I consent to the vehicle’s recorded entry and exit mileage at the inspection center. The inspection will be performed without engine disassembly. {company} shall not be held responsible for any engine, transmission, or other vehicle damages that may occur before or during the dynamometer test.').format(company=company.name) }}
-  </div>
-
-  <div class="signature-box" style="display: table-cell; width: 25%; font-weight: bold; color: white; border: 1px solid #dcdcdc;">
-    <h1 style="background-color: #a82b2e; margin:0; font-size:10px; padding:6px; text-align: center;">
-      {{ _('CUSTOMER') }}
-    </h1>
-    <p style="color: #d3d3d3; text-align:center; margin:0; padding-top:5px;">{{ _('Name & Signature') }}</p>
-  </div>
-</div>
-
-<footer class="footer">
-  <p>{{ company.name }}</p>
-  <p><strong>{{ _('ADDRESS') }}:</strong> {{ company.address }}</p>
-  <p>
-    <strong>{{ _('PHONE') }}:</strong> {{ company.phone_1 }}&nbsp;&nbsp;
-    <strong>{{ _('EMAIL') }}:</strong> {{ company.email }}
-  </p>
-</footer>

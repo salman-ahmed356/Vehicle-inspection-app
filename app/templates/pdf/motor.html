@@ -8,112 +8,58 @@
         position: relative;
         z-index: 1;
     }
-
     .section-title {
-        background-color: #b52424; /* Red background color */
-        color: white; /* White text color */
+        background-color: #b52424;
+        color: white;
         font-weight: bold;
-        text-align: center; /* Centered text */
+        text-align: center;
     }
-
     .summary-text {
-        padding: 15px; /* Adjusted padding for more space */
+        padding: 10px;
         border: 1px solid #ddd;
-        font-size: 14px; /* Slightly larger font size for readability */
+        font-size: 12px;
         line-height: 1.5;
-        background-color: #fff; /* White background */
-        text-align: left; /* Ensure left alignment */
+        background-color: #fff;
+        text-align: left;
+        width: 95%;
     }
-
+    .summary-text-small {
+        font-size: 10px;
+    }
+    .summary-text-normal {
+        font-size: 12px;
+    }
     .flex-container {
         display: flex;
-        justify-content: space-around; /* Space the elements evenly */
-        align-items: flex-start; /* Align items to the top */
-
+        justify-content: space-around;
+        align-items: flex-start;
     }
-
-    /* Footer motor section styling */
     .footer-motor {
-        font-size: 9px; /* Slightly larger font size */
-        color: #666;
-        text-align: justify;
+        font-size: 12px;
+        color: #333;
         padding: 10px;
         border-top: 1px solid #ddd;
         background-color: #f8f8f8;
         width: 30%;
     }
-    .footer-space{
-        width:5%
-    }
-    .footer-expertise{
-        width:65%;
-    }
-    .section-title{
-        width:95%;
-    }
-    /* Warning text styling */
-    .footer-warning {
-        font-size: 7px;
-        color: red;
-        font-weight: bold;
-        width: 95%;
-        text-align: justify;
-    }
-
-
-    .summary-text {
-        padding: 10px; /* Adjusted padding for more space */
-        border: 1px solid #ddd;
-        font-size: 12px; /* Slightly larger font size for readability */
-        line-height: 1.5;
-        background-color: #fff; /* White background */
-        text-align: left; /* Ensure left alignment */
-        width: 95%; /* Take 50% of the width */
-    }
-    .summary-text-small {
-        font-size: 10px;
-    }
-
-    .summary-text-normal {
-        font-size: 12px;
-    }
-
-</style>
-
-
-<style>
-    .title-large.primary-color.primary-bg-color {
-        position: relative;
-        padding: 15px;
-    }
-    .sasi-wrapper {
-        position: absolute;
-        right: 1%;
-        top: 50%;
-        transform: translateY(-50%);
-        padding: 0 10px;
-        background-color: white;
-        border-left: 0;
-    }
-    .footer-motor {
-        font-size: 12px;
-        color: #333;
+    .footer-space {
+        width: 5%;
     }
     .footer-expertise {
         font-size: 12px;
         color: #333;
+        width: 65%;
     }
     .footer-warning {
         margin-top: 8px;
         font-weight: bold;
         color: #a82b2e;
+        font-size: 7px;
     }
 </style>
 
 <div class="title-large primary-color primary-bg-color">
-  <span style="color: white;">
-    {{ _('ENGINE INSPECTION REPORT') }}
-  </span>
+  <span style="color: white;">{{ _('ENGINE INSPECTION REPORT') }}</span>
   <div class="sasi-wrapper">
     <table width="100%">
       <tbody>
@@ -126,7 +72,7 @@
           </td>
         </tr>
         <tr>
-          <td style="font-size: 8px; text-align:center;">
+          <td style="font-size: 8px; text-align: center;">
             {{ _('LAST 6 DIGITS') }}
           </td>
         </tr>
@@ -138,8 +84,8 @@
 <table cellspacing="0" cellpadding="0" width="100%">
   <tr>
     <td style="padding: 10px 20px;">
-      <img src="{{ motor_image_url }}" 
-           alt="{{ _('Engine Image') }}" 
+      <img src="{{ motor_image_url }}"
+           alt="{{ _('Engine Image') }}"
            style="width: 425px; height: auto;">
     </td>
     <td>
@@ -148,51 +94,38 @@
           <td valign="center" align="left">
             <div class="status-box status-good filled"></div>
           </td>
-          <td>
-            {{ _('(GOOD) PASSED INSPECTION') }}
-          </td>
+          <td>{{ _('(GOOD) PASSED INSPECTION') }}</td>
         </tr>
         <tr>
           <td valign="center" align="left">
             <div class="status-box status-warning filled"></div>
           </td>
-          <td>
-            {{ _('(MODERATE) MAY CAUSE ISSUES') }}
-          </td>
+          <td>{{ _('(MODERATE) MAY CAUSE ISSUES') }}</td>
         </tr>
         <tr>
           <td valign="center" align="left">
             <div class="status-box status-red filled"></div>
           </td>
-          <td>
-            {{ _('(BAD) MAINTENANCE REQUIRED') }}
-          </td>
+          <td>{{ _('(BAD) MAINTENANCE REQUIRED') }}</td>
         </tr>
       </table>
     </td>
   </tr>
 </table>
 
-<div class="table-container" 
-     style="display: flex; justify-content: space-between; margin-bottom:5px;">
-  <table class="inspection-table" 
-         style="width: 100%; border-collapse: collapse;">
+<div class="table-container" style="display: flex; justify-content: space-between; margin-bottom:5px;">
+  <table class="inspection-table" style="width: 100%; border-collapse: collapse;">
     <tr>
       <!-- First Column -->
       <td style="vertical-align: top; width: 50%;">
-        <table class="inspection-table-inner" 
-               style="width: 100%; border-collapse: collapse;">
+        <table class="inspection-table-inner" style="width: 100%; border-collapse: collapse;">
           {% for feature in pckg_report.features[:(pckg_report.features|length // 2)] %}
           <tr>
-            <th style="text-align: left; padding: 8px;">
-              {{ _(feature.name) }}
-            </th>
+            <th style="text-align: left; padding: 8px;">{{ _(feature.name) }}</th>
             <td>
               {% if feature.status == 'YOK' %}
                 <div class="status-container">
-                  <span class="status-box status-black filled">
-                    {{ _('NONE') }}
-                  </span>
+                  <span class="status-box status-black filled">{{ _('NONE') }}</span>
                 </div>
               {% else %}
                 <div class="status-container">
@@ -209,19 +142,14 @@
 
       <!-- Second Column -->
       <td style="vertical-align: top; width: 50%;">
-        <table class="inspection-table-inner" 
-               style="width: 100%; border-collapse: collapse;">
+        <table class="inspection-table-inner" style="width: 100%; border-collapse: collapse;">
           {% for feature in pckg_report.features[(pckg_report.features|length // 2):] %}
           <tr>
-            <th style="text-align: left; padding: 8px;">
-              {{ _(feature.name) }}
-            </th>
+            <th style="text-align: left; padding: 8px;">{{ _(feature.name) }}</th>
             <td>
               {% if feature.status == 'YOK' %}
                 <div class="status-container">
-                  <span class="status-box status-black filled">
-                    {{ _('NONE') }}
-                  </span>
+                  <span class="status-box status-black filled">{{ _('NONE') }}</span>
                 </div>
               {% else %}
                 <div class="status-container">
@@ -246,21 +174,13 @@
   </div>
   <div class="footer-space"></div>
   <div class="footer-expertise">
-    <div class="section-title">
-      {{ _('ENGINE INSPECTION SUMMARY') }}
-    </div>
+    <div class="section-title">{{ _('ENGINE INSPECTION SUMMARY') }}</div>
     {% if pckg_report.comment|length > 230 %}
-      <div class="summary-text summary-text-small">
-        {{ pckg_report.comment }}
-      </div>
+      <div class="summary-text summary-text-small">{{ pckg_report.comment }}</div>
     {% else %}
-      <div class="summary-text summary-text-normal">
-        {{ pckg_report.comment }}
-      </div>
+      <div class="summary-text summary-text-normal">{{ pckg_report.comment }}</div>
     {% endif %}
-    <div class="footer-warning">
-      {{ _('WARNING: The timing belt and front chain are in sealed casings and have not been inspected.') }}
-    </div>
+    <div class="footer-warning">{{ _('WARNING: The timing belt and front chain are in sealed casings and have not been inspected.') }}</div>
   </div>
 </div>
 
@@ -269,10 +189,9 @@
     const commentText = `{{ pckg_report.comment }}`;
     const summaryText = document.querySelector('.summary-text');
     if (commentText.length > 230) {
-      summaryText.style.fontSize = '3px';
+      summaryText.style.fontSize = '10px';
     } else {
       summaryText.style.fontSize = '12px';
     }
   });
 </script>
-

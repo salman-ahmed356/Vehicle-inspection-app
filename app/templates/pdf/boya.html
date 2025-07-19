@@ -107,7 +107,6 @@
   </div>
 </div>
 
-<!-- KAPORTA TABLE -->
 <div class="table-container boya-table" style="display: flex; justify-content: space-between; margin-bottom:5px;">
   <table class="inspection-table" style="width:100%; border-collapse:collapse;">
     <tr>
@@ -116,7 +115,7 @@
         <table class="inspection-table-inner" style="width:100%; border-collapse:collapse;">
           {% for feature in kaporta_features[:kaporta_features|length // 3] %}
           <tr>
-            <th style="text-align:left; padding:8px;">{{ feature.name }}</th>
+            <th style="text-align:left; padding:8px;">{{ _(feature.name) }}</th>
             <td>
               {% if feature.status == 'YOK' %}
               <div class="status-container">
@@ -148,7 +147,7 @@
         <table class="inspection-table-inner" style="width:100%; border-collapse:collapse;">
           {% for feature in kaporta_features[kaporta_features|length // 3 : kaporta_features|length // 3 * 2] %}
           <tr>
-            <th style="text-align:left; padding:8px;">{{ feature.name }}</th>
+            <th style="text-align:left; padding:8px;">{{ _(feature.name) }}</th>
             <td>
               {% if feature.status == 'YOK' %}
               <div class="status-container">
@@ -180,7 +179,7 @@
         <table class="inspection-table-inner" style="width:100%; border-collapse:collapse;">
           {% for feature in kaporta_features[kaporta_features|length // 3 * 2 :] %}
           <tr>
-            <th style="text-align:left; padding:8px;">{{ feature.name }}</th>
+            <th style="text-align:left; padding:8px;">{{ _(feature.name) }}</th>
             <td>
               {% if feature.status == 'YOK' %}
               <div class="status-container">
