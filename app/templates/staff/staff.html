@@ -1,348 +1,183 @@
-<!DOCTYPE html>
-<html lang="{{ get_locale() }}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ _('Staff List') }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-</head>
-<body class="bg-gray-100">
-{% include 'navbar.html' %}
+<!-- templates/staff/staff.html -->
 
-<div class="container mx-auto p-4">
-    <h1 class="text-xl font-semibold mb-4">{{ _('Staff List') }}</h1>
-    <button id="openModalBtn" class="bg-teal-500 text-white px-4 py-2 rounded inline-block mb-4">
-        <i class="fas fa-plus mr-2"></i> {{ _('Add New Staff') }}
-    </button>
-    <div class="bg-white shadow-md rounded-lg">
-        <table class="min-w-full table-auto">
-            <thead class="bg-gray-200">
-            <tr>
-                <th class="px-4 py-2 text-left">{{ _('Full Name') }}</th>
-                <th class="px-4 py-2 text-left">{{ _('Phone Number') }}</th>
-                <th class="px-4 py-2 text-left">{{ _('Role') }}</th>
-                <th class="px-4 py-2 text-left">{{ _('Status') }}</th>
-                <th class="px-4 py-2 text-left">{{ _('Action') }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for member in staff %}
-            <tr class="border-b">
-                <td class="px-4 py-2">{{ member.first_name }} {{ member.last_name }}</td>
-                <td class="px-4 py-2">{{ member.phone_number }}</td>
-                <td class="px-4 py-2">{{ member.role }}</td>
-                <td class="px-4 py-2">
-                    <span class="bg-teal-500 text-white px-2 py-1 rounded-full text-xs">{{ _('Active') }}</span>
-                </td>
-                <td class="px-4 py-2">
-                    <button
-                        class="bg-orange-500 text-white px-3 py-1 rounded editBtn"
-                        data-id="{{ member.id }}"
-                        data-first_name="{{ member.first_name }}"
-                        data-last_name="{{ member.last_name }}"
-                        data-phone_number="{{ member.phone_number }}"
-                        data-role="{{ member.role }}"
-                    >
-                        <i class="fas fa-edit"></i> {{ _('Edit') }}
-                    </button>
-                    <form
-                        action="{{ url_for('staff.delete_staff', id=member.id) }}"
-                        method="POST"
-                        class="inline-block"
-                    >
-                        {{ form.hidden_tag() }}
-                        <button
-                            type="submit"
-                            class="bg-red-500 text-white px-3 py-1 rounded ml-2"
-                            onclick="return confirm('{{ _('Are you sure you want to delete this staff member?') }}')"
-                        >
-                            <i class="fas fa-trash-alt"></i> {{ _('Delete') }}
-                        </button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        <div class="p-4">
-            <div class="flex justify-end mt-2 space-x-2">
-                <button class="bg-gray-300 px-3 py-1 rounded text-gray-700">
-                    {{ _('Previous') }}
-                </button>
-                <span class="mx-2 text-blue-500">{{ pagination.page }}</span>
-                <button class="bg-gray-300 px-3 py-1 rounded text-gray-700">
-                    {{ _('Next') }}
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
+{% extends 'base.html' %}
+{% block content %}
 
-<!-- Add Staff Modal Section -->
-<div id="myModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden">
-    <div class="bg-white rounded-lg shadow-lg w-1/3">
-        <div class="border-b px-4 py-2 flex justify-between items-center">
-            <h2 class="text-xl font-semibold">{{ _('Add New Staff') }}</h2>
-            <button id="closeModalBtn" class="text-gray-600 hover:text-gray-900">
-                <i class="fas fa-times"></i>
+<div class="container mx-auto mt-8">
+  <h1 class="text-2xl font-bold mb-4">{{ _('Staff Management') }}</h1>
+
+  <!-- Staff List -->
+  <table class="min-w-full bg-white shadow rounded">
+    <thead>
+      <tr>
+        <th class="px-4 py-2">{{ _('First Name') }}</th>
+        <th class="px-4 py-2">{{ _('Last Name') }}</th>
+        <th class="px-4 py-2">{{ _('Phone') }}</th>
+        <th class="px-4 py-2">{{ _('Role') }}</th>
+        <th class="px-4 py-2">{{ _('Actions') }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for member in staff %}
+      <tr>
+        <td class="border px-4 py-2">{{ member.first_name }}</td>
+        <td class="border px-4 py-2">{{ member.last_name }}</td>
+        <td class="border px-4 py-2">{{ member.phone_number }}</td>
+        <td class="border px-4 py-2">{{ member.role }}</td>
+        <td class="border px-4 py-2 space-x-2">
+          <!-- Edit button opens modal -->
+          <button
+            class="bg-blue-500 text-white px-2 py-1 rounded open-edit-modal"
+            data-id="{{ member.id }}"
+            data-first_name="{{ member.first_name }}"
+            data-last_name="{{ member.last_name }}"
+            data-phone_number="{{ member.phone_number }}"
+            data-role="{{ member.role }}"
+          >
+            {{ _('Edit') }}
+          </button>
+          <form
+            action="{{ url_for('staff.delete_staff', id=member.id) }}"
+            method="POST"
+            class="inline"
+          >
+            {{ form.hidden_tag() }}
+            <button
+              type="submit"
+              class="bg-red-500 text-white px-2 py-1 rounded"
+              onclick="return confirm('{{ _('Are you sure?') }}')"
+            >
+              {{ _('Delete') }}
             </button>
-        </div>
-        <div class="p-4">
-            <form action="{{ url_for('staff.add_staff') }}" method="POST">
-                {{ form.hidden_tag() }}
-                <div class="mb-4">
-                    <label for="first_name" class="block text-gray-700 text-sm font-bold mb-2">
-                        {{ _('First Name') }}
-                    </label>
-                    <input
-                        type="text"
-                        id="first_name"
-                        name="first_name"
-                        placeholder="{{ _('E.g., John') }}"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        value="{{ form.first_name.data | skip_none }}"
-                    >
-                    {% if form.first_name.errors %}
-                    <p class="text-red-500 text-xs italic">{{ form.first_name.errors[0] }}</p>
-                    {% endif %}
-                </div>
-                <div class="mb-4">
-                    <label for="last_name" class="block text-gray-700 text-sm font-bold mb-2">
-                        {{ _('Last Name') }}
-                    </label>
-                    <input
-                        type="text"
-                        id="last_name"
-                        name="last_name"
-                        placeholder="{{ _('E.g., Doe') }}"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        value="{{ form.last_name.data | skip_none }}"
-                    >
-                    {% if form.last_name.errors %}
-                    <p class="text-red-500 text-xs italic">{{ form.last_name.errors[0] }}</p>
-                    {% endif %}
-                </div>
-                <div class="mb-4">
-                    <label for="phone_number" class="block text-gray-700 text-sm font-bold mb-2">
-                        {{ _('Mobile Phone') }}
-                    </label>
-                    <input
-                        type="text"
-                        id="phone_number"
-                        name="phone_number"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        value="{{ form.phone_number.data | skip_none }}"
-                    >
-                    {% if form.phone_number.errors %}
-                    <p class="text-red-500 text-xs italic">{{ form.phone_number.errors[0] }}</p>
-                    {% endif %}
-                </div>
-                <div class="mb-4">
-                    <label for="password" class="block text-gray-700 text-sm font-bold mb-2">
-                        {{ _('Password') }}
-                    </label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                    {% if form.password.errors %}
-                    <p class="text-red-500 text-xs italic">{{ form.password.errors[0] }}</p>
-                    {% endif %}
-                </div>
-                <div class="mb-4">
-                    <label for="role" class="block text-gray-700 text-sm font-bold mb-2">
-                        {{ _('Role') }}
-                    </label>
-                    <select
-                        id="role"
-                        name="role"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                        <option value="">{{ _('--Select--') }}</option>
-                        <option value="Admin" {% if form.role.data == 'Admin' %}selected{% endif %}>
-                            {{ _('Admin') }}
-                        </option>
-                        <option value="Manager" {% if form.role.data == 'Manager' %}selected{% endif %}>
-                            {{ _('Manager') }}
-                        </option>
-                        <option value="Staff" {% if form.role.data == 'Staff' %}selected{% endif %}>
-                            {{ _('Staff') }}
-                        </option>
-                    </select>
-                    {% if form.role.errors %}
-                    <p class="text-red-500 text-xs italic">{{ form.role.errors[0] }}</p>
-                    {% endif %}
-                </div>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 
-                <div class="flex justify-end">
-                    <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded mr-2">
-                        {{ _('Save') }}
-                    </button>
-                    <button type="button" id="cancelBtn" class="bg-blue-500 text-white px-4 py-2 rounded">
-                        {{ _('Cancel') }}
-                    </button>
-                </div>
-            </form>
+
+  <!-- Edit Staff Modal -->
+  <div
+    id="editStaffModal"
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden"
+  >
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+      <h2 class="text-xl font-bold mb-4">{{ _('Edit Staff Member') }}</h2>
+
+      <form
+        id="editStaffForm"
+        method="POST"
+        action=""      {# will be set by JS #}
+      >
+        {{ form.hidden_tag() }}
+
+        <div class="mb-4">
+          <label for="first_name" class="block text-sm font-medium text-gray-700">
+            {{ _('First Name') }}
+          </label>
+          <input
+            type="text"
+            name="first_name"
+            id="edit_first_name"
+            class="mt-1 block w-full border px-3 py-2 rounded"
+            required
+          >
         </div>
+
+        <div class="mb-4">
+          <label for="last_name" class="block text-sm font-medium text-gray-700">
+            {{ _('Last Name') }}
+          </label>
+          <input
+            type="text"
+            name="last_name"
+            id="edit_last_name"
+            class="mt-1 block w-full border px-3 py-2 rounded"
+            required
+          >
+        </div>
+
+        <div class="mb-4">
+          <label for="phone_number" class="block text-sm font-medium text-gray-700">
+            {{ _('Phone Number') }}
+          </label>
+          <input
+            type="text"
+            name="phone_number"
+            id="edit_phone_number"
+            class="mt-1 block w-full border px-3 py-2 rounded"
+          >
+        </div>
+
+        <div class="mb-4">
+          <label for="role" class="block text-sm font-medium text-gray-700">
+            {{ _('Role') }}
+          </label>
+          <input
+            type="text"
+            name="role"
+            id="edit_role"
+            class="mt-1 block w-full border px-3 py-2 rounded"
+          >
+        </div>
+
+        <div class="mb-4">
+          <label for="password" class="block text-sm font-medium text-gray-700">
+            {{ _('Password (leave blank to keep current)') }}
+          </label>
+          <input
+            type="password"
+            name="password"
+            id="edit_password"
+            class="mt-1 block w-full border px-3 py-2 rounded"
+          >
+        </div>
+
+        <div class="flex justify-end space-x-4">
+          <button
+            type="button"
+            class="cancel-edit bg-gray-500 text-white px-4 py-2 rounded"
+          >
+            {{ _('Cancel') }}
+          </button>
+          <button
+            type="submit"
+            class="bg-orange-500 text-white px-4 py-2 rounded"
+          >
+            {{ _('Save') }}
+          </button>
+        </div>
+      </form>
     </div>
+  </div>
 </div>
 
-<!-- Edit Staff Modal Section -->
-<div id="editModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden">
-    <div class="bg-white rounded-lg shadow-lg w-1/3">
-        <div class="border-b px-4 py-2 flex justify-between items-center">
-            <h2 class="text-xl font-semibold">{{ _('Edit Staff') }}</h2>
-            <button id="closeEditModalBtn" class="text-gray-600 hover:text-gray-900">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="p-4">
-            <form id="editForm" method="POST">
-                {{ form.hidden_tag() }}
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="edit_first_name">
-                        {{ _('First Name') }}
-                    </label>
-                    <input
-                        type="text"
-                        id="edit_first_name"
-                        name="first_name"
-                        placeholder="{{ _('E.g., Ali') }}"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                    {% if form.first_name.errors %}
-                    <p class="text-red-500 text-xs italic">{{ form.first_name.errors[0] }}</p>
-                    {% endif %}
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="edit_last_name">
-                        {{ _('Last Name') }}
-                    </label>
-                    <input
-                        type="text"
-                        id="edit_last_name"
-                        name="last_name"
-                        placeholder="{{ _('E.g., Altun') }}"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                    {% if form.last_name.errors %}
-                    <p class="text-red-500 text-xs italic">{{ form.last_name.errors[0] }}</p>
-                    {% endif %}
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="edit_phone_number">
-                        {{ _('Phone') }}
-                    </label>
-                    <input
-                        type="text"
-                        id="edit_phone_number"
-                        name="phone_number"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                    {% if form.phone_number.errors %}
-                    <p class="text-red-500 text-xs italic">{{ form.phone_number.errors[0] }}</p>
-                    {% endif %}
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="edit_password">
-                        {{ _('Password') }}
-                    </label>
-                    <input
-                        type="password"
-                        id="edit_password"
-                        name="password"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                    {% if form.password.errors %}
-                    <p class="text-red-500 text-xs italic">{{ form.password.errors[0] }}</p>
-                    {% endif %}
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="edit_role">
-                        {{ _('Role') }}
-                    </label>
-                    <select
-                        id="edit_role"
-                        name="role"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                        <option value="">{{ _('--Select--') }}</option>
-                        <option value="Admin">{{ _('Admin') }}</option>
-                        <option value="Manager">{{ _('Manager') }}</option>
-                        <option value="Staff">{{ _('Staff') }}</option>
-                    </select>
-                    {% if form.role.errors %}
-                    <p class="text-red-500 text-xs italic">{{ form.role.errors[0] }}</p>
-                    {% endif %}
-                </div>
-                <div class="flex justify-end">
-                    <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded mr-2">
-                        {{ _('Update') }}
-                    </button>
-                    <button type="button" id="cancelEditBtn" class="bg-blue-500 text-white px-4 py-2 rounded">
-                        {{ _('Cancel') }}
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
+<!-- Inline JS to wire up modal + form action -->
 <script>
-    const openModalBtn = document.getElementById('openModalBtn');
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const myModal = document.getElementById('myModal');
+document.querySelectorAll('.open-edit-modal').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const id = btn.dataset.id;
+    // populate form fields
+    document.getElementById('edit_first_name').value = btn.dataset.first_name;
+    document.getElementById('edit_last_name').value = btn.dataset.last_name;
+    document.getElementById('edit_phone_number').value = btn.dataset.phone_number;
+    document.getElementById('edit_role').value = btn.dataset.role;
 
-    const editModal = document.getElementById('editModal');
-    const closeEditModalBtn = document.getElementById('closeEditModalBtn');
-    const cancelEditBtn = document.getElementById('cancelEditBtn');
-    const editForm = document.getElementById('editForm');
+    // set form action
+    const form = document.getElementById('editStaffForm');
+    form.action = `{{ url_for('staff.edit_staff', id=0) }}`.replace('0', id);
 
-    openModalBtn.addEventListener('click', function() {
-        myModal.classList.remove('hidden');
-    });
+    // show modal
+    document.getElementById('editStaffModal').classList.remove('hidden');
+  });
+});
 
-    closeModalBtn.addEventListener('click', function() {
-        myModal.classList.add('hidden');
-    });
-
-    cancelBtn.addEventListener('click', function() {
-        myModal.classList.add('hidden');
-    });
-
-    document.querySelectorAll('.editBtn').forEach(button => {
-        button.addEventListener('click', function() {
-            const staffId = this.dataset.id;
-            const firstName = this.dataset.first_name;
-            const lastName = this.dataset.last_name;
-            const phoneNumber = this.dataset.phone_number;
-            const role = this.dataset.role;
-
-            // Populate the form fields
-            document.getElementById('edit_first_name').value = firstName;
-            document.getElementById('edit_last_name').value = lastName;
-            document.getElementById('edit_phone_number').value = phoneNumber;
-            document.getElementById('edit_role').value = role;
-
-            // Set the action attribute for the form to point to the correct edit route
-            editForm.action = `/staff/edit/${staffId}`;
-
-            // Show the edit modal
-            editModal.classList.remove('hidden');
-        });
-    });
-
-    closeEditModalBtn.addEventListener('click', function() {
-        editModal.classList.add('hidden');
-    });
-
-    cancelEditBtn.addEventListener('click', function() {
-        editModal.classList.add('hidden');
-    });
+// cancel button
+document.querySelector('.cancel-edit').addEventListener('click', () => {
+  document.getElementById('editStaffModal').classList.add('hidden');
+});
 </script>
-</body>
-</html>
+
+{% endblock %}

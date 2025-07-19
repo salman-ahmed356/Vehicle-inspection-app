@@ -1,69 +1,58 @@
 <!DOCTYPE html>
 <html lang="{{ get_locale() }}">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ _('Company Settings') }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <style>
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>{{ _('Company Settings') }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+  >
+  <style>
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+  </style>
 </head>
-
 <body class="bg-gray-100 text-gray-800">
-{% include 'navbar.html' %}
+  {% include 'navbar.html' %}
 
-<!-- Main Content -->
-<main class="container mx-auto px-4 py-6">
+  <main class="container mx-auto px-4 py-6">
     <div class="bg-white p-6 rounded-lg shadow">
-        <h2 class="text-xl font-semibold mb-4">{{ _('Company Settings') }}</h2>
+      <h2 class="text-xl font-semibold mb-4">{{ _('Company Settings') }}</h2>
 
-        <!-- Tabs Navigation -->
-        {% include 'settings/tabs.html' %}
+      <!-- Tabs Navigation -->
+      {% include 'settings/tabs.html' %}
 
-        <form action="{{ url_for('companies.update_company', company_id=company.id) }}"
+      <!-- Tab 1: Company Information -->
+      <div id="tab1" class="tab-content {% if active_tab=='company' %}active{% endif %}">
+        <form action="{{ url_for('companies.update_company') }}"
               method="POST"
               class="space-y-4">
-            {{ form.hidden_tag() }}
+          {{ form.hidden_tag() }}
 
-            <!-- Tab 1: Company Information -->
-            <div id="tab1" class="tab-content active">
-                {% include 'settings/company.html' %}
-            </div>
+          {# Just include the company partial — it uses `form` #}
+          {% include 'settings/company.html' %}
 
-            <!-- Tab 2: Staff Information -->
-            <div id="tab2" class="tab-content">
-                {% include 'settings/staff.html' %}
-            </div>
-
-            <!-- Tab 3: Invoice Information -->
-            <div id="tab3" class="tab-content">
-                {% include 'settings/receipt.html' %}
-            </div>
-
-            <!-- Tab 4: Report Design -->
-            <div id="tab4" class="tab-content">
-                <!-- Content for Report Design -->
-                <!-- ... (Rest of the form content) -->
-            </div>
-
-            <!-- Tab 5: Report Settings -->
-            <div id="tab5" class="tab-content">
-                {% include 'settings/report.html' %}
-            </div>
+          <div class="flex justify-end">
+            <button type="submit"
+                    class="bg-blue-600 text-white px-4 py-2 rounded">
+              {{ _('Save Company') }}
+            </button>
+          </div>
         </form>
-    </div>
-</main>
+      </div>
 
-<!-- Include the settings.js file -->
-<script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+      <!-- Tab 2: Staff Information -->
+      <div id="tab2" class="tab-content {% if active_tab=='staff' %}active{% endif %}">
+        {% include 'settings/staff.html' %}
+      </div>
+
+      <!-- Add more tabs here… -->
+
+    </div>
+  </main>
+
+  <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
 </body>
 </html>

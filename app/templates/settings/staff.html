@@ -1,41 +1,52 @@
-<!-- Content for Staff Information -->
-<form action="{{ url_for('companies.update_company') }}" method="POST" class="space-y-4">
-    {{ form.hidden_tag() }}
+{% if first_staff and staff_form %}
+  <form
+    action="{{ url_for('staff.edit_staff', id=first_staff.id) }}"
+    method="POST"
+    class="space-y-4"
+  >
+    {{ staff_form.hidden_tag() }}
 
-    <div class="grid grid-cols-1 gap-6 mt-4">
-        <div>
-            <label for="contact_name" class="block text-sm font-medium text-gray-700">
-                {{ _('Full Name') }}
-            </label>
-            <input
-                type="text"
-                name="contact_name"
-                id="contact_name"
-                value="{{ form.contact_name.data }}"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            >
-        </div>
-        <div>
-            <label for="contact_phone" class="block text-sm font-medium text-gray-700">
-                {{ _('Mobile Phone') }}
-            </label>
-            <input
-                type="text"
-                name="contact_phone"
-                id="contact_phone"
-                value="{{ form.contact_phone.data }}"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            >
-        </div>
+    <div>
+      <label for="first_name" class="block text-sm font-medium text-gray-700">
+        {{ _('First Name') }}
+      </label>
+      {{ staff_form.first_name(class="mt-1 block w-full px-3 py-2 border rounded-md") }}
+      {% for e in staff_form.first_name.errors %}
+        <p class="text-red-600 text-sm">{{ e }}</p>
+      {% endfor %}
     </div>
 
-    <!-- Submit and Cancel Buttons -->
+    <div>
+      <label for="last_name" class="block text-sm font-medium text-gray-700">
+        {{ _('Last Name') }}
+      </label>
+      {{ staff_form.last_name(class="mt-1 block w-full px-3 py-2 border rounded-md") }}
+      {% for e in staff_form.last_name.errors %}
+        <p class="text-red-600 text-sm">{{ e }}</p>
+      {% endfor %}
+    </div>
+
+    <div>
+      <label for="phone_number" class="block text-sm font-medium text-gray-700">
+        {{ _('Phone Number') }}
+      </label>
+      {{ staff_form.phone_number(class="mt-1 block w-full px-3 py-2 border rounded-md") }}
+      {% for e in staff_form.phone_number.errors %}
+        <p class="text-red-600 text-sm">{{ e }}</p>
+      {% endfor %}
+    </div>
+
     <div class="flex justify-end space-x-4 mt-6">
-        <button type="submit" class="bg-orange-500 text-white px-4 py-2 rounded shadow">
-            {{ _('Save') }}
-        </button>
-        <a href="{{ url_for('companies.company_detail') }}" class="bg-gray-500 text-white px-4 py-2 rounded shadow">
-            {{ _('Cancel') }}
-        </a>
+      <button type="submit"
+              class="bg-green-600 text-white px-4 py-2 rounded">
+        {{ _('Save Staff') }}
+      </button>
+      <a href="{{ url_for('companies.company_detail', active_tab='staff') }}"
+         class="bg-gray-500 text-white px-4 py-2 rounded">
+        {{ _('Cancel') }}
+      </a>
     </div>
-</form>
+  </form>
+{% else %}
+  <p>{{ _('No staff member configured.') }}</p>
+{% endif %}

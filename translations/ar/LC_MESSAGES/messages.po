@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-07-19 16:55+0400\n"
+"POT-Creation-Date: 2025-07-19 19:23+0400\n"
 "PO-Revision-Date: 2025-07-19 16:56+0400\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ar\n"
@@ -44,13 +44,13 @@ msgid "Open Work Orders"
 msgstr ""
 
 #: app/templates/home.html:57 app/templates/layout.html:20
-#: app/templates/navbar.html:18
+#: app/templates/navbar.html:23
 #: app/templates/report_sections/report_list.html:17
 msgid "Open Expertise Reports"
 msgstr ""
 
 #: app/templates/home.html:60 app/templates/layout.html:19
-#: app/templates/navbar.html:17
+#: app/templates/navbar.html:21
 msgid "Create New Report"
 msgstr ""
 
@@ -99,7 +99,7 @@ msgid "Varius ferri magna detracto malorum"
 msgstr ""
 
 #: app/templates/layout.html:7 app/templates/layout.html:17
-#: app/templates/navbar.html:14
+#: app/templates/navbar.html:18
 #: app/templates/report_sections/expertises/boya_kaporta_expertise.html:164
 #: app/templates/report_sections/expertises/boya_kaporta_expertise.html:296
 #: app/templates/report_sections/expertises/ic_dis_expertise.html:60
@@ -110,29 +110,29 @@ msgstr ""
 msgid "Start"
 msgstr ""
 
-#: app/templates/layout.html:21 app/templates/navbar.html:19
+#: app/templates/layout.html:21 app/templates/navbar.html:25
 msgid "Completed Expertise Reports"
 msgstr ""
 
-#: app/templates/layout.html:22 app/templates/navbar.html:20
+#: app/templates/layout.html:22 app/templates/navbar.html:27
 msgid "Cancelled Expertise Reports"
 msgstr ""
 
-#: app/templates/layout.html:28 app/templates/navbar.html:27
+#: app/templates/layout.html:28 app/templates/navbar.html:35
 msgid "Appointments"
 msgstr ""
 
 #: app/templates/appointment/add_appointment.html:6
 #: app/templates/appointment/add_appointment.html:21
-#: app/templates/layout.html:30 app/templates/navbar.html:29
+#: app/templates/layout.html:30 app/templates/navbar.html:38
 msgid "Create Appointment"
 msgstr ""
 
-#: app/templates/layout.html:31 app/templates/navbar.html:30
+#: app/templates/layout.html:31 app/templates/navbar.html:40
 msgid "View Appointments"
 msgstr ""
 
-#: app/templates/layout.html:37
+#: app/templates/layout.html:37 app/templates/navbar.html:48
 msgid "Statistics"
 msgstr ""
 
@@ -141,7 +141,7 @@ msgid "General Settings"
 msgstr ""
 
 #: app/templates/layout.html:40 app/templates/layout.html:58
-#: app/templates/navbar.html:51
+#: app/templates/navbar.html:68
 msgid "Customers"
 msgstr ""
 
@@ -150,23 +150,23 @@ msgid "Dealership"
 msgstr ""
 
 #: app/templates/layout.html:42 app/templates/layout.html:67
-#: app/templates/navbar.html:52
+#: app/templates/navbar.html:70
 msgid "Staff Management"
 msgstr ""
 
 #: app/templates/layout.html:48 app/templates/layout.html:72
-#: app/templates/navbar.html:47
+#: app/templates/navbar.html:61
 msgid "Settings"
 msgstr ""
 
-#: app/templates/layout.html:54 app/templates/navbar.html:49
+#: app/templates/layout.html:54 app/templates/navbar.html:64
 #: app/templates/settings/settings.html:7
 #: app/templates/settings/settings.html:27
 msgid "Company Settings"
 msgstr ""
 
-#: app/templates/layout.html:55 app/templates/navbar.html:50
-#: app/templates/packages.html:7 app/templates/packages.html:55
+#: app/templates/layout.html:55 app/templates/navbar.html:66
+#: app/templates/packages.html:7 app/templates/packages.html:56
 msgid "Expertise Packages"
 msgstr ""
 
@@ -178,7 +178,7 @@ msgstr ""
 msgid "Dealership Packages"
 msgstr ""
 
-#: app/templates/layout.html:75
+#: app/templates/layout.html:75 app/templates/navbar.html:81
 msgid "Load Balance"
 msgstr ""
 
@@ -194,60 +194,108 @@ msgstr ""
 msgid "DEBT"
 msgstr ""
 
-#: app/templates/packages.html:57
+#: app/templates/navbar.html:10
+msgid "Dashboard"
+msgstr ""
+
+#: app/templates/navbar.html:51
+msgid "Earnings"
+msgstr ""
+
+#: app/templates/navbar.html:53
+msgid "Where They Came From"
+msgstr ""
+
+#: app/templates/navbar.html:78
+msgid "Balance Transactions"
+msgstr ""
+
+#: app/templates/navbar.html:83
+msgid "My Top-ups"
+msgstr ""
+
+#: app/templates/navbar.html:85
+msgid "My Query History"
+msgstr ""
+
+#: app/templates/packages.html:60
 msgid "+ New Package"
 msgstr ""
 
-#: app/templates/packages.html:75
+#: app/templates/packages.html:83
 msgid "Package Price:"
 msgstr ""
 
-#: app/templates/packages.html:76
+#: app/templates/packages.html:84
 msgid "Price Including VAT:"
 msgstr ""
 
-#: app/templates/packages.html:77
+#: app/templates/packages.html:86
 msgid "Status:"
 msgstr ""
 
-#: app/templates/packages.html:80 app/templates/packages.html:125
+#: app/templates/packages.html:89 app/templates/packages.html:169
 #: app/templates/staff/staff.html:36
 msgid "Active"
 msgstr ""
 
-#: app/templates/packages.html:80 app/templates/packages.html:126
+#: app/templates/packages.html:89 app/templates/packages.html:170
 msgid "Inactive"
 msgstr ""
 
-#: app/templates/packages.html:84
+#: app/templates/packages.html:93
 msgid "Applied Expertises:"
 msgstr ""
 
-#: app/templates/packages.html:99
+#: app/templates/packages.html:108
 msgid "Create Package"
 msgstr ""
 
-#: app/templates/packages.html:104
+#: app/templates/packages.html:118
 msgid "Package Name"
 msgstr ""
 
-#: app/templates/packages.html:105
+#: app/templates/packages.html:123
 msgid "E.g., FULL PACKAGE"
 msgstr ""
 
-#: app/templates/packages.html:108
+#: app/templates/packages.html:129
 msgid "Package Price (Enter excluding VAT)"
 msgstr ""
 
-#: app/templates/packages.html:112
+#: app/templates/packages.html:140
 msgid "Applied Expertises"
 msgstr ""
 
-#: app/templates/packages.html:123
+#: app/templates/packages.html:147
+msgid "Interior Expertise"
+msgstr ""
+
+#: app/templates/packages.html:148
+msgid "Exterior Expertise"
+msgstr ""
+
+#: app/templates/packages.html:149
+msgid "Road Expertise"
+msgstr ""
+
+#: app/templates/packages.html:150
+msgid "Dyno Expertise"
+msgstr ""
+
+#: app/templates/packages.html:151
+msgid "Paint Expertise"
+msgstr ""
+
+#: app/templates/packages.html:152
+msgid "Bodywork Expertise"
+msgstr ""
+
+#: app/templates/packages.html:164
 msgid "Package Status"
 msgstr ""
 
-#: app/templates/packages.html:130
+#: app/templates/packages.html:177
 #: app/templates/report_sections/expertises/boya_expertise.html:136
 #: app/templates/report_sections/expertises/fren_expertise.html:204
 #: app/templates/report_sections/expertises/suspansiyon_expertise.html:99
@@ -258,7 +306,7 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: app/templates/packages.html:131
+#: app/templates/packages.html:182
 #: app/templates/report_sections/report_list.html:100
 #: app/templates/report_sections/submit_buttons.html:7
 #: app/templates/settings/company.html:87
@@ -299,7 +347,6 @@ msgstr ""
 
 #: app/templates/appointment/add_appointment.html:104
 #: app/templates/appointment/update_appointment.html:69
-#: app/templates/pdf/first_page.html:95
 #: app/templates/report_sections/report_list.html:34
 #: app/templates/report_sections/vehicle_info.html:16
 msgid "Brand"
@@ -307,7 +354,6 @@ msgstr ""
 
 #: app/templates/appointment/add_appointment.html:122
 #: app/templates/appointment/update_appointment.html:79
-#: app/templates/pdf/first_page.html:99
 #: app/templates/report_sections/report_list.html:37
 #: app/templates/report_sections/vehicle_info.html:27
 msgid "Model"
@@ -423,12 +469,14 @@ msgid "OBD & Brain Expertise Report"
 msgstr ""
 
 #: app/templates/pdf/beyin.html:64 app/templates/pdf/boya.html:60
+#: app/templates/pdf/first_page.html:60
 #: app/templates/report_sections/expertises/vehicle_header.html:15
 #: app/templates/report_sections/report_list.html:31
 msgid "Chassis No"
 msgstr ""
 
 #: app/templates/pdf/beyin.html:73 app/templates/pdf/boya.html:69
+#: app/templates/pdf/first_page.html:69
 msgid "Last 6 Digits"
 msgstr ""
 
@@ -443,36 +491,38 @@ msgstr ""
 msgid "Fault Record Present"
 msgstr ""
 
-#: app/templates/pdf/boya.html:53 app/templates/pdf/first_page.html:70
+#: app/templates/pdf/boya.html:53 app/templates/pdf/first_page.html:53
 msgid "Paint & Body Inspection"
 msgstr ""
 
-#: app/templates/pdf/boya.html:90
+#: app/templates/pdf/boya.html:90 app/templates/pdf/first_page.html:90
 msgid "Information"
 msgstr ""
 
-#: app/templates/pdf/boya.html:95
+#: app/templates/pdf/boya.html:95 app/templates/pdf/first_page.html:95
 msgid "Body & Paint Inspection Summary"
 msgstr ""
 
-#: app/templates/pdf/boya.html:124 app/templates/pdf/boya.html:156
-#: app/templates/pdf/boya.html:188
+#: app/templates/pdf/boya.html:123 app/templates/pdf/boya.html:155
+#: app/templates/pdf/boya.html:187 app/templates/pdf/first_page.html:123
+#: app/templates/pdf/first_page.html:155 app/templates/pdf/first_page.html:187
 msgid "None"
 msgstr ""
 
-#: app/templates/pdf/boya.html:130
+#: app/templates/pdf/boya.html:129 app/templates/pdf/first_page.html:129
 msgid "Passed Inspection"
 msgstr ""
 
-#: app/templates/pdf/boya.html:133
+#: app/templates/pdf/boya.html:132 app/templates/pdf/first_page.html:132
 msgid "Potential Issue"
 msgstr ""
 
-#: app/templates/pdf/boya.html:136
+#: app/templates/pdf/boya.html:135 app/templates/pdf/first_page.html:135
 msgid "Maintenance Needed"
 msgstr ""
 
-#: app/templates/pdf/boya.html:162 app/templates/pdf/boya.html:194
+#: app/templates/pdf/boya.html:161 app/templates/pdf/boya.html:193
+#: app/templates/pdf/first_page.html:161 app/templates/pdf/first_page.html:193
 #: app/templates/report_sections/expertises/boya_kaporta_expertise.html:317
 #: app/templates/report_sections/expertises/boya_kaporta_expertise.html:338
 #: app/templates/report_sections/expertises/boya_kaporta_expertise.html:339
@@ -482,11 +532,13 @@ msgstr ""
 msgid "Scratch"
 msgstr ""
 
-#: app/templates/pdf/boya.html:165 app/templates/pdf/boya.html:197
+#: app/templates/pdf/boya.html:164 app/templates/pdf/boya.html:196
+#: app/templates/pdf/first_page.html:164 app/templates/pdf/first_page.html:196
 msgid "Dent / Crack / Damage"
 msgstr ""
 
-#: app/templates/pdf/boya.html:168 app/templates/pdf/boya.html:200
+#: app/templates/pdf/boya.html:167 app/templates/pdf/boya.html:199
+#: app/templates/pdf/first_page.html:167 app/templates/pdf/first_page.html:199
 #: app/templates/report_sections/expertises/boya_kaporta_expertise.html:319
 #: app/templates/report_sections/expertises/boya_kaporta_expertise.html:354
 #: app/templates/report_sections/expertises/boya_kaporta_expertise.html:355
@@ -496,262 +548,87 @@ msgstr ""
 msgid "Repaired / Painted"
 msgstr ""
 
-#: app/templates/pdf/first_page.html:2
-msgid "JOB ORDER / VEHICLE ACCEPTANCE / DELIVERY / INFORMATION FORM"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:10
-msgid "Opened By"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:14
-msgid "Acceptance Date"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:18
-msgid "Acceptance Time"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:22
-msgid "Delivery Time"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:26
-msgid "Entry Mileage (km/mi)"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:30
-msgid "Exit Mileage (km/mi)"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:39
-msgid "REQUESTED INSPECTION TESTS & CONTROLS"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:46
-msgid "Engine Inspection"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:47
-msgid "Lateral Drift Inspection"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:48
-msgid "Suspension Inspection"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:49
-msgid "Brake Inspection"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:50
-msgid "ECU Inspection"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:67
-msgid "Mechanical Inspection"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:68
-msgid "Interior & Exterior Inspection"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:69
-msgid "On-Road & Dyno Inspection"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:90
-msgid "VEHICLE INFORMATION"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:105
-msgid "Year"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:109
-#: app/templates/report_sections/expertises/vehicle_header.html:5
-msgid "License Plate"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:113
-#: app/templates/report_sections/vehicle_info.html:72
-msgid "Engine Number"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:117
-#: app/templates/report_sections/vehicle_info.html:82
-msgid "Chassis Number"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:121
-#: app/templates/report_sections/vehicle_info.html:110
-msgid "Fuel Type"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:127
-msgid "CUSTOMER DETAILS REQUESTING INSPECTION"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:132
-#: app/templates/report_sections/customer_info.html:8
-#: app/templates/report_sections/expertise_detail.html:8
-#: app/templates/report_sections/owner_info.html:9
-#: app/templates/report_sections/representative_info.html:8
-#: app/templates/settings/staff.html:8 app/templates/staff/staff.html:22
-msgid "Full Name"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:134
-#: app/templates/report_sections/customer_info.html:30
-#: app/templates/report_sections/expertise_detail.html:30
-#: app/templates/report_sections/owner_info.html:41
-#: app/templates/settings/company.html:24 app/templates/staff/staff.html:237
-msgid "Phone"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:138
-#: app/templates/report_sections/customer_info.html:52
-#: app/templates/report_sections/expertise_detail.html:52
-#: app/templates/report_sections/owner_info.html:25
-msgid "ID / Tax No"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:140
-#: app/templates/report_sections/customer_info.html:73
-#: app/templates/report_sections/expertise_detail.html:73
-#: app/templates/settings/company.html:36
-msgid "Email"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:144
-#: app/templates/report_sections/customer_info.html:94
-#: app/templates/report_sections/expertise_detail.html:94
-#: app/templates/report_sections/owner_info.html:57
-#: app/templates/settings/company.html:48
-msgid "Address"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:152
-msgid "WAS ORIGINAL REGISTRATION DOCUMENT SEEN?"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:155
-msgid "YES"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:156
-msgid "NO"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:164
-msgid "COMPANY"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:166 app/templates/pdf/first_page.html:177
-msgid "Name & Signature"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:170
-#, python-brace-format
-msgid ""
-"I authorize {company} service center to perform the operations specified "
-"in this work order. I have read and accept the terms on the service "
-"agreement page. I will be informed and collect the vehicle once the "
-"inspection is complete. I consent to the vehicle’s recorded entry and "
-"exit mileage at the inspection center. The inspection will be performed "
-"without engine disassembly. {company} shall not be held responsible for "
-"any engine, transmission, or other vehicle damages that may occur before "
-"or during the dynamometer test."
-msgstr ""
-
-#: app/templates/pdf/first_page.html:175
-msgid "CUSTOMER"
-msgstr ""
-
-#: app/templates/pdf/first_page.html:183 app/templates/pdf/footer.html:15
+#: app/templates/pdf/footer.html:15
 msgid "ADDRESS"
 msgstr ""
 
-#: app/templates/pdf/first_page.html:185 app/templates/pdf/footer.html:19
+#: app/templates/pdf/footer.html:19
 msgid "PHONE"
 msgstr ""
 
-#: app/templates/pdf/first_page.html:186 app/templates/pdf/footer.html:22
+#: app/templates/pdf/footer.html:22
 msgid "EMAIL"
 msgstr ""
 
-#: app/templates/pdf/fren.html:242
+#: app/templates/pdf/fren.html:208
 msgid "FRONT BRAKE INSPECTION REPORT"
 msgstr ""
 
-#: app/templates/pdf/fren.html:252 app/templates/pdf/last_page.html:47
-#: app/templates/pdf/motor.html:122 app/templates/pdf/suspansiyon.html:147
+#: app/templates/pdf/fren.html:215 app/templates/pdf/last_page.html:47
+#: app/templates/pdf/motor.html:68 app/templates/pdf/suspansiyon.html:115
 msgid "CHASSIS NO"
 msgstr ""
 
-#: app/templates/pdf/fren.html:261 app/templates/pdf/last_page.html:55
-#: app/templates/pdf/motor.html:130 app/templates/pdf/suspansiyon.html:155
+#: app/templates/pdf/fren.html:223 app/templates/pdf/last_page.html:55
+#: app/templates/pdf/motor.html:76 app/templates/pdf/suspansiyon.html:123
 msgid "LAST 6 DIGITS"
 msgstr ""
 
-#: app/templates/pdf/fren.html:273
+#: app/templates/pdf/fren.html:234
 msgid "FRONT BRAKES"
 msgstr ""
 
-#: app/templates/pdf/fren.html:279
+#: app/templates/pdf/fren.html:240
 msgid "Brakes"
 msgstr ""
 
-#: app/templates/pdf/fren.html:280 app/templates/pdf/suspansiyon.html:172
+#: app/templates/pdf/fren.html:241 app/templates/pdf/suspansiyon.html:138
 msgid "FRONT"
 msgstr ""
 
-#: app/templates/pdf/fren.html:281 app/templates/pdf/suspansiyon.html:173
+#: app/templates/pdf/fren.html:242 app/templates/pdf/suspansiyon.html:139
 msgid "RIGHT"
 msgstr ""
 
-#: app/templates/pdf/fren.html:282 app/templates/pdf/suspansiyon.html:174
+#: app/templates/pdf/fren.html:243 app/templates/pdf/suspansiyon.html:140
 msgid "REAR"
 msgstr ""
 
-#: app/templates/pdf/fren.html:283 app/templates/pdf/suspansiyon.html:175
+#: app/templates/pdf/fren.html:244 app/templates/pdf/suspansiyon.html:141
 msgid "LEFT"
 msgstr ""
 
-#: app/templates/pdf/fren.html:305 app/templates/pdf/fren.html:340
-#: app/templates/pdf/fren.html:399
+#: app/templates/pdf/fren.html:263 app/templates/pdf/fren.html:316
 msgid "DEVIATION"
 msgstr ""
 
-#: app/templates/pdf/fren.html:309 app/templates/pdf/fren.html:344
-#: app/templates/pdf/fren.html:403
+#: app/templates/pdf/fren.html:266 app/templates/pdf/fren.html:319
 msgid "PASSED"
 msgstr ""
 
-#: app/templates/pdf/fren.html:309 app/templates/pdf/fren.html:344
-#: app/templates/pdf/fren.html:403
+#: app/templates/pdf/fren.html:266 app/templates/pdf/fren.html:319
 msgid "FAILED"
 msgstr ""
 
-#: app/templates/pdf/fren.html:358 app/templates/pdf/fren.html:416
+#: app/templates/pdf/fren.html:279 app/templates/pdf/fren.html:332
 msgid "Deviation from 0% to 30% passes"
 msgstr ""
 
-#: app/templates/pdf/fren.html:362 app/templates/pdf/fren.html:420
+#: app/templates/pdf/fren.html:282 app/templates/pdf/fren.html:335
 #, python-format
 msgid "Deviation from 31% to 100% fails"
 msgstr ""
 
-#: app/templates/pdf/fren.html:369
+#: app/templates/pdf/fren.html:289
 msgid "PARKING BRAKE"
 msgstr ""
 
-#: app/templates/pdf/fren.html:376
+#: app/templates/pdf/fren.html:296
 #: app/templates/report_sections/expertises/fren_expertise.html:159
 msgid "Parking Brake"
 msgstr ""
 
-#: app/templates/pdf/fren.html:428
+#: app/templates/pdf/fren.html:343
 msgid "REAR BRAKES"
 msgstr ""
 
@@ -841,7 +718,7 @@ msgid ""
 "responsible for its accuracy."
 msgstr ""
 
-#: app/templates/pdf/last_page.html:109 app/templates/pdf/motor.html:244
+#: app/templates/pdf/last_page.html:109 app/templates/pdf/motor.html:172
 msgid ""
 "This report is an integral part and continuation of the Job Order / "
 "Vehicle Acceptance / Delivery / Information Form with the same chassis "
@@ -854,15 +731,15 @@ msgid ""
 "terms on this page."
 msgstr ""
 
-#: app/templates/pdf/motor.html:115
+#: app/templates/pdf/motor.html:62
 msgid "ENGINE INSPECTION REPORT"
 msgstr ""
 
-#: app/templates/pdf/motor.html:142
+#: app/templates/pdf/motor.html:88
 msgid "Engine Image"
 msgstr ""
 
-#: app/templates/pdf/motor.html:152
+#: app/templates/pdf/motor.html:97
 #: app/templates/report_sections/expertises/dis_expertise.html:72
 #: app/templates/report_sections/expertises/dis_expertise.html:93
 #: app/templates/report_sections/expertises/dis_expertise.html:94
@@ -883,7 +760,7 @@ msgstr ""
 msgid "(GOOD) PASSED INSPECTION"
 msgstr ""
 
-#: app/templates/pdf/motor.html:160
+#: app/templates/pdf/motor.html:103
 #: app/templates/report_sections/expertises/dis_expertise.html:73
 #: app/templates/report_sections/expertises/dis_expertise.html:101
 #: app/templates/report_sections/expertises/dis_expertise.html:102
@@ -904,7 +781,7 @@ msgstr ""
 msgid "(MODERATE) MAY CAUSE ISSUES"
 msgstr ""
 
-#: app/templates/pdf/motor.html:168
+#: app/templates/pdf/motor.html:109
 #: app/templates/report_sections/expertises/dis_expertise.html:74
 #: app/templates/report_sections/expertises/dis_expertise.html:109
 #: app/templates/report_sections/expertises/dis_expertise.html:110
@@ -925,7 +802,7 @@ msgstr ""
 msgid "(BAD) MAINTENANCE REQUIRED"
 msgstr ""
 
-#: app/templates/pdf/motor.html:194 app/templates/pdf/motor.html:223
+#: app/templates/pdf/motor.html:128 app/templates/pdf/motor.html:152
 #: app/templates/report_sections/expertises/boya_expertise.html:110
 #: app/templates/report_sections/expertises/boya_expertise.html:111
 #: app/templates/report_sections/expertises/boya_expertise.html:112
@@ -953,71 +830,71 @@ msgstr ""
 msgid "NONE"
 msgstr ""
 
-#: app/templates/pdf/motor.html:245
+#: app/templates/pdf/motor.html:173
 msgid ""
 "By signing the Vehicle Acceptance Information Form, you agree to all the "
 "terms in the Service Agreement."
 msgstr ""
 
-#: app/templates/pdf/motor.html:250
+#: app/templates/pdf/motor.html:177
 msgid "ENGINE INSPECTION SUMMARY"
 msgstr ""
 
-#: app/templates/pdf/motor.html:262
+#: app/templates/pdf/motor.html:183
 msgid ""
 "WARNING: The timing belt and front chain are in sealed casings and have "
 "not been inspected."
 msgstr ""
 
-#: app/templates/pdf/suspansiyon.html:137
+#: app/templates/pdf/suspansiyon.html:110
 msgid "SUSPENSION & LATERAL DRIFT INSPECTION REPORT"
 msgstr ""
 
-#: app/templates/pdf/suspansiyon.html:166
+#: app/templates/pdf/suspansiyon.html:133
 msgid "SUSPENSION TEST"
 msgstr ""
 
-#: app/templates/pdf/suspansiyon.html:171
+#: app/templates/pdf/suspansiyon.html:137
 msgid "Suspension"
 msgstr ""
 
-#: app/templates/pdf/suspansiyon.html:185
-#: app/templates/pdf/suspansiyon.html:212
-#: app/templates/pdf/suspansiyon.html:239
-#: app/templates/pdf/suspansiyon.html:266
-#: app/templates/pdf/suspansiyon.html:292
+#: app/templates/pdf/suspansiyon.html:151
+#: app/templates/pdf/suspansiyon.html:177
+#: app/templates/pdf/suspansiyon.html:203
+#: app/templates/pdf/suspansiyon.html:229
+#: app/templates/pdf/suspansiyon.html:254
 msgid "DEFECTIVE"
 msgstr ""
 
-#: app/templates/pdf/suspansiyon.html:187
-#: app/templates/pdf/suspansiyon.html:214
-#: app/templates/pdf/suspansiyon.html:241
-#: app/templates/pdf/suspansiyon.html:268
-#: app/templates/pdf/suspansiyon.html:293
+#: app/templates/pdf/suspansiyon.html:153
+#: app/templates/pdf/suspansiyon.html:179
+#: app/templates/pdf/suspansiyon.html:205
+#: app/templates/pdf/suspansiyon.html:231
+#: app/templates/pdf/suspansiyon.html:255
 msgid "CHECK"
 msgstr ""
 
-#: app/templates/pdf/suspansiyon.html:189
-#: app/templates/pdf/suspansiyon.html:216
-#: app/templates/pdf/suspansiyon.html:243
-#: app/templates/pdf/suspansiyon.html:270
-#: app/templates/pdf/suspansiyon.html:294
+#: app/templates/pdf/suspansiyon.html:155
+#: app/templates/pdf/suspansiyon.html:181
+#: app/templates/pdf/suspansiyon.html:207
+#: app/templates/pdf/suspansiyon.html:233
+#: app/templates/pdf/suspansiyon.html:256
 msgid "GOOD"
 msgstr ""
 
-#: app/templates/pdf/suspansiyon.html:191
-#: app/templates/pdf/suspansiyon.html:218
-#: app/templates/pdf/suspansiyon.html:245
-#: app/templates/pdf/suspansiyon.html:272
-#: app/templates/pdf/suspansiyon.html:295
+#: app/templates/pdf/suspansiyon.html:157
+#: app/templates/pdf/suspansiyon.html:183
+#: app/templates/pdf/suspansiyon.html:209
+#: app/templates/pdf/suspansiyon.html:235
+#: app/templates/pdf/suspansiyon.html:257
 msgid "VERY GOOD"
 msgstr ""
 
-#: app/templates/pdf/suspansiyon.html:193
-#: app/templates/pdf/suspansiyon.html:220
-#: app/templates/pdf/suspansiyon.html:247
-#: app/templates/pdf/suspansiyon.html:274
-#: app/templates/pdf/suspansiyon.html:296
+#: app/templates/pdf/suspansiyon.html:159
+#: app/templates/pdf/suspansiyon.html:185
+#: app/templates/pdf/suspansiyon.html:211
+#: app/templates/pdf/suspansiyon.html:237
+#: app/templates/pdf/suspansiyon.html:258
 msgid "EXCELLENT"
 msgstr ""
 
@@ -1053,9 +930,24 @@ msgstr ""
 msgid "Customer Information"
 msgstr ""
 
+#: app/templates/report_sections/customer_info.html:8
+#: app/templates/report_sections/expertise_detail.html:8
+#: app/templates/report_sections/owner_info.html:9
+#: app/templates/report_sections/representative_info.html:8
+#: app/templates/settings/staff.html:8 app/templates/staff/staff.html:22
+msgid "Full Name"
+msgstr ""
+
 #: app/templates/report_sections/customer_info.html:17
 #: app/templates/report_sections/expertise_detail.html:17
 msgid "Please enter full name"
+msgstr ""
+
+#: app/templates/report_sections/customer_info.html:30
+#: app/templates/report_sections/expertise_detail.html:30
+#: app/templates/report_sections/owner_info.html:41
+#: app/templates/settings/company.html:24 app/templates/staff/staff.html:237
+msgid "Phone"
 msgstr ""
 
 #: app/templates/report_sections/customer_info.html:39
@@ -1063,14 +955,33 @@ msgstr ""
 msgid "Please enter phone number"
 msgstr ""
 
+#: app/templates/report_sections/customer_info.html:52
+#: app/templates/report_sections/expertise_detail.html:52
+#: app/templates/report_sections/owner_info.html:25
+msgid "ID / Tax No"
+msgstr ""
+
 #: app/templates/report_sections/customer_info.html:60
 #: app/templates/report_sections/expertise_detail.html:60
 msgid "Please enter ID or tax number"
 msgstr ""
 
+#: app/templates/report_sections/customer_info.html:73
+#: app/templates/report_sections/expertise_detail.html:73
+#: app/templates/settings/company.html:36
+msgid "Email"
+msgstr ""
+
 #: app/templates/report_sections/customer_info.html:81
 #: app/templates/report_sections/expertise_detail.html:81
 msgid "Please enter a valid email address"
+msgstr ""
+
+#: app/templates/report_sections/customer_info.html:94
+#: app/templates/report_sections/expertise_detail.html:94
+#: app/templates/report_sections/owner_info.html:57
+#: app/templates/settings/company.html:48
+msgid "Address"
 msgstr ""
 
 #: app/templates/report_sections/customer_info.html:101
@@ -1169,8 +1080,20 @@ msgstr ""
 msgid "Gear Type"
 msgstr ""
 
+#: app/templates/report_sections/vehicle_info.html:72
+msgid "Engine Number"
+msgstr ""
+
+#: app/templates/report_sections/vehicle_info.html:82
+msgid "Chassis Number"
+msgstr ""
+
 #: app/templates/report_sections/vehicle_info.html:93
 msgid "Vehicle Color"
+msgstr ""
+
+#: app/templates/report_sections/vehicle_info.html:110
+msgid "Fuel Type"
 msgstr ""
 
 #: app/templates/report_sections/expertises/vehicle_header.html:33
@@ -1534,6 +1457,10 @@ msgstr ""
 msgid "Rear Right"
 msgstr ""
 
+#: app/templates/report_sections/expertises/vehicle_header.html:5
+msgid "License Plate"
+msgstr ""
+
 #: app/templates/report_sections/expertises/vehicle_header.html:9
 msgid "Brand / Model"
 msgstr ""
@@ -1671,4 +1598,97 @@ msgstr ""
 #: app/templates/staff/staff.html:228
 msgid "E.g., Altun"
 msgstr ""
+
+#~ msgid "JOB ORDER / VEHICLE ACCEPTANCE / DELIVERY / INFORMATION FORM"
+#~ msgstr ""
+
+#~ msgid "Opened By"
+#~ msgstr ""
+
+#~ msgid "Acceptance Date"
+#~ msgstr ""
+
+#~ msgid "Acceptance Time"
+#~ msgstr ""
+
+#~ msgid "Delivery Time"
+#~ msgstr ""
+
+#~ msgid "Entry Mileage (km/mi)"
+#~ msgstr ""
+
+#~ msgid "Exit Mileage (km/mi)"
+#~ msgstr ""
+
+#~ msgid "REQUESTED INSPECTION TESTS & CONTROLS"
+#~ msgstr ""
+
+#~ msgid "Engine Inspection"
+#~ msgstr ""
+
+#~ msgid "Lateral Drift Inspection"
+#~ msgstr ""
+
+#~ msgid "Suspension Inspection"
+#~ msgstr ""
+
+#~ msgid "Brake Inspection"
+#~ msgstr ""
+
+#~ msgid "ECU Inspection"
+#~ msgstr ""
+
+#~ msgid "Mechanical Inspection"
+#~ msgstr ""
+
+#~ msgid "Interior & Exterior Inspection"
+#~ msgstr ""
+
+#~ msgid "On-Road & Dyno Inspection"
+#~ msgstr ""
+
+#~ msgid "VEHICLE INFORMATION"
+#~ msgstr ""
+
+#~ msgid "Year"
+#~ msgstr ""
+
+#~ msgid "CUSTOMER DETAILS REQUESTING INSPECTION"
+#~ msgstr ""
+
+#~ msgid "WAS ORIGINAL REGISTRATION DOCUMENT SEEN?"
+#~ msgstr ""
+
+#~ msgid "YES"
+#~ msgstr ""
+
+#~ msgid "NO"
+#~ msgstr ""
+
+#~ msgid "COMPANY"
+#~ msgstr ""
+
+#~ msgid "Name & Signature"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "I authorize {company} service center to"
+#~ " perform the operations specified in "
+#~ "this work order. I have read and"
+#~ " accept the terms on the service "
+#~ "agreement page. I will be informed "
+#~ "and collect the vehicle once the "
+#~ "inspection is complete. I consent to "
+#~ "the vehicle’s recorded entry and exit"
+#~ " mileage at the inspection center. "
+#~ "The inspection will be performed without"
+#~ " engine disassembly. {company} shall not"
+#~ " be held responsible for any engine,"
+#~ " transmission, or other vehicle damages "
+#~ "that may occur before or during "
+#~ "the dynamometer test."
+#~ msgstr ""
+
+#~ msgid "CUSTOMER"
+#~ msgstr ""
 
