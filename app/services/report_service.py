@@ -1,37 +1,56 @@
 import json
-from ..models import (Report, Customer, VehicleOwner, Vehicle, Agent, Address,
-                      Staff, PackageExpertise,  ExpertiseReport, ExpertiseType, ExpertiseFeature)
-from ..database import db
 from datetime import datetime
+
+from ..database import db
+from ..models import (
+    Report,
+    Customer,
+    VehicleOwner,
+    Vehicle,
+    Agent,
+    Address,
+    Staff,
+    PackageExpertise,
+    ExpertiseReport,
+    ExpertiseType,
+    ExpertiseFeature
+)
 
 
 def load_expertise_map(file_path='data/expertise_map.json'):
     try:
-        with open(file_path, 'r', encoding='utf-8') as file:
-            expertise_map = json.load(file)
-        return expertise_map
-    except FileNotFoundError:
-        print(f"JSON file not found: {file_path}")
-        return {}
-    except json.JSONDecodeError:
-        print(f"Error decoding JSON from file: {file_path}")
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"Error loading expertise map: {e}")
         return {}
 
 
 def get_default_features_for_expertise_type(expertise_name, expertise_map=None):
     if expertise_map is None:
         expertise_map = load_expertise_map()
-
     return expertise_map.get(expertise_name, [])
 
 
-def create_report(inspection_date, vehicle_id, customer_id, package_id, operation, created_by, registration_document_seen):
-    # Check if the report already exists
-    existing_report = Report.query.filter_by(vehicle_id=vehicle_id, customer_id=customer_id, package_id=package_id).first()
-    if existing_report:
-        print(f"Report already exists for vehicle ID {vehicle_id} and customer ID {customer_id}.")
-        return existing_report  # or handle as needed
+def create_report(
+    inspection_date,
+    vehicle_id,
+    customer_id,
+    package_id,
+    operation,
+    created_by,
+    registration_document_seen
+):
+    # Avoid duplicates
+    existing = Report.query.filter_by(
+        vehicle_id=vehicle_id,
+        customer_id=customer_id,
+        package_id=package_id
+    ).first()
+    if existing:
+        return existing
 
+    # 1) Create the Report
     report = Report(
         inspection_date=inspection_date,
         vehicle_id=vehicle_id,
@@ -41,133 +60,145 @@ def create_report(inspection_date, vehicle_id, customer_id, package_id, operatio
         created_by=created_by,
         registration_document_seen=registration_document_seen
     )
-    
-    try:
-        db.session.add(report)
-        db.session.commit()  # Commit after adding the report
+    db.session.add(report)
+    db.session.commit()  # now report.id and report relationship are usable
 
-        package_expertises = PackageExpertise.query.filter_by(package_id=package_id).all()
-        if not package_expertises:
-            print(f"No expertise types found for package ID {package_id}.")
-            return report  # Return the report even if no expertises are found
+    # 2) For each PackageExpertise, seed an ExpertiseReport + default features
+    pkg_experts = PackageExpertise.query.filter_by(package_id=package_id).all()
+    for pe in pkg_experts:
+        # create ExpertiseReport without report_id kwarg
+        er = ExpertiseReport(
+            expertise_type_id=pe.expertise_type_id,
+            comment=""
+        )
+        db.session.add(er)
+        db.session.flush()         # assigns er.id
+        er.report = report         # set the relationship AFTER flush
 
-        for package_expertise in package_expertises:
-            expertise_report = ExpertiseReport(
-                expertise_type_id=package_expertise.expertise_type_id,
-                comment=""
+        # grab the defaults from JSON map
+        et = ExpertiseType.query.get(pe.expertise_type_id)
+        defaults = get_default_features_for_expertise_type(et.name)
+        for part in defaults:
+            feature = ExpertiseFeature(
+                expertise_report_id=er.id,
+                name=part['part_name'],
+                status=part['default_status']
             )
-            db.session.add(expertise_report)
+            db.session.add(feature)
 
-            expertise_type = ExpertiseType.query.get(package_expertise.expertise_type_id)
-            default_features = get_default_features_for_expertise_type(expertise_type.name)
-            for feature_name, status in default_features:
-                feature = ExpertiseFeature(
-                    name=feature_name,
-                    status=status,
-                    expertise_report_id=expertise_report.id
-                )
-                db.session.add(feature)
+    db.session.commit()
+    return report
 
-        db.session.commit()  # Commit after adding all expertise reports and features
-        print(f"Report for vehicle '{vehicle_id}' created successfully with associated expertise reports.")
-        return report
-
-    except Exception as e:
-        db.session.rollback()  # Rollback in case of error
-        print(f"Error creating report: {e}")
-        return None  # or handle the error as needed
 
 def get_or_create_customer(form_data):
-    # Try to find an existing customer with the given attributes
-    customer = Customer.query.filter(
-        Customer.first_name == form_data.get('customer_name').split()[0],
-        Customer.last_name == form_data.get('customer_name').split()[1],
-        Customer.phone_number == form_data.get('customer_phone'),
-        Customer.tc_tax_number == form_data.get('customer_tax_no'),
-        Customer.email == form_data.get('customer_email'),
-        Customer.address.has(street_address=form_data.get('customer_address'))
+    full = form_data.get('customer_name', '') or ''
+    first, _, last = full.partition(' ')
+
+    customer = Customer.query.filter_by(
+        first_name=first,
+        last_name=last,
+        phone_number=form_data.get('customer_phone'),
+        tc_tax_number=form_data.get('customer_tax_no'),
+        email=form_data.get('customer_email')
     ).first()
 
-    # If the customer doesn't exist, create a new one
     if not customer:
-        customer_name = form_data.get('customer_name')
-        first_name, last_name = customer_name.split()[0], customer_name.split()[1] if customer_name else (None, None)
-
         customer = Customer(
-            first_name=first_name,
-            last_name=last_name,
-            phone_number=form_data.get('customer_phone') or None,
-            tc_tax_number=form_data.get('customer_tax_no') or None,
-            email=form_data.get('customer_email') or None
+            first_name=first,
+            last_name=last,
+            phone_number=form_data.get('customer_phone') or '',
+            tc_tax_number=form_data.get('customer_tax_no') or '',
+            email=form_data.get('customer_email') or ''
         )
-        
-        # Create or associate the address if necessary
-        if form_data.get('customer_address'):
-            address = Address.query.filter_by(street_address=form_data.get('customer_address')).first()
-            if not address:
-                address = Address(street_address=form_data.get('customer_address'))
-                db.session.add(address)
-            customer.address = address
-
         db.session.add(customer)
         db.session.commit()
+
+        address_str = form_data.get('customer_address') or ''
+        if address_str:
+            addr = Address(
+                street_address=address_str,
+                city=form_data.get('customer_city', '') or '',
+                state=form_data.get('customer_state', '') or '',
+                postal_code=form_data.get('customer_postal_code', '') or ''
+            )
+            db.session.add(addr)
+            db.session.commit()
+
+            customer.address = addr
+            db.session.commit()
 
     return customer
 
 
 def get_or_create_vehicle_owner(form_data):
-    vehicle_owner = VehicleOwner.query.join(Address).filter(
-        VehicleOwner.full_name == form_data['owner_name'],
-        VehicleOwner.tc_tax_number == form_data['owner_tax_no'],
-        VehicleOwner.phone_number == form_data['owner_phone'],
-        Address.street_address == form_data.get('owner_address')
+    full = form_data.get('owner_name', '') or ''
+    first, _, last = full.partition(' ')
+
+    owner = VehicleOwner.query.join(Address).filter(
+        VehicleOwner.first_name == first,
+        VehicleOwner.last_name == last,
+        VehicleOwner.tc_tax_number == form_data.get('owner_tax_no'),
+        VehicleOwner.phone_number == form_data.get('owner_phone'),
+        Address.street_address == form_data.get('owner_address', '')
     ).first()
 
-    if not vehicle_owner:
-        # Handle Address creation
-        address = None
-        if form_data.get('owner_address') and form_data.get('owner_address') != 'None':
-            address = Address.query.filter_by(street_address=form_data['owner_address']).first()
-            if not address:
-                address = Address(
-                    street_address=form_data['owner_address'],
-                    city=form_data.get('owner_city', 'Unknown'),  # Default value
-                    state=form_data.get('owner_state', 'Unknown'),  # Default value
-                    postal_code=form_data.get('owner_postal_code', '00000')  # Default value
-                )
-                db.session.add(address)
-                db.session.flush()  # Ensure the ID is generated for the relationship
-
-        # Create VehicleOwner
-        vehicle_owner = VehicleOwner(
-            first_name=form_data['owner_name'].split()[0],
-            last_name=form_data['owner_name'].split()[1] if len(form_data['owner_name'].split()) > 1 else '',
-            tc_tax_number=form_data['owner_tax_no'],
-            phone_number=form_data['owner_phone'],
-            address=address
+    if not owner:
+        addr = Address(
+            street_address=form_data.get('owner_address') or '',
+            city=form_data.get('owner_city', '') or '',
+            state=form_data.get('owner_state', '') or '',
+            postal_code=form_data.get('owner_postal_code', '') or ''
         )
-        db.session.add(vehicle_owner)
+        db.session.add(addr)
         db.session.commit()
 
-    return vehicle_owner
+        owner = VehicleOwner(
+            first_name=first,
+            last_name=last,
+            tc_tax_number=form_data.get('owner_tax_no') or '',
+            phone_number=form_data.get('owner_phone') or ''
+        )
+        owner.address = addr
+        db.session.add(owner)
+        db.session.commit()
+
+    return owner
 
 
-def get_or_create_agent(agent_name):
-    agent = Agent.query.filter_by(full_name=agent_name).first()
+def get_or_create_agent(agent_name, report_id):
+    first, _, last = agent_name.partition(' ')
+    agent = Agent.query.filter_by(
+        first_name=first,
+        last_name=last
+    ).first()
 
     if not agent:
-        agent = Agent(full_name=agent_name)
+        agent = Agent(
+            first_name=first,
+            last_name=last,
+            report_id=report_id
+        )
         db.session.add(agent)
-        db.session.commit()
+    else:
+        agent.report_id = report_id
+        db.session.add(agent)
+
+    # do not commit here; caller will commit
     return agent
 
 
 def get_or_create_staff_by_name(staff_name):
-    staff = Staff.query.filter_by(full_name=staff_name).first()
+    first, _, last = staff_name.partition(' ')
+    staff = Staff.query.filter_by(
+        first_name=first,
+        last_name=last
+    ).first()
+
     if not staff:
-        staff = Staff(full_name=staff_name)
+        staff = Staff(first_name=first, last_name=last)
         db.session.add(staff)
         db.session.commit()
+
     return staff
 
 
@@ -188,11 +219,9 @@ def get_or_create_vehicle(form_data):
             model_year=int(form_data['model_year']),
             transmission_type=form_data['gear_type'],
             fuel_type=form_data['fuel_type'],
-            mileage=int(form_data['vehicle_km']),
+            mileage=int(form_data['vehicle_km'])
         )
         db.session.add(vehicle)
         db.session.commit()
+
     return vehicle
-
-
-

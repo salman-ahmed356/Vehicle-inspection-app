@@ -1,4 +1,6 @@
 import logging
+from pathlib import Path
+import json
 
 from app.database import db
 from app.models import ExpertiseReport, ExpertiseFeature, ExpertiseType
@@ -9,116 +11,129 @@ class ExpertiseInitializer:
 
     @classmethod
     def load_expertise_map(cls, file_path='data/expertise_map.json'):
-        from pathlib import Path
-        import json
-
         file_path = Path(file_path)
         if not file_path.exists():
             raise FileNotFoundError(f"JSON file not found: {file_path}")
-
         with file_path.open('r', encoding='utf-8') as file:
             return json.load(file)
 
     @classmethod
     def get_status_enum(cls, expertise_name):
-        # Map expertise type to corresponding enum
+        """
+        Map the English expertise type name to its corresponding status‐enum class.
+        """
         expertise_enum_map = {
-            "Boya Ekspertiz": ExpertiseAnswer.PaintStatus,
-            "Kaporta Ekspertiz": ExpertiseAnswer.BodyworkStatus,
-            "Motor Ekspertiz": ExpertiseAnswer.ExpertiseStatus,
-            "Yanal Kayma Ekspertiz": ExpertiseAnswer.IntStatus,
-            "Süspansiyon Ekspertiz": ExpertiseAnswer.IntStatus,
-            "Fren Ekspertiz": ExpertiseAnswer.IntStatus,
-            "Yol Ekspertiz": ExpertiseAnswer.IntStatus,
-            "Dyno Ekspertiz": ExpertiseAnswer.IntStatus,
-            "Beyin Ekspertiz": ExpertiseAnswer.OBDStatus,
-            "İç Ekspertiz": ExpertiseAnswer.ExpertiseStatus,
-            "Dış Ekspertiz": ExpertiseAnswer.ExpertiseStatus,
-            "Mekanik Ekspertiz": ExpertiseAnswer.ExpertiseStatus,
+            ExpertiseTypeEnum.BOYA.value: ExpertiseAnswer.PaintStatus,
+            ExpertiseTypeEnum.KAPORTA.value: ExpertiseAnswer.BodyworkStatus,
+            ExpertiseTypeEnum.MOTOR.value: ExpertiseAnswer.ExpertiseStatus,
+            ExpertiseTypeEnum.YANAL_KAYMA.value: ExpertiseAnswer.IntStatus,
+            ExpertiseTypeEnum.SUSPANSIYON.value: ExpertiseAnswer.IntStatus,
+            ExpertiseTypeEnum.FRENI.value: ExpertiseAnswer.IntStatus,
+            ExpertiseTypeEnum.YOL.value: ExpertiseAnswer.IntStatus,
+            ExpertiseTypeEnum.DYNO.value: ExpertiseAnswer.IntStatus,
+            ExpertiseTypeEnum.BEYIN.value: ExpertiseAnswer.OBDStatus,
+            ExpertiseTypeEnum.IC.value: ExpertiseAnswer.ExpertiseStatus,
+            ExpertiseTypeEnum.DIS.value: ExpertiseAnswer.ExpertiseStatus,
+            ExpertiseTypeEnum.MEKANIK.value: ExpertiseAnswer.ExpertiseStatus,
         }
-
         return expertise_enum_map.get(expertise_name)
 
     @classmethod
     def add_expertise_report(cls, expertise_name, parts_and_statuses, comment="", parent_name=None):
-        # Find or create the parent expertise type if provided
-        parent_expertise_type = None
+        """
+        Create ExpertiseType and ExpertiseReport entries using English names.
+        """
+        # Parent type (if combined expertise)
+        parent = None
         if parent_name:
-            parent_expertise_type = ExpertiseType.query.filter_by(name=parent_name).first()
-            if not parent_expertise_type:
-                parent_expertise_type = ExpertiseType(name=parent_name)
-                db.session.add(parent_expertise_type)
+            parent = ExpertiseType.query.filter_by(name=parent_name).first()
+            if not parent:
+                parent = ExpertiseType(name=parent_name)
+                db.session.add(parent)
                 db.session.commit()
 
-        # Find or create the main expertise type
-        expertise_type = ExpertiseType.query.filter_by(name=expertise_name).first()
-        if not expertise_type:
-            expertise_type = ExpertiseType(name=expertise_name, parent=parent_expertise_type)
-            db.session.add(expertise_type)
+        # Main expertise type
+        et = ExpertiseType.query.filter_by(name=expertise_name).first()
+        if not et:
+            et = ExpertiseType(name=expertise_name, parent=parent)
+            db.session.add(et)
             db.session.commit()
         else:
-            existing_report = ExpertiseReport.query.filter_by(expertise_type=expertise_type).first()
-            if existing_report:
+            if ExpertiseReport.query.filter_by(expertise_type=et).first():
                 return False
 
-        # Create the expertise report
-        expertise_report = ExpertiseReport(expertise_type=expertise_type, comment=comment)
-        db.session.add(expertise_report)
+        # Create the report
+        report = ExpertiseReport(expertise_type=et, comment=comment)
+        db.session.add(report)
         db.session.commit()
 
-        status_enum_class = cls.get_status_enum(expertise_name)
-
+        status_enum_cls = cls.get_status_enum(expertise_name)
         for part in parts_and_statuses:
-            status_value = part['default_status']
-
-            if status_enum_class is None:
-                status = status_value
-            else:
+            raw = part['default_status']
+            if status_enum_cls:
                 try:
-                    status_enum = status_enum_class(status_value)
-                    status = status_enum.value
+                    status = status_enum_cls(raw).value
                 except ValueError:
-                    raise ValueError(f"Status '{status_value}' not found in {status_enum_class.__name__} for expertise '{expertise_name}'")
+                    raise ValueError(
+                        f"Status '{raw}' not in {status_enum_cls.__name__} for '{expertise_name}'"
+                    )
+            else:
+                status = raw
 
-            feature = ExpertiseFeature(name=part['part_name'], status=status, expertise_report=expertise_report)
+            feature = ExpertiseFeature(
+                name=part['part_name'],
+                status=status,
+                expertise_report=report
+            )
             db.session.add(feature)
 
         db.session.commit()
-
         return True
-
-
 
     @classmethod
     def initialize_expertise_reports(cls):
+        """
+        Inserts all expertise reports using English labels.
+        """
         expertise_map = cls.load_expertise_map()
 
-        # Define parent-child relationships
+        # Define combined‐expertise parents in English
         parent_child_mapping = {
-            "İç & Dış Ekspertiz": ["İç Ekspertiz", "Dış Ekspertiz"],
-            "Yol & Dyno Ekspertiz": ["Yol Ekspertiz", "Dyno Ekspertiz"],
-            "Boya & Kaporta Ekspertiz": ["Boya Ekspertiz", "Kaporta Ekspertiz"],
+            "Interior & Exterior Expertise": [
+                ExpertiseTypeEnum.IC.value,
+                ExpertiseTypeEnum.DIS.value
+            ],
+            "Road & Dyno Expertise": [
+                ExpertiseTypeEnum.YOL.value,
+                ExpertiseTypeEnum.DYNO.value
+            ],
+            "Paint & Body Expertise": [
+                ExpertiseTypeEnum.BOYA.value,
+                ExpertiseTypeEnum.KAPORTA.value
+            ],
         }
 
-        created_reports = []
-        existing_reports = []
+        created, existing = [], []
 
+        # First handle combined types
         for parent_name, children in parent_child_mapping.items():
-            for child_name in children:
-                parts_and_statuses = expertise_map.get(child_name, [])
-                if cls.add_expertise_report(child_name, parts_and_statuses, parent_name=parent_name):
-                    created_reports.append(f"{parent_name} - {child_name}")
+            for child in children:
+                parts = expertise_map.get(child, [])
+                if cls.add_expertise_report(child, parts, parent_name=parent_name):
+                    created.append(f"{parent_name} - {child}")
                 else:
-                    existing_reports.append(f"{parent_name} - {child_name}")
-        for expertise_name, parts_and_statuses in expertise_map.items():
-            if expertise_name not in [child for children in parent_child_mapping.values() for child in children]:
-                if cls.add_expertise_report(expertise_name, parts_and_statuses):
-                    created_reports.append(f"{expertise_name} (Standalone)")
-                else:
-                    existing_reports.append(f"{expertise_name} (Standalone)")
-        # Print a summary message
-        if created_reports:
-            print(f"Successfully created reports: {', '.join(created_reports)}")
-        if existing_reports:
-            print(f"Reports already exist: {', '.join(existing_reports)}")
+                    existing.append(f"{parent_name} - {child}")
 
+        # Then standalone expertises
+        all_children = {c for lst in parent_child_mapping.values() for c in lst}
+        for name, parts in expertise_map.items():
+            if name not in all_children:
+                if cls.add_expertise_report(name, parts):
+                    created.append(f"{name} (Standalone)")
+                else:
+                    existing.append(f"{name} (Standalone)")
+
+        if created:
+            logging.info(f"Created reports: {', '.join(created)}")
+        if existing:
+            logging.info(f"Existing reports: {', '.join(existing)}")
