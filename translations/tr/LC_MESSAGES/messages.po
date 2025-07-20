@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-07-20 14:22+0400\n"
+"POT-Creation-Date: 2025-07-20 23:02+0400\n"
 "PO-Revision-Date: 2025-07-19 16:55+0400\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: tr\n"
@@ -221,79 +221,46 @@ msgstr ""
 msgid "+ New Package"
 msgstr ""
 
-#: app/templates/packages.html:83
+#: app/templates/packages.html:88
 msgid "Package Price:"
 msgstr ""
 
-#: app/templates/packages.html:84
+#: app/templates/packages.html:89
 msgid "Price Including VAT:"
 msgstr ""
 
-#: app/templates/packages.html:86
+#: app/templates/packages.html:91
 msgid "Status:"
 msgstr ""
 
-#: app/templates/packages.html:89 app/templates/packages.html:169
+#: app/templates/packages.html:96
 msgid "Active"
 msgstr ""
 
-#: app/templates/packages.html:89 app/templates/packages.html:170
+#: app/templates/packages.html:96
 msgid "Inactive"
 msgstr ""
 
-#: app/templates/packages.html:93
+#: app/templates/packages.html:100
 msgid "Applied Expertises:"
 msgstr ""
 
-#: app/templates/packages.html:108
-msgid "Create Package"
+#: app/templates/packages.html:105 app/templates/pdf/boya.html:123
+#: app/templates/pdf/boya.html:155 app/templates/pdf/boya.html:187
+#: app/templates/pdf/first_page.html:123 app/templates/pdf/first_page.html:155
+#: app/templates/pdf/first_page.html:187
+msgid "None"
 msgstr ""
 
 #: app/templates/packages.html:118
-msgid "Package Name"
+msgid "Update Package"
 msgstr ""
 
-#: app/templates/packages.html:123
-msgid "E.g., FULL PACKAGE"
+#: app/templates/packages.html:118
+msgid "Create Package"
 msgstr ""
 
-#: app/templates/packages.html:129
-msgid "Package Price (Enter excluding VAT)"
-msgstr ""
-
-#: app/templates/packages.html:140
-msgid "Applied Expertises"
-msgstr ""
-
-#: app/templates/packages.html:147
-msgid "Interior Expertise"
-msgstr ""
-
-#: app/templates/packages.html:148
-msgid "Exterior Expertise"
-msgstr ""
-
-#: app/templates/packages.html:149
-msgid "Road Expertise"
-msgstr ""
-
-#: app/templates/packages.html:150
-msgid "Dyno Expertise"
-msgstr ""
-
-#: app/templates/packages.html:151
-msgid "Paint Expertise"
-msgstr ""
-
-#: app/templates/packages.html:152
-msgid "Bodywork Expertise"
-msgstr ""
-
-#: app/templates/packages.html:164
-msgid "Package Status"
-msgstr ""
-
-#: app/templates/packages.html:177
+#: app/templates/packages.html:168
 #: app/templates/report_sections/expertises/boya_expertise.html:136
 #: app/templates/report_sections/expertises/fren_expertise.html:204
 #: app/templates/report_sections/expertises/suspansiyon_expertise.html:99
@@ -303,7 +270,7 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: app/templates/packages.html:182
+#: app/templates/packages.html:173
 #: app/templates/report_sections/report_list.html:100
 #: app/templates/report_sections/submit_buttons.html:7
 #: app/templates/settings/company.html:87
@@ -495,12 +462,6 @@ msgstr ""
 
 #: app/templates/pdf/boya.html:95 app/templates/pdf/first_page.html:95
 msgid "Body & Paint Inspection Summary"
-msgstr ""
-
-#: app/templates/pdf/boya.html:123 app/templates/pdf/boya.html:155
-#: app/templates/pdf/boya.html:187 app/templates/pdf/first_page.html:123
-#: app/templates/pdf/first_page.html:155 app/templates/pdf/first_page.html:187
-msgid "None"
 msgstr ""
 
 #: app/templates/pdf/boya.html:129 app/templates/pdf/first_page.html:129
@@ -893,11 +854,11 @@ msgid "EXCELLENT"
 msgstr ""
 
 #: app/templates/report_sections/complete_report.html:6
-#: app/templates/report_sections/complete_report.html:20
+#: app/templates/report_sections/complete_report.html:19
 msgid "Report Details"
 msgstr ""
 
-#: app/templates/report_sections/complete_report.html:27
+#: app/templates/report_sections/complete_report.html:26
 msgid "Inspection Types"
 msgstr ""
 
@@ -909,11 +870,11 @@ msgstr ""
 msgid "Select an inspection type..."
 msgstr ""
 
-#: app/templates/report_sections/complete_report.html:58
+#: app/templates/report_sections/complete_report.html:57
 msgid "Generate Report"
 msgstr ""
 
-#: app/templates/report_sections/complete_report.html:65
+#: app/templates/report_sections/complete_report.html:64
 msgid ""
 "Are you sure you want to generate the report? This should be done after "
 "completing all inspections."
@@ -1693,5 +1654,38 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "E.g., Altun"
+#~ msgstr ""
+
+#~ msgid "Package Name"
+#~ msgstr ""
+
+#~ msgid "E.g., FULL PACKAGE"
+#~ msgstr ""
+
+#~ msgid "Package Price (Enter excluding VAT)"
+#~ msgstr ""
+
+#~ msgid "Applied Expertises"
+#~ msgstr ""
+
+#~ msgid "Interior Expertise"
+#~ msgstr ""
+
+#~ msgid "Exterior Expertise"
+#~ msgstr ""
+
+#~ msgid "Road Expertise"
+#~ msgstr ""
+
+#~ msgid "Dyno Expertise"
+#~ msgstr ""
+
+#~ msgid "Paint Expertise"
+#~ msgstr ""
+
+#~ msgid "Bodywork Expertise"
+#~ msgstr ""
+
+#~ msgid "Package Status"
 #~ msgstr ""
 

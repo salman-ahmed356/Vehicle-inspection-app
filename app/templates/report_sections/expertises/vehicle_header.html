@@ -1,36 +1,51 @@
 <!-- templates/partials/report_header.html -->
-<div class="bg-white shadow-md rounded-lg p-4 mb-4">
-  <div class="grid grid-cols-6 gap-4">
+<div class="bg-white shadow-md rounded-lg p-6 mb-6">
+  <h2 class="text-xl font-semibold mb-4">{{ _('Vehicle Information') }}</h2>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+    <!-- License Plate -->
     <div>
-      <label class="text-gray-600">{{ _('License Plate') }}</label>
-      <div class="bg-gray-100 rounded px-3 py-2">{{ report.vehicle.plate }}</div>
+      <label class="block text-gray-600 mb-1">{{ _('License Plate') }}</label>
+      <div class="bg-gray-100 rounded px-3 py-2">
+        {{ report.vehicle.plate }}
+      </div>
     </div>
+
+    <!-- Brand / Model -->
     <div>
-      <label class="text-gray-600">{{ _('Brand / Model') }}</label>
+      <label class="block text-gray-600 mb-1">{{ _('Brand / Model') }}</label>
       <div class="bg-gray-100 rounded px-3 py-2">
         {{ report.vehicle.brand }} / {{ report.vehicle.model }}
       </div>
     </div>
+
+    <!-- Chassis Number -->
     <div>
-      <label class="text-gray-600">{{ _('Chassis No') }}</label>
+      <label class="block text-gray-600 mb-1">{{ _('Chassis Number') }}</label>
       <div class="bg-gray-100 rounded px-3 py-2">
         {{ report.vehicle.chassis_number }}
       </div>
     </div>
+
+    <!-- Transmission / Fuel Type -->
     <div>
-      <label class="text-gray-600">{{ _('Transmission / Fuel Type') }}</label>
+      <label class="block text-gray-600 mb-1">{{ _('Transmission') }} / {{ _('Fuel Type') }}</label>
       <div class="bg-gray-100 rounded px-3 py-2">
-        {{ report.vehicle.transmission_type.value }} / {{ report.vehicle.fuel_type.value }}
+        {{ report.vehicle.transmission_type.name }} / {{ report.vehicle.fuel_type.name }}
       </div>
     </div>
+
+    <!-- Model Year -->
     <div>
-      <label class="text-gray-600">{{ _('Model Year') }}</label>
+      <label class="block text-gray-600 mb-1">{{ _('Model Year') }}</label>
       <div class="bg-gray-100 rounded px-3 py-2">
         {{ report.vehicle.model_year }}
       </div>
     </div>
+
+    <!-- Mileage -->
     <div>
-      <label class="text-gray-600">{{ _('Mileage (km/mi)') }}</label>
+      <label class="block text-gray-600 mb-1">{{ _('Mileage') }} ({{ _('km') }}/{{ _('mi') }})</label>
       <div class="bg-gray-100 rounded px-3 py-2">
         {{ report.vehicle.mileage }}
       </div>

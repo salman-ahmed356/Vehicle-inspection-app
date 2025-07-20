@@ -1,3 +1,11 @@
+{# ensure we have a pckg_report even outside the loop #}
+{% set pckg_report = package_expertise_reports[0]
+                  if package_expertise_reports|length > 0
+                  else none %}
+{% set boya_features   = pckg_report.boya_features   if pckg_report else [] %}
+{% set kaporta_features = pckg_report.kaporta_features if pckg_report else [] %}
+
+
 <style>
   .beyin-bordered-table {
     width: 100%;

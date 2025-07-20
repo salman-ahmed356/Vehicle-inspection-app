@@ -95,6 +95,7 @@ def _extract_paint_body(report):
     """
     paint, body = [], []
     paint_comment = body_comment = ""
+
     for child in report.expertise_type.children:
         if child.name == "Paint Expertise":
             for rpt in child.expertise_reports:
@@ -102,22 +103,30 @@ def _extract_paint_body(report):
                     {
                         'name'      : f.name,
                         'status'    : f.status,
-                        'image_url' : url_for('static', filename=f.image_path, _external=True)
+                        'image_url' : (
+                            url_for('static', filename=f.image_path, _external=True)
+                            if f.image_path else ''
+                        )
                     }
                     for f in rpt.features
                 ]
                 paint_comment = rpt.comment
+
         elif child.name == "Body Expertise":
             for rpt in child.expertise_reports:
                 body = [
                     {
                         'name'      : f.name,
                         'status'    : f.status,
-                        'image_url' : url_for('static', filename=f.image_path, _external=True)
+                        'image_url' : (
+                            url_for('static', filename=f.image_path, _external=True)
+                            if f.image_path else ''
+                        )
                     }
                     for f in rpt.features
                 ]
                 body_comment = rpt.comment
+
     return paint, body, paint_comment, body_comment
 
 
@@ -129,7 +138,10 @@ def _build_block_dict(report):
         {
             'name'      : f.name,
             'status'    : f.status,
-            'image_url' : url_for('static', filename=f.image_path, _external=True)
+            'image_url' : (
+                url_for('static', filename=f.image_path, _external=True)
+                if f.image_path else ''
+            )
         }
         for f in report.features
     ]
@@ -168,7 +180,7 @@ def _gather_image_paths():
 
 def _build_output_filename(customer):
     """
-    Generate a unique PDF filename: RAPOR_<CustomerName>.pdf
+    Generate a unique PDF filename: REPORT_<CustomerName>.pdf
     """
     base_dir  = os.path.dirname(os.path.abspath(__file__))
     out_dir   = os.path.join(base_dir, 'pdfs')

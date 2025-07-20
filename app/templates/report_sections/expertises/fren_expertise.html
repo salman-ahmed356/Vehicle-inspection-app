@@ -1,280 +1,170 @@
 <style>
-    /* Styling for the form and inputs */
-    input[type="number"] {
-        width: 100%;
-        padding: 0.5rem;
-        border: 1px solid #CBD5E0;
-        border-radius: 0.375rem;
-        font-size: 1rem;
-        color: #4A5568;
-        outline: none;
-        transition: all 0.3s ease;
-    }
+  /* Styling for number inputs */
+  input[type="number"] {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #CBD5E0;
+    border-radius: 0.375rem;
+    font-size: 1rem;
+    color: #4A5568;
+    transition: all 0.3s ease;
+  }
+  input[type="number"]:focus {
+    border-color: #38B2AC;
+    box-shadow: 0 0 0 3px rgba(56,178,172,0.5);
+    outline: none;
+  }
+  input[type="number"][readonly] {
+    background-color: #E2E8F0;
+    color: #A0AEC0;
+  }
 
-    input[type="number"]:focus {
-        border-color: #38B2AC;
-        box-shadow: 0 0 0 3px rgba(56, 178, 172, 0.5);
-    }
+  .test-section {
+    margin-bottom: 2rem;
+  }
+  .test-section label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
 
-    input[type="number"][readonly] {
-        background-color: #E2E8F0; /* Gray background when readonly */
-        color: #A0AEC0; /* Optional: Change text color to light gray */
-    }
+  .form-section {
+    margin-bottom: 1rem;
+  }
+  .form-section label {
+    display: block;
+    margin-bottom: 0.25rem;
+  }
 
-    button[type="submit"] {
-        background-color: #3182CE;
-        color: white;
-        padding: 0.75rem 1.5rem;
-        font-size: 1rem;
-        border-radius: 0.375rem;
-        border: none;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    button[type="submit"]:hover {
-        background-color: #2B6CB0;
-    }
-
-    /* Additional styles for checkboxes */
-    input[type="checkbox"] {
-        margin-right: 0.5rem;
-    }
-
-    .test-section {
-        margin-bottom: 2rem;
-    }
-
-    .test-section label {
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        display: block;
-    }
-
-    .form-section {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .form-section label {
-        margin-bottom: 0.5rem;
-    }
+  button[type="submit"] {
+    background-color: #3182CE;
+    color: #FFF;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button[type="submit"]:hover {
+    background-color: #2B6CB0;
+  }
 </style>
 
 {% include 'report_sections/expertises/vehicle_header.html' %}
 
 <h2 class="text-lg font-semibold mb-4">{{ _('Brake Test') }}</h2>
-<p>{{ _('Please specify the status of each inspected brake sections!') }}</p>
+<p class="mb-4">{{ _('Please specify the status of each brake section!') }}</p>
 
-<form id="frenTestiForm" method="POST">
+<form id="brakeTestForm" method="POST">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-  <div class="grid grid-cols-3 gap-6">
-    <!-- Front Brakes Section -->
-    <div class="test-section">
-      <label>{{ _('Front Brakes') }}</label>
+  {# Split features into front, rear, and parking groups #}
+  {% set feats  = expertise_report.features %}
+  {% set front  = feats[:2] %}
+  {% set rear   = feats[2:4] %}
+  {% set park   = feats[4:] %}
 
-      <input
-        type="checkbox"
-        id="on_fren_olcum_yapilamadi"
-        name="on_fren_olcum_yapilamadi"
-      >
-      <label for="on_fren_olcum_yapilamadi">
-        {{ _('Measurement not possible') }}
-      </label>
-
+  <!-- Front Brakes -->
+  <div class="test-section">
+    <label>{{ _('Front Brakes') }}</label>
+    <label>
+      <input type="checkbox" id="front_na" />
+      {{ _('Measurement not possible') }}
+    </label>
+    {% for feature in front %}
       <div class="form-section">
-        {% for feature in expertise_report.features %}
-          {% if feature.name == 'ÖN SOL FREN' %}
-            <label for="on_sol_fren">{{ _('Front Left Brake') }}</label>
-            <input
-              type="number"
-              id="on_sol_fren"
-              name="feature_{{ feature.id }}"
-              value="{{ feature.status }}"
-            >
-          {% endif %}
-        {% endfor %}
+        <label for="feature_{{ feature.id }}">{{ feature.name }}</label>
+        <input
+          type="number"
+          id="feature_{{ feature.id }}"
+          name="feature_{{ feature.id }}"
+          value="{{ feature.status }}"
+          min="0"
+        >
       </div>
-
-      <div class="form-section">
-        {% for feature in expertise_report.features %}
-          {% if feature.name == 'ÖN SAĞ FREN' %}
-            <label for="on_sag_fren">{{ _('Front Right Brake') }}</label>
-            <input
-              type="number"
-              id="on_sag_fren"
-              name="feature_{{ feature.id }}"
-              value="{{ feature.status }}"
-            >
-          {% endif %}
-        {% endfor %}
-      </div>
-    </div>
-
-    <!-- Rear Brakes Section -->
-    <div class="test-section">
-      <label>{{ _('Rear Brakes') }}</label>
-
-      <input
-        type="checkbox"
-        id="arka_fren_olcum_yapilamadi"
-        name="arka_fren_olcum_yapilamadi"
-      >
-      <label for="arka_fren_olcum_yapilamadi">
-        {{ _('Measurement not possible') }}
-      </label>
-
-      <div class="form-section">
-        {% for feature in expertise_report.features %}
-          {% if feature.name == 'ARKA SOL FREN' %}
-            <label for="arka_sol_fren">{{ _('Rear Left Brake') }}</label>
-            <input
-              type="number"
-              id="arka_sol_fren"
-              name="feature_{{ feature.id }}"
-              value="{{ feature.status }}"
-            >
-          {% endif %}
-        {% endfor %}
-      </div>
-
-      <div class="form-section">
-        {% for feature in expertise_report.features %}
-          {% if feature.name == 'ARKA SAĞ FREN' %}
-            <label for="arka_sag_fren">{{ _('Rear Right Brake') }}</label>
-            <input
-              type="number"
-              id="arka_sag_fren"
-              name="feature_{{ feature.id }}"
-              value="{{ feature.status }}"
-            >
-          {% endif %}
-        {% endfor %}
-      </div>
-    </div>
-
-    <!-- Parking Brake Section -->
-    <div class="test-section">
-      <label>{{ _('Parking Brake') }}</label>
-
-      <input
-        type="checkbox"
-        id="el_freni_olcum_yapilamadi"
-        name="el_freni_olcum_yapilamadi"
-      >
-      <label for="el_freni_olcum_yapilamadi">
-        {{ _('Measurement not possible') }}
-      </label>
-
-      <div class="form-section">
-        {% for feature in expertise_report.features %}
-          {% if feature.name == 'EL FRENI SOL' %}
-            <label for="el_freni_sol">{{ _('Parking Brake Left') }}</label>
-            <input
-              type="number"
-              id="el_freni_sol"
-              name="feature_{{ feature.id }}"
-              value="{{ feature.status }}"
-            >
-          {% endif %}
-        {% endfor %}
-      </div>
-
-      <div class="form-section">
-        {% for feature in expertise_report.features %}
-          {% if feature.name == 'EL FRENI SAĞ' %}
-            <label for="el_freni_sag">{{ _('Parking Brake Right') }}</label>
-            <input
-              type="number"
-              id="el_freni_sag"
-              name="feature_{{ feature.id }}"
-              value="{{ feature.status }}"
-            >
-          {% endif %}
-        {% endfor %}
-      </div>
-    </div>
+    {% endfor %}
   </div>
 
-  <div class="flex justify-end mt-4">
-    <button
-      type="submit"
-      class="bg-blue-500 text-white px-4 py-2 rounded"
-    >{{ _('Save') }}</button>
+  <!-- Rear Brakes -->
+  <div class="test-section">
+    <label>{{ _('Rear Brakes') }}</label>
+    <label>
+      <input type="checkbox" id="rear_na" />
+      {{ _('Measurement not possible') }}
+    </label>
+    {% for feature in rear %}
+      <div class="form-section">
+        <label for="feature_{{ feature.id }}">{{ feature.name }}</label>
+        <input
+          type="number"
+          id="feature_{{ feature.id }}"
+          name="feature_{{ feature.id }}"
+          value="{{ feature.status }}"
+          min="0"
+        >
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Parking Brake -->
+  <div class="test-section">
+    <label>{{ _('Parking Brake') }}</label>
+    <label>
+      <input type="checkbox" id="park_na" />
+      {{ _('Measurement not possible') }}
+    </label>
+    {% for feature in park %}
+      <div class="form-section">
+        <label for="feature_{{ feature.id }}">{{ feature.name }}</label>
+        <input
+          type="number"
+          id="feature_{{ feature.id }}"
+          name="feature_{{ feature.id }}"
+          value="{{ feature.status }}"
+          min="0"
+        >
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="text-right">
+    <button type="submit">{{ _('Save') }}</button>
   </div>
 </form>
 
 <script>
-  $(document).ready(function() {
-    function updateInputsBasedOnCheckbox(checkboxId, inputIds) {
-      if ($(checkboxId).is(':checked')) {
-        inputIds.forEach(function(inputId) {
-          $(inputId).val(0);
-          $(inputId).prop('readonly', true);
-        });
-      } else {
-        inputIds.forEach(function(inputId) {
-          $(inputId).prop('readonly', false);
-        });
-      }
-    }
-
-    function initCheckboxHandlers() {
-      $('#on_fren_olcum_yapilamadi').on('change', function() {
-        updateInputsBasedOnCheckbox(
-          '#on_fren_olcum_yapilamadi',
-          ['#on_sol_fren', '#on_sag_fren']
-        );
-      });
-
-      $('#arka_fren_olcum_yapilamadi').on('change', function() {
-        updateInputsBasedOnCheckbox(
-          '#arka_fren_olcum_yapilamadi',
-          ['#arka_sol_fren', '#arka_sag_fren']
-        );
-      });
-
-      $('#el_freni_olcum_yapilamadi').on('change', function() {
-        updateInputsBasedOnCheckbox(
-          '#el_freni_olcum_yapilamadi',
-          ['#el_freni_sol', '#el_freni_sag']
-        );
+  $(function() {
+    function toggleReadonly(checkboxSelector, inputSelectors) {
+      const disabled = $(checkboxSelector).is(':checked');
+      inputSelectors.forEach(id => {
+        $(id).prop('readonly', disabled);
+        if (disabled) $(id).val(0);
       });
     }
 
-    function initializeForm() {
-      updateInputsBasedOnCheckbox(
-        '#on_fren_olcum_yapilamadi',
-        ['#on_sol_fren', '#on_sag_fren']
-      );
-      updateInputsBasedOnCheckbox(
-        '#arka_fren_olcum_yapilamadi',
-        ['#arka_sol_fren', '#arka_sag_fren']
-      );
-      updateInputsBasedOnCheckbox(
-        '#el_freni_olcum_yapilamadi',
-        ['#el_freni_sol', '#el_freni_sag']
-      );
-      initCheckboxHandlers();
-    }
+    const frontIds = ['#feature_{{ front[0].id }}', '#feature_{{ front[1].id }}'];
+    const rearIds  = ['#feature_{{ rear[0].id }}',  '#feature_{{ rear[1].id }}'];
+    const parkIds  = ['#feature_{{ park[0].id }}',  '#feature_{{ park[1].id }}'];
 
-    initializeForm();
+    // Initialize and bind toggles
+    toggleReadonly('#front_na', frontIds);
+    $('#front_na').change(() => toggleReadonly('#front_na', frontIds));
 
-    $('#frenTestiForm').on('submit', function(event) {
-      event.preventDefault();
-      $.ajax({
-        url: "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}",
-        type: "POST",
-        data: $(this).serialize(),
-        success: function(response) {
-          alert("{{ _('Brake test status updated successfully!') }}");
-        },
-        error: function(error) {
-          console.log("Error:", error);
-          alert("{{ _('Report could not be updated. Please ensure there are no issues!') }}");
-        }
-      });
+    toggleReadonly('#rear_na', rearIds);
+    $('#rear_na').change(() => toggleReadonly('#rear_na', rearIds));
+
+    toggleReadonly('#park_na', parkIds);
+    $('#park_na').change(() => toggleReadonly('#park_na', parkIds));
+
+    // AJAX form submission
+    $('#brakeTestForm').on('submit', function(e) {
+      e.preventDefault();
+      $.post(
+        "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}",
+        $(this).serialize()
+      )
+      .done(() => alert("{{ _('Brake test status updated successfully!') }}"))
+      .fail(() => alert("{{ _('Update failed. Please check your inputs.') }}"));
     });
   });
 </script>
