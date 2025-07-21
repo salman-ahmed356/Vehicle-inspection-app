@@ -9,7 +9,6 @@
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
   />
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body class="bg-gray-100">
   {% include 'navbar.html' %}
@@ -19,32 +18,50 @@
       {{ _('Report Details') }} ({{ report.vehicle.plate }})
     </h1>
 
+    {% set type_labels = {
+      'Beyin Ekspertiz':           'ECU Electronics',
+      'Boya Ekspertiz':            'Paint Expertise',
+      'Boya & Kaporta Ekspertiz':  'Paint & Body Expertise',
+      'Dış Ekspertiz':             'Exterior Expertise',
+      'Dyno Ekspertiz':            'Dyno Expertise',
+      'Fren Ekspertiz':            'Brake Expertise',
+      'İç & Dış Ekspertiz':        'Interior & Exterior Expertise',
+      'İç Ekspertiz':              'Interior Expertise',
+      'Kaporta Ekspertiz':         'Body Expertise',
+      'Mekanik Ekspertiz':         'Mechanical Expertise',
+      'Motor Ekspertiz':           'Engine Expertise',
+      'Süspansiyon Ekspertiz':     'Suspension Expertise',
+      'Yanal Ekspertiz':           'Lateral Drift Expertise',
+      'Yol Ekspertiz':             'Road Expertise'
+    } %}
+
     <div class="grid grid-cols-4 gap-4">
       <!-- Sidebar for Expertise Types -->
       <div class="bg-white shadow-md rounded-lg p-4">
-        <h2 class="text-lg font-semibold mb-4">
-          {{ _('Inspection Types') }}
-        </h2>
+        <h2 class="text-lg font-semibold mb-4">{{ _('Inspection Types') }}</h2>
         <ul class="list-none p-0">
           {% for pe in package_expertises %}
-          <li class="mb-2">
-            <a href="#"
-               class="block p-2 bg-gray-200 rounded hover:bg-gray-300"
-               data-expertise-type="{{ pe.expertise_type.name }}"
-               data-report-id="{{ report.id }}">
-              {{ pe.expertise_type.name }}
-            </a>
-          </li>
+            {% set label = type_labels.get(pe.expertise_type.name, pe.expertise_type.name) %}
+            <li class="mb-2">
+              <a
+                href="{{ url_for('reports.expertise_detail_ajax',
+                                 expertise_type=label,
+                                 report_id=report.id) }}"
+                class="block p-2 bg-gray-200 rounded hover:bg-gray-300 expertise-link"
+              >
+                {{ label }}
+              </a>
+            </li>
           {% endfor %}
         </ul>
       </div>
 
       <!-- Main Content Area -->
-      <div class="col-span-3 bg-white shadow-md rounded-lg p-4"
-           id="expertiseDetailContainer">
-        <h2 class="text-lg font-semibold mb-4">
-          {{ _('General Information') }}
-        </h2>
+      <div
+        id="expertiseDetailContainer"
+        class="col-span-3 bg-white shadow-md rounded-lg p-4"
+      >
+        <h2 class="text-lg font-semibold mb-4">{{ _('General Information') }}</h2>
         <p>{{ _('Select an inspection type...') }}</p>
       </div>
     </div>
@@ -59,34 +76,41 @@
     </div>
   </div>
 
+  <!-- PDF confirmation -->
   <script>
     function confirmRedirect(id) {
       if (confirm("{{ _('Are you sure you want to generate the report? This should be done after completing all inspections.') }}")) {
         window.location.href = `/pdfs/generate/${id}`;
       }
     }
-
-    $(function() {
-      $('a[data-expertise-type]').on('click', function(e) {
-        e.preventDefault();
-        // use attr() so hyphens and spaces stay intact
-        const type = $(this).attr('data-expertise-type');
-        const reportId = $(this).attr('data-report-id');
-
-        $.get("{{ url_for('reports.expertise_detail_ajax') }}", {
-          expertise_type: type,
-          report_id: reportId
-        })
-        .done(html => {
-          $('#expertiseDetailContainer').html(html);
-        })
-        .fail(err => console.error(err));
-      });
-    });
   </script>
 
-  <!-- correct absolute static paths -->
+  <!-- Navbar JS -->
   <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/report.js') }}"></script>
+
+  <!-- Inline AJAX loader -->
+  <script>
+    document.querySelectorAll('.expertise-link').forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        fetch(link.href)
+          .then(res => {
+            if (!res.ok) throw new Error(res.statusText);
+            return res.text();
+          })
+          .then(html => {
+            document.getElementById('expertiseDetailContainer').innerHTML = html;
+          })
+          .catch(err => {
+            console.error('AJAX error:', err);
+            alert('Failed to load inspection details.');
+          });
+      });
+    });
+
+    // Auto-open first tab
+    const first = document.querySelector('.expertise-link');
+    if (first) first.click();
+  </script>
 </body>
 </html>

@@ -1,77 +1,83 @@
-// Main function to open the appointment modal and set up event listeners
+// static/js/navbar.js
+
+// Appointment modal opener
 function openCreateAppointmentModal() {
-    fetch('/appointment/add')
-        .then(response => response.text())
-        .then(data => {
-            setupModal(data);
-        })
-        .catch(error => {
-            console.error('Error loading modal:', error);
-        });
+  fetch('/appointment/add')
+    .then(resp => resp.text())
+    .then(html => setupModal(html))
+    .catch(err => console.error('Error loading modal:', err));
 }
 
-// Function to set up the modal content and attach event listeners
 function setupModal(data) {
-    document.getElementById("createAppointmentModal").innerHTML = data;
-    document.getElementById("myModal").classList.add("active");
+  const modalWrapper = document.getElementById("createAppointmentModal");
+  const modal        = document.getElementById("myModal");
 
-    // Add event listener for closing the modal
-    document.getElementById("closeModalBtn").onclick = function () {
-        document.getElementById("myModal").classList.remove("active");
-    };
+  if (!modalWrapper || !modal) {
+    console.error("Modal elements not found");
+    return;
+  }
 
-    // Add event listener to close the modal when clicking outside of it
-    window.onclick = function (event) {
-        if (event.target == document.getElementById("myModal")) {
-            document.getElementById("myModal").classList.remove("active");
-        }
-    };
+  modalWrapper.innerHTML = data;
+  modal.classList.add("active");
 
-    // Add event listener for form submission validation
-    let form = document.getElementById("appointmentForm");
-    if (form) {
-        form.addEventListener("submit", handleFormSubmission);
-    } else {
-        console.error("Form not found");
+  // Close buttons
+  const closeBtn = document.getElementById("closeModalBtn");
+  if (closeBtn) {
+    closeBtn.addEventListener("click", () => modal.classList.remove("active"));
+  }
+
+  window.addEventListener("click", event => {
+    if (event.target === modal) {
+      modal.classList.remove("active");
     }
-}
+  });
 
-// Function to handle form submission and validate the date field
-function handleFormSubmission(event) {
-    let dateField = document.getElementById("form-date");
-    if (dateField) {
-        let today = new Date().toISOString().split('T')[0];
+  // Form validation
+  const form = document.getElementById("appointmentForm");
+  if (form) {
+    form.addEventListener("submit", event => {
+      const dateField = document.getElementById("form-date");
+      if (dateField) {
+        const today = new Date().toISOString().split('T')[0];
         if (dateField.value < today) {
-            event.preventDefault(); // Prevent form submission
-            dateField.setCustomValidity('Randevu tarihi geçmişte olamaz.');
-            dateField.reportValidity();
+          event.preventDefault();
+          dateField.setCustomValidity('Randevu tarihi geçmişte olamaz.');
+          dateField.reportValidity();
         } else {
-            dateField.setCustomValidity(''); // Clear the custom validation message if the date is valid
+          dateField.setCustomValidity('');
         }
-    } else {
-        console.error("Date field not found");
-    }
+      }
+    });
+  }
 }
 
-// Attach the main function to the click event of the button
-document.getElementById("openCreateAppointmentModal").onclick = openCreateAppointmentModal;
+// Navbar dropdowns + appointment button
+document.addEventListener('DOMContentLoaded', function() {
+  // Appointment button
+  const openBtn = document.getElementById("openCreateAppointmentModal");
+  if (openBtn) {
+    openBtn.addEventListener("click", openCreateAppointmentModal);
+  }
 
-
-document.querySelectorAll('.navbar').forEach(function(navbar) {
-    let timeout;
-
-    // When the mouse enters the navbar or dropdown menu
-    navbar.addEventListener('mouseenter', function() {
-        clearTimeout(timeout);
-        this.querySelector('.dropdown-menu').style.visibility = 'visible';
-        this.querySelector('.dropdown-menu').style.opacity = '1';
+  // Hover dropdowns
+  document.querySelectorAll('.navbar').forEach(navbar => {
+    let timer;
+    navbar.addEventListener('mouseenter', () => {
+      clearTimeout(timer);
+      const menu = navbar.querySelector('.dropdown-menu');
+      if (menu) {
+        menu.style.visibility = 'visible';
+        menu.style.opacity    = '1';
+      }
     });
-
-    // When the mouse leaves the navbar or dropdown menu
-    navbar.addEventListener('mouseleave', function() {
-        timeout = setTimeout(() => {
-            this.querySelector('.dropdown-menu').style.visibility = 'hidden';
-            this.querySelector('.dropdown-menu').style.opacity = '0';
-        }, 200); // Delay to allow mouse movement
+    navbar.addEventListener('mouseleave', () => {
+      timer = setTimeout(() => {
+        const menu = navbar.querySelector('.dropdown-menu');
+        if (menu) {
+          menu.style.visibility = 'hidden';
+          menu.style.opacity    = '0';
+        }
+      }, 200);
     });
+  });
 });

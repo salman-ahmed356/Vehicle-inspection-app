@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="{{ get_locale() }}">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -126,40 +125,52 @@
         {{ form.hidden_tag() }}
 
         <div>
-          <label for="{{ form.name.id }}" class="block text-sm font-medium text-gray-700">
+          <label for="package_name" class="block text-sm font-medium text-gray-700">
             {{ form.name.label.text }}
           </label>
-          {{ form.name(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md") }}
+          {{ form.name(
+               id="package_name",
+               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+             ) }}
           {% for e in form.name.errors %}
             <p class="text-red-600 text-sm">{{ e }}</p>
           {% endfor %}
         </div>
 
         <div>
-          <label for="{{ form.price.id }}" class="block text-sm font-medium text-gray-700">
+          <label for="price" class="block text-sm font-medium text-gray-700">
             {{ form.price.label.text }}
           </label>
-          {{ form.price(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md") }}
+          {{ form.price(
+               id="price",
+               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+             ) }}
           {% for e in form.price.errors %}
             <p class="text-red-600 text-sm">{{ e }}</p>
           {% endfor %}
         </div>
 
         <div>
-          <label for="{{ form.contents.id }}" class="block text-sm font-medium text-gray-700">
+          <label for="contents" class="block text-sm font-medium text-gray-700">
             {{ form.contents.label.text }}
           </label>
-          {{ form.contents(class="mt-1 block w-full h-32 px-3 py-2 border border-gray-300 rounded-md") }}
+          {{ form.contents(
+               id="contents",
+               class="mt-1 block w-full h-32 px-3 py-2 border border-gray-300 rounded-md"
+             ) }}
           {% for err in form.contents.errors %}
             <p class="text-red-600 text-sm">{{ err }}</p>
           {% endfor %}
         </div>
 
         <div>
-          <label for="{{ form.active.id }}" class="block text-sm font-medium text-gray-700">
+          <label for="active" class="block text-sm font-medium text-gray-700">
             {{ form.active.label.text }}
           </label>
-          {{ form.active(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md") }}
+          {{ form.active(
+               id="active",
+               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+             ) }}
         </div>
 
         <div class="flex justify-end space-x-4 mt-6">
@@ -178,6 +189,15 @@
   </div>
 
   <script src="{{ url_for('static', filename='js/packages.js') }}"></script>
+
+  {% if update %}
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById("newPackageModal").style.display = "block";
+    });
+  </script>
+  {% endif %}
+
   <script>
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
@@ -189,4 +209,3 @@
   </script>
 </body>
 </html>
-```

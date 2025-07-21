@@ -1,9 +1,14 @@
-{# ensure we have a pckg_report even outside the loop #}
-{% set pckg_report = package_expertise_reports[0]
-                  if package_expertise_reports|length > 0
-                  else none %}
-{% set boya_features   = pckg_report.boya_features   if pckg_report else [] %}
-{% set kaporta_features = pckg_report.kaporta_features if pckg_report else [] %}
+{#— grab the Paint & Body block (if any) —#}
+{% set pckg_report = (package_expertise_reports
+     | selectattr('expertise_type_name','equalto','Paint & Body Expertise')
+     | first)
+   | default({}) %}
+
+{#— now use default filters to avoid missing-attribute errors —#}
+{% set boya_features   = pckg_report.paint_features  | default([]) %}
+{% set kaporta_features = pckg_report.body_features   | default([]) %}
+{% set boya_comment     = pckg_report.paint_comment   | default('') %}
+{% set kaporta_comment  = pckg_report.body_comment    | default('') %}
 
 
 <style>
@@ -81,9 +86,6 @@
     </table>
   </div>
 </div>
-
-{% set boya_features = pckg_report.boya_features %}
-{% set kaporta_features = pckg_report.kaporta_features %}
 
 <div class="form-column image-section">
   <div class="image-container w-full max-w-4xl mx-auto">

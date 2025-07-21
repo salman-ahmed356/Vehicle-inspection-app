@@ -1,0 +1,80 @@
+2025-07-18 19:29:43,229 ERROR: Exception on / [GET] [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/.venv/lib/python3.10/site-packages/flask/app.py:838]
+Traceback (most recent call last):
+  File "/mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/.venv/lib/python3.10/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/.venv/lib/python3.10/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/.venv/lib/python3.10/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/.venv/lib/python3.10/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/main.py", line 8, in index
+    return render_template('home.html')
+  File "/mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/.venv/lib/python3.10/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/.venv/lib/python3.10/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/.venv/lib/python3.10/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/.venv/lib/python3.10/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/templates/home.html", line 2, in top-level template code
+    <html lang="{{ get_locale() }}">
+  File "/mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/.venv/lib/python3.10/site-packages/jinja2/utils.py", line 92, in from_obj
+    if hasattr(obj, "jinja_pass_arg"):
+jinja2.exceptions.UndefinedError: 'get_locale' is undefined
+2025-07-18 19:30:11,772 ERROR: Exception on / [GET] [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/.venv/lib/python3.10/site-packages/flask/app.py:838]
+Traceback (most recent call last):
+  File "/mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/.venv/lib/python3.10/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/.venv/lib/python3.10/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/.venv/lib/python3.10/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/.venv/lib/python3.10/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/main.py", line 8, in index
+    return render_template('home.html')
+  File "/mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/.venv/lib/python3.10/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/.venv/lib/python3.10/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/.venv/lib/python3.10/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/.venv/lib/python3.10/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/templates/home.html", line 2, in top-level template code
+    <html lang="{{ get_locale() }}">
+  File "/mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/.venv/lib/python3.10/site-packages/jinja2/utils.py", line 92, in from_obj
+    if hasattr(obj, "jinja_pass_arg"):
+jinja2.exceptions.UndefinedError: 'get_locale' is undefined
+2025-07-18 21:00:10,157 ERROR: Unhandled Exception: 'pagination' is undefined [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-18 21:12:34,413 ERROR: Unhandled Exception: expected token 'end of print statement', got 'page' [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-18 21:12:43,994 ERROR: Unhandled Exception: 'pagination' is undefined [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-18 21:15:04,274 ERROR: Unhandled Exception: expected token 'end of print statement', got 'page' [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-19 19:39:24,480 ERROR: Unhandled Exception: 'pagination' is undefined [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-19 19:39:28,835 ERROR: Unhandled Exception: expected token 'end of print statement', got 'page' [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-19 22:27:44,890 ERROR: Unhandled Exception: 'form' is undefined [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-19 22:27:50,305 ERROR: Unhandled Exception: 'form' is undefined [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-19 22:32:54,880 ERROR: Unhandled Exception: 'form' is undefined [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-19 22:32:57,368 ERROR: Unhandled Exception: 'form' is undefined [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-19 22:33:11,712 ERROR: Unhandled Exception: expected token 'end of statement block', got 'with' [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-19 22:33:45,051 ERROR: Unhandled Exception: expected token 'end of statement block', got 'with' [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-19 22:36:58,718 ERROR: Unhandled Exception: base.html [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-19 22:37:37,301 ERROR: Unhandled Exception: base.html [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-20 14:36:01,584 ERROR: Unhandled Exception: 'expertises' is an invalid keyword argument for Package [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-20 14:36:23,942 ERROR: Unhandled Exception: 'expertises' is an invalid keyword argument for Package [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-20 23:40:59,708 ERROR: Unhandled Exception: 'form' is undefined [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-20 23:41:28,376 ERROR: Unhandled Exception: 'form' is undefined [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-21 00:03:57,023 ERROR: Unhandled Exception: 'form' is undefined [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-21 14:52:09,320 ERROR: Unhandled Exception: Tried to select from an empty list of templates. [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-21 14:52:11,364 ERROR: Unhandled Exception: Tried to select from an empty list of templates. [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-21 14:52:11,945 ERROR: Unhandled Exception: Tried to select from an empty list of templates. [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-21 14:52:30,587 ERROR: Unhandled Exception: Tried to select from an empty list of templates. [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-21 14:52:30,920 ERROR: Unhandled Exception: Tried to select from an empty list of templates. [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-21 14:52:31,195 ERROR: Unhandled Exception: Tried to select from an empty list of templates. [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-21 15:10:45,458 ERROR: Unhandled Exception: Entity namespace for "expertise_reports" has no property "report_id" [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-21 16:10:33,233 ERROR: Unhandled Exception: Entity namespace for "expertise_reports" has no property "report" [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-21 16:10:37,427 ERROR: Unhandled Exception: Entity namespace for "expertise_reports" has no property "report" [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-21 16:10:38,753 ERROR: Unhandled Exception: Entity namespace for "expertise_reports" has no property "report" [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]
+2025-07-21 16:10:39,407 ERROR: Unhandled Exception: Entity namespace for "expertise_reports" has no property "report" [in /mnt/c/Users/Killua/Desktop/Vehicle-Inspection-Web-App-main/app/routes/errors.py:36]

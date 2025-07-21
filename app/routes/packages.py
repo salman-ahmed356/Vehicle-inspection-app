@@ -1,3 +1,5 @@
+# File: app/routes/packages.py
+
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app.database import db
 from app.models import Report, ExpertiseType, PackageExpertise, Package
@@ -6,10 +8,21 @@ from app.forms.package_form import PackageForm
 packages = Blueprint('packages', __name__, url_prefix='/packages')
 
 
+def _populate_contents(field):
+    """
+    Populate the WTForms SelectMultipleField with all expertise names.
+    """
+    field.choices = [
+        (et.name, et.name)
+        for et in ExpertiseType.query.order_by(ExpertiseType.name).all()
+    ]
+
+
 @packages.route('/', methods=['GET'])
 def packages_list():
-    form   = PackageForm()
-    packs  = Package.query.all()
+    form = PackageForm()
+    _populate_contents(form.contents)
+    packs = Package.query.all()
     return render_template(
         'packages.html',
         form=form,
@@ -21,26 +34,24 @@ def packages_list():
 @packages.route('/add', methods=['POST'])
 def add_pckg():
     form = PackageForm(request.form)
+    _populate_contents(form.contents)
 
     if form.validate_on_submit():
-        # 1) Create the Package itself
-        new_pkg = Package(
-            name = form.name.data,
-            price = form.price.data,
+        pkg = Package(
+            name   = form.name.data,
+            price  = form.price.data,
             active = (form.active.data == 'active')
         )
-        db.session.add(new_pkg)
-        db.session.commit()  # so new_pkg.id is available
+        db.session.add(pkg)
+        db.session.commit()
 
-        # 2) Link each selected expertise by name → ExpertiseType.id
-        for expertise_name in form.contents.data:
-            et = ExpertiseType.query.filter_by(name=expertise_name).first()
+        for name in form.contents.data:
+            et = ExpertiseType.query.filter_by(name=name).first()
             if et:
-                link = PackageExpertise(
-                    package_id= new_pkg.id,
-                    expertise_type_id= et.id
-                )
-                db.session.add(link)
+                db.session.add(PackageExpertise(
+                    package_id        = pkg.id,
+                    expertise_type_id = et.id
+                ))
 
         db.session.commit()
         flash('Package successfully created!', 'success')
@@ -52,45 +63,57 @@ def add_pckg():
 
 @packages.route('/update/<int:package_id>', methods=['GET', 'POST'])
 def update_package(package_id):
-    pkg  = Package.query.get_or_404(package_id)
-    form = PackageForm(request.form)
+    pkg = Package.query.get_or_404(package_id)
 
-    if request.method == 'POST' and form.validate_on_submit():
-        # Update basic fields
-        pkg.name   = form.name.data
-        pkg.price  = form.price.data
-        pkg.active = (form.active.data == 'active')
-        db.session.commit()
+    if request.method == 'POST':
+        form = PackageForm(request.form)
+        _populate_contents(form.contents)
 
-        # Clear old links
-        PackageExpertise.query.filter_by(package_id=pkg.id).delete()
-        db.session.commit()
+        if form.validate_on_submit():
+            pkg.name   = form.name.data
+            pkg.price  = form.price.data
+            pkg.active = (form.active.data == 'active')
+            db.session.commit()
 
-        # Re‐add new links
-        for expertise_name in form.contents.data:
-            et = ExpertiseType.query.filter_by(name=expertise_name).first()
-            if et:
-                link = PackageExpertise(
-                    package_id= pkg.id,
-                    expertise_type_id= et.id
-                )
-                db.session.add(link)
-        db.session.commit()
+            # clear old links and add new ones
+            PackageExpertise.query.filter_by(package_id=pkg.id).delete()
+            db.session.commit()
+            for name in form.contents.data:
+                et = ExpertiseType.query.filter_by(name=name).first()
+                if et:
+                    db.session.add(PackageExpertise(
+                        package_id        = pkg.id,
+                        expertise_type_id = et.id
+                    ))
+            db.session.commit()
 
-        flash('Package updated!', 'success')
-        return redirect(url_for('packages.packages_list'))
+            flash('Package updated!', 'success')
+            return redirect(url_for('packages.packages_list'))
 
-    # GET: pre‐populate form
-    form.name.data     = pkg.name
-    form.price.data    = pkg.price
-    form.active.data   = 'active' if pkg.active else 'inactive'
-    # pull the linked ExpertiseType names back into the multi‐select
-    linked = PackageExpertise.query.filter_by(package_id=pkg.id).all()
-    form.contents.data = [
-        ExpertiseType.query.get(pe.expertise_type_id).name
-        for pe in linked
-    ]
+    else:
+        # GET: build form and pre-select existing expertises
+        form = PackageForm()
+        _populate_contents(form.contents)
 
+        form.name.data   = pkg.name
+        form.price.data  = pkg.price
+        form.active.data = 'active' if pkg.active else 'inactive'
+
+        linked = PackageExpertise.query.filter_by(package_id=pkg.id).all()
+        form.contents.data = [
+            ExpertiseType.query.get(pe.expertise_type_id).name
+            for pe in linked
+        ]
+
+        return render_template(
+            'packages.html',
+            form=form,
+            packages=Package.query.all(),
+            update=True,
+            current_pkg=pkg
+        )
+
+    # if POST validation failed, fall back to list view
     return render_template(
         'packages.html',
         form=form,
@@ -104,11 +127,10 @@ def update_package(package_id):
 def delete_package(package_id):
     pkg = Package.query.get_or_404(package_id)
 
-    if Report.query.filter_by(package_id=package_id).count():
-        flash('Cannot delete: package in use', 'error')
-    else:
-        db.session.delete(pkg)
-        db.session.commit()
-        flash('Package deleted', 'success')
+    # first delete any Reports using this package
+    Report.query.filter_by(package_id=package_id).delete()
+    db.session.delete(pkg)
+    db.session.commit()
 
+    flash('Package and its reports deleted', 'success')
     return redirect(url_for('packages.packages_list'))

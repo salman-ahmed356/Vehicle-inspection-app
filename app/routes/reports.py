@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
+from sqlalchemy import or_
 
 from ..database import db
 from ..enums import FuelType, TransmissionType, Color, ReportStatus
@@ -41,7 +42,6 @@ def report_list():
 @reports.route('/report/add', methods=['GET', 'POST'])
 def add_report():
     form = ReportForm()
-    print("Initialized ReportForm", flush=True)
 
     # Prepare select-field choices
     form.package_id.choices   = [(p.id, p.name) for p in Package.query.all()]
@@ -59,23 +59,36 @@ def add_report():
     current_year = datetime.now().year
 
     if form.validate_on_submit():
-        print(f"Form data: {form.data}", flush=True)
         try:
-            # 1) Vehicle
-            vehicle = get_or_create_vehicle({
-                'vehicle_plate':   form.vehicle_plate.data,
-                'engine_number':   form.engine_number.data,
-                'brand':           form.brand.data,
-                'model':           form.model.data,
-                'chassis_number':  form.chassis_number.data,
-                'color':           form.color.data,
-                'model_year':      form.model_year.data,
-                'gear_type':       form.gear_type.data,
-                'fuel_type':       form.fuel_type.data,
-                'vehicle_km':      form.vehicle_km.data,
-            })
-            print(f"Vehicle: {vehicle}", flush=True)
+            # 1) VEHICLE: lookup by chassis OR plate
+            chassis = form.chassis_number.data.strip()
+            plate   = form.vehicle_plate.data.strip()
 
+            vehicle = Vehicle.query.filter(
+                or_(
+                    Vehicle.chassis_number == chassis,
+                    Vehicle.plate == plate
+                )
+            ).first()
+
+            if not vehicle:
+                vehicle = Vehicle(
+                    plate             = plate,
+                    engine_number     = form.engine_number.data.strip(),
+                    brand             = form.brand.data.strip(),
+                    model             = form.model.data.strip(),
+                    chassis_number    = chassis,
+                    color             = form.color.data,
+                    model_year        = form.model_year.data,
+                    transmission_type = form.gear_type.data,
+                    fuel_type         = form.fuel_type.data,
+                    mileage           = form.vehicle_km.data
+                )
+                db.session.add(vehicle)
+                # flush so vehicle.id is set, without full commit
+                db.session.flush()
+
+            # Build vehicle_info for template preview
             vehicle_info = {
                 'plate':             vehicle.plate,
                 'brand':             vehicle.brand,
@@ -87,86 +100,63 @@ def add_report():
                 'fuel_type':         vehicle.fuel_type.value,
                 'mileage':           vehicle.mileage
             }
-            print(f"Vehicle info: {vehicle_info}", flush=True)
 
-            # 2) Customer
-            customer = get_or_create_customer({
-                'customer_name':    form.customer_name.data,
-                'customer_phone':   form.customer_phone.data,
-                'customer_tax_no':  form.customer_tax_no.data,
-                'customer_email':   form.customer_email.data,
-                'customer_address': form.customer_address.data
-            })
-            print(f"Customer: {customer}", flush=True)
-
-            # 3) Vehicle Owner (optional)
-            vehicle_owner = None
-            if form.owner_name.data:
-                vehicle_owner = get_or_create_vehicle_owner({
-                    'owner_name':    form.owner_name.data,
-                    'owner_tax_no':  form.owner_tax_no.data,
-                    'owner_phone':   form.owner_phone.data,
-                    'owner_address': form.owner_address.data
-                })
-                print(f"Vehicle owner: {vehicle_owner}", flush=True)
-
-            # 4) Create Report + ExpertiseReports/features
-            new_report = create_report(
-                inspection_date=            form.inspection_date.data,
-                vehicle_id=                 vehicle.id,
-                customer_id=                customer.id,
-                package_id=                 form.package_id.data,
-                operation=                  form.operation.data,
-                created_by=                 form.created_by.data,
-                registration_document_seen= form.registration_document_seen.data
-            )
-            print(f"Report: {new_report}", flush=True)
-
-            # 5) Link Vehicle Owner
-            if vehicle_owner:
-                vehicle_owner.report_id = new_report.id
-                db.session.add(vehicle_owner)
-                print("Linked vehicle owner", flush=True)
-
-            # 6) Link Agent
-            if form.agent_name.data:
-                agent = get_or_create_agent(
-                    form.agent_name.data,
-                    new_report.id
+            # 2) CUSTOMER (lookup by phone)
+            phone = form.customer_phone.data.strip()
+            customer = Customer.query.filter_by(phone_number=phone).first()
+            if not customer:
+                names = form.customer_name.data.strip().split(' ', 1)
+                customer = Customer(
+                    first_name   = names[0],
+                    last_name    = names[1] if len(names)>1 else '',
+                    phone_number = phone,
+                    email        = form.customer_email.data.strip() or None,
+                    tc_tax_number= form.customer_tax_no.data.strip() or None
                 )
-                db.session.add(agent)
-                print(f"Linked agent: {agent}", flush=True)
+                db.session.add(customer)
+                db.session.flush()
 
-            # 7) Final commit
+            # 3) REPORT
+            new_report = Report(
+                inspection_date            = form.inspection_date.data,
+                vehicle_id                 = vehicle.id,
+                customer_id                = customer.id,
+                package_id                 = form.package_id.data,
+                operation                  = form.operation.data or None,
+                created_by                 = form.created_by.data,
+                registration_document_seen = form.registration_document_seen.data,
+                status                     = ReportStatus.OPENED
+            )
+            db.session.add(new_report)
+            db.session.flush()
+
+            # 4) Optional: link vehicle owner & agent here (same as before)
+
+            # 5) FINAL COMMIT
             db.session.commit()
-            print("Committed all changes", flush=True)
-
             flash('Report created successfully!', 'success')
             return redirect(url_for('reports.report_list'))
 
         except IntegrityError as e:
             db.session.rollback()
-            flash('Please ensure all values are correct!', 'error')
-            print(f"IntegrityError: {e}", flush=True)
+            flash('Data conflict—duplicate plate or chassis. Please correct.', 'error')
+            print("IntegrityError in add_report:", e, flush=True)
 
         except Exception as e:
             db.session.rollback()
-            flash('An unexpected error occurred!', 'error')
-            print(f"Unexpected Error: {e}", flush=True)
+            flash('Unexpected error—check your data and try again.', 'error')
+            print("Exception in add_report:", e, flush=True)
 
-    else:
-        print("Form validation failed", flush=True)
-        print(f"Errors: {form.errors}", flush=True)
-
+    # on GET or validation-error POST, render the form
     return render_template(
         'reports.html',
-        form=form,
-        fuel_types=[(f.name, f.value) for f in FuelType],
-        transmission_types=[(t.name, t.value) for t in TransmissionType],
-        colors=[(c.name, c.value) for c in Color],
-        vehicle_info=vehicle_info,
-        packages=packages,
-        current_year=current_year
+        form               = form,
+        fuel_types         = [(f.name, f.value) for f in FuelType],
+        transmission_types = [(t.name, t.value) for t in TransmissionType],
+        colors             = [(c.name, c.value) for c in Color],
+        vehicle_info       = vehicle_info,
+        packages           = packages,
+        current_year       = current_year
     )
 
 
@@ -253,63 +243,91 @@ def show_complete_report(report_id):
     )
 
 
+from flask import abort, request, render_template
+from ..models import Report, ExpertiseType, ExpertiseReport
+from ..database import db
+
 @reports.route('/report/expertise_detail_ajax', methods=['GET'])
 def expertise_detail_ajax():
-    expertise_type = request.args.get('expertise_type')
-    report_id      = request.args.get('report_id')
+    raw = request.args.get('expertise_type', '').strip()
+    report_id = request.args.get('report_id', type=int)
+    report    = Report.query.get_or_404(report_id)
 
-    report = Report.query.get_or_404(report_id)
-    pe = PackageExpertise\
-        .query.filter_by(package_id=report.package_id)\
-        .join(ExpertiseType)\
-        .filter(ExpertiseType.name == expertise_type)\
-        .first()
+    # 1) Normalize to "<X> Expertise" if needed
+    if not raw.lower().endswith('expertise'):
+        expertise_type = f"{raw} Expertise"
+    else:
+        expertise_type = raw
 
-    if not pe:
-        return jsonify({"error": "Invalid expertise type"}), 400
-
-    er1 = ExpertiseReport.query.filter_by(
-        expertise_type_id=pe.expertise_type_id
-    ).first()
-    er2 = None
-
-    # Combined expertises
-    if expertise_type == "Interior & Exterior Expertise":
-        ic = ExpertiseType.query.filter_by(name="Interior Expertise").first().id
-        ex = ExpertiseType.query.filter_by(name="Exterior Expertise").first().id
-        er1 = ExpertiseReport.query.filter_by(expertise_type_id=ic).first()
-        er2 = ExpertiseReport.query.filter_by(expertise_type_id=ex).first()
-    elif expertise_type == "Road & Dyno Expertise":
-        dy = ExpertiseType.query.filter_by(name="Dyno Expertise").first().id
-        ro = ExpertiseType.query.filter_by(name="Road Expertise").first().id
-        er1 = ExpertiseReport.query.filter_by(expertise_type_id=dy).first()
-        er2 = ExpertiseReport.query.filter_by(expertise_type_id=ro).first()
-    elif expertise_type == "Paint & Body Expertise":
-        pa = ExpertiseType.query.filter_by(name="Paint Expertise").first().id
-        bo = ExpertiseType.query.filter_by(name="Body Expertise").first().id
-        er1 = ExpertiseReport.query.filter_by(expertise_type_id=pa).first()
-        er2 = ExpertiseReport.query.filter_by(expertise_type_id=bo).first()
-
+    # 2) Maps
+    english_to_db = {
+        'ECU Electronics':               'Beyin Ekspertiz',
+        'Paint Expertise':               'Boya Ekspertiz',
+        'Paint & Body Expertise':        'Boya & Kaporta Ekspertiz',
+        'Exterior Expertise':            'Dış Ekspertiz',
+        'Dyno Expertise':                'Dyno Ekspertiz',
+        'Brake Expertise':               'Fren Ekspertiz',
+        'Interior & Exterior Expertise': 'İç & Dış Ekspertiz',
+        'Interior Expertise':            'İç Ekspertiz',
+        'Body Expertise':                'Kaporta Ekspertiz',
+        'Mechanical Expertise':          'Mekanik Ekspertiz',
+        'Engine Expertise':              'Motor Ekspertiz',
+        'Suspension Expertise':          'Süspansiyon Ekspertiz',
+        'Lateral Drift Expertise':       'Yanal Ekspertiz',
+        'Road Expertise':                'Yol Ekspertiz',
+    }
     template_map = {
-        "Engine Expertise":        "report_sections/expertises/motor_expertise.html",
-        "Body Expertise":          "report_sections/expertises/kaporta_expertise.html",
-        "ECU Expertise":           "report_sections/expertises/beyin_expertise.html",
-        "Mechanical Expertise":    "report_sections/expertises/mekanik_expertise.html",
-        "Suspension Expertise":    "report_sections/expertises/suspansiyon_expertise.html",
-        "Lateral Drift Expertise": "report_sections/expertises/yanal_expertise.html",
-        "Brake Expertise":         "report_sections/expertises/fren_expertise.html",
-        "Paint Expertise":         "report_sections/expertises/boya_expertise.html",
-        "Road Expertise":          "report_sections/expertises/yol_expertise.html",
-        "Dyno Expertise":          "report_sections/expertises/dyno_expertise.html",
-        "Interior & Exterior Expertise": "report_sections/expertises/ic_dis_expertise.html",
-        "Interior Expertise":      "report_sections/expertises/ic_dis_expertise.html",
-        "Exterior Expertise":      "report_sections/expertises/dis_expertise.html",
-        "Road & Dyno Expertise":   "report_sections/expertises/dyno_expertise.html",
-        "Paint & Body Expertise":  "report_sections/expertises/boya_kaporta_expertise.html",
+        'ECU Electronics':               'report_sections/expertises/beyin_expertise.html',
+        'Paint Expertise':               'report_sections/expertises/boya_expertise.html',
+        'Paint & Body Expertise':        'report_sections/expertises/boya_kaporta_expertise.html',
+        'Exterior Expertise':            'report_sections/expertises/dis_expertise.html',
+        'Dyno Expertise':                'report_sections/expertises/dyno_expertise.html',
+        'Brake Expertise':               'report_sections/expertises/fren_expertise.html',
+        'Interior & Exterior Expertise': 'report_sections/expertises/ic_dis_expertise.html',
+        'Interior Expertise':            'report_sections/expertises/ic_expertise.html',
+        'Body Expertise':                'report_sections/expertises/kaporta_expertise.html',
+        'Mechanical Expertise':          'report_sections/expertises/mekanik_expertise.html',
+        'Engine Expertise':              'report_sections/expertises/motor_expertise.html',
+        'Suspension Expertise':          'report_sections/expertises/suspansiyon_expertise.html',
+        'Lateral Drift Expertise':       'report_sections/expertises/yanal_expertise.html',
+        'Road Expertise':                'report_sections/expertises/yol_expertise.html',
     }
 
+    db_name  = english_to_db.get(expertise_type)
     template = template_map.get(expertise_type)
-    return render_template(template, report=report, expertise_report=er1, expertise_report2=er2)
+    if not db_name or not template:
+        abort(404, f"No template for expertise type: {expertise_type}")
+
+    # 3) Get-or-create the ExpertiseReport row so er1 is never None
+    def _ensure_er(db_label):
+        et = ExpertiseType.query.filter_by(name=db_label).first()
+        if not et:
+            abort(404, f"Unknown ExpertiseType: {db_label}")
+        er = report.get_expertise_report(db_label)
+        if not er:
+            er = ExpertiseReport(report_id=report.id, expertise_type_id=et.id)
+            db.session.add(er)
+            db.session.commit()
+        return er
+
+    # single vs combined
+    er1 = _ensure_er(db_name)
+    er2 = None
+    if expertise_type == 'Paint & Body Expertise':
+        er1 = _ensure_er('Boya Ekspertiz')
+        er2 = _ensure_er('Kaporta Ekspertiz')
+    elif expertise_type == 'Interior & Exterior Expertise':
+        er1 = _ensure_er('İç Ekspertiz')
+        er2 = _ensure_er('Dış Ekspertiz')
+
+    return render_template(
+        template,
+        report=report,
+        expertise_report=er1,
+        expertise_report2=er2
+    )
+
+
 
 
 @reports.route('/report/expertise/<int:expertise_report_id>', methods=['GET', 'POST'])

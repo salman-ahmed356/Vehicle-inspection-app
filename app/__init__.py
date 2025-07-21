@@ -9,11 +9,30 @@ from flask import Flask, request
 from flask_babel import Babel
 
 from .database import db, migrate
-from .models import (
-    Address, Agent, Appointment, Branch, Company, Customer, Package,
-    Report, Staff, Vehicle, VehicleOwner, ExpertiseType,
-    ExpertiseFeature, ExpertiseReport, PackageExpertise
+
+# Import ALL models from the single source-of-truth file
+# app/models/__init__.py
+
+from .models.all_models import (
+    Address,
+    Agent,
+    Appointment,
+    Branch,
+    Company,
+    Customer,
+    Package,
+    PackageContent,
+    PackageExpertise,
+    ExpertiseType,
+    ExpertiseReport,
+    ExpertiseFeature,
+    Report,
+    Staff,
+    Vehicle,
+    VehicleOwner,
 )
+
+
 from .services.commands import register_commands
 from .services.expertise_initializer import ExpertiseInitializer
 from .tests.test_config import TestConfig
