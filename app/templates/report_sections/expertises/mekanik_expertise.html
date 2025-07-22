@@ -1,3 +1,5 @@
+
+
 <style>
   /* Custom radio button styling */
   input[type="radio"] {
@@ -54,7 +56,8 @@
 <h2 class="text-lg font-semibold mb-4">{{ _('Mechanical Inspection') }}</h2>
 <p class="mb-4">{{ _('Please specify the condition of each mechanical component!') }}</p>
 
-<form id="expertiseForm" onsubmit="return false;" method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
+<form id="expertiseForm" method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
+  <input type="hidden" name="current_expertise_type" value="{{ current_expertise_type }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
   {# Define your mechanical status choices in English #}
@@ -121,33 +124,10 @@
 document.addEventListener('DOMContentLoaded', function() {
   var form = document.getElementById('expertiseForm');
   
+  // Add submit event listener
   form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    var formData = new FormData(form);
-    var url = "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}";
-    
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: new URLSearchParams(formData)
-    })
-    .then(function(response) {
-      return response.json();
-    })
-    .then(function(data) {
-      if (data.success) {
-        alert('Expertise updated successfully!');
-      } else {
-        alert('Update failed: ' + (data.error || 'Unknown error'));
-      }
-    })
-    .catch(function(error) {
-      console.error('Error:', error);
-      alert('Update failed. Please try again.');
-    });
+    // Don't prevent default - let the form submit normally
+    console.log('Form submitted');
   });
 });
 </script>

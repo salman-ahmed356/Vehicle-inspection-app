@@ -67,12 +67,8 @@ def add_report():
             chassis = form.chassis_number.data.strip()
             plate   = form.vehicle_plate.data.strip()
 
-            vehicle = Vehicle.query.filter(
-                or_(
-                    Vehicle.chassis_number == chassis,
-                    Vehicle.plate == plate
-                )
-            ).first()
+            # First check if a vehicle with this chassis number exists
+            vehicle = Vehicle.query.filter_by(chassis_number=chassis).first()
 
             if not vehicle:
                 # Convert string enum names to actual enum values
@@ -149,11 +145,33 @@ def add_report():
             db.session.rollback()
             flash('Data conflict—duplicate plate or chassis. Please correct.', 'error')
             print("IntegrityError in add_report:", e, flush=True)
+            # Don't clear the form data
+            return render_template(
+                'reports.html',
+                form=form,
+                fuel_types=[(f.name, f.value) for f in FuelType],
+                transmission_types=[(t.name, t.value) for t in TransmissionType],
+                colors=[(c.name, c.value) for c in Color],
+                vehicle_info=None,
+                packages=Package.query.all(),
+                current_year=datetime.now().year
+            )
 
         except Exception as e:
             db.session.rollback()
             flash('Unexpected error—check your data and try again.', 'error')
             print("Exception in add_report:", e, flush=True)
+            # Don't clear the form data
+            return render_template(
+                'reports.html',
+                form=form,
+                fuel_types=[(f.name, f.value) for f in FuelType],
+                transmission_types=[(t.name, t.value) for t in TransmissionType],
+                colors=[(c.name, c.value) for c in Color],
+                vehicle_info=None,
+                packages=Package.query.all(),
+                current_year=datetime.now().year
+            )
 
     # on GET or validation-error POST, render the form
     return render_template(
@@ -298,6 +316,7 @@ def expertise_detail_ajax():
         'Suspension Expertise':          'Suspension Expertise',
         'Lateral Drift Expertise':       'Lateral Drift Expertise',
         'Road Expertise':                'Road Expertise',
+        'Road & Dyno Expertise':         'Road & Dyno Expertise',
     }
     template_map = {
         'ECU Expertise':                 'report_sections/expertises/beyin_expertise.html',
@@ -314,6 +333,7 @@ def expertise_detail_ajax():
         'Suspension Expertise':          'report_sections/expertises/suspansiyon_expertise.html',
         'Lateral Drift Expertise':       'report_sections/expertises/yanal_expertise.html',
         'Road Expertise':                'report_sections/expertises/yol_expertise.html',
+        'Road & Dyno Expertise':         'report_sections/expertises/yol_dyno_expertise.html',
     }
 
     db_name  = english_to_db.get(expertise_type)
@@ -402,6 +422,9 @@ def expertise_detail_ajax():
     elif expertise_type == 'Interior & Exterior Expertise':
         er1 = _ensure_er('Interior Expertise')
         er2 = _ensure_er('Exterior Expertise')
+    elif expertise_type == 'Road & Dyno Expertise':
+        er1 = _ensure_er('Road Expertise')
+        er2 = _ensure_er('Dyno Expertise')
     
     # PERMANENT FIX: Load features from expertise_map.json
     def load_features_from_map(expertise_name):
@@ -518,7 +541,8 @@ def expertise_detail_ajax():
         template,
         report=report,
         expertise_report=er1,
-        expertise_report2=er2
+        expertise_report2=er2,
+        current_expertise_type=expertise_type
     )
 
 
@@ -532,6 +556,9 @@ def expertise_detail(expertise_report_id):
         ExpertiseReport.query.get(expertise_report2_id)
         if expertise_report2_id else None
     )
+    
+    # Get the current expertise type from the form
+    current_expertise_type = request.form.get('current_expertise_type')
 
     if request.method == 'POST':
         try:
@@ -555,20 +582,69 @@ def expertise_detail(expertise_report_id):
             
             for rpt in reports_to_update:
                 print(f"Processing report: {rpt.id} with {len(rpt.features)} features")
-                for feature in rpt.features:
-                    form_key = f'feature_{feature.id}'
-                    new_status = request.form.get(form_key)
-                    print(f"Feature {feature.id} ({feature.name}): current={feature.status}, new={new_status}")
+                
+                # Special handling for dyno expertise
+                if rpt.expertise_type and rpt.expertise_type.name == 'Dyno Expertise':
+                    # Handle test_type
+                    test_type = request.form.get('test_type')
+                    if test_type:
+                        test_type_feature = next((f for f in rpt.features if f.name == 'test_type'), None)
+                        if not test_type_feature:
+                            test_type_feature = ExpertiseFeature(name='test_type', expertise_report_id=rpt.id)
+                        test_type_feature.status = test_type
+                        db.session.add(test_type_feature)
                     
-                    if new_status and new_status != feature.status:
-                        print(f"UPDATING feature {feature.id} from {feature.status} to {new_status}")
-                        feature.status = new_status
-                        feature.image_path = (
-                            f'assets/car_parts/'
-                            f'{status_dir.get(new_status,"default")}/'
-                            f'{feature.name}.png'
-                        )
-                        db.session.add(feature)
+                    # Handle dyno_unit
+                    dyno_unit = request.form.get('dyno_unit')
+                    if dyno_unit:
+                        dyno_unit_feature = next((f for f in rpt.features if f.name == 'dyno_unit'), None)
+                        if not dyno_unit_feature:
+                            dyno_unit_feature = ExpertiseFeature(name='dyno_unit', expertise_report_id=rpt.id)
+                        dyno_unit_feature.status = dyno_unit
+                        db.session.add(dyno_unit_feature)
+                    
+                    # Handle power, torque, rpm for dyno test
+                    if test_type == 'dyno':
+                        for field in ['power', 'torque', 'rpm']:
+                            value = request.form.get(field)
+                            if value:
+                                feature = next((f for f in rpt.features if f.name == field), None)
+                                if not feature:
+                                    feature = ExpertiseFeature(name=field, expertise_report_id=rpt.id)
+                                feature.status = value
+                                db.session.add(feature)
+                    
+                    # Handle acceleration, braking, handling for road test
+                    if test_type == 'road':
+                        for field in ['acceleration', 'braking', 'handling']:
+                            value = request.form.get(field)
+                            if value:
+                                feature = next((f for f in rpt.features if f.name == field), None)
+                                if not feature:
+                                    feature = ExpertiseFeature(name=field, expertise_report_id=rpt.id)
+                                feature.status = value
+                                db.session.add(feature)
+                else:
+                    # Normal processing for other expertise types
+                    for feature in rpt.features:
+                        form_key = f'feature_{feature.id}'
+                        new_status = request.form.get(form_key)
+                        print(f"Feature {feature.id} ({feature.name}): current={feature.status}, new={new_status}")
+                        
+                        if new_status is not None:
+                            if new_status != feature.status:
+                                print(f"UPDATING feature {feature.id} from {feature.status} to {new_status}")
+                                feature.status = new_status
+                                feature.image_path = (
+                                    f'assets/car_parts/'
+                                    f'{status_dir.get(new_status,"default")}/'
+                                    f'{feature.name}.png'
+                                )
+                            else:
+                                print(f"Feature {feature.id} status unchanged: {feature.status}")
+                            db.session.add(feature)
+                        else:
+                            print(f"WARNING: No form data for feature {feature.id}")
 
                 new_comment = request.form.get('technician_comment') or ''
                 if new_comment != rpt.comment:
@@ -577,7 +653,14 @@ def expertise_detail(expertise_report_id):
 
             db.session.commit()
             print("SUCCESSFULLY SAVED ALL CHANGES")
-            return jsonify({"success": True}), 200
+            
+            # Check if this is an AJAX request
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return jsonify({"success": True}), 200
+            else:
+                # Regular form submission - redirect back to the complete report page
+                flash('Expertise updated successfully!', 'success')
+                return redirect(url_for('reports.show_complete_report', report_id=expertise_report.report_id))
 
         except Exception as e:
             db.session.rollback()

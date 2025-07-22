@@ -8,13 +8,6 @@
     margin-bottom: 0.5rem;
     display: block;
   }
-  .hidden {
-    display: none;
-  }
-  .red-text {
-    color: red;
-    font-weight: bold;
-  }
   input[type="radio"] {
     appearance: none;
     -webkit-appearance: none;
@@ -56,9 +49,6 @@
     border-color: #38B2AC;
     box-shadow: 0 0 0 3px rgba(56,178,172,0.5);
   }
-  input[type="number"]:disabled {
-    background-color: #E2E8F0;
-  }
   button[type="submit"] {
     background-color: #3182CE;
     color: white;
@@ -72,6 +62,10 @@
   button[type="submit"]:hover {
     background-color: #2B6CB0;
   }
+  .red-text {
+    color: red;
+    font-weight: bold;
+  }
 </style>
 
 {% include 'report_sections/expertises/vehicle_header.html' %}
@@ -79,59 +73,59 @@
 <h2 class="text-lg font-semibold mb-4">{{ _('Dyno / Road Test') }}</h2>
 <p class="mb-4">{{ _('Please specify which test was performed, then enter the results or comments!') }}</p>
 
-<form id="expertiseForm" onsubmit="return false;" method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
+<form id="expertiseForm" method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
+  <input type="hidden" name="current_expertise_type" value="{{ current_expertise_type }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
   <!-- Test Type Selection -->
   <div class="form-section">
     <label class="red-text">{{ _('Which test was performed?') }}</label>
-    <label>
-      <input type="radio" name="test_type" value="dyno"
-             onclick="showSection('dyno')" required
-             {% if test_type == 'dyno' %}checked{% endif %}>
-      {{ _('Dyno Test') }}
-    </label>
-    <label>
-      <input type="radio" name="test_type" value="road"
-             onclick="showSection('road')"
-             {% if test_type == 'road' %}checked{% endif %}>
-      {{ _('Road Test') }}
-    </label>
+    <div>
+      <label style="display: inline-block; margin-right: 20px;">
+        <input type="radio" name="test_type" value="dyno" id="dyno_test_radio">
+        {{ _('Dyno Test') }}
+      </label>
+      <label style="display: inline-block;">
+        <input type="radio" name="test_type" value="road" id="road_test_radio">
+        {{ _('Road Test') }}
+      </label>
+    </div>
   </div>
 
   <!-- Dyno Options -->
-  <div id="dynoOptions" class="hidden">
+  <div id="dynoOptions" style="display: none;">
     <div class="form-section">
       <label class="red-text">{{ _('Output Unit') }}</label>
-      <label>
-        <input type="radio" name="dyno_unit" value="hp"
-               onclick="showSection('dyno')" 
-               {% if dyno_unit == 'hp' %}checked{% endif %}>
-        HP
-      </label>
-      <label>
-        <input type="radio" name="dyno_unit" value="kw"
-               onclick="showSection('dyno')" 
-               {% if dyno_unit == 'kw' %}checked{% endif %}>
-        KW
-      </label>
-    </div>
-    <div class="form-section">
-      {% for feature in expertise_report.features %}
-        <label for="feature_{{ feature.id }}">
-          {{ feature.name }} ({{ dyno_unit|upper }})
+      <div>
+        <label style="display: inline-block; margin-right: 20px;">
+          <input type="radio" name="dyno_unit" value="hp" id="hp_unit_radio">
+          HP
         </label>
-        <input type="number"
-               id="feature_{{ feature.id }}"
-               name="feature_{{ feature.id }}"
-               value="{{ feature.status }}"
-               step="any" min="0">
-      {% endfor %}
+        <label style="display: inline-block;">
+          <input type="radio" name="dyno_unit" value="kw" id="kw_unit_radio">
+          KW
+        </label>
+      </div>
+    </div>
+    
+    <div class="form-section">
+      <label>{{ _('Power') }}</label>
+      <input type="number" name="power" id="power_input" step="any" min="0">
+    </div>
+    
+    <div class="form-section">
+      <label>{{ _('Torque') }}</label>
+      <input type="number" name="torque" id="torque_input" step="any" min="0">
+    </div>
+    
+    <div class="form-section">
+      <label>{{ _('RPM') }}</label>
+      <input type="number" name="rpm" id="rpm_input" step="any" min="0">
     </div>
   </div>
 
   <!-- Road Test Fields -->
-  <div id="roadOptions" class="hidden">
+  <div id="roadOptions" style="display: none;">
     {% set road_statuses = [
          'None',
          '(Good) Passed Inspection',
@@ -140,29 +134,54 @@
        ]
     %}
     <div class="form-section">
-      {% for feature in expertise_report.features %}
-        <label class="block font-semibold mb-1">{{ feature.name }}</label>
-        <div>
-          {% for status in road_statuses %}
-            <label>
-              <input type="radio"
-                     name="feature_{{ feature.id }}"
-                     value="{{ status }}"
-                     {% if feature.status == status %}checked{% endif %}>
-              {{ _(status) }}
-            </label>
-          {% endfor %}
-        </div>
-      {% endfor %}
+      <label>{{ _('Acceleration') }}</label>
+      <div>
+        {% for status in road_statuses %}
+          <label style="display: block; margin-bottom: 5px;">
+            <input type="radio" name="acceleration" value="{{ status }}" class="road_status_radio">
+            {{ _(status) }}
+          </label>
+        {% endfor %}
+      </div>
     </div>
+    
     <div class="form-section">
-      <label for="technician_comment" class="font-semibold mb-1">
-        {{ _('Technician Comment') }}
-      </label>
-      <textarea id="technician_comment"
-                name="technician_comment"
-                rows="4">{{ expertise_report.comment }}</textarea>
+      <label>{{ _('Braking') }}</label>
+      <div>
+        {% for status in road_statuses %}
+          <label style="display: block; margin-bottom: 5px;">
+            <input type="radio" name="braking" value="{{ status }}" class="road_status_radio">
+            {{ _(status) }}
+          </label>
+        {% endfor %}
+      </div>
     </div>
+    
+    <div class="form-section">
+      <label>{{ _('Handling') }}</label>
+      <div>
+        {% for status in road_statuses %}
+          <label style="display: block; margin-bottom: 5px;">
+            <input type="radio" name="handling" value="{{ status }}" class="road_status_radio">
+            {{ _(status) }}
+          </label>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Technician Comment - Always visible -->
+  <div class="form-section">
+    <label for="technician_comment" class="block text-gray-700 font-semibold mb-2">
+      {{ _('Technician Comment') }}
+    </label>
+    <textarea
+      id="technician_comment"
+      name="technician_comment"
+      rows="4"
+      class="w-full p-2 border border-gray-300 rounded"
+      placeholder="{{ _('Enter technician comment here...') }}"
+    >{{ expertise_report.comment }}</textarea>
   </div>
 
   <div class="text-right mt-4">
@@ -171,36 +190,109 @@
 </form>
 
 <script>
+// Function to show/hide sections based on test type
+function showTestType(type) {
+  if (type === 'dyno') {
+    document.getElementById('dynoOptions').style.display = 'block';
+    document.getElementById('roadOptions').style.display = 'none';
+  } else if (type === 'road') {
+    document.getElementById('dynoOptions').style.display = 'none';
+    document.getElementById('roadOptions').style.display = 'block';
+  }
+}
+
+// Initialize form with existing data
 document.addEventListener('DOMContentLoaded', function() {
-  var form = document.getElementById('expertiseForm');
-  
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    var formData = new FormData(form);
-    var url = "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}";
-    
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: new URLSearchParams(formData)
-    })
-    .then(function(response) {
-      return response.json();
-    })
-    .then(function(data) {
-      if (data.success) {
-        alert('Expertise updated successfully!');
-      } else {
-        alert('Update failed: ' + (data.error || 'Unknown error'));
-      }
-    })
-    .catch(function(error) {
-      console.error('Error:', error);
-      alert('Update failed. Please try again.');
-    });
+  // Set up event listeners for radio buttons
+  document.getElementById('dyno_test_radio').addEventListener('change', function() {
+    if (this.checked) showTestType('dyno');
   });
+  
+  document.getElementById('road_test_radio').addEventListener('change', function() {
+    if (this.checked) showTestType('road');
+  });
+  
+  // Get existing data from features
+  {% for feature in expertise_report.features %}
+    {% if feature.name == 'test_type' %}
+      var savedTestType = "{{ feature.status }}";
+      if (savedTestType === 'dyno') {
+        document.getElementById('dyno_test_radio').checked = true;
+        showTestType('dyno');
+      } else if (savedTestType === 'road') {
+        document.getElementById('road_test_radio').checked = true;
+        showTestType('road');
+      } else {
+        // Default to dyno
+        document.getElementById('dyno_test_radio').checked = true;
+        showTestType('dyno');
+      }
+    {% endif %}
+    
+    {% if feature.name == 'dyno_unit' %}
+      var savedDynoUnit = "{{ feature.status }}";
+      if (savedDynoUnit === 'hp') {
+        document.getElementById('hp_unit_radio').checked = true;
+      } else if (savedDynoUnit === 'kw') {
+        document.getElementById('kw_unit_radio').checked = true;
+      } else {
+        // Default to hp
+        document.getElementById('hp_unit_radio').checked = true;
+      }
+    {% endif %}
+    
+    {% if feature.name == 'power' %}
+      document.getElementById('power_input').value = "{{ feature.status }}";
+    {% endif %}
+    
+    {% if feature.name == 'torque' %}
+      document.getElementById('torque_input').value = "{{ feature.status }}";
+    {% endif %}
+    
+    {% if feature.name == 'rpm' %}
+      document.getElementById('rpm_input').value = "{{ feature.status }}";
+    {% endif %}
+    
+    {% if feature.name == 'acceleration' %}
+      var accelerationRadios = document.querySelectorAll('input[name="acceleration"]');
+      for (var i = 0; i < accelerationRadios.length; i++) {
+        if (accelerationRadios[i].value === "{{ feature.status }}") {
+          accelerationRadios[i].checked = true;
+          break;
+        }
+      }
+    {% endif %}
+    
+    {% if feature.name == 'braking' %}
+      var brakingRadios = document.querySelectorAll('input[name="braking"]');
+      for (var i = 0; i < brakingRadios.length; i++) {
+        if (brakingRadios[i].value === "{{ feature.status }}") {
+          brakingRadios[i].checked = true;
+          break;
+        }
+      }
+    {% endif %}
+    
+    {% if feature.name == 'handling' %}
+      var handlingRadios = document.querySelectorAll('input[name="handling"]');
+      for (var i = 0; i < handlingRadios.length; i++) {
+        if (handlingRadios[i].value === "{{ feature.status }}") {
+          handlingRadios[i].checked = true;
+          break;
+        }
+      }
+    {% endif %}
+  {% endfor %}
+  
+  // If no test type is set, default to dyno
+  if (!document.querySelector('input[name="test_type"]:checked')) {
+    document.getElementById('dyno_test_radio').checked = true;
+    showTestType('dyno');
+  }
+  
+  // If no dyno unit is set, default to hp
+  if (!document.querySelector('input[name="dyno_unit"]:checked')) {
+    document.getElementById('hp_unit_radio').checked = true;
+  }
 });
 </script>

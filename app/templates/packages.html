@@ -113,8 +113,8 @@
   <div id="newPackageModal" class="modal">
     <div class="modal-content">
       <span class="close" id="closeModal">&times;</span>
-      <h2 class="text-xl font-semibold mb-4">
-        {% if update %}{{ _('Update Package') }}{% else %}{{ _('Create Package') }}{% endif %}
+      <h2 class="text-xl font-semibold mb-4" id="packageModalTitle">
+        {{ _('Create Package') }}
       </h2>
 
       <form id="packageForm"
@@ -151,13 +151,17 @@
         </div>
 
         <div>
-          <label for="contents" class="block text-sm font-medium text-gray-700">
+          <label class="block text-sm font-medium text-gray-700 mb-2">
             {{ form.contents.label.text }}
           </label>
-          {{ form.contents(
-               id="contents",
-               class="mt-1 block w-full h-32 px-3 py-2 border border-gray-300 rounded-md"
-             ) }}
+          <div class="mt-1 grid grid-cols-2 gap-2 border border-gray-300 rounded-md p-3">
+            {% for checkbox in form.contents %}
+              <div class="flex items-center">
+                {{ checkbox(class="mr-2") }}
+                <label for="{{ checkbox.id }}" class="text-sm text-gray-700">{{ checkbox.label.text }}</label>
+              </div>
+            {% endfor %}
+          </div>
           {% for err in form.contents.errors %}
             <p class="text-red-600 text-sm">{{ err }}</p>
           {% endfor %}
@@ -193,6 +197,7 @@
   {% if update %}
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById("packageModalTitle").textContent = "{{ _('Update Package') }}";
       document.getElementById("newPackageModal").style.display = "block";
     });
   </script>

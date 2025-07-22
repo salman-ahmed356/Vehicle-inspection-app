@@ -50,6 +50,7 @@ from .routes.companies import companies as companies_bp
 from .routes.errors import errors as errors_bp
 from .routes.packages import packages as packages_bp
 from .routes.pdfs import pdfs as pdfs_bp
+from .routes.test import test as test_bp
 
 # 1) Instantiate Babel once (no app yet)
 babel = Babel()
@@ -184,5 +185,6 @@ def create_app(config_object=None):
     app.register_blueprint(reports_bp)
     app.register_blueprint(staff_bp)
     app.register_blueprint(main_bp)
+    app.register_blueprint(test_bp)
 
     return app

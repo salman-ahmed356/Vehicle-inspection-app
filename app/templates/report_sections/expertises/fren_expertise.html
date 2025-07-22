@@ -55,7 +55,8 @@
 <h2 class="text-lg font-semibold mb-4">{{ _('Brake Test') }}</h2>
 <p class="mb-4">{{ _('Please specify the status of each brake section!') }}</p>
 
-<form id="brakeTestForm" method="POST" onsubmit="return false;">
+<form id="brakeTestForm" method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
+  <input type="hidden" name="current_expertise_type" value="{{ current_expertise_type }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
   {# Split features into front, rear, and parking groups #}
@@ -125,6 +126,19 @@
         >
       </div>
     {% endfor %}
+  </div>
+
+  <div class="mb-4">
+    <label for="technician_comment" class="block text-gray-700 font-semibold mb-2">
+      {{ _('Technician Comment') }}
+    </label>
+    <textarea
+      id="technician_comment"
+      name="technician_comment"
+      rows="4"
+      class="w-full p-2 border border-gray-300 rounded"
+      placeholder="{{ _('Enter technician comment here...') }}"
+    >{{ expertise_report.comment }}</textarea>
   </div>
 
   <div class="text-right">

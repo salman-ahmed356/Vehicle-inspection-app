@@ -72,10 +72,16 @@ def add_pckg():
 @packages.route('/update/<int:package_id>', methods=['GET', 'POST'])
 def update_package(package_id):
     pkg = Package.query.get_or_404(package_id)
+    
+    # Check if package is in use by incomplete reports
+    incomplete_reports = Report.query.filter_by(package_id=package_id, status='OPENED').count()
+    if incomplete_reports > 0:
+        flash(f'Cannot edit package: It is currently in use by {incomplete_reports} incomplete reports.', 'error')
+        return redirect(url_for('packages.packages_list'))
 
     if request.method == 'POST':
         form = PackageForm(request.form)
-        _populate_contents(form.contents)
+        _populate_contents(form)
 
         if form.validate_on_submit():
             pkg.name   = form.name.data
@@ -145,10 +151,15 @@ def update_package(package_id):
 def delete_package(package_id):
     pkg = Package.query.get_or_404(package_id)
 
-    # first delete any Reports using this package
-    Report.query.filter_by(package_id=package_id).delete()
+    # Check if any reports are using this package
+    reports_count = Report.query.filter_by(package_id=package_id).count()
+    if reports_count > 0:
+        flash(f'Cannot delete package: It is currently in use by {reports_count} reports.', 'error')
+        return redirect(url_for('packages.packages_list'))
+    
+    # If no reports are using this package, delete it
     db.session.delete(pkg)
     db.session.commit()
 
-    flash('Package and its reports deleted', 'success')
+    flash('Package deleted successfully', 'success')
     return redirect(url_for('packages.packages_list'))

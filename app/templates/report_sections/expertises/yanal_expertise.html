@@ -44,7 +44,8 @@
 </h2>
 <p class="mb-4">{{ _('Please enter the measured drift values for each side:') }}</p>
 
-<form id="expertiseForm" onsubmit="return false;" method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
+<form id="expertiseForm"  method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
+  <input type="hidden" name="current_expertise_type" value="{{ current_expertise_type }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
   {% for feature in expertise_report.features %}
@@ -61,7 +62,20 @@
     </div>
   {% endfor %}
 
-  <div class="flex justify-end">
+    <div class="mb-4">
+    <label for="technician_comment" class="block text-gray-700 font-semibold mb-2">
+      {{ _('Technician Comment') }}
+    </label>
+    <textarea
+      id="technician_comment"
+      name="technician_comment"
+      rows="4"
+      class="w-full p-2 border border-gray-300 rounded"
+      placeholder="{{ _('Enter technician comment here...') }}"
+    >{{ expertise_report.comment }}</textarea>
+  </div>
+
+<div class="flex justify-end">
     <button type="submit">{{ _('Save') }}</button>
   </div>
 </form>
@@ -70,13 +84,27 @@
 document.addEventListener('DOMContentLoaded', function() {
   var form = document.getElementById('expertiseForm');
   
+  // Log all form elements on page load
+  console.log('Form elements on page load:');
+  Array.from(form.elements).forEach(function(element) {
+    if (element.name) {
+      console.log(element.name + ' = ' + element.value + 
+                 (element.type === 'radio' ? ', checked: ' + element.checked : ''));
+    }
+  });
+  
   form.addEventListener('submit', function(e) {
     e.preventDefault();
     
     var formData = new FormData(form);
-    var url = "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}";
     
-    fetch(url, {
+    // Log what we're submitting
+    console.log('Submitting form data:');
+    for (var pair of formData.entries()) {
+      console.log(pair[0] + ': ' + pair[1]);
+    }
+    
+    fetch(form.action, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
@@ -84,9 +112,14 @@ document.addEventListener('DOMContentLoaded', function() {
       body: new URLSearchParams(formData)
     })
     .then(function(response) {
+      console.log('Response status:', response.status);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
       return response.json();
     })
     .then(function(data) {
+      console.log('Response data:', data);
       if (data.success) {
         alert('Expertise updated successfully!');
       } else {
@@ -95,8 +128,17 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .catch(function(error) {
       console.error('Error:', error);
-      alert('Update failed. Please try again.');
+      alert('Update failed. Please check your inputs!');
     });
+  });
+  
+  // Add change listeners to form elements
+  Array.from(form.elements).forEach(function(element) {
+    if (element.name && element.type !== 'hidden' && element.type !== 'submit') {
+      element.addEventListener('change', function() {
+        console.log(this.name + ' changed to ' + this.value);
+      });
+    }
   });
 });
 </script>

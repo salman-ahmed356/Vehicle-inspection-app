@@ -60,102 +60,83 @@ def _process_expertise_reports(report):
         return []
 
     blocks = []
-    paint_feats, body_feats = [], []
-    paint_comment = body_comment = ""
-
-    for pe in report.package.package_expertises:
-        for rpt in ExpertiseReport.query.filter_by(
-            expertise_type_id=pe.expertise_type_id,
-            report_id=report.id
-        ).all():
-            name = rpt.expertise_type.name
-            # Combined Paint & Body block
-            if name == "Paint & Body Expertise":
-                (paint_feats, body_feats,
-                 paint_comment, body_comment) = _extract_paint_body(rpt)
-            else:
-                blocks.append(_build_block_dict(rpt))
-
-    if paint_feats or body_feats:
+    
+    # Get all expertise reports for this report
+    expertise_reports = ExpertiseReport.query.filter_by(report_id=report.id).all()
+    
+    # Group by expertise type
+    expertise_types = {}
+    for er in expertise_reports:
+        if er.expertise_type:
+            expertise_types[er.expertise_type.name] = er
+    
+    # Check if we have both Paint and Body expertises
+    paint_report = expertise_types.get("Paint Expertise")
+    body_report = expertise_types.get("Body Expertise")
+    
+    if paint_report and body_report:
+        # Create combined Paint & Body block
+        paint_features = []
+        body_features = []
+        
+        if paint_report.features:
+            paint_features = [
+                {
+                    'name': f.name,
+                    'status': f.status,
+                    'image_url': (
+                        url_for('static', filename=f.image_path, _external=True)
+                        if f.image_path else ''
+                    )
+                }
+                for f in paint_report.features
+            ]
+        
+        if body_report.features:
+            body_features = [
+                {
+                    'name': f.name,
+                    'status': f.status,
+                    'image_url': (
+                        url_for('static', filename=f.image_path, _external=True)
+                        if f.image_path else ''
+                    )
+                }
+                for f in body_report.features
+            ]
+        
         blocks.append({
             'expertise_type_name': "Paint & Body Expertise",
-            'paint_features'     : paint_feats,
-            'body_features'      : body_feats,
-            'paint_comment'      : paint_comment,
-            'body_comment'       : body_comment
+            'paint_features': paint_features,
+            'body_features': body_features,
+            'paint_comment': paint_report.comment or "",
+            'body_comment': body_report.comment or ""
         })
+    
+    # Process all other expertise reports
+    for er in expertise_reports:
+        if er.expertise_type and er.expertise_type.name not in ["Paint Expertise", "Body Expertise"]:
+            features = []
+            if er.features:
+                features = [
+                    {
+                        'name': f.name,
+                        'status': f.status,
+                        'image_url': (
+                            url_for('static', filename=f.image_path, _external=True)
+                            if f.image_path else ''
+                        )
+                    }
+                    for f in er.features
+                ]
+            
+            blocks.append({
+                'expertise_type_name': er.expertise_type.name,
+                'comment': er.comment or "",
+                'features': features
+            })
 
     return blocks
-
-
-def _extract_paint_body(report):
-    """
-    From a Paint & Body report, split into:
-      - paint_features + comment
-      - body_features + comment
-    """
-    paint, body = [], []
-    paint_comment = body_comment = ""
-    
-    # Safety check
-    if not report or not report.expertise_type or not report.expertise_type.children:
-        print(f"Warning: Invalid report or missing children in _extract_paint_body")
-        return paint, body, paint_comment, body_comment
-
-    for child in report.expertise_type.children:
-        if child.name == "Paint Expertise":
-            for rpt in child.expertise_reports:
-                paint = [
-                    {
-                        'name'      : f.name,
-                        'status'    : f.status,
-                        'image_url' : (
-                            url_for('static', filename=f.image_path, _external=True)
-                            if f.image_path else ''
-                        )
-                    }
-                    for f in rpt.features
-                ]
-                paint_comment = rpt.comment
-
-        elif child.name == "Body Expertise":
-            for rpt in child.expertise_reports:
-                body = [
-                    {
-                        'name'      : f.name,
-                        'status'    : f.status,
-                        'image_url' : (
-                            url_for('static', filename=f.image_path, _external=True)
-                            if f.image_path else ''
-                        )
-                    }
-                    for f in rpt.features
-                ]
-                body_comment = rpt.comment
-
-    return paint, body, paint_comment, body_comment
-
-
-def _build_block_dict(report):
-    """
-    Build dict for a single expertise block (non-paint/body).
-    """
-    feats = [
-        {
-            'name'      : f.name,
-            'status'    : f.status,
-            'image_url' : (
-                url_for('static', filename=f.image_path, _external=True)
-                if f.image_path else ''
-            )
-        }
-        for f in report.features
-    ]
-    return {
-        'expertise_type_name': report.expertise_type.name,
-        'comment'            : report.comment,
-        'features'           : feats
-    }
 
 
 def _gather_image_paths():

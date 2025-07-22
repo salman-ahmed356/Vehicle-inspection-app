@@ -42,7 +42,8 @@
 <h2 class="text-lg font-semibold mb-4">{{ _('Suspension Inspection') }}</h2>
 <p class="mb-4">{{ _('Please enter the measured values for each suspension point:') }}</p>
 
-<form id="suspensionForm" method="POST" onsubmit="return false;">
+<form id="suspensionForm" method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
+  <input type="hidden" name="current_expertise_type" value="{{ current_expertise_type }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
   {% for feature in expertise_report.features %}
@@ -58,6 +59,19 @@
       >
     </div>
   {% endfor %}
+
+  <div class="mb-4">
+    <label for="technician_comment" class="block text-gray-700 font-semibold mb-2">
+      {{ _('Technician Comment') }}
+    </label>
+    <textarea
+      id="technician_comment"
+      name="technician_comment"
+      rows="4"
+      class="w-full p-2 border border-gray-300 rounded"
+      placeholder="{{ _('Enter technician comment here...') }}"
+    >{{ expertise_report.comment }}</textarea>
+  </div>
 
   <div class="text-right">
     <button type="submit">{{ _('Save') }}</button>

@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // New Package
   document.getElementById("newPackageButton").onclick = () => {
     clearForm();
+    document.getElementById("packageModalTitle").textContent = "Create Package";
     document.getElementById("newPackageModal").style.display = "block";
   };
 
@@ -36,8 +37,11 @@ function clearForm() {
   document.getElementById("package_name").value = '';
   document.getElementById("price").value        = '0.00';
   document.getElementById("active").selectedIndex = 0;
-  const sel = document.getElementById("contents");
-  [...sel.options].forEach(opt => opt.selected = false);
+  
+  // Clear all checkboxes
+  document.querySelectorAll('input[name^="contents-"]').forEach(checkbox => {
+    checkbox.checked = false;
+  });
 }
 
 function showAlert(message, type) {

@@ -1,17 +1,5 @@
 <style>
   /* General Styles */
-  .expertise-section {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 2rem;
-  }
-  .form-section {
-    width: 50%;
-  }
-  .car-image-section {
-    width: 40%;
-    text-align: center;
-  }
   .form-group {
     margin-bottom: 1.5rem;
   }
@@ -45,10 +33,7 @@
     border-radius: 0.25rem;
     margin-right: 0.5rem;
   }
-  .car-image {
-    max-width: 100%;
-    margin-top: 1.5rem;
-  }
+
   .feature-selected {
     background-color: #38B2AC;
     color: white;
@@ -66,72 +51,88 @@
 </h2>
 <p class="mb-4">{{ _('Please specify the condition of each painted area!') }}</p>
 
-<div class="expertise-section">
-  <div class="form-section">
-    <form id="expertiseForm" onsubmit="return false;" method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<form id="expertiseForm" method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
+  <input type="hidden" name="current_expertise_type" value="{{ current_expertise_type }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-      {# Paint‐specific statuses in English #}
-      {% set status_choices = [
-           'Original',
-           'Plastic',
-           'Painted',
-           'Locally Painted',
-           'Replaced',
-           'Coated',
-           'None'
-         ]
-      %}
+  {# Paint‐specific statuses in English #}
+  {% set status_choices = [
+       'Original',
+       'Plastic',
+       'Painted',
+       'Locally Painted',
+       'Replaced',
+       'Coated',
+       'None'
+     ]
+  %}
 
-      {% for feature in expertise_report.features %}
-        <div class="form-group feature-{{ feature.id }}">
-          <label for="feature-status-{{ feature.id }}">
-            {{ feature.name }}
-          </label>
-          <select
-            class="dropdown"
-            id="feature-status-{{ feature.id }}"
-            name="feature_{{ feature.id }}"
-          >
-            {% for s in status_choices %}
-              <option
-                value="{{ s }}"
-                {% if feature.status == s %}selected{% endif %}
-              >{{ _(s) }}</option>
-            {% endfor %}
-          </select>
-          <div class="extra-conditions" id="extra-conditions-{{ feature.id }}"></div>
-        </div>
-      {% endfor %}
+  {% for feature in expertise_report.features %}
+    <div class="form-group feature-{{ feature.id }}">
+      <label for="feature-status-{{ feature.id }}">
+        {{ feature.name }}
+      </label>
+      <select
+        class="dropdown"
+        id="feature-status-{{ feature.id }}"
+        name="feature_{{ feature.id }}"
+      >
+        {% for s in status_choices %}
+          <option
+            value="{{ s }}"
+            {% if feature.status == s %}selected{% endif %}
+          >{{ _(s) }}</option>
+        {% endfor %}
+      </select>
+      <div class="extra-conditions" id="extra-conditions-{{ feature.id }}"></div>
+    </div>
+  {% endfor %}
 
-      <div class="flex justify-end mt-4">
-        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
-          {{ _('Save') }}
-        </button>
-      </div>
-    </form>
+  <div class="mb-4">
+    <label for="technician_comment" class="block text-gray-700 font-semibold mb-2">
+      {{ _('Technician Comment') }}
+    </label>
+    <textarea
+      id="technician_comment"
+      name="technician_comment"
+      rows="4"
+      class="w-full p-2 border border-gray-300 rounded"
+      placeholder="{{ _('Enter technician comment here...') }}"
+    >{{ expertise_report.comment }}</textarea>
   </div>
 
-  <div class="car-image-section">
-    <img
-      src="https://placehold.co/400x300"
-      alt="{{ _('Car Image') }}"
-      class="car-image"
-    >
+  <div class="flex justify-end mt-4">
+    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
+      {{ _('Save') }}
+    </button>
   </div>
-</div>
+</form>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   var form = document.getElementById('expertiseForm');
   
+  // Log all form elements on page load
+  console.log('Form elements on page load:');
+  Array.from(form.elements).forEach(function(element) {
+    if (element.name) {
+      console.log(element.name + ' = ' + element.value + 
+                 (element.type === 'radio' ? ', checked: ' + element.checked : ''));
+    }
+  });
+  
   form.addEventListener('submit', function(e) {
     e.preventDefault();
     
     var formData = new FormData(form);
-    var url = "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}";
     
-    fetch(url, {
+    // Log what we're submitting
+    console.log('Submitting form data:');
+    for (var pair of formData.entries()) {
+      console.log(pair[0] + ': ' + pair[1]);
+    }
+    
+    fetch(form.action, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
@@ -139,9 +140,14 @@ document.addEventListener('DOMContentLoaded', function() {
       body: new URLSearchParams(formData)
     })
     .then(function(response) {
+      console.log('Response status:', response.status);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
       return response.json();
     })
     .then(function(data) {
+      console.log('Response data:', data);
       if (data.success) {
         alert('Expertise updated successfully!');
       } else {
@@ -150,8 +156,19 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .catch(function(error) {
       console.error('Error:', error);
-      alert('Update failed. Please try again.');
+      alert('Update failed. Please check your inputs!');
     });
+  });
+  
+  // Add change listeners to form elements
+  Array.from(form.elements).forEach(function(element) {
+    if (element.name && element.type !== 'hidden' && element.type !== 'submit') {
+      element.addEventListener('change', function() {
+        console.log(this.name + ' changed to ' + this.value);
+        
+
+      });
+    }
   });
 });
 </script>

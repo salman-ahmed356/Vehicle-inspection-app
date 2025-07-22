@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Direct Form Test</title>
+</head>
+<body>
+    <h1>Direct Form Test</h1>
+    
+    <form action="/test_form_submit" method="POST">
+        <div>
+            <label for="feature_1">Feature 1:</label>
+            <select name="feature_1" id="feature_1">
+                <option value="No Issue">No Issue</option>
+                <option value="Scratch">Scratch</option>
+                <option value="Dent">Dent</option>
+            </select>
+        </div>
+        <div>
+            <label for="feature_2">Feature 2:</label>
+            <select name="feature_2" id="feature_2">
+                <option value="No Issue">No Issue</option>
+                <option value="Scratch">Scratch</option>
+                <option value="Dent">Dent</option>
+            </select>
+        </div>
+        <div>
+            <label for="comment">Comment:</label>
+            <textarea name="comment" id="comment"></textarea>
+        </div>
+        <div>
+            <button type="submit">Submit</button>
+        </div>
+    </form>
+</body>
+</html>

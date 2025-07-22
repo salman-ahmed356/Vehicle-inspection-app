@@ -21,6 +21,12 @@ DEFAULT_EXPERTISE_TYPES = [
     "Paint & Body Expertise"
 ]
 
+from wtforms import SelectMultipleField, widgets
+
+class MultiCheckboxField(SelectMultipleField):
+    widget = widgets.ListWidget(prefix_label=False)
+    option_widget = widgets.CheckboxInput()
+
 class PackageForm(FlaskForm):
     name = StringField(
         'Package Name',
@@ -30,10 +36,10 @@ class PackageForm(FlaskForm):
         'Package Price (excl. VAT)',
         validators=[DataRequired()]
     )
-    contents = SelectMultipleField(
+    contents = MultiCheckboxField(
         'Applied Expertises',
         choices=[(et, et) for et in DEFAULT_EXPERTISE_TYPES],  # Default hardcoded choices
-        validators=[DataRequired()]
+        validators=[]
     )
     active = SelectField(
         'Package Status',

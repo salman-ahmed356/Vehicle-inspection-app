@@ -42,12 +42,13 @@
         <ul class="list-none p-0">
           {% for pe in package_expertises %}
             {% set label = type_labels.get(pe.expertise_type.name, pe.expertise_type.name) %}
-            <li class="mb-2">
+            <li class="mb-2" id="expertise-{{ label }}">
               <a
                 href="{{ url_for('reports.expertise_detail_ajax',
                                  expertise_type=label,
                                  report_id=report.id) }}"
                 class="block p-2 bg-gray-200 rounded hover:bg-gray-300 expertise-link"
+                data-expertise-type="{{ label }}"
               >
                 {{ label }}
               </a>
@@ -68,6 +69,7 @@
 
     <div class="text-right mt-8">
       <form action="{{ url_for('reports.mark_complete', report_id=report.id) }}" method="POST" style="display: inline-block; margin-right: 10px;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
           {{ _('Mark as Complete') }}
         </button>
@@ -95,9 +97,32 @@
 
   <!-- Inline AJAX loader -->
   <script>
+    // Store the active tab in localStorage
+    function storeActiveTab(expertiseType) {
+      localStorage.setItem('activeExpertiseTab_' + {{ report.id }}, expertiseType);
+    }
+    
+    // Get the active tab from localStorage
+    function getActiveTab() {
+      return localStorage.getItem('activeExpertiseTab_' + {{ report.id }});
+    }
+    
     document.querySelectorAll('.expertise-link').forEach(link => {
       link.addEventListener('click', e => {
         e.preventDefault();
+        
+        // Get expertise type and store it
+        const expertiseType = link.getAttribute('data-expertise-type');
+        storeActiveTab(expertiseType);
+        
+        // Highlight the active tab
+        document.querySelectorAll('.expertise-link').forEach(l => {
+          l.classList.remove('bg-blue-500', 'text-white');
+          l.classList.add('bg-gray-200');
+        });
+        link.classList.remove('bg-gray-200');
+        link.classList.add('bg-blue-500', 'text-white');
+        
         fetch(link.href)
           .then(res => {
             if (!res.ok) throw new Error(res.statusText);
@@ -113,9 +138,21 @@
       });
     });
 
-    // Auto-open first tab
-    const first = document.querySelector('.expertise-link');
-    if (first) first.click();
+    // Open the previously active tab or default to first tab
+    window.addEventListener('DOMContentLoaded', () => {
+      const activeTab = getActiveTab();
+      let targetLink;
+      
+      if (activeTab) {
+        targetLink = document.querySelector(`.expertise-link[data-expertise-type="${activeTab}"]`);
+      }
+      
+      if (!targetLink) {
+        targetLink = document.querySelector('.expertise-link');
+      }
+      
+      if (targetLink) targetLink.click();
+    });
   </script>
 </body>
 </html>
