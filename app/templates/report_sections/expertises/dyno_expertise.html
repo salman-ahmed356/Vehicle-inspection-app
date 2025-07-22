@@ -79,7 +79,7 @@
 <h2 class="text-lg font-semibold mb-4">{{ _('Dyno / Road Test') }}</h2>
 <p class="mb-4">{{ _('Please specify which test was performed, then enter the results or comments!') }}</p>
 
-<form id="expertiseForm" method="POST">
+<form id="expertiseForm" onsubmit="return false;" method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
   <!-- Test Type Selection -->
@@ -171,25 +171,36 @@
 </form>
 
 <script>
-  function showSection(type) {
-    document.getElementById('dynoOptions').classList.toggle('hidden', type !== 'dyno');
-    document.getElementById('roadOptions').classList.toggle('hidden', type !== 'road');
-  }
-
-  document.addEventListener('DOMContentLoaded', function() {
-    const initType = '{{ test_type }}';
-    if (initType === 'dyno' || initType === 'road') {
-      showSection(initType);
-    }
-
-    $('#expertiseForm').on('submit', function(e) {
-      e.preventDefault();
-      $.post(
-        "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}",
-        $(this).serialize()
-      )
-      .done(() => alert("{{ _('Expertise updated successfully!') }}"))
-      .fail(() => alert("{{ _('Update failed. Please check your inputs.') }}"));
+document.addEventListener('DOMContentLoaded', function() {
+  var form = document.getElementById('expertiseForm');
+  
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    var formData = new FormData(form);
+    var url = "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}";
+    
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams(formData)
+    })
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data) {
+      if (data.success) {
+        alert('Expertise updated successfully!');
+      } else {
+        alert('Update failed: ' + (data.error || 'Unknown error'));
+      }
+    })
+    .catch(function(error) {
+      console.error('Error:', error);
+      alert('Update failed. Please try again.');
     });
   });
+});
 </script>

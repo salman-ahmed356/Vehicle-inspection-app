@@ -84,8 +84,8 @@
             </div>
           </div>
 
-          <p>{{ _('Package Price:') }} {{ package.price }} TL</p>
-          <p>{{ _('Price Including VAT:') }} {{ (package.price * 1.18)|round(2) }} TL</p>
+          <p>{{ _('Package Price:') }} AED {{ package.price|round(2) }}</p>
+          <p>{{ _('Price Including VAT:') }} AED {{ (package.price * 1.18)|round(2) }}</p>
 
           <p>{{ _('Status:') }}
             <span

@@ -68,7 +68,7 @@
 
 <div class="expertise-section">
   <div class="form-section">
-    <form id="expertiseForm" method="POST">
+    <form id="expertiseForm" onsubmit="return false;" method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
       {# Paint‐specific statuses in English #}
@@ -122,58 +122,36 @@
 </div>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    // Pull Jinja status_choices into JS
-    const statusChoices = [
-      {% for s in status_choices %}
-        "{{ s }}"{% if not loop.last %},{% endif %}
-      {% endfor %}
-    ];
-    const extrasList = [
-      '{{ _("DISASSEMBLED / REASSEMBLED") }}',
-      '{{ _("PAINTLESS DENT") }}',
-      '{{ _("DENT/SCRATCH") }}',
-      '{{ _("CLEARCOAT") }}'
-    ];
-
-    document.querySelectorAll(".form-group").forEach(function(group) {
-      const dropdown = group.querySelector(".dropdown");
-      const extraDiv = group.querySelector(".extra-conditions");
-
-      function updateExtras() {
-        const val = dropdown.value;
-        let picks = [];
-        if (val !== statusChoices[0]) {
-          picks = extrasList
-            .slice(0, Math.floor(Math.random() * extrasList.length) + 1);
-        }
-        extraDiv.innerHTML = picks.map(x => `<span>${x}</span>`).join("");
-        group.classList.toggle("feature-selected", val !== statusChoices[0]);
+document.addEventListener('DOMContentLoaded', function() {
+  var form = document.getElementById('expertiseForm');
+  
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    var formData = new FormData(form);
+    var url = "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}";
+    
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams(formData)
+    })
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data) {
+      if (data.success) {
+        alert('Expertise updated successfully!');
+      } else {
+        alert('Update failed: ' + (data.error || 'Unknown error'));
       }
-
-      dropdown.addEventListener("change", updateExtras);
-      updateExtras();
-    });
-
-    // AJAX save
-    document.getElementById("expertiseForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      fetch("{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams(new FormData(this))
-      })
-      .then(r => r.json())
-      .then(resp => {
-        if (resp.success) {
-          alert("{{ _('Paint status updated successfully!') }}");
-        } else {
-          alert("{{ _('An error occurred during update.') }}");
-        }
-      })
-      .catch(() => {
-        alert("{{ _('Report could not be updated. Please ensure there are no issues!') }}");
-      });
+    })
+    .catch(function(error) {
+      console.error('Error:', error);
+      alert('Update failed. Please try again.');
     });
   });
+});
 </script>

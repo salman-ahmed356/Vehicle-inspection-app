@@ -32,6 +32,11 @@ def create_company(data):
 
 
 def update_company_service(company, data):
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    logger.info(f"Updating company ID: {company.id} with data: {data}")
+    
     company.name = data['name']
     company.phone = data.get('phone')
     company.fax = data.get('fax')
@@ -40,11 +45,13 @@ def update_company_service(company, data):
 
     # Update or create the address
     if company.address:
+        logger.info(f"Updating existing address ID: {company.address.id}")
         company.address.street_address = data.get('street_address')
         company.address.city = data['city']
         company.address.state = data.get('state')
         company.address.postal_code = data.get('postal_code')
     else:
+        logger.info("Creating new address for company")
         address = Address(
             street_address=data.get('street_address'),
             city=data['city'],
@@ -52,17 +59,62 @@ def update_company_service(company, data):
             postal_code=data.get('postal_code')
         )
         db.session.add(address)
-        company.address = address
+        db.session.flush()
+        company.address_id = address.id
+        logger.info(f"Created new address with ID: {address.id}")
 
     # Update associated branches and their staff
-    for branch in company.branches:
-        for staff in branch.staff_members:
-            # Update staff details if needed
-            staff.first_name = data.get('contact_name', staff.first_name)
-            staff.phone_number = data.get('contact_phone', staff.phone_number)
+    branch_count = len(company.branches) if company.branches else 0
+    logger.info(f"Company has {branch_count} branches")
+    
+    # If no branches exist, create one
+    if branch_count == 0:
+        logger.info("Creating default branch for company")
+        branch = Branch(
+            name='Main',
+            company_id=company.id,
+            address_id=company.address_id
+        )
+        db.session.add(branch)
+        db.session.flush()
+        logger.info(f"Created branch with ID: {branch.id}")
+    else:
+        for branch in company.branches:
+            staff_count = len(branch.staff_members) if branch.staff_members else 0
+            logger.info(f"Branch ID: {branch.id} has {staff_count} staff members")
+            
+            # If no staff exists, create one
+            if staff_count == 0:
+                logger.info("Creating default staff for branch")
+                from werkzeug.security import generate_password_hash
+                default_staff = Staff(
+                    first_name="Admin",
+                    last_name="User",
+                    password=generate_password_hash("password123", method='pbkdf2:sha256', salt_length=16),
+                    phone_number=company.phone or "000-000-0000",
+                    department="Management",
+                    role="Manager",
+                    branch_id=branch.id
+                )
+                db.session.add(default_staff)
+                db.session.flush()
+                logger.info(f"Created staff with ID: {default_staff.id}")
+            else:
+                for staff in branch.staff_members:
+                    # Update staff details if needed
+                    if data.get('contact_name'):
+                        staff.first_name = data.get('contact_name')
+                    if data.get('contact_phone'):
+                        staff.phone_number = data.get('contact_phone')
 
-    db.session.commit()
-    return company
+    try:
+        db.session.commit()
+        logger.info("Successfully committed company updates")
+        return company
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error updating company: {str(e)}")
+        raise
 
 
 def delete_company(company):

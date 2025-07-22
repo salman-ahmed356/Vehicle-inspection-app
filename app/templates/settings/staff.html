@@ -1,6 +1,6 @@
-{% if first_staff and staff_form %}
+{% if staff_form %}
   <form
-    action="{{ url_for('staff.edit_staff', id=first_staff.id) }}"
+    action="{% if first_staff %}{{ url_for('staff.edit_staff', id=first_staff.id) }}{% else %}{{ url_for('staff.add_staff') }}{% endif %}"
     method="POST"
     class="space-y-4"
   >
@@ -10,7 +10,9 @@
       <label for="first_name" class="block text-sm font-medium text-gray-700">
         {{ _('First Name') }}
       </label>
-      {{ staff_form.first_name(class="mt-1 block w-full px-3 py-2 border rounded-md") }}
+      {{ staff_form.first_name(
+           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+         ) }}
       {% for e in staff_form.first_name.errors %}
         <p class="text-red-600 text-sm">{{ e }}</p>
       {% endfor %}
@@ -20,7 +22,9 @@
       <label for="last_name" class="block text-sm font-medium text-gray-700">
         {{ _('Last Name') }}
       </label>
-      {{ staff_form.last_name(class="mt-1 block w-full px-3 py-2 border rounded-md") }}
+      {{ staff_form.last_name(
+           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+         ) }}
       {% for e in staff_form.last_name.errors %}
         <p class="text-red-600 text-sm">{{ e }}</p>
       {% endfor %}
@@ -30,7 +34,9 @@
       <label for="phone_number" class="block text-sm font-medium text-gray-700">
         {{ _('Phone Number') }}
       </label>
-      {{ staff_form.phone_number(class="mt-1 block w-full px-3 py-2 border rounded-md") }}
+      {{ staff_form.phone_number(
+           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+         ) }}
       {% for e in staff_form.phone_number.errors %}
         <p class="text-red-600 text-sm">{{ e }}</p>
       {% endfor %}
@@ -38,15 +44,15 @@
 
     <div class="flex justify-end space-x-4 mt-6">
       <button type="submit"
-              class="bg-green-600 text-white px-4 py-2 rounded">
+              class="bg-green-600 text-white px-4 py-2 rounded shadow">
         {{ _('Save Staff') }}
       </button>
       <a href="{{ url_for('companies.company_detail', active_tab='staff') }}"
-         class="bg-gray-500 text-white px-4 py-2 rounded">
+         class="bg-gray-500 text-white px-4 py-2 rounded shadow">
         {{ _('Cancel') }}
       </a>
     </div>
   </form>
 {% else %}
-  <p>{{ _('No staff member configured.') }}</p>
+  <p>{{ _('Please create a company first before adding staff members.') }}</p>
 {% endif %}

@@ -1,99 +1,132 @@
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <!-- navbar.html -->
+
+<!-- Tailwind & Font Awesome -->
+<script src="https://cdn.tailwindcss.com"></script>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+/>
+
 <div class="bg-blue-500 p-4">
   <div class="container mx-auto flex justify-between items-center">
+
+    <!-- Dashboard Link -->
     <div class="text-white text-lg font-bold flex items-center space-x-2">
       <i class="fas fa-th-large"></i>
-      <a href="{{ url_for('main.index') }}"
-         class="hover:underline">{{ _('Dashboard') }}</a>
+      <a href="{{ url_for('main.index') }}" class="hover:underline">
+        {{ _('Dashboard') }}
+      </a>
     </div>
 
+    <!-- Main Menu -->
     <div class="flex space-x-8 text-white">
-      <!-- Expertise Dropdown -->
-      <div class="navbar flex items-center space-x-2">
+
+      <!-- Expertise -->
+      <div class="relative group">
         <i class="fas fa-car"></i>
-        <a href="#"
-           class="hover:underline uppercase">{{ _('Expertise') }}</a>
+        <a href="#" class="hover:underline uppercase">{{ _('Expertise') }}</a>
         <div class="dropdown-menu">
           <a href="{{ url_for('reports.add_report') }}"
-             class="block px-4 py-2 hover:bg-gray-100">{{ _('Create New Report') }}</a>
+             class="block px-4 py-2 hover:bg-gray-100">
+            {{ _('Create New Report') }}
+          </a>
           <a href="{{ url_for('reports.report_list') }}"
-             class="block px-4 py-2 hover:bg-gray-100">{{ _('Open Expertise Reports') }}</a>
+             class="block px-4 py-2 hover:bg-gray-100">
+            {{ _('Open Expertise Reports') }}
+          </a>
           <a href="#"
-             class="block px-4 py-2 hover:bg-gray-100">{{ _('Completed Expertise Reports') }}</a>
+             class="block px-4 py-2 hover:bg-gray-100">
+            {{ _('Completed Expertise Reports') }}
+          </a>
           <a href="#"
-             class="block px-4 py-2 hover:bg-gray-100">{{ _('Cancelled Expertise Reports') }}</a>
+             class="block px-4 py-2 hover:bg-gray-100">
+            {{ _('Cancelled Expertise Reports') }}
+          </a>
         </div>
       </div>
 
-      <!-- Appointments Dropdown -->
-      <div class="navbar flex items-center space-x-2">
+      <!-- Appointments -->
+      <div class="relative group">
         <i class="fas fa-calendar-alt"></i>
         <a href="{{ url_for('appointments.appointment_list') }}"
            class="hover:underline uppercase">{{ _('Appointments') }}</a>
         <div class="dropdown-menu">
           <a href="#" id="openCreateAppointmentModal"
-             class="block px-4 py-2 hover:bg-gray-100">{{ _('Create Appointment') }}</a>
+             class="block px-4 py-2 hover:bg-gray-100">
+            {{ _('Create Appointment') }}
+          </a>
           <a href="{{ url_for('appointments.appointment_list') }}"
-             class="block px-4 py-2 hover:bg-gray-100">{{ _('View Appointments') }}</a>
+             class="block px-4 py-2 hover:bg-gray-100">
+            {{ _('View Appointments') }}
+          </a>
         </div>
       </div>
 
-      <!-- Statistics Dropdown -->
-      <div class="navbar flex items-center space-x-2">
+      <!-- Statistics -->
+      <div class="relative group">
         <i class="fas fa-chart-line"></i>
-        <a href="#"
-           class="hover:underline uppercase">{{ _('Statistics') }}</a>
+        <a href="#" class="hover:underline uppercase">{{ _('Statistics') }}</a>
         <div class="dropdown-menu">
           <a href="#"
-             class="block px-4 py-2 hover:bg-gray-100">{{ _('Earnings') }}</a>
+             class="block px-4 py-2 hover:bg-gray-100">
+            {{ _('Earnings') }}
+          </a>
           <a href="#"
-             class="block px-4 py-2 hover:bg-gray-100">{{ _('Where They Came From') }}</a>
+             class="block px-4 py-2 hover:bg-gray-100">
+            {{ _('Where They Came From') }}
+          </a>
         </div>
       </div>
 
-      <!-- Settings Dropdown -->
-      <div class="navbar flex items-center space-x-2">
+      <!-- Settings -->
+      <div class="relative group">
         <i class="fas fa-cog"></i>
-        <a href="#"
-           class="hover:underline uppercase">{{ _('Settings') }}</a>
+        <a href="#" class="hover:underline uppercase">{{ _('Settings') }}</a>
         <div class="dropdown-menu">
           <a href="{{ url_for('companies.company_detail') }}"
-             class="block px-4 py-2 hover:bg-gray-100">{{ _('Company Settings') }}</a>
+             class="block px-4 py-2 hover:bg-gray-100">
+            {{ _('Company Settings') }}
+          </a>
           <a href="{{ url_for('packages.packages_list') }}"
-             class="block px-4 py-2 hover:bg-gray-100">{{ _('Expertise Packages') }}</a>
+             class="block px-4 py-2 hover:bg-gray-100">
+            {{ _('Expertise Packages') }}
+          </a>
           <a href="{{ url_for('customers.customer_list') }}"
-             class="block px-4 py-2 hover:bg-gray-100">{{ _('Customers') }}</a>
+             class="block px-4 py-2 hover:bg-gray-100">
+            {{ _('Customers') }}
+          </a>
           <a href="{{ url_for('staff.staff_list') }}"
-             class="block px-4 py-2 hover:bg-gray-100">{{ _('Staff Management') }}</a>
+             class="block px-4 py-2 hover:bg-gray-100">
+            {{ _('Staff Management') }}
+          </a>
         </div>
       </div>
 
-      <!-- Balance Transactions Dropdown -->
-      <div class="navbar flex items-center space-x-2">
+      <!-- Balance Transactions -->
+      <div class="relative group">
         <i class="fas fa-wallet"></i>
-        <a href="#"
-           class="hover:underline uppercase">{{ _('Balance Transactions') }}</a>
+        <a href="#" class="hover:underline uppercase">{{ _('Balance Transactions') }}</a>
         <div class="dropdown-menu">
           <a href="#"
-             class="block px-4 py-2 hover:bg-gray-100">{{ _('Load Balance') }}</a>
+             class="block px-4 py-2 hover:bg-gray-100">
+            {{ _('Load Balance') }}
+          </a>
           <a href="#"
-             class="block px-4 py-2 hover:bg-gray-100">{{ _('My Top-ups') }}</a>
+             class="block px-4 py-2 hover:bg-gray-100">
+            {{ _('My Top-ups') }}
+          </a>
           <a href="#"
-             class="block px-4 py-2 hover:bg-gray-100">{{ _('My Query History') }}</a>
+             class="block px-4 py-2 hover:bg-gray-100">
+            {{ _('My Query History') }}
+          </a>
         </div>
       </div>
+
     </div>
   </div>
 </div>
 
 <style>
-  .navbar {
-    position: relative;
-    display: inline-block;
-  }
   .dropdown-menu {
     visibility: hidden;
     opacity: 0;
@@ -107,8 +140,7 @@
     z-index: 1000;
     transition: visibility 0.2s, opacity 0.2s ease-in-out;
   }
-  .navbar:hover .dropdown-menu,
-  .dropdown-menu:hover {
+  .relative.group:hover .dropdown-menu {
     visibility: visible;
     opacity: 1;
   }
@@ -123,7 +155,4 @@
   }
 </style>
 
-<link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-<script src="../static/js/navbar.js"></script>
+<script src="{{ url_for('static', filename='js/navbar.js') }}"></script>

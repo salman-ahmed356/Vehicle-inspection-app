@@ -54,7 +54,7 @@
 <h2 class="text-lg font-semibold mb-4">{{ _('Bodywork Inspection') }}</h2>
 <p class="mb-4">{{ _('Please specify the condition of each inspected area on the vehicle!') }}</p>
 
-<form id="expertiseForm" method="POST">
+<form id="expertiseForm" onsubmit="return false;" method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
   {% set status_choices = [
@@ -84,8 +84,11 @@
                 type="radio"
                 name="feature_{{ feature.id }}"
                 value="{{ s }}"
+                id="feature_{{ feature.id }}_{{ loop.index }}"
                 {% if feature.status == s %}checked{% endif %}
+                onchange="console.log('Changed feature {{ feature.id }} to {{ s }}');"
               >
+              <label for="feature_{{ feature.id }}_{{ loop.index }}" class="sr-only">{{ s }}</label>
             </td>
           {% endfor %}
         </tr>
@@ -117,15 +120,36 @@
 </form>
 
 <script>
-  $(function() {
-    $('#expertiseForm').on('submit', function(e) {
-      e.preventDefault();
-      $.post(
-        "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}",
-        $(this).serialize()
-      )
-      .done(() => alert("{{ _('Bodywork status updated successfully!') }}"))
-      .fail(() => alert("{{ _('Update failed. Please check your inputs!') }}"));
+document.addEventListener('DOMContentLoaded', function() {
+  var form = document.getElementById('expertiseForm');
+  
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    var formData = new FormData(form);
+    var url = "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}";
+    
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams(formData)
+    })
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data) {
+      if (data.success) {
+        alert('Expertise updated successfully!');
+      } else {
+        alert('Update failed: ' + (data.error || 'Unknown error'));
+      }
+    })
+    .catch(function(error) {
+      console.error('Error:', error);
+      alert('Update failed. Please try again.');
     });
   });
+});
 </script>

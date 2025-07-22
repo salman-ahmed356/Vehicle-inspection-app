@@ -1,8 +1,8 @@
-"""Initial schema
+"""initial schema
 
-Revision ID: 81044d8c04fa
+Revision ID: 9514469d6deb
 Revises: 
-Create Date: 2025-07-11 20:50:53.165636
+Create Date: 2025-07-22 15:05:21.527707
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '81044d8c04fa'
+revision = '9514469d6deb'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -67,7 +67,6 @@ def upgrade():
     sa.Column('email', sa.String(length=100), nullable=True),
     sa.Column('website', sa.String(length=100), nullable=True),
     sa.Column('address_id', sa.Integer(), nullable=True),
-    sa.Column('my_business_address_link', sa.String(length=255), nullable=True),
     sa.ForeignKeyConstraint(['address_id'], ['address.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -82,14 +81,14 @@ def upgrade():
     sa.ForeignKeyConstraint(['address_id'], ['address.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('expertise_reports',
+    op.create_table('package_content',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('expertise_type_id', sa.Integer(), nullable=False),
-    sa.Column('comment', sa.Text(), nullable=True),
-    sa.ForeignKeyConstraint(['expertise_type_id'], ['expertise_types.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.Column('package_id', sa.Integer(), nullable=False),
+    sa.Column('content_item', sa.String(length=100), nullable=False),
+    sa.ForeignKeyConstraint(['package_id'], ['package.id'], ),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('package_id', 'content_item', name='uq_package_content_item')
     )
-    op.create_index(op.f('ix_expertise_reports_expertise_type_id'), 'expertise_reports', ['expertise_type_id'], unique=False)
     op.create_table('package_expertises',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('package_id', sa.Integer(), nullable=False),
@@ -128,23 +127,14 @@ def upgrade():
     op.create_table('branch',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=100), nullable=False),
-    sa.Column('company_id', sa.Integer(), nullable=True),
+    sa.Column('company_id', sa.Integer(), nullable=False),
     sa.Column('address_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['address_id'], ['address.id'], ),
     sa.ForeignKeyConstraint(['company_id'], ['company.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_branch_address_id'), 'branch', ['address_id'], unique=False)
-    op.create_table('expertise_features',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=100), nullable=False),
-    sa.Column('status', sa.String(length=50), nullable=True),
-    sa.Column('image_path', sa.String(length=255), nullable=True),
-    sa.Column('expertise_report_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['expertise_report_id'], ['expertise_reports.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_expertise_features_expertise_report_id'), 'expertise_features', ['expertise_report_id'], unique=False)
+    op.create_index(op.f('ix_branch_company_id'), 'branch', ['company_id'], unique=False)
     op.create_table('staff',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('first_name', sa.String(length=50), nullable=False),
@@ -157,6 +147,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['branch_id'], ['branch.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_index(op.f('ix_staff_branch_id'), 'staff', ['branch_id'], unique=False)
     op.create_table('report',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('inspection_date', sa.DateTime(), nullable=False),
@@ -186,20 +177,46 @@ def upgrade():
     sa.ForeignKeyConstraint(['report_id'], ['report.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('expertise_reports',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('report_id', sa.Integer(), nullable=False),
+    sa.Column('expertise_type_id', sa.Integer(), nullable=False),
+    sa.Column('comment', sa.Text(), nullable=True),
+    sa.ForeignKeyConstraint(['expertise_type_id'], ['expertise_types.id'], ),
+    sa.ForeignKeyConstraint(['report_id'], ['report.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_expertise_reports_expertise_type_id'), 'expertise_reports', ['expertise_type_id'], unique=False)
+    op.create_index(op.f('ix_expertise_reports_report_id'), 'expertise_reports', ['report_id'], unique=False)
+    op.create_table('expertise_features',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=100), nullable=False),
+    sa.Column('status', sa.String(length=50), nullable=True),
+    sa.Column('image_path', sa.String(length=255), nullable=True),
+    sa.Column('expertise_report_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['expertise_report_id'], ['expertise_reports.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_expertise_features_expertise_report_id'), 'expertise_features', ['expertise_report_id'], unique=False)
     # ### end Alembic commands ###
 
 
 def downgrade():
     # ### commands auto generated by Alembic - please adjust! ###
+    op.drop_index(op.f('ix_expertise_features_expertise_report_id'), table_name='expertise_features')
+    op.drop_table('expertise_features')
+    op.drop_index(op.f('ix_expertise_reports_report_id'), table_name='expertise_reports')
+    op.drop_index(op.f('ix_expertise_reports_expertise_type_id'), table_name='expertise_reports')
+    op.drop_table('expertise_reports')
     op.drop_table('agent')
     op.drop_index(op.f('ix_report_vehicle_id'), table_name='report')
     op.drop_index(op.f('ix_report_package_id'), table_name='report')
     op.drop_index(op.f('ix_report_customer_id'), table_name='report')
     op.drop_index(op.f('ix_report_created_by'), table_name='report')
     op.drop_table('report')
+    op.drop_index(op.f('ix_staff_branch_id'), table_name='staff')
     op.drop_table('staff')
-    op.drop_index(op.f('ix_expertise_features_expertise_report_id'), table_name='expertise_features')
-    op.drop_table('expertise_features')
+    op.drop_index(op.f('ix_branch_company_id'), table_name='branch')
     op.drop_index(op.f('ix_branch_address_id'), table_name='branch')
     op.drop_table('branch')
     op.drop_index(op.f('ix_appointment_customer_id'), table_name='appointment')
@@ -211,8 +228,7 @@ def downgrade():
     op.drop_index(op.f('ix_package_expertises_package_id'), table_name='package_expertises')
     op.drop_index(op.f('ix_package_expertises_expertise_type_id'), table_name='package_expertises')
     op.drop_table('package_expertises')
-    op.drop_index(op.f('ix_expertise_reports_expertise_type_id'), table_name='expertise_reports')
-    op.drop_table('expertise_reports')
+    op.drop_table('package_content')
     op.drop_table('customer')
     op.drop_table('company')
     op.drop_table('vehicle')

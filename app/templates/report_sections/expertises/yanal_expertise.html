@@ -44,7 +44,7 @@
 </h2>
 <p class="mb-4">{{ _('Please enter the measured drift values for each side:') }}</p>
 
-<form id="expertiseForm" method="POST">
+<form id="expertiseForm" onsubmit="return false;" method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
   {% for feature in expertise_report.features %}
@@ -67,24 +67,36 @@
 </form>
 
 <script>
-  $(function() {
-    $('#expertiseForm').on('submit', function(e) {
-      e.preventDefault();
-      $.ajax({
-        url: "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}",
-        type: "POST",
-        data: $(this).serialize(),
-        success: function(resp) {
-          if (resp.success) {
-            alert("{{ _('Drift values saved successfully!') }}");
-          } else {
-            alert("{{ _('An error occurred during save.') }}");
-          }
-        },
-        error: function() {
-          alert("{{ _('Could not update drift values. Please try again.') }}");
-        }
-      });
+document.addEventListener('DOMContentLoaded', function() {
+  var form = document.getElementById('expertiseForm');
+  
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    var formData = new FormData(form);
+    var url = "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}";
+    
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams(formData)
+    })
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data) {
+      if (data.success) {
+        alert('Expertise updated successfully!');
+      } else {
+        alert('Update failed: ' + (data.error || 'Unknown error'));
+      }
+    })
+    .catch(function(error) {
+      console.error('Error:', error);
+      alert('Update failed. Please try again.');
     });
   });
+});
 </script>

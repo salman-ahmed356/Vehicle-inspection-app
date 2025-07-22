@@ -1,86 +1,157 @@
 <!DOCTYPE html>
-<html lang="{{ get_locale() }}">
+<html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ _('Expertise') }}</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ _('Expertise') }}</title>
+
+  <!-- Tailwind & Font Awesome -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+  />
 </head>
-<body>
-<div class="bg-blue-500 p-4">
+
+<body class="bg-gray-100 text-gray-800">
+
+  <!-- NAVBAR -->
+  <div class="bg-blue-500 p-4">
     <div class="container mx-auto flex justify-between items-center">
-        <div class="text-white text-lg font-bold">{{ _('Start') }}</div>
-        <div class="flex space-x-4 text-white">
-            <!-- Expertise Dropdown -->
-            <div class="relative group">
-                <a href="#" class="hover:underline">{{ _('Expertise') }}</a>
-                <div class="absolute left-0 mt-2 w-48 bg-white border rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Create New Report') }}</a>
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Open Expertise Reports') }}</a>
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Completed Expertise Reports') }}</a>
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Cancelled Expertise Reports') }}</a>
-                </div>
-            </div>
+      
+      <!-- Logo / Dashboard -->
+      <div class="text-white text-lg font-bold flex items-center space-x-2">
+        <i class="fas fa-th-large"></i>
+        <a href="{{ url_for('main.index') }}" class="hover:underline">
+          {{ _('Dashboard') }}
+        </a>
+      </div>
 
-            <!-- Appointments Dropdown -->
-            <div class="relative group">
-                <a href="{{ url_for('appointments.appointment_list') }}" class="hover:underline">{{ _('Appointments') }}</a>
-                <div class="absolute left-0 mt-2 w-48 bg-white border rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                    <a href="#" id="openCreateAppointmentModal" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Create Appointment') }}</a>
-                    <a href="{{ url_for('appointments.appointment_list') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('View Appointments') }}</a>
-                </div>
-            </div>
+      <!-- Main Navigation -->
+      <nav class="flex space-x-8 text-white">
 
-            <!-- Statistics Dropdown -->
-            <div class="relative group">
-                <a href="#" class="hover:underline">{{ _('Statistics') }}</a>
-                <div class="absolute left-0 mt-2 w-48 bg-white border rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('General Settings') }}</a>
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Customers') }}</a>
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Dealership') }}</a>
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Staff Management') }}</a>
-                </div>
-            </div>
-
-            <!-- Settings Dropdown -->
-            <div class="relative group">
-                <a href="#" class="hover:underline">{{ _('Settings') }}</a>
-                <div class="absolute left-0 mt-2 w-48 bg-white border rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div class="relative group">
-                        <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('General Settings') }}</a>
-                        <!-- Nested Dropdown for General Settings -->
-                        <div class="absolute left-full top-0 ml-2 w-48 bg-white border rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Company Settings') }}</a>
-                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Expertise Packages') }}</a>
-                        </div>
-                    </div>
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Customers') }}</a>
-                    <div class="relative group">
-                        <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Dealership') }}</a>
-                        <!-- Nested Dropdown for Dealership -->
-                        <div class="absolute left-full top-0 ml-2 w-48 bg-white border rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Dealership Settings') }}</a>
-                            <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Dealership Packages') }}</a>
-                        </div>
-                    </div>
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Staff Management') }}</a>
-                </div>
-            </div>
-
-            <div class="relative group">
-                <a href="#" class="hover:underline">{{ _('Settings') }}</a>
-                <!-- Nested Dropdown for Balance -->
-                <div class="absolute left-0 mt-2 w-48 bg-white border rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('Load Balance') }}</a>
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('My Balance Top-ups') }}</a>
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">{{ _('My Previous Queries') }}</a>
-                </div>
-            </div>
+        <!-- Expertise -->
+        <div class="relative group">
+          <i class="fas fa-car"></i>
+          <a href="#" class="hover:underline uppercase">{{ _('Expertise') }}</a>
+          <div
+            class="absolute left-0 mt-2 w-48 bg-white border rounded-lg shadow-lg
+                   opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <a
+              href="{{ url_for('reports.add_report') }}"
+              class="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+            >{{ _('Create New Report') }}</a>
+            <a
+              href="{{ url_for('reports.report_list') }}"
+              class="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+            >{{ _('Open Reports') }}</a>
+            <a
+              href="#"
+              class="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+            >{{ _('Completed Reports') }}</a>
+            <a
+              href="#"
+              class="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+            >{{ _('Cancelled Reports') }}</a>
+          </div>
         </div>
-        <div class="bg-red-500 px-3 py-1 text-white rounded">{{ _('DEBT') }}</div>
-    </div>
-</div>
 
+        <!-- Appointments -->
+        <div class="relative group">
+          <i class="fas fa-calendar-alt"></i>
+          <a
+            href="{{ url_for('appointments.appointment_list') }}"
+            class="hover:underline uppercase"
+          >{{ _('Appointments') }}</a>
+          <div
+            class="absolute left-0 mt-2 w-48 bg-white border rounded-lg shadow-lg
+                   opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <a
+              href="#"
+              id="openCreateAppointmentModal"
+              class="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+            >{{ _('Create Appointment') }}</a>
+            <a
+              href="{{ url_for('appointments.appointment_list') }}"
+              class="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+            >{{ _('View Appointments') }}</a>
+          </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="relative group">
+          <i class="fas fa-chart-line"></i>
+          <a href="#" class="hover:underline uppercase">{{ _('Statistics') }}</a>
+          <div
+            class="absolute left-0 mt-2 w-48 bg-white border rounded-lg shadow-lg
+                   opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <a class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+              {{ _('Earnings') }}
+            </a>
+            <a class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+              {{ _('Referrals') }}
+            </a>
+          </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="relative group">
+          <i class="fas fa-cog"></i>
+          <a href="#" class="hover:underline uppercase">{{ _('Settings') }}</a>
+          <div
+            class="absolute left-0 mt-2 w-56 bg-white border rounded-lg shadow-lg
+                   opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <a
+              href="{{ url_for('companies.company_detail') }}"
+              class="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+            >{{ _('Company Settings') }}</a>
+            <a
+              href="{{ url_for('packages.packages_list') }}"
+              class="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+            >{{ _('Expertise Packages') }}</a>
+            <a
+              href="{{ url_for('customers.customer_list') }}"
+              class="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+            >{{ _('Customers') }}</a>
+            <a
+              href="{{ url_for('staff.staff_list') }}"
+              class="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+            >{{ _('Staff Management') }}</a>
+          </div>
+        </div>
+
+        <!-- Balance -->
+        <div class="relative group">
+          <i class="fas fa-wallet"></i>
+          <a href="#" class="hover:underline uppercase">{{ _('Balance') }}</a>
+          <div
+            class="absolute left-0 mt-2 w-48 bg-white border rounded-lg shadow-lg
+                   opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <a class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+              {{ _('Load Balance') }}
+            </a>
+            <a class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+              {{ _('Top-up History') }}
+            </a>
+          </div>
+        </div>
+
+      </nav>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="container mx-auto px-4 py-6">
+    {% block content %}{% endblock %}
+  </div>
+
+  <!-- NAVBAR SCRIPT -->
+  <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
 </body>
 </html>

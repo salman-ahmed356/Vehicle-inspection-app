@@ -1,18 +1,27 @@
+{# app/templates/settings/tabs.html #}
 <ul class="flex border-b mb-6">
-    <li class="-mb-px mr-1">
-        <a class="bg-white inline-block border-l border-t border-r rounded-t py-2 px-4 text-blue-700 font-semibold"
-           href="#tab1">{{ _('Company Information') }}</a>
-    </li>
-    <li class="-mb-px mr-1">
-        <a class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-700 font-semibold"
-           href="#tab2">{{ _('Staff Information') }}</a>
-    </li>
-    <li class="-mb-px mr-1">
-        <a class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-700 font-semibold"
-           href="#tab3">{{ _('Invoice Information') }}</a>
-    </li>
-    <li class="-mb-px mr-1">
-        <a class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-700 font-semibold"
-           href="#tab5">{{ _('Report Settings') }}</a>
-    </li>
+  <li class="-mb-px mr-1">
+    <a href="#tab1"
+       class="bg-white inline-block {% if active_tab == 'company' %}border-l border-t border-r rounded-t text-blue-700{% else %}text-blue-500 hover:text-blue-700{% endif %} py-2 px-4 font-semibold">
+      {{ _('Company Information') }}
+    </a>
+  </li>
+  <li class="-mb-px mr-1">
+    <a href="#tab2"
+       class="bg-white inline-block {% if active_tab == 'staff' %}border-l border-t border-r rounded-t text-blue-700{% else %}text-blue-500 hover:text-blue-700{% endif %} py-2 px-4 font-semibold">
+      {{ _('Staff Information') }}
+    </a>
+  </li>
+  <li class="-mb-px mr-1">
+    <a href="#tab3"
+       class="bg-white inline-block {% if active_tab == 'invoice' %}border-l border-t border-r rounded-t text-blue-700{% else %}text-blue-500 hover:text-blue-700{% endif %} py-2 px-4 font-semibold">
+      {{ _('Invoice Information') }}
+    </a>
+  </li>
+  <li class="-mb-px mr-1">
+    <a href="#tab4"
+       class="bg-white inline-block {% if active_tab == 'report' %}border-l border-t border-r rounded-t text-blue-700{% else %}text-blue-500 hover:text-blue-700{% endif %} py-2 px-4 font-semibold">
+      {{ _('Report Settings') }}
+    </a>
+  </li>
 </ul>

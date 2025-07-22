@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ get_locale() }}">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -8,7 +8,7 @@
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-  >
+  />
   <style>
     .tab-content { display: none; }
     .tab-content.active { display: block; }
@@ -22,7 +22,7 @@
       <h2 class="text-xl font-semibold mb-4">{{ _('Company Settings') }}</h2>
 
       <!-- Tabs Navigation -->
-      {% include 'settings/tabs.html' %}
+      {% include 'settings/tabs.html' with context %}
 
       <!-- Tab 1: Company Information -->
       <div id="tab1" class="tab-content {% if active_tab=='company' %}active{% endif %}">
@@ -31,7 +31,6 @@
               class="space-y-4">
           {{ form.hidden_tag() }}
 
-          {# Just include the company partial — it uses `form` #}
           {% include 'settings/company.html' %}
 
           <div class="flex justify-end">
@@ -45,10 +44,10 @@
 
       <!-- Tab 2: Staff Information -->
       <div id="tab2" class="tab-content {% if active_tab=='staff' %}active{% endif %}">
-        {% include 'settings/staff.html' %}
+        {% include 'settings/staff.html' with context %}
       </div>
 
-      <!-- Add more tabs here… -->
+      <!-- Future tabs can be added here -->
 
     </div>
   </main>

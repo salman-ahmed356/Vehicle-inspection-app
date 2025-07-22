@@ -52,7 +52,7 @@
 <h2 class="text-lg font-semibold mb-4">{{ _('Interior Inspection') }}</h2>
 <p class="mb-4">{{ _('Please specify the status of the interior areas you inspected!') }}</p>
 
-<form id="expertiseForm" method="POST">
+<form id="expertiseForm" onsubmit="return false;" method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
   {# English status options #}
@@ -116,20 +116,36 @@
 </form>
 
 <script>
-  $(function() {
-    $('#expertiseForm').on('submit', function(e) {
-      e.preventDefault();
-      $.ajax({
-        url: "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}",
-        type: "POST",
-        data: $(this).serialize(),
-        success: function() {
-          alert("{{ _('Expertise status updated successfully!') }}");
-        },
-        error: function() {
-          alert("{{ _('Report could not be updated. Please ensure there are no issues!') }}");
-        }
-      });
+document.addEventListener('DOMContentLoaded', function() {
+  var form = document.getElementById('expertiseForm');
+  
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    var formData = new FormData(form);
+    var url = "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}";
+    
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams(formData)
+    })
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data) {
+      if (data.success) {
+        alert('Expertise updated successfully!');
+      } else {
+        alert('Update failed: ' + (data.error || 'Unknown error'));
+      }
+    })
+    .catch(function(error) {
+      console.error('Error:', error);
+      alert('Update failed. Please try again.');
     });
   });
+});
 </script>

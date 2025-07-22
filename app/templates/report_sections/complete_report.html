@@ -67,6 +67,11 @@
     </div>
 
     <div class="text-right mt-8">
+      <form action="{{ url_for('reports.mark_complete', report_id=report.id) }}" method="POST" style="display: inline-block; margin-right: 10px;">
+        <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+          {{ _('Mark as Complete') }}
+        </button>
+      </form>
       <button
         onclick="confirmRedirect({{ report.id }})"
         class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"

@@ -1,12 +1,17 @@
 # scripts/migrate_expertise_names.py
-import os, sys
+
+import os
+import sys
+
+# ensure project root is on PYTHONPATH
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, PROJECT_ROOT)
 
 from app import create_app
 from app.database import db
-from app.models import ExpertiseType
+from app.models import ExpertiseType, ExpertiseReport
 
+# Map Turkish names → English names
 RENAME = {
     "Boya Ekspertiz":           "Paint Expertise",
     "Kaporta Ekspertiz":        "Body Expertise",
@@ -27,22 +32,33 @@ RENAME = {
 def main():
     app = create_app()
     with app.app_context():
-        for old, new in RENAME.items():
-            et = ExpertiseType.query.filter_by(name=old).first()
-            if not et:
-                print(f"[SKIP] no row for '{old}'")
+        for old_name, new_name in RENAME.items():
+            et_old = ExpertiseType.query.filter_by(name=old_name).first()
+            et_new = ExpertiseType.query.filter_by(name=new_name).first()
+
+            if not et_old:
+                print(f"[SKIP] no row for '{old_name}'")
                 continue
 
-            # if the new name is already taken, don’t rename (avoids UNIQUE conflict)
-            if ExpertiseType.query.filter_by(name=new).first():
-                print(f"[SKIP] '{new}' already exists, leaving '{old}' in place")
+            # If no English row exists yet, just rename the Turkish row
+            if not et_new:
+                et_old.name = new_name
+                db.session.commit()
+                print(f"[RENAMED] {old_name} → {new_name}")
                 continue
 
-            et.name = new
+            # Both old and new exist: reassign any reports, then delete the old row
+            count = ExpertiseReport.query \
+                                   .filter_by(expertise_type_id=et_old.id) \
+                                   .update({"expertise_type_id": et_new.id})
             db.session.commit()
-            print(f"[RENAMED] {old} → {new}")
+            print(f"[MERGED] {count} reports from '{old_name}' into '{new_name}'")
 
-        print("Done.")
+            db.session.delete(et_old)
+            db.session.commit()
+            print(f"[DELETED] ExpertiseType '{old_name}'")
+
+        print("All done. Your Turkish rows are merged and removed.")
 
 if __name__ == '__main__':
     main()

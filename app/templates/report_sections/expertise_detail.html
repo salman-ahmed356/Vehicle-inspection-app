@@ -1,111 +1,64 @@
-<!-- Customer Information -->
-<div>
-    <h3 class="text-lg font-semibold mb-4">{{ _('Customer Information') }}</h3>
-    <div class="grid grid-cols-2 gap-6">
-        <!-- Customer Name -->
-        <div>
-            <label class="block text-sm font-medium text-gray-700">
-              {{ _('Full Name') }}
-            </label>
-            <input
-                type="text"
-                name="customer_name"
-                id="customer_name"
-                required
-                value="{{ form.customer_name.data | skip_none }}"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                oninvalid="this.setCustomValidity('{{ _('Please enter full name') }}')"
-                oninput="setCustomValidity('')"
-            >
-            {% if form.customer_name.errors %}
-            <span class="text-red-500 text-sm">
-              {{ form.customer_name.errors[0] }}
-            </span>
-            {% endif %}
-        </div>
+{# app/templates/report_sections/expertise_detail.html #}
 
-        <!-- Customer Phone -->
-        <div>
-            <label class="block text-sm font-medium text-gray-700">
-              {{ _('Phone') }}
-            </label>
-            <input
-                type="text"
-                name="customer_phone"
-                id="customer_phone"
-                required
-                value="{{ form.customer_phone.data | skip_none }}"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                oninvalid="this.setCustomValidity('{{ _('Please enter phone number') }}')"
-                oninput="setCustomValidity('')"
-            >
-            {% if form.customer_phone.errors %}
-            <span class="text-red-500 text-sm">
-              {{ form.customer_phone.errors[0] }}
-            </span>
-            {% endif %}
-        </div>
+{# Vehicle Header & Common Sections #}
+{% include 'report_sections/expertises/vehicle_header.html' %}
+{% include 'report_sections/customer_info.html' %}
+{% include 'report_sections/inspection_info.html' %}
+{% include 'report_sections/owner_info.html' %}
+{% include 'report_sections/representative_info.html' %}
 
-        <!-- Customer Tax No -->
-        <div>
-            <label class="block text-sm font-medium text-gray-700">
-              {{ _('ID / Tax No') }}
-            </label>
-            <input
-                type="text"
-                name="customer_tax_no"
-                id="customer_tax_no"
-                value="{{ form.customer_tax_no.data | skip_none }}"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                oninvalid="this.setCustomValidity('{{ _('Please enter ID or tax number') }}')"
-                oninput="setCustomValidity('')"
-            >
-            {% if form.customer_tax_no.errors %}
-            <span class="text-red-500 text-sm">
-              {{ form.customer_tax_no.errors[0] }}
-            </span>
-            {% endif %}
-        </div>
+{# Dispatch to the right expertise partial #}
+{% set et = expertise_report.expertise_type.name %}
 
-        <!-- Customer Email -->
-        <div>
-            <label class="block text-sm font-medium text-gray-700">
-              {{ _('Email') }}
-            </label>
-            <input
-                type="email"
-                name="customer_email"
-                id="customer_email"
-                value="{{ form.customer_email.data | skip_none }}"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                oninvalid="this.setCustomValidity('{{ _('Please enter a valid email address') }}')"
-                oninput="setCustomValidity('')"
-            >
-            {% if form.customer_email.errors %}
-            <span class="text-red-500 text-sm">
-              {{ form.customer_email.errors[0] }}
-            </span>
-            {% endif %}
-        </div>
+{% if et == 'Paint & Body Expertise' %}
+  {% include 'report_sections/expertises/boya_kaporta_expertise.html' %}
 
-        <!-- Customer Address -->
-        <div class="col-span-2">
-            <label class="block text-sm font-medium text-gray-700">
-              {{ _('Address') }}
-            </label>
-            <textarea
-                name="customer_address"
-                id="customer_address"
-                rows="2"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                oninvalid="this.setCustomValidity('{{ _('Please enter address') }}')"
-                oninput="setCustomValidity('')"
-            >{{ form.customer_address.data | skip_none }}</textarea>
-            {% if form.customer_address.errors %}
-            <span class="text-red-500 text-sm">
-              {{ form.customer_address.errors[0] }}
-            </span>
-            {% endif %}
-        </div>
-    </div>
-</div>
+{% elif et == 'Interior & Exterior Expertise' %}
+  {% include 'report_sections/expertises/ic_dis_expertise.html' %}
+
+{% else %}
+  {% if et == 'Paint Expertise' %}
+    {% include 'report_sections/expertises/boya_expertise.html' %}
+
+  {% elif et == 'Body Expertise' %}
+    {% include 'report_sections/expertises/kaporta_expertise.html' %}
+
+  {% elif et == 'Engine Expertise' %}
+    {% include 'report_sections/expertises/motor_expertise.html' %}
+
+  {% elif et == 'Lateral Drift Expertise' %}
+    {% include 'report_sections/expertises/yanal_expertise.html' %}
+
+  {% elif et == 'Suspension Expertise' %}
+    {% include 'report_sections/expertises/suspansiyon_expertise.html' %}
+
+  {% elif et == 'Brake Expertise' %}
+    {% include 'report_sections/expertises/fren_expertise.html' %}
+
+  {% elif et == 'Road Expertise' %}
+    {% include 'report_sections/expertises/yol_expertise.html' %}
+
+  {% elif et == 'Dyno Expertise' %}
+    {% include 'report_sections/expertises/dyno_expertise.html' %}
+
+  {% elif et == 'ECU Expertise' %}
+    {% include 'report_sections/expertises/beyin_expertise.html' %}
+
+  {% elif et == 'Interior Expertise' %}
+    {% include 'report_sections/expertises/ic_expertise.html' %}
+
+  {% elif et == 'Exterior Expertise' %}
+    {% include 'report_sections/expertises/dis_expertise.html' %}
+
+  {% elif et == 'Mechanical Expertise' %}
+    {% include 'report_sections/expertises/mekanik_expertise.html' %}
+
+  {% else %}
+    <p class="text-red-500">
+      {{ _('No expertise template found for') }} “{{ et }}”
+    </p>
+  {% endif %}
+{% endif %}
+
+{# Submit button block #}
+{% include 'report_sections/submit_buttons.html' %}

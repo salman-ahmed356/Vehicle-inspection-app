@@ -36,11 +36,42 @@ FUEL_TYPE_MAPPING = {
 }
 
 
-def map_to_enum(input_value: str, mapping: dict):
+def map_to_enum(input_value, enum_class):
     """
-    Map the input value to the corresponding Enum using the provided mapping.
+    Convert a string enum name to the actual enum value.
+    
+    Args:
+        input_value: The string name of the enum (e.g., 'MANUAL' or 'Manual')
+        enum_class: The enum class (e.g., TransmissionType)
+        
+    Returns:
+        The enum value
     """
-    mapped_value = mapping.get(input_value.upper())
-    if not mapped_value:
-        raise ValueError(f"Invalid value: {input_value}. Expected one of {list(mapping.keys())}.")
-    return mapped_value
+    # If it's already an enum instance, return it
+    if isinstance(input_value, enum_class):
+        return input_value
+    
+    # Try to find the enum by name
+    try:
+        # First try direct lookup by name
+        return enum_class[input_value]
+    except (KeyError, TypeError):
+        # Then try to find by value
+        for enum_item in enum_class:
+            if enum_item.name == input_value or enum_item.value == input_value:
+                return enum_item
+        
+        # If we get here, try the mappings
+        if enum_class == Color:
+            mapping = COLOR_MAPPING
+        elif enum_class == TransmissionType:
+            mapping = TRANSMISSION_TYPE_MAPPING
+        elif enum_class == FuelType:
+            mapping = FUEL_TYPE_MAPPING
+        else:
+            raise ValueError(f"No mapping available for enum class: {enum_class}")
+        
+        mapped_value = mapping.get(input_value.upper() if isinstance(input_value, str) else input_value)
+        if not mapped_value:
+            raise ValueError(f"Invalid value: {input_value}. Expected one of {[e.name for e in enum_class]}.")
+        return mapped_value

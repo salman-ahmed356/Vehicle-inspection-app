@@ -19,6 +19,14 @@ def staff_list():
 def add_staff():
     form = StaffForm()
     if form.validate_on_submit():
+        # Get the first branch from the first company
+        from ..models import Branch
+        branch = Branch.query.first()
+        
+        if not branch:
+            flash('No branch found. Please create a company first.', 'error')
+            return redirect(url_for('companies.company_detail', active_tab='company'))
+            
         hashed_password = generate_password_hash(
             form.password.data,
             method='pbkdf2:sha256',
@@ -29,17 +37,17 @@ def add_staff():
             last_name=form.last_name.data,
             password=hashed_password,
             phone_number=form.phone_number.data,
-            department="Default",
+            department=form.department.data or "Default",
             role=form.role.data,
-            branch_id=1
+            branch_id=branch.id
         )
         try:
             db.session.add(new_staff)
             db.session.commit()
-            flash('Yeni personel başarıyla eklendi!', 'success')
+            flash('Staff member successfully added!', 'success')
         except IntegrityError as e:
             db.session.rollback()
-            flash('Tüm değerleri doğru girdiğinize emin olun!', 'error')
+            flash('Please make sure all values are correct!', 'error')
             print(f"IntegrityError: {e}")
 
     # After adding, return to Company Settings → Staff tab

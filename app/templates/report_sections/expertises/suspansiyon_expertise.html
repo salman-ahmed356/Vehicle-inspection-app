@@ -42,7 +42,7 @@
 <h2 class="text-lg font-semibold mb-4">{{ _('Suspension Inspection') }}</h2>
 <p class="mb-4">{{ _('Please enter the measured values for each suspension point:') }}</p>
 
-<form id="suspensionForm" method="POST">
+<form id="suspensionForm" method="POST" onsubmit="return false;">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
   {% for feature in expertise_report.features %}
@@ -65,24 +65,36 @@
 </form>
 
 <script>
-  $(function() {
-    $('#suspensionForm').on('submit', function(e) {
-      e.preventDefault();
-      $.ajax({
-        url: "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}",
-        type: "POST",
-        data: $(this).serialize(),
-        success: function(resp) {
-          if (resp.success) {
-            alert("{{ _('Suspension measurements saved successfully!') }}");
-          } else {
-            alert("{{ _('An error occurred during save.') }}");
-          }
-        },
-        error: function() {
-          alert("{{ _('Could not update suspension. Please try again.') }}");
-        }
-      });
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('suspensionForm');
+  
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(form);
+    const url = "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}";
+    
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams(formData)
+    })
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data) {
+      if (data.success) {
+        alert("{{ _('Suspension measurements saved successfully!') }}");
+      } else {
+        alert("{{ _('An error occurred during save.') }}");
+      }
+    })
+    .catch(function(error) {
+      console.error('Error:', error);
+      alert("{{ _('Could not update suspension. Please try again.') }}");
     });
   });
+});
 </script>

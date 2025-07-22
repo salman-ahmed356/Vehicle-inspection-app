@@ -3,25 +3,23 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app.database import db
 from app.models import Report, ExpertiseType, PackageExpertise, Package
-from app.forms.package_form import PackageForm
+from app.forms.package_form import PackageForm, DEFAULT_EXPERTISE_TYPES
 
 packages = Blueprint('packages', __name__, url_prefix='/packages')
 
 
-def _populate_contents(field):
+def _populate_contents(form):
     """
     Populate the WTForms SelectMultipleField with all expertise names.
+    The form already has default choices, but we'll try to get them from the database.
     """
-    field.choices = [
-        (et.name, et.name)
-        for et in ExpertiseType.query.order_by(ExpertiseType.name).all()
-    ]
+    form.populate_expertise_choices()
 
 
 @packages.route('/', methods=['GET'])
 def packages_list():
     form = PackageForm()
-    _populate_contents(form.contents)
+    _populate_contents(form)
     packs = Package.query.all()
     return render_template(
         'packages.html',
@@ -34,7 +32,7 @@ def packages_list():
 @packages.route('/add', methods=['POST'])
 def add_pckg():
     form = PackageForm(request.form)
-    _populate_contents(form.contents)
+    _populate_contents(form)
 
     if form.validate_on_submit():
         pkg = Package(
@@ -46,7 +44,17 @@ def add_pckg():
         db.session.commit()
 
         for name in form.contents.data:
+            # Try to find the expertise type in the database
             et = ExpertiseType.query.filter_by(name=name).first()
+            
+            # If not found, create it
+            if not et and name in DEFAULT_EXPERTISE_TYPES:
+                et = ExpertiseType(name=name)
+                db.session.add(et)
+                db.session.commit()
+                print(f"Created expertise type: {name}")
+            
+            # Add the package expertise link
             if et:
                 db.session.add(PackageExpertise(
                     package_id        = pkg.id,
@@ -79,7 +87,17 @@ def update_package(package_id):
             PackageExpertise.query.filter_by(package_id=pkg.id).delete()
             db.session.commit()
             for name in form.contents.data:
+                # Try to find the expertise type in the database
                 et = ExpertiseType.query.filter_by(name=name).first()
+                
+                # If not found, create it
+                if not et and name in DEFAULT_EXPERTISE_TYPES:
+                    et = ExpertiseType(name=name)
+                    db.session.add(et)
+                    db.session.commit()
+                    print(f"Created expertise type: {name}")
+                
+                # Add the package expertise link
                 if et:
                     db.session.add(PackageExpertise(
                         package_id        = pkg.id,
@@ -93,7 +111,7 @@ def update_package(package_id):
     else:
         # GET: build form and pre-select existing expertises
         form = PackageForm()
-        _populate_contents(form.contents)
+        _populate_contents(form)
 
         form.name.data   = pkg.name
         form.price.data  = pkg.price

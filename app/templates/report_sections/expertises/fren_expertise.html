@@ -55,7 +55,7 @@
 <h2 class="text-lg font-semibold mb-4">{{ _('Brake Test') }}</h2>
 <p class="mb-4">{{ _('Please specify the status of each brake section!') }}</p>
 
-<form id="brakeTestForm" method="POST">
+<form id="brakeTestForm" method="POST" onsubmit="return false;">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
   {# Split features into front, rear, and parking groups #}
@@ -133,38 +133,76 @@
 </form>
 
 <script>
-  $(function() {
-    function toggleReadonly(checkboxSelector, inputSelectors) {
-      const disabled = $(checkboxSelector).is(':checked');
-      inputSelectors.forEach(id => {
-        $(id).prop('readonly', disabled);
-        if (disabled) $(id).val(0);
-      });
-    }
+document.addEventListener('DOMContentLoaded', function() {
+  // Function to toggle readonly state
+  function toggleReadonly(checkboxId, inputIds) {
+    const checkbox = document.getElementById(checkboxId);
+    const disabled = checkbox.checked;
+    
+    inputIds.forEach(id => {
+      const input = document.getElementById(id);
+      input.readOnly = disabled;
+      if (disabled) input.value = 0;
+    });
+  }
 
-    const frontIds = ['#feature_{{ front[0].id }}', '#feature_{{ front[1].id }}'];
-    const rearIds  = ['#feature_{{ rear[0].id }}',  '#feature_{{ rear[1].id }}'];
-    const parkIds  = ['#feature_{{ park[0].id }}',  '#feature_{{ park[1].id }}'];
+  // Get checkbox and input elements
+  const frontNa = document.getElementById('front_na');
+  const rearNa = document.getElementById('rear_na');
+  const parkNa = document.getElementById('park_na');
+  
+  const frontIds = ['feature_{{ front[0].id }}', 'feature_{{ front[1].id }}'];
+  const rearIds = ['feature_{{ rear[0].id }}', 'feature_{{ rear[1].id }}'];
+  const parkIds = ['feature_{{ park[0].id }}', 'feature_{{ park[1].id }}'];
 
-    // Initialize and bind toggles
-    toggleReadonly('#front_na', frontIds);
-    $('#front_na').change(() => toggleReadonly('#front_na', frontIds));
+  // Add event listeners
+  if (frontNa) {
+    frontNa.addEventListener('change', function() {
+      toggleReadonly('front_na', frontIds);
+    });
+  }
+  
+  if (rearNa) {
+    rearNa.addEventListener('change', function() {
+      toggleReadonly('rear_na', rearIds);
+    });
+  }
+  
+  if (parkNa) {
+    parkNa.addEventListener('change', function() {
+      toggleReadonly('park_na', parkIds);
+    });
+  }
 
-    toggleReadonly('#rear_na', rearIds);
-    $('#rear_na').change(() => toggleReadonly('#rear_na', rearIds));
-
-    toggleReadonly('#park_na', parkIds);
-    $('#park_na').change(() => toggleReadonly('#park_na', parkIds));
-
-    // AJAX form submission
-    $('#brakeTestForm').on('submit', function(e) {
-      e.preventDefault();
-      $.post(
-        "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}",
-        $(this).serialize()
-      )
-      .done(() => alert("{{ _('Brake test status updated successfully!') }}"))
-      .fail(() => alert("{{ _('Update failed. Please check your inputs.') }}"));
+  // Form submission
+  const form = document.getElementById('brakeTestForm');
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(form);
+    const url = "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}";
+    
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams(formData)
+    })
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data) {
+      if (data.success) {
+        alert("{{ _('Brake test status updated successfully!') }}");
+      } else {
+        alert("{{ _('Update failed: ') }}" + (data.error || "{{ _('Unknown error') }}"));
+      }
+    })
+    .catch(function(error) {
+      console.error('Error:', error);
+      alert("{{ _('Update failed. Please check your inputs.') }}");
     });
   });
+});
 </script>

@@ -123,6 +123,55 @@ def create_app(config_object=None):
         create_default_company()
         create_default_package()
         click.echo("✔️  Database seeded")
+        
+    @app.cli.command("init-expertise")
+    def init_expertise():
+        """Initialize expertise types only."""
+        from app.models import ExpertiseType
+        from app.enums import ExpertiseTypeEnum
+        
+        # Check if expertise types already exist
+        existing_count = ExpertiseType.query.count()
+        if existing_count > 0:
+            click.echo(f"Found {existing_count} existing expertise types.")
+            return
+        
+        # Initialize expertise types from enum
+        click.echo("Initializing expertise types...")
+        for expertise_enum in ExpertiseTypeEnum:
+            expertise_type = ExpertiseType(name=expertise_enum.value)
+            db.session.add(expertise_type)
+        
+        # Add combined expertise types
+        combined_types = {
+            "Interior & Exterior Expertise": [
+                ExpertiseTypeEnum.IC.value,
+                ExpertiseTypeEnum.DIS.value
+            ],
+            "Road & Dyno Expertise": [
+                ExpertiseTypeEnum.YOL.value,
+                ExpertiseTypeEnum.DYNO.value
+            ],
+            "Paint & Body Expertise": [
+                ExpertiseTypeEnum.BOYA.value,
+                ExpertiseTypeEnum.KAPORTA.value
+            ],
+        }
+        
+        for parent_name, children in combined_types.items():
+            # Create parent
+            parent = ExpertiseType(name=parent_name)
+            db.session.add(parent)
+            db.session.flush()
+            
+            # Update children to reference parent
+            for child_name in children:
+                child = ExpertiseType.query.filter_by(name=child_name).first()
+                if child:
+                    child.parent_id = parent.id
+        
+        db.session.commit()
+        click.echo("✔️  Expertise types initialized")
 
     # 10) Register blueprints
     app.register_blueprint(pdfs_bp)

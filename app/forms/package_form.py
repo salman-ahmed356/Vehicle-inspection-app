@@ -1,7 +1,25 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, DecimalField, SelectMultipleField, SelectField, SubmitField
 from wtforms.validators import DataRequired
-from app.enums import ExpertiseTypeEnum
+
+# Hardcoded expertise types as fallback
+DEFAULT_EXPERTISE_TYPES = [
+    "Paint Expertise",
+    "Body Expertise",
+    "Engine Expertise",
+    "Lateral Drift Expertise",
+    "Suspension Expertise",
+    "Brake Expertise",
+    "Road Expertise",
+    "Dyno Expertise",
+    "ECU Expertise",
+    "Interior Expertise",
+    "Exterior Expertise",
+    "Mechanical Expertise",
+    "Interior & Exterior Expertise",
+    "Road & Dyno Expertise",
+    "Paint & Body Expertise"
+]
 
 class PackageForm(FlaskForm):
     name = StringField(
@@ -14,7 +32,7 @@ class PackageForm(FlaskForm):
     )
     contents = SelectMultipleField(
         'Applied Expertises',
-        choices=[(et.value, et.value) for et in ExpertiseTypeEnum],
+        choices=[(et, et) for et in DEFAULT_EXPERTISE_TYPES],  # Default hardcoded choices
         validators=[DataRequired()]
     )
     active = SelectField(
@@ -26,3 +44,9 @@ class PackageForm(FlaskForm):
         validators=[DataRequired()]
     )
     submit = SubmitField('Save')
+    
+    def populate_expertise_choices(self):
+        """Populate the expertise choices from the database if available"""
+        # Always use the hardcoded choices to ensure all expertise types are available
+        self.contents.choices = [(et, et) for et in DEFAULT_EXPERTISE_TYPES]
+        return self
