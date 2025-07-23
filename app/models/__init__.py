@@ -16,3 +16,5 @@ from .all_models import (
     Vehicle,
     VehicleOwner,
 )
+
+from .report_settings import ReportSettings

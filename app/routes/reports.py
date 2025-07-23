@@ -1,12 +1,14 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, jsonify
+import base64
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 from sqlalchemy import or_
 
 from ..database import db
 from ..enums import FuelType, TransmissionType, Color, ReportStatus
+from ..auth import login_required
 from ..models import (
-    Report, Customer, Package, Staff, Vehicle,
+    Report, Customer, Package, Staff, Vehicle, Agent, VehicleOwner,
     PackageExpertise, ExpertiseReport, ExpertiseType, ExpertiseFeature
 )
 from ..forms.report_form import ReportForm
@@ -18,36 +20,60 @@ from ..services.report_service import (
     get_or_create_vehicle_owner, get_or_create_agent,
     get_or_create_vehicle
 )
+from ..services.package_service import get_active_packages
 
 reports = Blueprint('reports', __name__)
 
 
 @reports.route('/reports')
+@login_required
 def report_list():
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 10, type=int)
+    status = request.args.get('status', 'open')
+    chassis = request.args.get('chassis')
     
-    # Only show open reports
-    pagination = Report.query\
-        .filter_by(status=ReportStatus.OPENED)\
-        .order_by(Report.created_at.desc())\
-        .paginate(page=page, per_page=per_page, error_out=False)
+    if status == 'completed':
+        # Show completed reports
+        filter_status = ReportStatus.COMPLETED
+        template = 'report_sections/completed_report_list.html'
+    elif status == 'cancelled':
+        # Show cancelled reports
+        filter_status = ReportStatus.CANCELLED
+        template = 'report_sections/cancelled_report_list.html'
+    else:
+        # Show open reports (default)
+        filter_status = ReportStatus.OPENED
+        template = 'report_sections/report_list.html'
+    
+    # Start with base query
+    query = Report.query.filter_by(status=filter_status)
+    
+    # Add chassis filter if provided
+    if chassis:
+        # Join with Vehicle to filter by chassis number
+        query = query.join(Report.vehicle).filter(Vehicle.chassis_number == chassis)
+    
+    # Paginate the results
+    pagination = query.order_by(Report.created_at.desc()).paginate(page=page, per_page=per_page, error_out=False)
 
     form = ReportForm()
     return render_template(
-        'report_sections/report_list.html',
+        template,
         reports=pagination.items,
         pagination=pagination,
-        form=form
+        form=form,
+        status=status
     )
 
 
 @reports.route('/report/add', methods=['GET', 'POST'])
+@login_required
 def add_report():
     form = ReportForm()
 
-    # Prepare select-field choices
-    form.package_id.choices   = [(p.id, p.name) for p in Package.query.all()]
+    # Prepare select-field choices - only show active packages
+    form.package_id.choices   = [(p.id, p.name) for p in get_active_packages()]
     form.color.choices        = [(c.name, c.value) for c in Color]
     form.gear_type.choices    = [(t.name, t.value) for t in TransmissionType]
     form.fuel_type.choices    = [(f.name, f.value) for f in FuelType]
@@ -56,9 +82,21 @@ def add_report():
     # Default timestamps
     form.created_at.data      = datetime.now()
     form.inspection_date.data = datetime.now()
+    
+    # Check if we have appointment data in session
+    from flask import session
+    appointment_data = session.get('appointment_data', {})
+    if appointment_data and request.method == 'GET':
+        # Pre-fill form with appointment data
+        form.customer_name.data = appointment_data.get('customer_name', '')
+        form.customer_phone.data = appointment_data.get('customer_phone', '')
+        form.customer_email.data = appointment_data.get('customer_email', '')
+        form.customer_tax_no.data = appointment_data.get('customer_tax_no', '')
+        form.brand.data = appointment_data.get('vehicle_brand', '')
+        form.model.data = appointment_data.get('vehicle_model', '')
 
     vehicle_info = None
-    packages     = Package.query.all()
+    packages     = get_active_packages()
     current_year = datetime.now().year
 
     if form.validate_on_submit():
@@ -121,6 +159,41 @@ def add_report():
                 db.session.flush()
 
             # 3) REPORT
+            # Handle image upload if has_image is 'yes'
+            has_image = request.form.get('has_image') == 'yes'
+            image_data = None
+            
+            if has_image:
+                if 'vehicle_image' in request.files:
+                    image_file = request.files['vehicle_image']
+                    if image_file and image_file.filename:
+                        # Read the image data
+                        image_data = image_file.read()
+                    else:
+                        flash('Please upload a vehicle image or select "No" for the image option.', 'error')
+                        return render_template(
+                            'reports.html',
+                            form=form,
+                            fuel_types=[(f.name, f.value) for f in FuelType],
+                            transmission_types=[(t.name, t.value) for t in TransmissionType],
+                            colors=[(c.name, c.value) for c in Color],
+                            vehicle_info=vehicle_info,
+                            packages=get_active_packages(),
+                            current_year=datetime.now().year
+                        )
+                else:
+                    flash('Please upload a vehicle image or select "No" for the image option.', 'error')
+                    return render_template(
+                        'reports.html',
+                        form=form,
+                        fuel_types=[(f.name, f.value) for f in FuelType],
+                        transmission_types=[(t.name, t.value) for t in TransmissionType],
+                        colors=[(c.name, c.value) for c in Color],
+                        vehicle_info=vehicle_info,
+                        packages=get_active_packages(),
+                        current_year=datetime.now().year
+                    )
+            
             new_report = Report(
                 inspection_date            = form.inspection_date.data,
                 vehicle_id                 = vehicle.id,
@@ -129,15 +202,42 @@ def add_report():
                 operation                  = form.operation.data or None,
                 created_by                 = form.created_by.data,
                 registration_document_seen = form.registration_document_seen.data,
-                status                     = ReportStatus.OPENED
+                status                     = ReportStatus.OPENED,
+                has_image                  = has_image,
+                image_data                 = image_data
             )
             db.session.add(new_report)
             db.session.flush()
 
             # 4) Optional: link vehicle owner & agent here (same as before)
 
-            # 5) FINAL COMMIT
+            # 5) Delete appointment if this report was created from an appointment
+            from flask import session
+            appointment_data = session.get('appointment_data', {})
+            appointment_id = appointment_data.get('appointment_id')
+            if appointment_id:
+                from ..models import Appointment
+                appointment = Appointment.query.get(appointment_id)
+                if appointment:
+                    db.session.delete(appointment)
+                    flash('Appointment converted to report and removed from appointments list.', 'info')
+                # Clear the appointment data from session
+                session.pop('appointment_data', None)
+            
+            # 6) FINAL COMMIT
             db.session.commit()
+            
+            # Save form data to session for later editing
+            from flask import session
+            session[f'report_{new_report.id}_data'] = {
+                'owner_name': form.owner_name.data,
+                'owner_phone': form.owner_phone.data,
+                'owner_tax_no': form.owner_tax_no.data,
+                'owner_address': form.owner_address.data,
+                'agent_name': form.agent_name.data,
+                'customer_address': form.customer_address.data
+            }
+            
             flash('Report created successfully!', 'success')
             return redirect(url_for('reports.report_list'))
 
@@ -153,7 +253,7 @@ def add_report():
                 transmission_types=[(t.name, t.value) for t in TransmissionType],
                 colors=[(c.name, c.value) for c in Color],
                 vehicle_info=None,
-                packages=Package.query.all(),
+                packages=get_active_packages(),
                 current_year=datetime.now().year
             )
 
@@ -169,7 +269,7 @@ def add_report():
                 transmission_types=[(t.name, t.value) for t in TransmissionType],
                 colors=[(c.name, c.value) for c in Color],
                 vehicle_info=None,
-                packages=Package.query.all(),
+                packages=get_active_packages(),
                 current_year=datetime.now().year
             )
 
@@ -181,7 +281,7 @@ def add_report():
         transmission_types = [(t.name, t.value) for t in TransmissionType],
         colors             = [(c.name, c.value) for c in Color],
         vehicle_info       = vehicle_info,
-        packages           = packages,
+        packages           = get_active_packages(),
         current_year       = current_year
     )
 
@@ -207,7 +307,7 @@ def update_report(report_id):
             print(f"Error: {e}", flush=True)
 
     customers = Customer.query.all()
-    packages  = Package.query.all()
+    packages  = get_active_packages()
     staff     = Staff.query.all()
     return render_template(
         'report/update_report.html',
@@ -217,14 +317,275 @@ def update_report(report_id):
         staff=staff
     )
 
+@reports.route('/report/edit/<int:report_id>', methods=['GET', 'POST'])
+@login_required
+def edit_report(report_id):
+    # Get the report
+    report = Report.query.get_or_404(report_id)
+    
+    # Create a form and populate it with report data
+    form = ReportForm()
+    
+    # Prepare select-field choices
+    form.package_id.choices = [(p.id, p.name) for p in get_active_packages()]
+    form.color.choices = [(c.name, c.value) for c in Color]
+    form.gear_type.choices = [(t.name, t.value) for t in TransmissionType]
+    form.fuel_type.choices = [(f.name, f.value) for f in FuelType]
+    form.created_by.choices = [(s.id, s.full_name) for s in Staff.query.all()]
+    
+    if request.method == 'GET':
+        # Populate form with existing data
+        # Customer information
+        form.customer_name.data = report.customer.full_name
+        form.customer_phone.data = report.customer.phone_number
+        form.customer_email.data = report.customer.email
+        form.customer_tax_no.data = report.customer.tc_tax_number
+        form.customer_address.data = ""
+        
+        # Vehicle information
+        form.vehicle_plate.data = report.vehicle.plate
+        form.engine_number.data = report.vehicle.engine_number
+        form.brand.data = report.vehicle.brand
+        form.model.data = report.vehicle.model
+        form.chassis_number.data = report.vehicle.chassis_number
+        form.color.data = report.vehicle.color.name
+        form.model_year.data = report.vehicle.model_year
+        form.gear_type.data = report.vehicle.transmission_type.name
+        form.fuel_type.data = report.vehicle.fuel_type.name
+        form.vehicle_km.data = report.vehicle.mileage
+        
+        # Force select the correct options in the form
+        form.color.process_data(report.vehicle.color.name)
+        form.gear_type.process_data(report.vehicle.transmission_type.name)
+        form.fuel_type.process_data(report.vehicle.fuel_type.name)
+        
+        # Report information
+        form.package_id.data = report.package_id
+        form.operation.data = report.operation
+        form.created_by.data = report.created_by
+        form.registration_document_seen.data = report.registration_document_seen
+        form.inspection_date.data = report.inspection_date
+        form.created_at.data = report.created_at
+        
+        # Load agent information from the database
+        agent = Agent.query.filter_by(report_id=report_id).first()
+        if agent and agent.customer:
+            form.agent_name.data = agent.customer.full_name
+        else:
+            form.agent_name.data = request.form.get('agent_name', '')
+        
+        # Set empty values for owner fields - user will fill these in
+        form.owner_name.data = ""
+        form.owner_phone.data = ""
+        form.owner_tax_no.data = ""
+        form.owner_address.data = ""
+        
+        # Customer address - no address field in Customer model, so we use form data
+        form.customer_address.data = request.form.get('customer_address', '')
+    
+    if form.validate_on_submit():
+        try:
+            # Update vehicle data
+            vehicle = report.vehicle
+            vehicle.plate = form.vehicle_plate.data.strip()
+            vehicle.engine_number = form.engine_number.data.strip()
+            vehicle.brand = form.brand.data.strip()
+            vehicle.model = form.model.data.strip()
+            vehicle.chassis_number = form.chassis_number.data.strip()
+            vehicle.color = map_to_enum(form.color.data, Color)
+            vehicle.model_year = form.model_year.data
+            vehicle.transmission_type = map_to_enum(form.gear_type.data, TransmissionType)
+            vehicle.fuel_type = map_to_enum(form.fuel_type.data, FuelType)
+            vehicle.mileage = form.vehicle_km.data
+            
+            # Update customer data
+            customer = report.customer
+            names = form.customer_name.data.strip().split(' ', 1)
+            customer.first_name = names[0]
+            customer.last_name = names[1] if len(names) > 1 else ''
+            customer.phone_number = form.customer_phone.data.strip()
+            customer.email = form.customer_email.data.strip() or None
+            customer.tc_tax_number = form.customer_tax_no.data.strip() or None
+            
+            # Update report data
+            report.package_id = form.package_id.data
+            report.operation = form.operation.data or None
+            report.created_by = form.created_by.data
+            report.registration_document_seen = form.registration_document_seen.data
+            report.inspection_date = form.inspection_date.data
+            
+            # Update or create agent if agent name is provided
+            agent_name = form.agent_name.data.strip()
+            if agent_name:
+                # Try to find existing agent
+                agent = Agent.query.filter_by(report_id=report_id).first()
+                if not agent:
+                    # Create a new agent customer with a unique phone number
+                    agent_names = agent_name.split(' ', 1)
+                    agent_first_name = agent_names[0]
+                    agent_last_name = agent_names[1] if len(agent_names) > 1 else ''
+                    
+                    # Create a unique phone number for the agent
+                    unique_phone = f"agent-{report_id}-{datetime.now().timestamp()}"
+                    
+                    agent_customer = Customer(
+                        first_name=agent_first_name,
+                        last_name=agent_last_name,
+                        phone_number=unique_phone,
+                        email=None,
+                        tc_tax_number=None
+                    )
+                    db.session.add(agent_customer)
+                    db.session.flush()
+                    
+                    # Create agent
+                    agent = Agent(
+                        report_id=report_id,
+                        customer_id=agent_customer.id
+                    )
+                    db.session.add(agent)
+                    db.session.flush()
+                else:
+                    # Update existing agent's customer information
+                    agent_names = agent_name.split(' ', 1)
+                    agent_customer = Customer.query.get(agent.customer_id)
+                    if agent_customer:
+                        agent_customer.first_name = agent_names[0]
+                        agent_customer.last_name = agent_names[1] if len(agent_names) > 1 else ''
+                        db.session.add(agent_customer)
+            
+            # We'll skip vehicle owner handling for now to simplify the code
+            
+            # Handle image upload if has_image is 'yes'
+            has_image = request.form.get('has_image') == 'yes'
+            if has_image:
+                if 'vehicle_image' in request.files:
+                    image_file = request.files['vehicle_image']
+                    if image_file and image_file.filename:
+                        # Read the image data
+                        report.image_data = image_file.read()
+                        report.has_image = True
+                    else:
+                        # If no new image is uploaded but the report already has an image, that's OK
+                        if not report.has_image or not report.image_data:
+                            flash('Please upload a vehicle image or select "No" for the image option.', 'error')
+                            return render_template(
+                                'reports.html',
+                                form=form,
+                                fuel_types=[(f.name, f.value) for f in FuelType],
+                                transmission_types=[(t.name, t.value) for t in TransmissionType],
+                                colors=[(c.name, c.value) for c in Color],
+                                vehicle_info=vehicle_info,
+                                packages=get_active_packages(),
+                                current_year=datetime.now().year,
+                                edit_mode=True,
+                                report=report,
+                                b64encode=base64.b64encode
+                            )
+                else:
+                    # If no new image is uploaded but the report already has an image, that's OK
+                    if not report.has_image or not report.image_data:
+                        flash('Please upload a vehicle image or select "No" for the image option.', 'error')
+                        return render_template(
+                            'reports.html',
+                            form=form,
+                            fuel_types=[(f.name, f.value) for f in FuelType],
+                            transmission_types=[(t.name, t.value) for t in TransmissionType],
+                            colors=[(c.name, c.value) for c in Color],
+                            vehicle_info=vehicle_info,
+                            packages=get_active_packages(),
+                            current_year=datetime.now().year,
+                            edit_mode=True,
+                            report=report,
+                            b64encode=base64.b64encode
+                        )
+            
+            # Save changes
+            db.session.commit()
+            flash('Report updated successfully!', 'success')
+            
+            # Use JavaScript to force a redirect and close the modal
+            from flask import Response
+            return Response("""
+            <script type="text/javascript">
+                window.top.location.href = "/reports";
+            </script>
+            """, mimetype="text/html")
+            
+        except IntegrityError as e:
+            db.session.rollback()
+            flash('Data conflict—duplicate plate or chassis. Please correct.', 'error')
+            print(f"IntegrityError in edit_report: {e}", flush=True)
+        except Exception as e:
+            db.session.rollback()
+            flash('Unexpected error—check your data and try again.', 'error')
+            print(f"Exception in edit_report: {e}", flush=True)
+    
+    # Get vehicle info for display
+    vehicle_info = None
+    if report.vehicle:
+        vehicle_info = {
+            'plate': report.vehicle.plate,
+            'brand': report.vehicle.brand,
+            'model': report.vehicle.model,
+            'chassis_number': report.vehicle.chassis_number,
+            'color': report.vehicle.color.value,
+            'model_year': report.vehicle.model_year,
+            'transmission_type': report.vehicle.transmission_type.value,
+            'fuel_type': report.vehicle.fuel_type.value,
+            'mileage': report.vehicle.mileage,
+            'engine_number': report.vehicle.engine_number
+        }
+    
+    return render_template(
+        'reports.html',
+        form=form,
+        fuel_types=[(f.name, f.value) for f in FuelType],
+        transmission_types=[(t.name, t.value) for t in TransmissionType],
+        colors=[(c.name, c.value) for c in Color],
+        vehicle_info=vehicle_info,
+        packages=get_active_packages(),
+        current_year=datetime.now().year,
+        edit_mode=True,
+        report=report,
+        b64encode=base64.b64encode
+    )
+
 
 @reports.route('/report/delete/<int:report_id>', methods=['POST'])
 def delete_report(report_id):
     report = Report.query.get_or_404(report_id)
-    db.session.delete(report)
-    db.session.commit()
-    flash('Report successfully deleted!', 'success')
-    return redirect(url_for('reports.report_list'))
+    
+    # Store the status before deleting
+    if report.status == ReportStatus.COMPLETED:
+        status = 'completed'
+    elif report.status == ReportStatus.CANCELLED:
+        status = 'cancelled'
+    else:
+        status = 'open'
+    
+    # Delete the report and all related data
+    try:
+        # Delete expertise features
+        for er in report.expertise_reports:
+            for feature in er.features:
+                db.session.delete(feature)
+        
+        # Delete expertise reports
+        for er in report.expertise_reports:
+            db.session.delete(er)
+        
+        # Delete the report
+        db.session.delete(report)
+        db.session.commit()
+        flash('Report successfully deleted!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error deleting report: {str(e)}', 'error')
+        print(f"Error deleting report: {e}")
+    
+    # Redirect back to the appropriate list
+    return redirect(url_for('reports.report_list', status=status))
 
 
 @reports.route('/report/cancel/<int:report_id>', methods=['POST'])
@@ -284,7 +645,7 @@ def show_complete_report(report_id):
 
 
 from flask import abort, request, render_template
-from ..models import Report, ExpertiseType, ExpertiseReport
+from ..models import Report, ExpertiseType, ExpertiseReport, ExpertiseFeature
 from ..database import db
 
 @reports.route('/report/expertise_detail_ajax', methods=['GET'])
@@ -323,9 +684,9 @@ def expertise_detail_ajax():
         'Paint Expertise':               'report_sections/expertises/boya_expertise.html',
         'Paint & Body Expertise':        'report_sections/expertises/boya_kaporta_expertise.html',
         'Exterior Expertise':            'report_sections/expertises/dis_expertise.html',
-        'Dyno Expertise':                'report_sections/expertises/dyno_expertise.html',
-        'Brake Expertise':               'report_sections/expertises/fren_expertise.html',
-        'Interior & Exterior Expertise': 'report_sections/expertises/ic_dis_expertise.html',
+        'Dyno Expertise':                'report_sections/expertises/dyno_expertise_fixed.html',
+        'Brake Expertise':               'report_sections/expertises/fren_expertise_last.html',
+        'Interior & Exterior Expertise': 'report_sections/expertises/ic_dis_expertise_fixed.html',
         'Interior Expertise':            'report_sections/expertises/ic_expertise.html',
         'Body Expertise':                'report_sections/expertises/kaporta_expertise.html',
         'Mechanical Expertise':          'report_sections/expertises/mekanik_expertise.html',
@@ -333,7 +694,7 @@ def expertise_detail_ajax():
         'Suspension Expertise':          'report_sections/expertises/suspansiyon_expertise.html',
         'Lateral Drift Expertise':       'report_sections/expertises/yanal_expertise.html',
         'Road Expertise':                'report_sections/expertises/yol_expertise.html',
-        'Road & Dyno Expertise':         'report_sections/expertises/yol_dyno_expertise.html',
+        'Road & Dyno Expertise':         'report_sections/expertises/yol_dyno_expertise_clean.html',
     }
 
     db_name  = english_to_db.get(expertise_type)
@@ -351,7 +712,12 @@ def expertise_detail_ajax():
             db.session.commit()
             print(f"Created expertise type: {db_label}")
         
-        er = report.get_expertise_report(db_label)
+        # Try to find existing expertise report for this report and expertise type
+        er = ExpertiseReport.query.filter_by(
+            report_id=report.id,
+            expertise_type_id=et.id
+        ).first()
+        
         if not er:
             er = ExpertiseReport(report_id=report.id, expertise_type_id=et.id)
             db.session.add(er)
@@ -580,71 +946,34 @@ def expertise_detail(expertise_report_id):
             print(f"Form data keys: {list(request.form.keys())}")
             print(f"Form data values: {list(request.form.values())}")
             
+            # Debug the reports being updated
+            print(f"Reports to update: {[r.id for r in reports_to_update]}")
+            
             for rpt in reports_to_update:
                 print(f"Processing report: {rpt.id} with {len(rpt.features)} features")
+                # Normal processing for all expertise types
+                # No special processing needed for brake expertise anymore
                 
-                # Special handling for dyno expertise
-                if rpt.expertise_type and rpt.expertise_type.name == 'Dyno Expertise':
-                    # Handle test_type
-                    test_type = request.form.get('test_type')
-                    if test_type:
-                        test_type_feature = next((f for f in rpt.features if f.name == 'test_type'), None)
-                        if not test_type_feature:
-                            test_type_feature = ExpertiseFeature(name='test_type', expertise_report_id=rpt.id)
-                        test_type_feature.status = test_type
-                        db.session.add(test_type_feature)
+                # Process regular features
+                for feature in rpt.features:
+                    form_key = f'feature_{feature.id}'
+                    new_status = request.form.get(form_key)
+                    print(f"Feature {feature.id} ({feature.name}): current={feature.status}, new={new_status}")
                     
-                    # Handle dyno_unit
-                    dyno_unit = request.form.get('dyno_unit')
-                    if dyno_unit:
-                        dyno_unit_feature = next((f for f in rpt.features if f.name == 'dyno_unit'), None)
-                        if not dyno_unit_feature:
-                            dyno_unit_feature = ExpertiseFeature(name='dyno_unit', expertise_report_id=rpt.id)
-                        dyno_unit_feature.status = dyno_unit
-                        db.session.add(dyno_unit_feature)
-                    
-                    # Handle power, torque, rpm for dyno test
-                    if test_type == 'dyno':
-                        for field in ['power', 'torque', 'rpm']:
-                            value = request.form.get(field)
-                            if value:
-                                feature = next((f for f in rpt.features if f.name == field), None)
-                                if not feature:
-                                    feature = ExpertiseFeature(name=field, expertise_report_id=rpt.id)
-                                feature.status = value
-                                db.session.add(feature)
-                    
-                    # Handle acceleration, braking, handling for road test
-                    if test_type == 'road':
-                        for field in ['acceleration', 'braking', 'handling']:
-                            value = request.form.get(field)
-                            if value:
-                                feature = next((f for f in rpt.features if f.name == field), None)
-                                if not feature:
-                                    feature = ExpertiseFeature(name=field, expertise_report_id=rpt.id)
-                                feature.status = value
-                                db.session.add(feature)
-                else:
-                    # Normal processing for other expertise types
-                    for feature in rpt.features:
-                        form_key = f'feature_{feature.id}'
-                        new_status = request.form.get(form_key)
-                        print(f"Feature {feature.id} ({feature.name}): current={feature.status}, new={new_status}")
-                        
-                        if new_status is not None:
-                            if new_status != feature.status:
-                                print(f"UPDATING feature {feature.id} from {feature.status} to {new_status}")
-                                feature.status = new_status
-                                feature.image_path = (
-                                    f'assets/car_parts/'
-                                    f'{status_dir.get(new_status,"default")}/'
-                                    f'{feature.name}.png'
-                                )
-                            else:
-                                print(f"Feature {feature.id} status unchanged: {feature.status}")
-                            db.session.add(feature)
+                    if new_status is not None:
+                        if new_status != feature.status:
+                            print(f"UPDATING feature {feature.id} from {feature.status} to {new_status}")
+                            feature.status = new_status
+                            feature.image_path = (
+                                f'assets/car_parts/'
+                                f'{status_dir.get(new_status,"default")}/'
+                                f'{feature.name}.png'
+                            )
                         else:
-                            print(f"WARNING: No form data for feature {feature.id}")
+                            print(f"Feature {feature.id} status unchanged: {feature.status}")
+                        db.session.add(feature)
+                    else:
+                        print(f"WARNING: No form data for feature {feature.id}")
 
                 new_comment = request.form.get('technician_comment') or ''
                 if new_comment != rpt.comment:
@@ -660,7 +989,13 @@ def expertise_detail(expertise_report_id):
             else:
                 # Regular form submission - redirect back to the complete report page
                 flash('Expertise updated successfully!', 'success')
-                return redirect(url_for('reports.show_complete_report', report_id=expertise_report.report_id))
+                # Add debug info
+                print(f"Redirecting to report {expertise_report.report_id} with anchor {current_expertise_type}")
+                
+                # Build URL with anchor
+                url = url_for('reports.show_complete_report', report_id=expertise_report.report_id) + f'#expertise-{current_expertise_type}'
+                
+                return redirect(url)
 
         except Exception as e:
             db.session.rollback()

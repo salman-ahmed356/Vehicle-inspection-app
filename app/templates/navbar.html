@@ -10,21 +10,36 @@
 <div class="bg-blue-500 p-4">
   <div class="container mx-auto flex justify-between items-center">
 
-    <!-- Dashboard Link -->
-    <div class="text-white text-lg font-bold flex items-center space-x-2">
-      <i class="fas fa-th-large"></i>
-      <a href="{{ url_for('main.index') }}" class="hover:underline">
+    <!-- Dashboard and Back Links -->
+    <div class="text-white text-lg font-bold flex items-center space-x-4">
+      <a href="javascript:history.back()" class="hover:underline flex items-center">
+        <i class="fas fa-arrow-left mr-1"></i>
+        {{ _('Back') }}
+      </a>
+      <a href="/dashboard" class="hover:underline flex items-center">
+        <i class="fas fa-th-large mr-1"></i>
         {{ _('Dashboard') }}
       </a>
     </div>
 
     <!-- Main Menu -->
     <div class="flex space-x-8 text-white">
+      <!-- Logged in user -->
+      {% if session.user_name %}
+      <div class="relative group mr-4">
+        <i class="fas fa-user-circle text-yellow-300 mr-1"></i>
+        <span class="uppercase font-bold text-yellow-200">{{ session.user_name }}</span>
+      </div>
+      <div class="relative group mr-4">
+        <i class="fas fa-sign-out-alt"></i>
+        <a href="#" id="logoutBtn" class="hover:underline uppercase">{{ _('Logout') }}</a>
+      </div>
+      {% endif %}
 
       <!-- Expertise -->
       <div class="relative group">
         <i class="fas fa-car"></i>
-        <a href="#" class="hover:underline uppercase">{{ _('Expertise') }}</a>
+        <a href="{{ url_for('reports.report_list') }}" class="hover:underline uppercase">{{ _('Expertise') }}</a>
         <div class="dropdown-menu">
           <a href="{{ url_for('reports.add_report') }}"
              class="block px-4 py-2 hover:bg-gray-100">
@@ -34,11 +49,11 @@
              class="block px-4 py-2 hover:bg-gray-100">
             {{ _('Open Expertise Reports') }}
           </a>
-          <a href="#"
+          <a href="{{ url_for('reports.report_list', status='completed') }}"
              class="block px-4 py-2 hover:bg-gray-100">
             {{ _('Completed Expertise Reports') }}
           </a>
-          <a href="#"
+          <a href="{{ url_for('reports.report_list', status='cancelled') }}"
              class="block px-4 py-2 hover:bg-gray-100">
             {{ _('Cancelled Expertise Reports') }}
           </a>
@@ -51,7 +66,7 @@
         <a href="{{ url_for('appointments.appointment_list') }}"
            class="hover:underline uppercase">{{ _('Appointments') }}</a>
         <div class="dropdown-menu">
-          <a href="#" id="openCreateAppointmentModal"
+          <a href="{{ url_for('appointments.add_appointment') }}"
              class="block px-4 py-2 hover:bg-gray-100">
             {{ _('Create Appointment') }}
           </a>
@@ -62,26 +77,10 @@
         </div>
       </div>
 
-      <!-- Statistics -->
-      <div class="relative group">
-        <i class="fas fa-chart-line"></i>
-        <a href="#" class="hover:underline uppercase">{{ _('Statistics') }}</a>
-        <div class="dropdown-menu">
-          <a href="#"
-             class="block px-4 py-2 hover:bg-gray-100">
-            {{ _('Earnings') }}
-          </a>
-          <a href="#"
-             class="block px-4 py-2 hover:bg-gray-100">
-            {{ _('Where They Came From') }}
-          </a>
-        </div>
-      </div>
-
       <!-- Settings -->
       <div class="relative group">
         <i class="fas fa-cog"></i>
-        <a href="#" class="hover:underline uppercase">{{ _('Settings') }}</a>
+        <a href="{{ url_for('companies.company_detail') }}" class="hover:underline uppercase">{{ _('Settings') }}</a>
         <div class="dropdown-menu">
           <a href="{{ url_for('companies.company_detail') }}"
              class="block px-4 py-2 hover:bg-gray-100">
@@ -102,25 +101,7 @@
         </div>
       </div>
 
-      <!-- Balance Transactions -->
-      <div class="relative group">
-        <i class="fas fa-wallet"></i>
-        <a href="#" class="hover:underline uppercase">{{ _('Balance Transactions') }}</a>
-        <div class="dropdown-menu">
-          <a href="#"
-             class="block px-4 py-2 hover:bg-gray-100">
-            {{ _('Load Balance') }}
-          </a>
-          <a href="#"
-             class="block px-4 py-2 hover:bg-gray-100">
-            {{ _('My Top-ups') }}
-          </a>
-          <a href="#"
-             class="block px-4 py-2 hover:bg-gray-100">
-            {{ _('My Query History') }}
-          </a>
-        </div>
-      </div>
+
 
     </div>
   </div>
@@ -134,25 +115,80 @@
     left: 0;
     margin-top: 0.5rem;
     background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 0.375rem;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     z-index: 1000;
-    transition: visibility 0.2s, opacity 0.2s ease-in-out;
+    transition: visibility 0.2s, opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+    transform: translateY(-10px);
+    min-width: 200px;
+    overflow: hidden;
+  }
+  .relative.group:hover .dropdown-menu {
+    transform: translateY(0);
   }
   .relative.group:hover .dropdown-menu {
     visibility: visible;
     opacity: 1;
+    display: block !important;
   }
   .dropdown-menu a {
     display: block;
-    padding: 8px 16px;
+    padding: 10px 16px;
     color: #333;
     text-decoration: none;
+    pointer-events: auto !important;
+    border-bottom: 1px solid #eaeaea;
+    transition: all 0.2s ease;
+  }
+  .dropdown-menu a:last-child {
+    border-bottom: none;
   }
   .dropdown-menu a:hover {
-    background-color: #f1f1f1;
+    background-color: #f8f9fa;
+    padding-left: 20px;
   }
 </style>
 
+<!-- Logout Confirmation Modal -->
+<div id="logoutModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center hidden z-50">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+    <h3 class="text-lg font-bold mb-4">{{ _('Confirm Logout') }}</h3>
+    <p class="mb-6">{{ _('Are you sure you want to log out?') }}</p>
+    <div class="flex justify-end space-x-4">
+      <button id="cancelLogout" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded">{{ _('Cancel') }}</button>
+      <a href="{{ url_for('auth.logout') }}" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">{{ _('Logout') }}</a>
+    </div>
+  </div>
+</div>
+
 <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dropdown-fix.js') }}"></script>
+<script src="{{ url_for('static', filename='js/back-button.js') }}"></script>
+
+<script>
+  // Logout confirmation modal
+  const logoutBtn = document.getElementById('logoutBtn');
+  const logoutModal = document.getElementById('logoutModal');
+  const cancelLogout = document.getElementById('cancelLogout');
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      logoutModal.classList.remove('hidden');
+    });
+  }
+
+  if (cancelLogout) {
+    cancelLogout.addEventListener('click', function() {
+      logoutModal.classList.add('hidden');
+    });
+  }
+
+  // Close modal when clicking outside
+  window.addEventListener('click', function(event) {
+    if (event.target === logoutModal) {
+      logoutModal.classList.add('hidden');
+    }
+  });
+</script>

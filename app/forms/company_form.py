@@ -13,7 +13,7 @@ class CompanyForm(FlaskForm):
     city = StringField('Şehir', validators=[DataRequired(), Length(max=100)])
     state = StringField('Eyalet', validators=[Optional(), Length(max=100)])
     postal_code = StringField('Posta Kodu', validators=[Optional(), Length(max=20)])
-    my_business_address_link = StringField('My Business Adres Linki', validators=[Optional(), Length(max=255)])
+    # my_business_address_link field removed temporarily
     contact_name = StringField('Adı ve Soyadı', validators=[Optional(), Length(max=100)])
     contact_phone = StringField('Cep Telefonu', validators=[Optional(), Length(max=15)])
     submit = SubmitField('KAYDET')

@@ -203,6 +203,7 @@ function showTestType(type) {
 
 // Initialize form with existing data
 document.addEventListener('DOMContentLoaded', function() {
+  console.log('Initializing dyno expertise form...');
   // Set up event listeners for radio buttons
   document.getElementById('dyno_test_radio').addEventListener('change', function() {
     if (this.checked) showTestType('dyno');
@@ -216,6 +217,7 @@ document.addEventListener('DOMContentLoaded', function() {
   {% for feature in expertise_report.features %}
     {% if feature.name == 'test_type' %}
       var savedTestType = "{{ feature.status }}";
+      console.log('Found saved test_type:', savedTestType);
       if (savedTestType === 'dyno') {
         document.getElementById('dyno_test_radio').checked = true;
         showTestType('dyno');

@@ -37,11 +37,18 @@ def update_company_service(company, data):
     
     logger.info(f"Updating company ID: {company.id} with data: {data}")
     
+    # Log the data being used to update the company
+    logger.info(f"Updating company with data: {data}")
+    
     company.name = data['name']
     company.phone = data.get('phone')
     company.fax = data.get('fax')
     company.email = data.get('email')
     company.website = data.get('website')
+    # Removed my_business_address_link temporarily
+    
+    # Log the updated company object
+    logger.info(f"Updated company object: {company.name}, {company.phone}, {company.email}")
 
     # Update or create the address
     if company.address:
@@ -50,6 +57,7 @@ def update_company_service(company, data):
         company.address.city = data['city']
         company.address.state = data.get('state')
         company.address.postal_code = data.get('postal_code')
+        logger.info(f"Updated address: {company.address.street_address}, {company.address.city}, {company.address.state}, {company.address.postal_code}")
     else:
         logger.info("Creating new address for company")
         address = Address(

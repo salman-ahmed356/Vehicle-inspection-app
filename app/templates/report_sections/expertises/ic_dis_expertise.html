@@ -135,7 +135,9 @@
       rows="4"
       class="w-full p-2 border border-gray-300 rounded"
       placeholder="{{ _('Enter technician comment here...') }}"
-    >{{ expertise_report.comment }}{{ expertise_report2.comment }}</textarea>
+    >{% if expertise_report.comment or expertise_report2.comment %}{{ expertise_report.comment or '' }}{% if expertise_report.comment and expertise_report2.comment %}
+
+{% endif %}{{ expertise_report2.comment or '' }}{% endif %}</textarea>
   </div>
 
   <div class="text-right">

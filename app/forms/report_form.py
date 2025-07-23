@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, BooleanField, SelectField, SubmitField, TextAreaField, DateTimeField
+from flask_wtf.file import FileField, FileAllowed
+from wtforms import StringField, IntegerField, BooleanField, SelectField, SubmitField, TextAreaField, DateTimeField, RadioField
 from wtforms.validators import DataRequired, Optional, Length
 from ..enums import ReportStatus
 
@@ -17,6 +18,10 @@ class ReportForm(FlaskForm):
     owner_tax_no = StringField('Owner Tax No', validators=[Optional(), Length(max=11)])
     owner_phone = StringField('Owner Phone', validators=[Optional(), Length(min=10, max=15)])
     owner_address = TextAreaField('Owner Address', validators=[Optional(), Length(max=255)])
+    
+    # Vehicle Image
+    has_image = RadioField('Add Vehicle Image?', choices=[('no', 'No'), ('yes', 'Yes')], default='no')
+    vehicle_image = FileField('Vehicle Image', validators=[Optional(), FileAllowed(['jpg', 'jpeg', 'png'], 'Images only!')])
 
     # Vehicle Information
     vehicle_plate = StringField('Vehicle Plate', validators=[DataRequired(), Length(max=10)])

@@ -129,5 +129,27 @@
             packagePriceVatInput.value = '';
         }
     }
+    
+    // Set default package price on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const packageSelect = document.getElementById('package_id');
+        const packagePriceInput = document.getElementById('package_price');
+        
+        // Set initial price if not already set
+        if (packagePriceInput && packagePriceInput.value === '') {
+            packagePriceInput.value = '500'; // Default price
+            calculateVAT();
+        }
+        
+        // Update price when package changes
+        if (packageSelect) {
+            packageSelect.addEventListener('change', function() {
+                // In a real app, you might fetch the price from the server
+                // For now, just set a default price
+                packagePriceInput.value = '500';
+                calculateVAT();
+            });
+        }
+    });
 </script>
 

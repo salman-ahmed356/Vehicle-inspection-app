@@ -18,6 +18,17 @@
   {% include 'navbar.html' %}
 
   <main class="container mx-auto px-4 py-6">
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="{{ 'bg-green-100 border-green-400 text-green-700' if category == 'success' else 'bg-red-100 border-red-400 text-red-700' }} px-4 py-3 mb-4 rounded relative border" role="alert">
+            <span class="block sm:inline">{{ message }}</span>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    
     <div class="bg-white p-6 rounded-lg shadow">
       <h2 class="text-xl font-semibold mb-4">{{ _('Company Settings') }}</h2>
 
@@ -47,11 +58,39 @@
         {% include 'settings/staff.html' with context %}
       </div>
 
-      <!-- Future tabs can be added here -->
+      <!-- Tab 3: Invoice Information (Hidden) -->
+      <div id="tab3" class="tab-content {% if active_tab=='invoice' %}active{% endif %} hidden">
+        <!-- Invoice content will be added in the future -->
+      </div>
+
+      <!-- Tab 4: Report Settings (Hidden temporarily) -->
+      <div id="tab4" class="tab-content {% if active_tab=='report' %}active{% endif %} hidden">
+        <!-- Report settings content hidden to prevent errors -->
+        <!-- {% include 'settings/report.html' %} -->
+      </div>
 
     </div>
   </main>
 
   <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+  
+  <!-- Script to remove any extra Save Settings buttons -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Find and remove any Save Settings buttons that might be added
+      const buttons = document.querySelectorAll('button');
+      for (let i = 0; i < buttons.length; i++) {
+        if (buttons[i].textContent.includes('Save Settings')) {
+          buttons[i].remove();
+        }
+      }
+      
+      // Also remove any button with class 'save-settings'
+      const saveSettingsButtons = document.querySelectorAll('.save-settings');
+      for (let i = 0; i < saveSettingsButtons.length; i++) {
+        saveSettingsButtons[i].remove();
+      }
+    });
+  </script>
 </body>
 </html>

@@ -1,0 +1,132 @@
+{# app/templates/settings/report.html #}
+
+<form action="{{ url_for('report_settings.update_report_settings') }}" method="POST">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  
+  <div class="border-b border-gray-200 pb-4">
+    <h3 class="text-lg font-medium text-gray-900">
+      {{ _('Report Settings') }}
+    </h3>
+  </div>
+
+  <div class="mt-6 space-y-8">
+    <!-- Report Customization -->
+    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+      <h4 class="text-md font-medium text-gray-800 mb-3">{{ _('Report Customization') }}</h4>
+      <p class="text-sm text-gray-600 mb-4">{{ _('Select which sections appear in vehicle inspection reports.') }}</p>
+      
+      <div class="grid grid-cols-2 gap-4">
+        <div class="flex items-center">
+          <input type="checkbox" id="show_customer_info" name="show_customer_info" class="h-4 w-4 text-blue-600 border-gray-300 rounded" checked>
+          <label for="show_customer_info" class="ml-2 block text-sm text-gray-700">{{ _('Customer Information') }}</label>
+        </div>
+        <div class="flex items-center">
+          <input type="checkbox" id="show_vehicle_info" name="show_vehicle_info" class="h-4 w-4 text-blue-600 border-gray-300 rounded" checked>
+          <label for="show_vehicle_info" class="ml-2 block text-sm text-gray-700">{{ _('Vehicle Information') }}</label>
+        </div>
+        <div class="flex items-center">
+          <input type="checkbox" id="show_inspection_details" name="show_inspection_details" class="h-4 w-4 text-blue-600 border-gray-300 rounded" checked>
+          <label for="show_inspection_details" class="ml-2 block text-sm text-gray-700">{{ _('Inspection Details') }}</label>
+        </div>
+        <div class="flex items-center">
+          <input type="checkbox" id="show_photos" name="show_photos" class="h-4 w-4 text-blue-600 border-gray-300 rounded" checked>
+          <label for="show_photos" class="ml-2 block text-sm text-gray-700">{{ _('Vehicle Photos') }}</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Default Values -->
+    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+      <h4 class="text-md font-medium text-gray-800 mb-3">{{ _('Default Values') }}</h4>
+      <p class="text-sm text-gray-600 mb-4">{{ _('Set default values for new reports.') }}</p>
+      
+      <div class="grid grid-cols-1 gap-4">
+        <div>
+          <label for="default_comments" class="block text-sm font-medium text-gray-700">{{ _('Default Comments') }}</label>
+          <textarea id="default_comments" name="default_comments" rows="3" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+        </div>
+        <div>
+          <label for="default_rating" class="block text-sm font-medium text-gray-700">{{ _('Default Rating') }}</label>
+          <select id="default_rating" name="default_rating" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            <option value="excellent">{{ _('Excellent') }}</option>
+            <option value="good" selected>{{ _('Good') }}</option>
+            <option value="fair">{{ _('Fair') }}</option>
+            <option value="poor">{{ _('Poor') }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- PDF Export Settings -->
+    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+      <h4 class="text-md font-medium text-gray-800 mb-3">{{ _('PDF Export Settings') }}</h4>
+      <p class="text-sm text-gray-600 mb-4">{{ _('Configure PDF export options.') }}</p>
+      
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label for="paper_size" class="block text-sm font-medium text-gray-700">{{ _('Paper Size') }}</label>
+          <select id="paper_size" name="paper_size" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            <option value="a4" selected>A4</option>
+            <option value="letter">Letter</option>
+            <option value="legal">Legal</option>
+          </select>
+        </div>
+        <div>
+          <label for="orientation" class="block text-sm font-medium text-gray-700">{{ _('Orientation') }}</label>
+          <select id="orientation" name="orientation" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            <option value="portrait" selected>{{ _('Portrait') }}</option>
+            <option value="landscape">{{ _('Landscape') }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Branding Options -->
+    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+      <h4 class="text-md font-medium text-gray-800 mb-3">{{ _('Branding Options') }}</h4>
+      <p class="text-sm text-gray-600 mb-4">{{ _('Customize the appearance of your reports.') }}</p>
+      
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label for="logo_position" class="block text-sm font-medium text-gray-700">{{ _('Logo Position') }}</label>
+          <select id="logo_position" name="logo_position" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            <option value="top_left" selected>{{ _('Top Left') }}</option>
+            <option value="top_center">{{ _('Top Center') }}</option>
+            <option value="top_right">{{ _('Top Right') }}</option>
+          </select>
+        </div>
+        <div>
+          <label for="primary_color" class="block text-sm font-medium text-gray-700">{{ _('Primary Color') }}</label>
+          <input type="color" id="primary_color" name="primary_color" value="#3b82f6" class="mt-1 block w-full h-10 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        </div>
+      </div>
+    </div>
+
+    <!-- Signature Requirements -->
+    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+      <h4 class="text-md font-medium text-gray-800 mb-3">{{ _('Signature Requirements') }}</h4>
+      <p class="text-sm text-gray-600 mb-4">{{ _('Configure which signatures are required on reports.') }}</p>
+      
+      <div class="grid grid-cols-2 gap-4">
+        <div class="flex items-center">
+          <input type="checkbox" id="require_inspector_signature" name="require_inspector_signature" class="h-4 w-4 text-blue-600 border-gray-300 rounded" checked>
+          <label for="require_inspector_signature" class="ml-2 block text-sm text-gray-700">{{ _('Inspector Signature') }}</label>
+        </div>
+        <div class="flex items-center">
+          <input type="checkbox" id="require_customer_signature" name="require_customer_signature" class="h-4 w-4 text-blue-600 border-gray-300 rounded" checked>
+          <label for="require_customer_signature" class="ml-2 block text-sm text-gray-700">{{ _('Customer Signature') }}</label>
+        </div>
+        <div class="flex items-center">
+          <input type="checkbox" id="require_manager_signature" name="require_manager_signature" class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+          <label for="require_manager_signature" class="ml-2 block text-sm text-gray-700">{{ _('Manager Signature') }}</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-6 flex justify-end">
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">
+      {{ _('Save Settings') }}
+    </button>
+  </div>
+</form>

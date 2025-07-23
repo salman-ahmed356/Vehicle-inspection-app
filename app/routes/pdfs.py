@@ -1,12 +1,15 @@
-from flask import render_template, send_file, Blueprint, abort
-from weasyprint import HTML
-from ..models import Report
-from ..services.pdf_service_fix import *
+from flask import send_file, Blueprint, abort
+from ..services.pdf_service_simple import create_pdf
+from ..auth import login_required
+
 pdfs = Blueprint('pdfs', __name__, url_prefix='/pdfs')
 
 @pdfs.route('generate/<int:report_id>')
+@login_required
 def generate_report_pdf(report_id):
-
+    """
+    Generate a simple PDF report for the given report_id.
+    """
     try:
         # Add detailed debugging
         from ..models import Report, ExpertiseReport
@@ -27,11 +30,11 @@ def generate_report_pdf(report_id):
             print(f"  - Expertise report {er.id}: type={er.expertise_type_id}, features={len(er.features)}")
             
         pdf_path = create_pdf(report_id)
+        print(f"PDF created successfully: {pdf_path}")
     except Exception as e:
-        # Eğer PDF oluşturulurken bir hata oluşursa, bunu loglayabilir ve bir hata mesajı döndürebilirsin
         import traceback
-        print(f"PDF oluşturulurken bir hata oluştu: {str(e)}")
+        print(f"Error creating PDF: {str(e)}")
         print(traceback.format_exc())
-        abort(500, description="PDF oluşturulamadı.")
+        abort(500, description="Could not create PDF.")
 
     return send_file(pdf_path, mimetype='application/pdf')

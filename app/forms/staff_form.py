@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, IntegerField, SelectField, SubmitField
+from wtforms import StringField, PasswordField, IntegerField, SelectField
 from wtforms.validators import DataRequired, Length, NumberRange, Optional
 
 
@@ -21,8 +21,15 @@ class StaffForm(FlaskForm):
     password = PasswordField(
         'Password',
         validators=[
-            DataRequired(message="Bu alan gereklidir."),
-            Length(min=6, message="Şifre en az 6 karakter olmalıdır.")
+            DataRequired(message="Password is required."),
+            Length(min=6, message="Password must be at least 6 characters.")
+        ]
+    )
+    confirm_password = PasswordField(
+        'Confirm Password',
+        validators=[
+            DataRequired(message="Please confirm your password."),
+            Length(min=6, message="Password must be at least 6 characters.")
         ]
     )
     phone_number = StringField(
@@ -50,4 +57,4 @@ class StaffForm(FlaskForm):
             NumberRange(min=1, message="Geçerli bir Şube ID girin.")
         ]
     )
-    submit = SubmitField('Add Staff')
+    # Removed submit field completely

@@ -1,3 +1,5 @@
+{% include 'report_sections/vehicle_image.html' %}
+
 <div class="grid grid-cols-2 gap-6">
     <!-- Vehicle Plate -->
     <div>
@@ -59,7 +61,7 @@
                 required>
             <option value="">{{ _('--Select--') }}</option>
             {% for gear_name, gear_value in transmission_types %}
-            <option value="{{ gear_name }}" {% if vehicle_info and vehicle_info.transmission_type == gear_name %}selected{% endif %}>
+            <option value="{{ gear_name }}" {% if vehicle_info and vehicle_info.transmission_type == gear_value %}selected{% endif %}>
                 {{ gear_value }}
             </option>
             {% endfor %}
@@ -97,7 +99,7 @@
                 required>
             <option value="">{{ _('--Select--') }}</option>
             {% for color_name, color_value in colors %}
-            <option value="{{ color_name }}" {% if vehicle_info and vehicle_info.color == color_name %}selected{% endif %}>
+            <option value="{{ color_name }}" {% if vehicle_info and vehicle_info.color == color_value %}selected{% endif %}>
                 {{ color_value }}
             </option>
             {% endfor %}
@@ -114,7 +116,7 @@
                 required>
             <option value="">{{ _('--Select--') }}</option>
             {% for fuel_name, fuel_value in fuel_types %}
-            <option value="{{ fuel_name }}" {% if vehicle_info and vehicle_info.fuel_type == fuel_name %}selected{% endif %}>
+            <option value="{{ fuel_name }}" {% if vehicle_info and vehicle_info.fuel_type == fuel_value %}selected{% endif %}>
                 {{ fuel_value }}
             </option>
             {% endfor %}

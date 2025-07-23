@@ -67,9 +67,22 @@
             </td>
             <td class="py-2 px-4 border-b">
               <button onclick="openUpdateModal({{ appointment.id }})"
-                      class="bg-blue-500 text-white px-2 py-1 rounded">
+                      class="bg-blue-500 text-white px-2 py-1 rounded mr-1">
                 {{ _('Update') }}
               </button>
+              <a href="{{ url_for('appointments.create_report_from_appointment', appointment_id=appointment.id) }}" 
+                 class="bg-green-500 text-white px-2 py-1 rounded mr-1 inline-block">
+                {{ _('Create Report') }}
+              </a>
+              <form action="{{ url_for('appointments.cancel_appointment', appointment_id=appointment.id) }}" 
+                    method="POST" 
+                    class="inline-block" 
+                    onsubmit="return confirm('{{ _('Are you sure you want to cancel this appointment?') }}');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded">
+                  {{ _('Cancel') }}
+                </button>
+              </form>
             </td>
           </tr>
           {% endfor %}

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ _('Create Report') }}</title>
+    <title>{{ _('Edit Report') if edit_mode else _('Create Report') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
@@ -16,9 +16,9 @@
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-6">
         <div class="bg-white p-6 rounded-lg shadow">
-            <h2 class="text-xl font-semibold mb-4">{{ _('Create Report') }}</h2>
+            <h2 class="text-xl font-semibold mb-4">{{ _('Edit Report') if edit_mode else _('Create Report') }}</h2>
 
-            <form action="{{ url_for('reports.add_report') }}" method="POST" class="space-y-6">
+            <form action="{{ url_for('reports.edit_report', report_id=report.id) if edit_mode else url_for('reports.add_report') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 {{ form.hidden_tag() }}
 
                 <!-- Inspection Information Section -->
@@ -57,6 +57,36 @@
 
     <script src="../static/js/report.js"></script>
     <script src="../static/js/appointment.js"></script>
+    
+    {% if edit_mode and report.has_image and report.image_data %}
+    <script>
+        // Ensure image preview is shown in edit mode
+        document.addEventListener('DOMContentLoaded', function() {
+            // Force show the image preview
+            const imagePreview = document.getElementById('image_preview');
+            const imageUploadSection = document.getElementById('image_upload_section');
+            const hasImageYes = document.getElementById('has_image_yes');
+            
+            if (imagePreview) {
+                imagePreview.style.display = 'block';
+            }
+            
+            if (imageUploadSection) {
+                imageUploadSection.style.display = 'block';
+            }
+            
+            if (hasImageYes) {
+                hasImageYes.checked = true;
+            }
+            
+            // Force the image to be visible
+            const previewImage = document.getElementById('preview_image');
+            if (previewImage && previewImage.src && previewImage.src.startsWith('data:image')) {
+                console.log('Image source is set to:', previewImage.src);
+            }
+        });
+    </script>
+    {% endif %}
 </body>
 
 </html>

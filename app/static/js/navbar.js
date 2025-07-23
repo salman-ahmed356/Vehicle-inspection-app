@@ -10,25 +10,38 @@ function openCreateAppointmentModal() {
 
 function setupModal(data) {
   const modalWrapper = document.getElementById("createAppointmentModal");
-  const modal        = document.getElementById("myModal");
-
-  if (!modalWrapper || !modal) {
-    console.error("Modal elements not found");
+  
+  if (!modalWrapper) {
+    console.error("Modal wrapper not found");
     return;
   }
-
+  
   modalWrapper.innerHTML = data;
+  
+  // Now that the HTML is injected, we can find the modal
+  const modal = document.getElementById("myModal");
+  
+  if (!modal) {
+    console.error("Modal element not found after injection");
+    return;
+  }
+  
   modal.classList.add("active");
+  modal.style.display = "flex";
 
   // Close buttons
   const closeBtn = document.getElementById("closeModalBtn");
   if (closeBtn) {
-    closeBtn.addEventListener("click", () => modal.classList.remove("active"));
+    closeBtn.addEventListener("click", () => {
+      modal.classList.remove("active");
+      modal.style.display = "none";
+    });
   }
 
   window.addEventListener("click", event => {
     if (event.target === modal) {
       modal.classList.remove("active");
+      modal.style.display = "none";
     }
   });
 
@@ -60,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Hover dropdowns
-  document.querySelectorAll('.navbar').forEach(navbar => {
+  document.querySelectorAll('.relative.group').forEach(navbar => {
     let timer;
     navbar.addEventListener('mouseenter', () => {
       clearTimeout(timer);

@@ -1,26 +1,32 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from ..database import db
 from ..models import Appointment, Customer
-from datetime import datetime
+from datetime import datetime, date
 from ..forms import AppointmentForm
+from ..auth import login_required
 
 appointments = Blueprint('appointments', __name__)
 
 
 @appointments.route('/appointments')
+@login_required
 def appointment_list():
     page = request.args.get('page', 1, type=int)  # Get the current page, default is 1
     per_page = request.args.get('per_page', 10, type=int)  # per_page, default is 10
-    paginated_appointments = Appointment.query.paginate(page=page, per_page=per_page, error_out=False)
+    
+    # Filter out past appointments
+    today = date.today()
+    paginated_appointments = Appointment.query.filter(Appointment.date >= today).order_by(Appointment.date, Appointment.time).paginate(page=page, per_page=per_page, error_out=False)
 
     return render_template('appointment/appointment_list.html', appointments=paginated_appointments.items,
                            pagination=paginated_appointments)
 
 
 @appointments.route('/appointment/add', methods=['GET', 'POST'])
+@login_required
 def add_appointment():
     form = AppointmentForm()
-    if form.validate_on_submit():
+    if request.method == 'POST' and form.validate_on_submit():
         customer_name = form.customer_name.data
         name_parts = customer_name.split(' ', 1)
         
@@ -55,12 +61,19 @@ def add_appointment():
         db.session.commit()
         flash('New appointment successfully created!', 'success')
         return redirect(url_for('appointments.appointment_list'))
-    else:
-        flash('Randevu oluşturma başarısız. Bilgileri doğru girdiğinize emin olun.', 'error')
+    elif request.method == 'POST':
+        flash('Appointment creation failed. Please check your information.', 'error')
         print("Form failed validation:", form.errors)
 
+    # Initialize form with default values
+    if not form.date.data:
+        form.date.data = datetime.now().date()
+    if not form.time.data:
+        form.time.data = datetime.now().time()
+
     customers = Customer.query.all()
-    return render_template('appointment/add_appointment.html', form=form, customers=customers)
+    # For GET requests, render the full page, not just the modal
+    return render_template('appointment/add_appointment_page.html', form=form, customers=customers)
 
 
 @appointments.route('/appointment/update/<int:appointment_id>', methods=['GET', 'POST'])
@@ -90,3 +103,43 @@ def update_appointment(appointment_id):
         return redirect(url_for('appointments.appointment_list'))
 
     return render_template('appointment/update_appointment.html', form=form, appointment=appointment)
+
+
+@appointments.route('/appointment/cancel/<int:appointment_id>', methods=['POST'])
+def cancel_appointment(appointment_id):
+    appointment = Appointment.query.get_or_404(appointment_id)
+    
+    # Delete the appointment
+    db.session.delete(appointment)
+    db.session.commit()
+    
+    flash('Appointment successfully cancelled!', 'success')
+    
+    # Check if the request came from the dashboard
+    from_dashboard = request.form.get('from_dashboard') == 'true'
+    if from_dashboard:
+        return redirect('/dashboard')
+    else:
+        return redirect(url_for('appointments.appointment_list'))
+
+
+@appointments.route('/appointment/create-report/<int:appointment_id>')
+def create_report_from_appointment(appointment_id):
+    # Get the appointment
+    appointment = Appointment.query.get_or_404(appointment_id)
+    
+    # Store appointment data in session to pre-fill the report form
+    from flask import session
+    session['appointment_data'] = {
+        'customer_name': appointment.customer.full_name,
+        'customer_phone': appointment.customer.phone_number,
+        'customer_email': appointment.customer.email,
+        'customer_tax_no': appointment.customer.tc_tax_number,
+        'vehicle_brand': appointment.brand,
+        'vehicle_model': appointment.model,
+        'appointment_id': appointment_id  # Store the appointment ID to delete it later
+    }
+    
+    # Redirect to the report creation page
+    return redirect(url_for('reports.add_report'))
+

@@ -1,18 +1,25 @@
 {% if staff_form %}
   <form
-    action="{% if first_staff %}{{ url_for('staff.edit_staff', id=first_staff.id) }}{% else %}{{ url_for('staff.add_staff') }}{% endif %}"
+    action="{{ url_for('companies.update_company_staff') }}"
     method="POST"
     class="space-y-4"
+    id="staffForm"
   >
-    {{ staff_form.hidden_tag() }}
+    {% if first_staff %}
+    <input type="hidden" name="staff_id" value="{{ first_staff.id }}">
+    {% endif %}
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
     <div>
       <label for="first_name" class="block text-sm font-medium text-gray-700">
         {{ _('First Name') }}
       </label>
-      {{ staff_form.first_name(
-           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-         ) }}
+      <input type="text" 
+             name="first_name" 
+             id="first_name" 
+             value="{{ staff_form.first_name.data or '' }}"
+             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+             required>
       {% for e in staff_form.first_name.errors %}
         <p class="text-red-600 text-sm">{{ e }}</p>
       {% endfor %}
@@ -22,9 +29,12 @@
       <label for="last_name" class="block text-sm font-medium text-gray-700">
         {{ _('Last Name') }}
       </label>
-      {{ staff_form.last_name(
-           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-         ) }}
+      <input type="text" 
+             name="last_name" 
+             id="last_name" 
+             value="{{ staff_form.last_name.data or '' }}"
+             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+             required>
       {% for e in staff_form.last_name.errors %}
         <p class="text-red-600 text-sm">{{ e }}</p>
       {% endfor %}
@@ -34,13 +44,65 @@
       <label for="phone_number" class="block text-sm font-medium text-gray-700">
         {{ _('Phone Number') }}
       </label>
-      {{ staff_form.phone_number(
-           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-         ) }}
+      <input type="text" 
+             name="phone_number" 
+             id="phone_number" 
+             value="{{ staff_form.phone_number.data or '' }}"
+             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+             required>
       {% for e in staff_form.phone_number.errors %}
         <p class="text-red-600 text-sm">{{ e }}</p>
       {% endfor %}
     </div>
+
+    {% if first_staff %}
+    <div>
+      <button type="button" 
+              id="changePasswordBtn"
+              class="bg-blue-500 text-white px-3 py-1 rounded text-sm">
+        {{ _('Change Password') }}
+      </button>
+    </div>
+    {% else %}
+    <div>
+      <label for="password" class="block text-sm font-medium text-gray-700">
+        {{ _('Password') }} *
+      </label>
+      <input type="password" 
+             name="password" 
+             id="password" 
+             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+             required>
+      {% for e in staff_form.password.errors %}
+        <p class="text-red-600 text-sm">{{ e }}</p>
+      {% endfor %}
+    </div>
+
+    <div>
+      <label for="confirm_password" class="block text-sm font-medium text-gray-700">
+        {{ _('Confirm Password') }} *
+      </label>
+      <input type="password" 
+             name="confirm_password" 
+             id="confirm_password" 
+             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+             required>
+      {% for e in staff_form.confirm_password.errors %}
+        <p class="text-red-600 text-sm">{{ e }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Hidden fields for role and department -->
+    <input type="hidden" name="role" value="{{ staff_form.role.data or 'Staff' }}">
+    <input type="hidden" name="department" value="{{ staff_form.department.data or 'Management' }}">
+    
+    <!-- Hidden password fields that will be populated by the modal -->
+    {% if first_staff %}
+    <input type="hidden" name="password" id="password">
+    <input type="hidden" name="confirm_password" id="confirm_password">
+    <input type="hidden" name="current_password" id="current_password">
+    {% endif %}
 
     <div class="flex justify-end space-x-4 mt-6">
       <button type="submit"
@@ -56,3 +118,177 @@
 {% else %}
   <p>{{ _('Please create a company first before adding staff members.') }}</p>
 {% endif %}
+
+<!-- Password Change Modal -->
+<div id="passwordModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center hidden z-50">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-bold">{{ _('Change Password') }}</h3>
+      <button id="closePasswordModal" class="text-gray-500 hover:text-gray-700">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="space-y-4">
+      <div>
+        <label for="modal_current_password" class="block text-sm font-medium text-gray-700">
+          {{ _('Current Password') }} *
+        </label>
+        <input type="password" 
+               id="modal_current_password" 
+               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+               required>
+        <p id="current_password_error" class="text-red-600 text-xs mt-1 hidden">{{ _('Current password is required') }}</p>
+      </div>
+      
+      <div>
+        <label for="modal_new_password" class="block text-sm font-medium text-gray-700">
+          {{ _('New Password') }} *
+        </label>
+        <input type="password" 
+               id="modal_new_password" 
+               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+               required>
+        <p id="new_password_error" class="text-red-600 text-xs mt-1 hidden">{{ _('New password is required') }}</p>
+      </div>
+      
+      <div>
+        <label for="modal_confirm_password" class="block text-sm font-medium text-gray-700">
+          {{ _('Confirm New Password') }} *
+        </label>
+        <input type="password" 
+               id="modal_confirm_password" 
+               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+               required>
+        <p id="confirm_password_error" class="text-red-600 text-xs mt-1 hidden">{{ _('Passwords do not match') }}</p>
+      </div>
+      
+      <div class="flex justify-end space-x-4 mt-6">
+        <button type="button"
+                id="savePasswordBtn"
+                class="bg-green-600 text-white px-4 py-2 rounded shadow">
+          {{ _('Save Password') }}
+        </button>
+        <button type="button"
+                id="cancelPasswordBtn"
+                class="bg-gray-500 text-white px-4 py-2 rounded shadow">
+          {{ _('Cancel') }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Password modal elements
+    const passwordModal = document.getElementById('passwordModal');
+    const changePasswordBtn = document.getElementById('changePasswordBtn');
+    const closePasswordModal = document.getElementById('closePasswordModal');
+    const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
+    const savePasswordBtn = document.getElementById('savePasswordBtn');
+    
+    // Form elements
+    const staffForm = document.getElementById('staffForm');
+    const passwordField = document.getElementById('password');
+    const confirmPasswordField = document.getElementById('confirm_password');
+    const currentPasswordField = document.getElementById('current_password');
+    
+    // Modal input fields
+    const modalCurrentPassword = document.getElementById('modal_current_password');
+    const modalNewPassword = document.getElementById('modal_new_password');
+    const modalConfirmPassword = document.getElementById('modal_confirm_password');
+    
+    // Error message elements
+    const currentPasswordError = document.getElementById('current_password_error');
+    const newPasswordError = document.getElementById('new_password_error');
+    const confirmPasswordError = document.getElementById('confirm_password_error');
+    
+    // Open password modal
+    if (changePasswordBtn) {
+      changePasswordBtn.addEventListener('click', function() {
+        passwordModal.classList.remove('hidden');
+      });
+    }
+    
+    // Close password modal
+    if (closePasswordModal) {
+      closePasswordModal.addEventListener('click', function() {
+        passwordModal.classList.add('hidden');
+        resetModalFields();
+      });
+    }
+    
+    // Cancel button in modal
+    if (cancelPasswordBtn) {
+      cancelPasswordBtn.addEventListener('click', function() {
+        passwordModal.classList.add('hidden');
+        resetModalFields();
+      });
+    }
+    
+    // Save password button in modal
+    if (savePasswordBtn) {
+      savePasswordBtn.addEventListener('click', function() {
+        // Reset error messages
+        currentPasswordError.classList.add('hidden');
+        newPasswordError.classList.add('hidden');
+        confirmPasswordError.classList.add('hidden');
+        
+        // Validate inputs
+        let isValid = true;
+        
+        if (!modalCurrentPassword.value) {
+          currentPasswordError.classList.remove('hidden');
+          isValid = false;
+        }
+        
+        if (!modalNewPassword.value) {
+          newPasswordError.classList.remove('hidden');
+          isValid = false;
+        }
+        
+        if (modalNewPassword.value !== modalConfirmPassword.value) {
+          confirmPasswordError.classList.remove('hidden');
+          isValid = false;
+        }
+        
+        if (isValid) {
+          // Set the values in the hidden form fields
+          passwordField.value = modalNewPassword.value;
+          confirmPasswordField.value = modalConfirmPassword.value;
+          currentPasswordField.value = modalCurrentPassword.value;
+          
+          // Close the modal
+          passwordModal.classList.add('hidden');
+          
+          // Add a message to show the user that the password will be changed
+          const messageDiv = document.createElement('div');
+          messageDiv.className = 'bg-blue-100 border-blue-400 text-blue-700 px-4 py-3 mb-4 rounded relative border';
+          messageDiv.innerHTML = '<span class="block sm:inline">Password will be changed when you save the form.</span>';
+          staffForm.insertBefore(messageDiv, staffForm.firstChild);
+          
+          // Don't submit the form automatically - let the user click Save Staff
+        }
+      });
+    }
+    
+    // Reset modal fields
+    function resetModalFields() {
+      modalCurrentPassword.value = '';
+      modalNewPassword.value = '';
+      modalConfirmPassword.value = '';
+      currentPasswordError.classList.add('hidden');
+      newPasswordError.classList.add('hidden');
+      confirmPasswordError.classList.add('hidden');
+    }
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+      if (event.target === passwordModal) {
+        passwordModal.classList.add('hidden');
+        resetModalFields();
+      }
+    });
+  });
+</script>

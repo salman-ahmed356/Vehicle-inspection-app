@@ -10,7 +10,6 @@ class Company(db.Model):
     email = db.Column(db.String(100))
     website = db.Column(db.String(100))
     address_id = db.Column(db.Integer, db.ForeignKey('address.id'), nullable=True)
-    my_business_address_link = db.Column(db.String(255))
 
     address = db.relationship('Address', backref='companies', lazy=True)
     branches = db.relationship('Branch', back_populates='company', lazy=True)
