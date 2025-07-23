@@ -1,0 +1,149 @@
+<div class="mb-4">
+    <h3 class="text-lg font-medium mb-2">{{ _('Vehicle Image') }}</h3>
+    <div class="mb-2">
+        <label class="block text-sm font-medium text-gray-700">{{ _('Add Vehicle Image?') }}</label>
+        <div class="mt-1 flex items-center space-x-4">
+            <div class="flex items-center">
+                <input type="radio" id="has_image_no" name="has_image" value="no" 
+                       {% if (edit_mode and not report.has_image) or form.has_image.data == 'no' %}checked{% endif %}
+                       class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                <label for="has_image_no" class="ml-2 block text-sm text-gray-700">{{ _('No') }}</label>
+            </div>
+            <div class="flex items-center">
+                <input type="radio" id="has_image_yes" name="has_image" value="yes" 
+                       {% if (edit_mode and report.has_image) or form.has_image.data == 'yes' %}checked{% endif %}
+                       class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                <label for="has_image_yes" class="ml-2 block text-sm text-gray-700">{{ _('Yes') }}</label>
+            </div>
+        </div>
+    </div>
+    
+    <div id="image_upload_section" style="display: {% if (edit_mode and report.has_image) or form.has_image.data == 'yes' %}block{% else %}none{% endif %};" class="mt-3">
+        <label class="block text-sm font-medium text-gray-700">{{ _('Upload Vehicle Image') }}</label>
+        <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+            <div class="space-y-1 text-center">
+                <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <div class="flex text-sm text-gray-600">
+                    <label for="vehicle_image" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                        <span>{{ _('Upload a file') }}</span>
+                        <input id="vehicle_image" name="vehicle_image" type="file" class="sr-only" accept="image/*">
+                    </label>
+                    <p class="pl-1">{{ _('or drag and drop') }}</p>
+                </div>
+                <p class="text-xs text-gray-500">{{ _('PNG, JPG, JPEG up to 5MB') }}</p>
+            </div>
+        </div>
+        <div id="image_preview" style="display: {% if edit_mode and report.has_image and report.image_data %}block{% else %}none{% endif %};" class="mt-3">
+            <img id="preview_image" src="{% if edit_mode and report.has_image and report.image_data %}data:image/jpeg;base64,{{ report.image_data|b64encode }}{% else %}#{% endif %}" alt="Preview" class="max-h-48 rounded-md">
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const hasImageRadios = document.querySelectorAll('input[name="has_image"]');
+        const imageUploadSection = document.getElementById('image_upload_section');
+        const fileInput = document.getElementById('vehicle_image');
+        const imagePreview = document.getElementById('image_preview');
+        const previewImage = document.getElementById('preview_image');
+        const form = document.querySelector('form');
+        
+        // Add form validation
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const hasImageYes = document.getElementById('has_image_yes');
+                if (hasImageYes && hasImageYes.checked) {
+                    // Check if there's an existing image in edit mode
+                    const hasExistingImage = previewImage && previewImage.src && 
+                                           previewImage.src !== '#' && 
+                                           !previewImage.src.endsWith('#');
+                    
+                    // If no file is selected and there's no existing image
+                    if (!fileInput.files[0] && !hasExistingImage) {
+                        e.preventDefault();
+                        alert('Please upload a vehicle image or select "No" for the image option.');
+                        return false;
+                    }
+                }
+                return true;
+            });
+        }
+        
+        // Handle radio button change
+        hasImageRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'yes') {
+                    imageUploadSection.style.display = 'block';
+                } else {
+                    imageUploadSection.style.display = 'none';
+                    fileInput.value = '';
+                    imagePreview.style.display = 'none';
+                }
+            });
+        });
+        
+        // Handle file input change
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(this.files[0]);
+            } else {
+                imagePreview.style.display = 'none';
+            }
+        });
+        
+        // Handle drag and drop
+        const dropArea = imageUploadSection.querySelector('.border-dashed');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            dropArea.classList.add('border-blue-500', 'bg-blue-50');
+        }
+        
+        function unhighlight() {
+            dropArea.classList.remove('border-blue-500', 'bg-blue-50');
+        }
+        
+        dropArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files && files[0]) {
+                fileInput.files = files;
+                const event = new Event('change');
+                fileInput.dispatchEvent(event);
+            }
+        }
+        
+        // Force show image in edit mode
+        if (previewImage && previewImage.src && previewImage.src.includes('data:image')) {
+            imagePreview.style.display = 'block';
+            imageUploadSection.style.display = 'block';
+            document.getElementById('has_image_yes').checked = true;
+        }
+    });
+</script>

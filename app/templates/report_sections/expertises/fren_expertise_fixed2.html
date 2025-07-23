@@ -1,0 +1,225 @@
+{% include 'report_sections/expertises/vehicle_header.html' %}
+
+<h2 class="text-lg font-semibold mb-4">{{ _('Brake Test') }}</h2>
+<p class="mb-4">{{ _('Please specify the status of each brake section!') }}</p>
+
+<form method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
+  <input type="hidden" name="current_expertise_type" value="{{ current_expertise_type }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  {# Find special features #}
+  {% set front_na_feature = expertise_report.features|selectattr("name", "equalto", "FRONT_NA")|first %}
+  {% set rear_na_feature = expertise_report.features|selectattr("name", "equalto", "REAR_NA")|first %}
+  {% set park_na_feature = expertise_report.features|selectattr("name", "equalto", "PARK_NA")|first %}
+  
+  {# Find regular features #}
+  {% set front_left = expertise_report.features|selectattr("name", "equalto", "ÖN SOL FREN")|first %}
+  {% set front_right = expertise_report.features|selectattr("name", "equalto", "ÖN SAĞ FREN")|first %}
+  {% set rear_left = expertise_report.features|selectattr("name", "equalto", "ARKA SOL FREN")|first %}
+  {% set rear_right = expertise_report.features|selectattr("name", "equalto", "ARKA SAĞ FREN")|first %}
+  {% set park_left = expertise_report.features|selectattr("name", "equalto", "EL FRENI SOL")|first %}
+  {% set park_right = expertise_report.features|selectattr("name", "equalto", "EL FRENI SAĞ")|first %}
+
+  <!-- Front Brakes -->
+  <div class="bg-white shadow-md rounded-lg p-4 mb-4">
+    <h3 class="text-lg font-semibold mb-2">{{ _('Front Brakes') }}</h3>
+    
+    <div class="mb-2">
+      <label class="inline-flex items-center">
+        <input type="checkbox" id="front_na" name="feature_{{ front_na_feature.id }}" value="1" 
+               {% if front_na_feature.status == "1" %}checked{% endif %} 
+               class="form-checkbox h-5 w-5 text-blue-600">
+        <span class="ml-2">{{ _('Measurement not possible') }}</span>
+      </label>
+    </div>
+    
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label for="feature_{{ front_left.id }}" class="block text-sm font-medium text-gray-700 mb-1">
+          {{ front_left.name }}
+        </label>
+        <input
+          type="number"
+          id="feature_{{ front_left.id }}"
+          name="feature_{{ front_left.id }}"
+          value="{{ front_left.status }}"
+          min="0"
+          class="w-full p-2 border border-gray-300 rounded"
+          {% if front_na_feature.status == "1" %}readonly{% endif %}
+        >
+      </div>
+      <div>
+        <label for="feature_{{ front_right.id }}" class="block text-sm font-medium text-gray-700 mb-1">
+          {{ front_right.name }}
+        </label>
+        <input
+          type="number"
+          id="feature_{{ front_right.id }}"
+          name="feature_{{ front_right.id }}"
+          value="{{ front_right.status }}"
+          min="0"
+          class="w-full p-2 border border-gray-300 rounded"
+          {% if front_na_feature.status == "1" %}readonly{% endif %}
+        >
+      </div>
+    </div>
+  </div>
+
+  <!-- Rear Brakes -->
+  <div class="bg-white shadow-md rounded-lg p-4 mb-4">
+    <h3 class="text-lg font-semibold mb-2">{{ _('Rear Brakes') }}</h3>
+    
+    <div class="mb-2">
+      <label class="inline-flex items-center">
+        <input type="checkbox" id="rear_na" name="feature_{{ rear_na_feature.id }}" value="1" 
+               {% if rear_na_feature.status == "1" %}checked{% endif %} 
+               class="form-checkbox h-5 w-5 text-blue-600">
+        <span class="ml-2">{{ _('Measurement not possible') }}</span>
+      </label>
+    </div>
+    
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label for="feature_{{ rear_left.id }}" class="block text-sm font-medium text-gray-700 mb-1">
+          {{ rear_left.name }}
+        </label>
+        <input
+          type="number"
+          id="feature_{{ rear_left.id }}"
+          name="feature_{{ rear_left.id }}"
+          value="{{ rear_left.status }}"
+          min="0"
+          class="w-full p-2 border border-gray-300 rounded"
+          {% if rear_na_feature.status == "1" %}readonly{% endif %}
+        >
+      </div>
+      <div>
+        <label for="feature_{{ rear_right.id }}" class="block text-sm font-medium text-gray-700 mb-1">
+          {{ rear_right.name }}
+        </label>
+        <input
+          type="number"
+          id="feature_{{ rear_right.id }}"
+          name="feature_{{ rear_right.id }}"
+          value="{{ rear_right.status }}"
+          min="0"
+          class="w-full p-2 border border-gray-300 rounded"
+          {% if rear_na_feature.status == "1" %}readonly{% endif %}
+        >
+      </div>
+    </div>
+  </div>
+
+  <!-- Parking Brake -->
+  <div class="bg-white shadow-md rounded-lg p-4 mb-4">
+    <h3 class="text-lg font-semibold mb-2">{{ _('Parking Brake') }}</h3>
+    
+    <div class="mb-2">
+      <label class="inline-flex items-center">
+        <input type="checkbox" id="park_na" name="feature_{{ park_na_feature.id }}" value="1" 
+               {% if park_na_feature.status == "1" %}checked{% endif %} 
+               class="form-checkbox h-5 w-5 text-blue-600">
+        <span class="ml-2">{{ _('Measurement not possible') }}</span>
+      </label>
+    </div>
+    
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label for="feature_{{ park_left.id }}" class="block text-sm font-medium text-gray-700 mb-1">
+          {{ park_left.name }}
+        </label>
+        <input
+          type="number"
+          id="feature_{{ park_left.id }}"
+          name="feature_{{ park_left.id }}"
+          value="{{ park_left.status }}"
+          min="0"
+          class="w-full p-2 border border-gray-300 rounded"
+          {% if park_na_feature.status == "1" %}readonly{% endif %}
+        >
+      </div>
+      <div>
+        <label for="feature_{{ park_right.id }}" class="block text-sm font-medium text-gray-700 mb-1">
+          {{ park_right.name }}
+        </label>
+        <input
+          type="number"
+          id="feature_{{ park_right.id }}"
+          name="feature_{{ park_right.id }}"
+          value="{{ park_right.status }}"
+          min="0"
+          class="w-full p-2 border border-gray-300 rounded"
+          {% if park_na_feature.status == "1" %}readonly{% endif %}
+        >
+      </div>
+    </div>
+  </div>
+
+  <!-- Technician Comment -->
+  <div class="bg-white shadow-md rounded-lg p-4 mb-4">
+    <label for="technician_comment" class="block text-gray-700 font-semibold mb-2">
+      {{ _('Technician Comment') }}
+    </label>
+    <textarea
+      id="technician_comment"
+      name="technician_comment"
+      rows="4"
+      class="w-full p-2 border border-gray-300 rounded"
+      placeholder="{{ _('Enter technician comment here...') }}"
+    >{{ expertise_report.comment }}</textarea>
+  </div>
+
+  <!-- Submit Button -->
+  <div class="flex justify-end">
+    <button
+      type="submit"
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+    >
+      {{ _('Save') }}
+    </button>
+  </div>
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Function to toggle readonly state
+  function toggleReadonly(checkboxId, inputIds) {
+    const checkbox = document.getElementById(checkboxId);
+    const disabled = checkbox.checked;
+    
+    inputIds.forEach(id => {
+      const input = document.getElementById(id);
+      input.readOnly = disabled;
+      if (disabled) input.value = 0;
+    });
+  }
+
+  // Get checkbox and input elements
+  const frontNa = document.getElementById('front_na');
+  const rearNa = document.getElementById('rear_na');
+  const parkNa = document.getElementById('park_na');
+  
+  const frontIds = ['feature_{{ front_left.id }}', 'feature_{{ front_right.id }}'];
+  const rearIds = ['feature_{{ rear_left.id }}', 'feature_{{ rear_right.id }}'];
+  const parkIds = ['feature_{{ park_left.id }}', 'feature_{{ park_right.id }}'];
+
+  // Add event listeners
+  if (frontNa) {
+    frontNa.addEventListener('change', function() {
+      toggleReadonly('front_na', frontIds);
+    });
+  }
+  
+  if (rearNa) {
+    rearNa.addEventListener('change', function() {
+      toggleReadonly('rear_na', rearIds);
+    });
+  }
+  
+  if (parkNa) {
+    parkNa.addEventListener('change', function() {
+      toggleReadonly('park_na', parkIds);
+    });
+  }
+});
+</script>

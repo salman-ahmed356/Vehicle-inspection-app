@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ _('Create Appointment') }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+  {% include 'navbar.html' %}
+
+  <div class="container mx-auto mt-8 px-4">
+    <div class="bg-white p-6 rounded-lg shadow-lg max-w-2xl mx-auto">
+      <h2 class="text-2xl font-bold mb-6">{{ _('Create Appointment') }}</h2>
+
+      <form action="{{ url_for('appointments.add_appointment') }}" method="POST">
+        {{ form.hidden_tag() }}
+
+        <!-- Customer Name -->
+        <div class="mb-4">
+          <label for="customer_name" class="block text-sm font-medium text-gray-700">
+            {{ _('Customer Name') }}
+          </label>
+          {{ form.customer_name(
+               class="mt-1 p-2 border border-gray-300 rounded w-full",
+               oninput="setCustomValidity('')",
+               oninvalid="this.setCustomValidity('Please enter a name.')"
+             ) }}
+          {% if form.customer_name.errors %}
+          <div class="text-red-500 text-sm mt-1">
+            {% for error in form.customer_name.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Phone Number -->
+        <div class="mb-4">
+          <label for="phone_number" class="block text-sm font-medium text-gray-700">
+            {{ _('Phone Number') }}
+          </label>
+          {{ form.phone_number(
+               class="mt-1 p-2 border border-gray-300 rounded w-full",
+               oninput="setCustomValidity('')",
+               oninvalid="this.setCustomValidity('Phone number must be 9 to 15 characters.')"
+             ) }}
+          {% if form.phone_number.errors %}
+          <div class="text-red-500 text-sm mt-1">
+            {% for error in form.phone_number.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Date -->
+        <div class="mb-4">
+          <label for="date" class="block text-sm font-medium text-gray-700">
+            {{ _('Date') }}
+          </label>
+          {{ form.date(
+               id="form-date",
+               class="mt-1 p-2 border border-gray-300 rounded w-full",
+               oninput="setCustomValidity('')",
+               oninvalid="this.setCustomValidity('Please enter a valid date.')"
+             ) }}
+          {% if form.date.errors %}
+          <div class="text-red-500 text-sm mt-1">
+            {% for error in form.date.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Time -->
+        <div class="mb-4">
+          <label for="time" class="block text-sm font-medium text-gray-700">
+            {{ _('Time') }}
+          </label>
+          {{ form.time(
+               class="mt-1 p-2 border border-gray-300 rounded w-full",
+               oninput="setCustomValidity('')",
+               oninvalid="this.setCustomValidity('Please enter a valid time.')"
+             ) }}
+          {% if form.time.errors %}
+          <div class="text-red-500 text-sm mt-1">
+            {% for error in form.time.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Brand -->
+        <div class="mb-4">
+          <label for="brand" class="block text-sm font-medium text-gray-700">
+            {{ _('Brand') }}
+          </label>
+          {{ form.brand(
+               class="mt-1 p-2 border border-gray-300 rounded w-full",
+               oninput="setCustomValidity('')",
+               oninvalid="this.setCustomValidity('Brand must be at least 2 characters.')"
+             ) }}
+          {% if form.brand.errors %}
+          <div class="text-red-500 text-sm mt-1">
+            {% for error in form.brand.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Model -->
+        <div class="mb-4">
+          <label for="model" class="block text-sm font-medium text-gray-700">
+            {{ _('Model') }}
+          </label>
+          {{ form.model(
+               class="mt-1 p-2 border border-gray-300 rounded w-full",
+               oninput="setCustomValidity('')",
+               oninvalid="this.setCustomValidity('Model must be at least 2 characters.')"
+             ) }}
+          {% if form.model.errors %}
+          <div class="text-red-500 text-sm mt-1">
+            {% for error in form.model.errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Submit -->
+        <div class="flex justify-between mt-6">
+          <a href="{{ url_for('main.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+            {{ _('Cancel') }}
+          </a>
+          <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            {{ _('Create Appointment') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

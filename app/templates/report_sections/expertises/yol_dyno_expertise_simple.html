@@ -1,0 +1,110 @@
+{% include 'report_sections/expertises/vehicle_header.html' %}
+
+<h2 class="text-lg font-semibold mb-4">{{ _('Road & Dyno Inspection') }}</h2>
+<p class="mb-4">{{ _('Please specify the status of each area you inspected!') }}</p>
+
+<form method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
+  <input type="hidden" name="current_expertise_type" value="{{ current_expertise_type }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="expertise_report2_id" value="{{ expertise_report2.id }}">
+
+  {% set status_choices = [
+       'None',
+       '(Good) Passed Inspection',
+       '(Moderate) May Cause Issues',
+       '(Bad) Maintenance Required'
+     ]
+  %}
+
+  <!-- Road Test Section -->
+  <div class="bg-white shadow-md rounded-lg p-4 mb-6">
+    <h3 class="text-lg font-semibold mb-3">{{ _('Road Test') }}</h3>
+    
+    <table class="min-w-full bg-white">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="py-2 px-4 border-b text-left">{{ _('Feature') }}</th>
+          {% for status in status_choices %}
+            <th class="py-2 px-4 border-b text-center">{{ _(status) }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for feature in expertise_report.features %}
+          <tr class="hover:bg-gray-50">
+            <td class="py-2 px-4 border-b">{{ feature.name }}</td>
+            {% for status in status_choices %}
+              <td class="py-2 px-4 border-b text-center">
+                <input 
+                  type="radio" 
+                  name="feature_{{ feature.id }}" 
+                  value="{{ status }}"
+                  class="form-radio h-5 w-5 text-blue-600"
+                  {% if feature.status == status %}checked{% endif %}
+                >
+              </td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Dyno Test Section -->
+  <div class="bg-white shadow-md rounded-lg p-4 mb-6">
+    <h3 class="text-lg font-semibold mb-3">{{ _('Dyno Test') }}</h3>
+    
+    <table class="min-w-full bg-white">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="py-2 px-4 border-b text-left">{{ _('Feature') }}</th>
+          {% for status in status_choices %}
+            <th class="py-2 px-4 border-b text-center">{{ _(status) }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for feature in expertise_report2.features %}
+          <tr class="hover:bg-gray-50">
+            <td class="py-2 px-4 border-b">{{ feature.name }}</td>
+            {% for status in status_choices %}
+              <td class="py-2 px-4 border-b text-center">
+                <input 
+                  type="radio" 
+                  name="feature_{{ feature.id }}" 
+                  value="{{ status }}"
+                  class="form-radio h-5 w-5 text-blue-600"
+                  {% if feature.status == status %}checked{% endif %}
+                >
+              </td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Technician Comment -->
+  <div class="bg-white shadow-md rounded-lg p-4 mb-6">
+    <label for="technician_comment" class="block text-gray-700 font-semibold mb-2">
+      {{ _('Technician Comment') }}
+    </label>
+    <textarea
+      id="technician_comment"
+      name="technician_comment"
+      rows="4"
+      class="w-full p-2 border border-gray-300 rounded"
+      placeholder="{{ _('Enter technician comment here...') }}"
+    >{{ expertise_report.comment }}</textarea>
+  </div>
+
+  <!-- Submit Button -->
+  <div class="flex justify-end">
+    <button
+      type="submit"
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+    >
+      {{ _('Save') }}
+    </button>
+  </div>
+</form>

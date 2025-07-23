@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ _('Vehicle Inspection Report') }}</title>
+  <style>
+    @page {
+      size: A4;
+      margin-top: 100px;
+      margin-bottom: 100px;
+      margin-left: 20px;
+      margin-right: 20px;
+      @top-center   { content: element(header); }
+      @bottom-center{ content: element(footer); }
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      margin: 0;
+      padding: 0;
+      color: #333;
+      line-height: 1.4;
+    }
+
+    header {
+      position: running(header);
+      width: 100%;
+    }
+
+    footer {
+      position: running(footer);
+      width: 100%;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+
+    /* Common styles */
+    .section-container {
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      background-color: #a82b2e;
+      color: white;
+      padding: 10px;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    .section-content {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+
+    /* Status indicators */
+    .status-good {
+      color: #4CAF50;
+    }
+
+    .status-warning {
+      color: #FFC107;
+    }
+
+    .status-bad {
+      color: #F44336;
+    }
+
+    /* Utility classes */
+    .text-center {
+      text-align: center;
+    }
+
+    .text-right {
+      text-align: right;
+    }
+
+    .font-bold {
+      font-weight: bold;
+    }
+
+    .primary-color {
+      color: #a82b2e;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="header">
+    {% include 'pdf/header_improved.html' %}
+  </div>
+
+  <div id="footer">
+    {% include 'pdf/footer_improved.html' %}
+  </div>
+
+  {% include 'pdf/first_page_improved.html' %}
+
+  {% for pckg_report in package_expertise_reports %}
+    {% if pckg_report.expertise_type_name == "Engine Expertise" %}
+      <div class="page-break"></div>
+      {% include 'pdf/motor.html' %}
+    {% elif pckg_report.expertise_type_name == "Brake Expertise" %}
+      <div class="page-break"></div>
+      {% include 'pdf/fren_fixed.html' %}
+    {% elif pckg_report.expertise_type_name == "Suspension Expertise" %}
+      <div class="page-break"></div>
+      {% include 'pdf/suspansiyon.html' %}
+    {% elif pckg_report.expertise_type_name == "Lateral Drift Expertise" %}
+      <div class="page-break"></div>
+      {% include 'pdf/yanal.html' %}
+    {% elif pckg_report.expertise_type_name == "ECU Expertise" %}
+      <div class="page-break"></div>
+      {% include 'pdf/beyin.html' %}
+    {% elif pckg_report.expertise_type_name == "Paint & Body Expertise" %}
+      <div class="page-break"></div>
+      {% include 'pdf/boya.html' %}
+    {% endif %}
+  {% endfor %}
+
+  <div class="page-break"></div>
+  {% include 'pdf/last_page.html' %}
+
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ _('Vehicle List') }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+
+<body class="bg-gray-100">
+  {% include 'navbar.html' %}
+
+  <div class="container mx-auto px-4 py-6">
+    <div class="bg-white p-6 rounded-lg shadow">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold">{{ _('Vehicle List') }}</h1>
+        <div class="relative w-1/3">
+          <input type="text" id="vehicleSearch" placeholder="{{ _('Search by chassis number...') }}" 
+                 class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+          <div id="searchResults" class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg hidden overflow-hidden max-h-60 overflow-y-auto"></div>
+        </div>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="mb-4 p-4 rounded-md {{ 'bg-green-100 text-green-700' if category == 'success' else 'bg-red-100 text-red-700' }}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white">
+          <thead class="bg-gray-200">
+            <tr>
+              <th class="py-2 px-4 text-left">{{ _('Image') }}</th>
+              <th class="py-2 px-4 text-left">{{ _('Brand') }}</th>
+              <th class="py-2 px-4 text-left">{{ _('Model') }}</th>
+              <th class="py-2 px-4 text-left">{{ _('Plate') }}</th>
+              <th class="py-2 px-4 text-left">{{ _('Chassis Number') }}</th>
+              <th class="py-2 px-4 text-left">{{ _('Engine Number') }}</th>
+              <th class="py-2 px-4 text-left">{{ _('Year') }}</th>
+              <th class="py-2 px-4 text-left">{{ _('Mileage') }}</th>
+              <th class="py-2 px-4 text-left">{{ _('Actions') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for vehicle_data in vehicles %}
+              <tr class="border-b hover:bg-gray-50">
+                <td class="py-2 px-4">
+                  {% if vehicle_data.has_image and vehicle_data.image_data %}
+                    <img src="data:image/jpeg;base64,{{ vehicle_data.image_data|b64encode }}" alt="Vehicle Image" class="w-16 h-16 object-cover rounded">
+                  {% else %}
+                    <div class="w-16 h-16 bg-gray-200 flex items-center justify-center rounded">
+                      <i class="fas fa-car text-gray-400"></i>
+                    </div>
+                  {% endif %}
+                </td>
+                <td class="py-2 px-4">{{ vehicle_data.vehicle.brand }}</td>
+                <td class="py-2 px-4">{{ vehicle_data.vehicle.model }}</td>
+                <td class="py-2 px-4">{{ vehicle_data.vehicle.plate }}</td>
+                <td class="py-2 px-4">{{ vehicle_data.vehicle.chassis_number }}</td>
+                <td class="py-2 px-4">{{ vehicle_data.vehicle.engine_number }}</td>
+                <td class="py-2 px-4">{{ vehicle_data.vehicle.model_year }}</td>
+                <td class="py-2 px-4">{{ vehicle_data.vehicle.mileage }}</td>
+                <td class="py-2 px-4 flex space-x-2">
+                  <a href="{{ url_for('vehicles.edit_vehicle', vehicle_id=vehicle_data.vehicle.id) }}" class="text-blue-500 hover:text-blue-700">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                  <button onclick="confirmDelete({{ vehicle_data.vehicle.id }}, '{{ vehicle_data.vehicle.brand }} {{ vehicle_data.vehicle.model }}')" class="text-red-500 hover:text-red-700">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="mt-6">
+        <div class="flex justify-between items-center">
+          <p>
+            {{ _('Showing') }} {{ (pagination.page - 1) * pagination.per_page + 1 }}
+            {{ _('to') }}
+            {{ pagination.page * pagination.per_page if pagination.page * pagination.per_page < pagination.total else pagination.total }}
+            {{ _('of') }} {{ pagination.total }} {{ _('vehicles') }}
+          </p>
+          <div class="flex space-x-1">
+            {% if pagination.has_prev %}
+              <a href="{{ url_for('vehicles.vehicle_list', page=pagination.prev_num) }}" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">
+                &laquo; {{ _('Previous') }}
+              </a>
+            {% endif %}
+            
+            {% for page_num in pagination.iter_pages() %}
+              {% if page_num %}
+                <a href="{{ url_for('vehicles.vehicle_list', page=page_num) }}" 
+                   class="px-3 py-1 rounded {% if page_num == pagination.page %}bg-blue-500 text-white{% else %}bg-gray-200 hover:bg-gray-300{% endif %}">
+                  {{ page_num }}
+                </a>
+              {% else %}
+                <span class="px-3 py-1">...</span>
+              {% endif %}
+            {% endfor %}
+            
+            {% if pagination.has_next %}
+              <a href="{{ url_for('vehicles.vehicle_list', page=pagination.next_num) }}" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">
+                {{ _('Next') }} &raquo;
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center hidden z-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
+      <h3 class="text-lg font-bold mb-4">{{ _('Confirm Deletion') }}</h3>
+      <p class="mb-6">{{ _('Are you sure you want to delete vehicle') }} <span id="vehicleName" class="font-bold"></span>?</p>
+      <div class="flex justify-end space-x-4">
+        <button id="cancelDelete" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded">{{ _('Cancel') }}</button>
+        <form id="deleteForm" method="POST" action="">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">{{ _('Delete') }}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function confirmDelete(vehicleId, vehicleName) {
+      document.getElementById('vehicleName').textContent = vehicleName;
+      document.getElementById('deleteForm').action = `{{ url_for('vehicles.delete_vehicle', vehicle_id=0) }}`.replace('0', vehicleId);
+      document.getElementById('deleteModal').classList.remove('hidden');
+    }
+
+    document.getElementById('cancelDelete').addEventListener('click', function() {
+      document.getElementById('deleteModal').classList.add('hidden');
+    });
+
+    window.addEventListener('click', function(event) {
+      const modal = document.getElementById('deleteModal');
+      if (event.target === modal) {
+        modal.classList.add('hidden');
+      }
+    });
+    
+    // Vehicle search functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchInput = document.getElementById('vehicleSearch');
+      const searchResults = document.getElementById('searchResults');
+      
+      if (searchInput) {
+        searchInput.addEventListener('input', function() {
+          const query = this.value.trim();
+          if (query.length < 2) {
+            searchResults.classList.add('hidden');
+            return;
+          }
+          
+          fetch(`/api/search/vehicles?query=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+              searchResults.innerHTML = '';
+              searchResults.classList.remove('hidden');
+              
+              if (data.length === 0) {
+                searchResults.innerHTML = `<div class="p-3 text-gray-500 text-sm">No vehicles found</div>`;
+                return;
+              }
+              
+              data.forEach(vehicle => {
+                const item = document.createElement('div');
+                item.className = 'p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-200 flex items-center';
+                
+                let imageHtml = `<div class="w-12 h-12 bg-gray-200 flex items-center justify-center rounded mr-3"><i class="fas fa-car text-gray-400"></i></div>`;
+                if (vehicle.has_image) {
+                  imageHtml = `<img src="${vehicle.image_url}" alt="${vehicle.brand} ${vehicle.model}" class="w-12 h-12 object-cover rounded mr-3">`;
+                }
+                
+                item.innerHTML = `
+                  ${imageHtml}
+                  <div>
+                    <div class="font-medium">${vehicle.brand} ${vehicle.model}</div>
+                    <div class="text-xs text-gray-500">${vehicle.chassis_number}</div>
+                  </div>
+                `;
+                
+                item.addEventListener('click', function() {
+                  window.location.href = `/vehicles?chassis=${encodeURIComponent(vehicle.chassis_number)}`;
+                });
+                
+                searchResults.appendChild(item);
+              });
+            })
+            .catch(error => {
+              console.error('Error searching vehicles:', error);
+            });
+        });
+        
+        // Close search results when clicking outside
+        document.addEventListener('click', function(event) {
+          if (!searchInput.contains(event.target) && !searchResults.contains(event.target)) {
+            searchResults.classList.add('hidden');
+          }
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>

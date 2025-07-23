@@ -1,0 +1,290 @@
+{#— grab the Paint & Body block (if any) —#}
+{% set pckg_report = (package_expertise_reports
+     | selectattr('expertise_type_name','equalto','Paint & Body Expertise')
+     | first)
+   | default({}) %}
+
+{#— now use default filters to avoid missing-attribute errors —#}
+{% set boya_features   = pckg_report.paint_features  | default([]) %}
+{% set kaporta_features = pckg_report.body_features   | default([]) %}
+{% set boya_comment     = pckg_report.paint_comment   | default('') %}
+{% set kaporta_comment  = pckg_report.body_comment    | default('') %}
+
+<style>
+  .page-title {
+    background-color: #a82b2e;
+    color: white;
+    padding: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    position: relative;
+    border-radius: 4px;
+  }
+
+  .chassis-box {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: white;
+    padding: 5px 15px;
+    border-left: 3px solid #a82b2e;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .chassis-label {
+    font-size: 12px;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .chassis-number {
+    font-size: 20px;
+    font-weight: bold;
+    color: #a82b2e;
+  }
+
+  .chassis-subtitle {
+    font-size: 8px;
+    text-align: center;
+    color: #666;
+  }
+
+  .vehicle-info-section {
+    display: flex;
+    margin-bottom: 20px;
+    gap: 20px;
+  }
+
+  .vehicle-details {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    background-color: #f9f9f9;
+  }
+
+  .vehicle-image {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+  }
+
+  .vehicle-image img {
+    max-width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+  }
+
+  .info-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .info-table th {
+    text-align: left;
+    padding: 8px;
+    font-weight: bold;
+    width: 40%;
+    color: #a82b2e;
+    font-size: 11px;
+  }
+
+  .info-table td {
+    padding: 8px;
+    font-size: 11px;
+  }
+
+  .info-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+
+  .section-title {
+    background-color: #a82b2e;
+    color: white;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    text-align: center;
+  }
+
+  .inspection-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .inspection-item {
+    flex: 1 0 30%;
+    min-width: 200px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .inspection-header {
+    background-color: #f2f2f2;
+    padding: 8px;
+    font-weight: bold;
+    font-size: 12px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .inspection-status {
+    display: flex;
+    justify-content: space-around;
+    padding: 8px;
+  }
+
+  .status-indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .status-good {
+    background-color: #4CAF50;
+  }
+
+  .status-warning {
+    background-color: #FFC107;
+  }
+
+  .status-bad {
+    background-color: #F44336;
+  }
+
+  .status-none {
+    background-color: #000;
+    color: white;
+    width: auto;
+    height: auto;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 10px;
+  }
+
+  .comment-section {
+    margin-top: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .comment-header {
+    background-color: #a82b2e;
+    color: white;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .comment-body {
+    padding: 15px;
+    font-size: 12px;
+    min-height: 80px;
+    background-color: #f9f9f9;
+  }
+</style>
+
+<!-- Page Title with Chassis Number -->
+<div class="page-title">
+  {{ _('Vehicle Inspection Report') }}
+  <div class="chassis-box">
+    <div class="chassis-label">{{ _('Chassis No') }}:</div>
+    <div class="chassis-number">{{ vehicle.chassis_number[-6:] }}</div>
+    <div class="chassis-subtitle">{{ _('Last 6 Digits') }}</div>
+  </div>
+</div>
+
+<!-- Vehicle Information Section -->
+<div class="vehicle-info-section">
+  <div class="vehicle-details">
+    <table class="info-table">
+      <tr>
+        <th>{{ _('Brand') }}</th>
+        <td>{{ vehicle.brand }}</td>
+      </tr>
+      <tr>
+        <th>{{ _('Model') }}</th>
+        <td>{{ vehicle.model }}</td>
+      </tr>
+      <tr>
+        <th>{{ _('Year') }}</th>
+        <td>{{ vehicle.model_year }}</td>
+      </tr>
+      <tr>
+        <th>{{ _('Color') }}</th>
+        <td>{{ vehicle.color.value }}</td>
+      </tr>
+      <tr>
+        <th>{{ _('Plate') }}</th>
+        <td>{{ vehicle.plate }}</td>
+      </tr>
+      <tr>
+        <th>{{ _('Mileage') }}</th>
+        <td>{{ vehicle.mileage }} km</td>
+      </tr>
+      <tr>
+        <th>{{ _('Fuel Type') }}</th>
+        <td>{{ vehicle.fuel_type.value }}</td>
+      </tr>
+      <tr>
+        <th>{{ _('Transmission') }}</th>
+        <td>{{ vehicle.transmission_type.value }}</td>
+      </tr>
+    </table>
+  </div>
+  
+  <div class="vehicle-image">
+    <!-- Placeholder for vehicle image -->
+    <img src="{{ url_for('static', filename='assets/pdf_imgs/car_placeholder.png', _external=True) }}" alt="{{ _('Vehicle Image') }}">
+  </div>
+</div>
+
+<!-- Paint & Body Inspection Section -->
+<div class="section-title">
+  {{ _('Paint & Body Inspection') }}
+</div>
+
+<div class="inspection-grid">
+  {% for feature in kaporta_features %}
+  <div class="inspection-item">
+    <div class="inspection-header">{{ _(feature.name) }}</div>
+    <div class="inspection-status">
+      {% if feature.status == 'YOK' %}
+        <span class="status-none">{{ _('None') }}</span>
+      {% else %}
+        {% if feature.status == 'ÇİZİK' %}
+          <span class="status-indicator status-good" title="{{ _('Scratch') }}"></span>
+        {% elif feature.status == 'EZİK / KIRIK / GÖÇÜK' %}
+          <span class="status-indicator status-warning" title="{{ _('Dent / Crack / Damage') }}"></span>
+        {% elif feature.status == 'İŞLEMLİ / BOYALI' %}
+          <span class="status-indicator status-bad" title="{{ _('Repaired / Painted') }}"></span>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Comment Section -->
+<div class="comment-section">
+  <div class="comment-header">
+    {{ _('Body & Paint Inspection Summary') }}
+  </div>
+  <div class="comment-body">
+    {{ boya_comment }}
+  </div>
+</div>

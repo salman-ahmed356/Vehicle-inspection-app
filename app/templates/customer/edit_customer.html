@@ -1,0 +1,41 @@
+<form action="{{ url_for('customers.edit_customer', customer_id=customer.id) }}" method="POST">
+    {{ form.hidden_tag() }}
+    <div class="mb-4">
+        <label for="first_name" class="block text-sm font-medium text-gray-700">{{ _('First Name') }}</label>
+        {{ form.first_name(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+        {% if form.first_name.errors %}
+        <p class="text-red-500 text-xs mt-1">{{ form.first_name.errors[0] }}</p>
+        {% endif %}
+    </div>
+    <div class="mb-4">
+        <label for="last_name" class="block text-sm font-medium text-gray-700">{{ _('Last Name') }}</label>
+        {{ form.last_name(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+        {% if form.last_name.errors %}
+        <p class="text-red-500 text-xs mt-1">{{ form.last_name.errors[0] }}</p>
+        {% endif %}
+    </div>
+    <div class="mb-4">
+        <label for="phone_number" class="block text-sm font-medium text-gray-700">{{ _('Phone Number') }}</label>
+        {{ form.phone_number(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+        {% if form.phone_number.errors %}
+        <p class="text-red-500 text-xs mt-1">{{ form.phone_number.errors[0] }}</p>
+        {% endif %}
+    </div>
+    <div class="mb-4">
+        <label for="email" class="block text-sm font-medium text-gray-700">{{ _('Email') }}</label>
+        {{ form.email(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+        {% if form.email.errors %}
+        <p class="text-red-500 text-xs mt-1">{{ form.email.errors[0] }}</p>
+        {% endif %}
+    </div>
+    <div class="mb-4">
+        <label for="tc_tax_number" class="block text-sm font-medium text-gray-700">{{ _('TC/Tax Number') }}</label>
+        {{ form.tc_tax_number(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+        {% if form.tc_tax_number.errors %}
+        <p class="text-red-500 text-xs mt-1">{{ form.tc_tax_number.errors[0] }}</p>
+        {% endif %}
+    </div>
+    <div class="flex justify-end">
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">{{ _('Update Customer') }}</button>
+    </div>
+</form>

@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ _('Staff Management') }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+
+<body class="bg-gray-100 text-gray-800">
+{% include 'navbar.html' %}
+
+<!-- Add Staff Modal -->
+<div id="addStaffModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center hidden z-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold">{{ _('Add New Staff Member') }}</h3>
+            <button id="closeAddStaffModal" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form action="{{ url_for('staff.add_staff') }}" method="POST">
+            {{ form.hidden_tag() }}
+            <div class="mb-4">
+                <label for="first_name" class="block text-sm font-medium text-gray-700">{{ _('First Name') }}</label>
+                {{ form.first_name(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+                {% if form.first_name.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.first_name.errors[0] }}</p>
+                {% endif %}
+            </div>
+            <div class="mb-4">
+                <label for="last_name" class="block text-sm font-medium text-gray-700">{{ _('Last Name') }}</label>
+                {{ form.last_name(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+                {% if form.last_name.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.last_name.errors[0] }}</p>
+                {% endif %}
+            </div>
+            <div class="mb-4">
+                <label for="password" class="block text-sm font-medium text-gray-700">{{ _('Password') }} *</label>
+                {{ form.password(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+                {% if form.password.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.password.errors[0] }}</p>
+                {% endif %}
+            </div>
+            <div class="mb-4">
+                <label for="confirm_password" class="block text-sm font-medium text-gray-700">{{ _('Confirm Password') }} *</label>
+                {{ form.confirm_password(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+                {% if form.confirm_password.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.confirm_password.errors[0] }}</p>
+                {% endif %}
+            </div>
+            <div class="mb-4">
+                <label for="phone_number" class="block text-sm font-medium text-gray-700">{{ _('Phone Number') }}</label>
+                {{ form.phone_number(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+                {% if form.phone_number.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.phone_number.errors[0] }}</p>
+                {% endif %}
+            </div>
+            <div class="mb-4">
+                <label for="role" class="block text-sm font-medium text-gray-700">{{ _('Role') }}</label>
+                {{ form.role(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+                {% if form.role.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.role.errors[0] }}</p>
+                {% endif %}
+            </div>
+            <div class="mb-4">
+                <label for="department" class="block text-sm font-medium text-gray-700">{{ _('Department') }}</label>
+                {{ form.department(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+                {% if form.department.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.department.errors[0] }}</p>
+                {% endif %}
+            </div>
+            <div class="flex justify-end">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">{{ _('Save Staff') }}</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Main Content -->
+<main class="container mx-auto px-4 py-6">
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="{{ 'bg-green-100 border-green-400 text-green-700' if category == 'success' else 'bg-red-100 border-red-400 text-red-700' }} px-4 py-3 mb-4 rounded relative border" role="alert">
+                    <span class="block sm:inline">{{ message }}</span>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <div class="bg-white p-6 rounded-lg shadow">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold">{{ _('Staff Management') }}</h2>
+            <button id="openAddStaffModal" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                <i class="fas fa-plus mr-2"></i>{{ _('Add Staff Member') }}
+            </button>
+        </div>
+
+        <!-- Staff Table -->
+        <table class="min-w-full bg-white">
+            <thead class="bg-gray-200">
+            <tr>
+                <th class="py-2">{{ _('Full Name') }}</th>
+                <th class="py-2">{{ _('Phone Number') }}</th>
+                <th class="py-2">{{ _('Role') }}</th>
+                <th class="py-2">{{ _('Department') }}</th>
+                <th class="py-2">{{ _('Actions') }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for member in staff %}
+            <tr>
+                <td class="border px-4 py-2">{{ member.full_name }}</td>
+                <td class="border px-4 py-2">{{ member.phone_number }}</td>
+                <td class="border px-4 py-2">{{ member.role }}</td>
+                <td class="border px-4 py-2">{{ member.department }}</td>
+                <td class="border px-4 py-2">
+                    <button 
+                        class="text-blue-500 hover:text-blue-700 mr-2 open-edit-modal"
+                        data-id="{{ member.id }}"
+                        data-first_name="{{ member.first_name }}"
+                        data-last_name="{{ member.last_name }}"
+                        data-phone_number="{{ member.phone_number }}"
+                        data-role="{{ member.role }}"
+                        data-department="{{ member.department }}"
+                    >
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    {% if member.role|lower != 'manager' %}
+                    <button onclick="confirmDelete({{ member.id }}, '{{ member.full_name }}')" class="text-red-500 hover:text-red-700">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<!-- Edit Staff Modal -->
+<div id="editStaffModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center hidden z-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold">{{ _('Edit Staff Member') }}</h3>
+            <button id="closeEditStaffModal" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form id="editStaffForm" method="POST" action="">
+            {{ form.hidden_tag() }}
+            <div class="mb-4">
+                <label for="first_name" class="block text-sm font-medium text-gray-700">{{ _('First Name') }}</label>
+                <input type="text" name="first_name" id="edit_first_name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+            </div>
+            <div class="mb-4">
+                <label for="last_name" class="block text-sm font-medium text-gray-700">{{ _('Last Name') }}</label>
+                <input type="text" name="last_name" id="edit_last_name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+            </div>
+            <div class="mb-4">
+                <label for="phone_number" class="block text-sm font-medium text-gray-700">{{ _('Phone Number') }}</label>
+                <input type="text" name="phone_number" id="edit_phone_number" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div class="mb-4">
+                <button type="button" 
+                        id="editChangePasswordBtn"
+                        class="bg-blue-500 text-white px-3 py-1 rounded text-sm">
+                  {{ _('Change Password') }}
+                </button>
+                <!-- Hidden password fields that will be populated by the modal -->
+                <input type="hidden" name="password" id="edit_password">
+                <input type="hidden" name="confirm_password" id="edit_confirm_password">
+                <input type="hidden" name="current_password" id="edit_current_password">
+            </div>
+            <div class="mb-4">
+                <label for="role" class="block text-sm font-medium text-gray-700">{{ _('Role') }}</label>
+                <input type="text" name="role" id="edit_role" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div class="mb-4">
+                <label for="department" class="block text-sm font-medium text-gray-700">{{ _('Department') }}</label>
+                <input type="text" name="department" id="edit_department" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div class="flex justify-end">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">{{ _('Update Staff') }}</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteConfirmModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center hidden z-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
+        <h3 class="text-lg font-bold mb-4">{{ _('Confirm Deletion') }}</h3>
+        <p class="mb-6">{{ _('Are you sure you want to delete staff member') }} <span id="staffName" class="font-bold"></span>?</p>
+        <div class="flex justify-end space-x-4">
+            <button id="cancelDelete" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded">{{ _('Cancel') }}</button>
+            <form id="deleteForm" method="POST" action="">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">{{ _('Delete') }}</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Password Change Modal -->
+<div id="passwordChangeModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center hidden z-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold">{{ _('Change Password') }}</h3>
+            <button id="closePasswordChangeModal" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="space-y-4">
+            <div>
+                <label for="edit_modal_current_password" class="block text-sm font-medium text-gray-700">
+                    {{ _('Current Password') }} *
+                </label>
+                <input type="password" 
+                       id="edit_modal_current_password" 
+                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                       required>
+                <p id="edit_current_password_error" class="text-red-600 text-xs mt-1 hidden">{{ _('Current password is required') }}</p>
+            </div>
+            
+            <div>
+                <label for="edit_modal_new_password" class="block text-sm font-medium text-gray-700">
+                    {{ _('New Password') }} *
+                </label>
+                <input type="password" 
+                       id="edit_modal_new_password" 
+                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                       required>
+                <p id="edit_new_password_error" class="text-red-600 text-xs mt-1 hidden">{{ _('New password is required') }}</p>
+            </div>
+            
+            <div>
+                <label for="edit_modal_confirm_password" class="block text-sm font-medium text-gray-700">
+                    {{ _('Confirm New Password') }} *
+                </label>
+                <input type="password" 
+                       id="edit_modal_confirm_password" 
+                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                       required>
+                <p id="edit_confirm_password_error" class="text-red-600 text-xs mt-1 hidden">{{ _('Passwords do not match') }}</p>
+            </div>
+            
+            <div class="flex justify-end space-x-4 mt-6">
+                <button type="button"
+                        id="savePasswordChangeBtn"
+                        class="bg-green-600 text-white px-4 py-2 rounded shadow">
+                    {{ _('Save Password') }}
+                </button>
+                <button type="button"
+                        id="cancelPasswordChangeBtn"
+                        class="bg-gray-500 text-white px-4 py-2 rounded shadow">
+                    {{ _('Cancel') }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Add Staff Modal
+    const addStaffModal = document.getElementById('addStaffModal');
+    const openAddStaffModal = document.getElementById('openAddStaffModal');
+    const closeAddStaffModal = document.getElementById('closeAddStaffModal');
+
+    openAddStaffModal.addEventListener('click', () => {
+        addStaffModal.classList.remove('hidden');
+    });
+
+    closeAddStaffModal.addEventListener('click', () => {
+        addStaffModal.classList.add('hidden');
+    });
+
+    // Edit Staff Modal
+    const editStaffModal = document.getElementById('editStaffModal');
+    const closeEditStaffModal = document.getElementById('closeEditStaffModal');
+
+    closeEditStaffModal.addEventListener('click', () => {
+        editStaffModal.classList.add('hidden');
+    });
+
+    document.querySelectorAll('.open-edit-modal').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            // populate form fields
+            document.getElementById('edit_first_name').value = btn.dataset.first_name;
+            document.getElementById('edit_last_name').value = btn.dataset.last_name;
+            document.getElementById('edit_phone_number').value = btn.dataset.phone_number;
+            document.getElementById('edit_role').value = btn.dataset.role;
+            document.getElementById('edit_department').value = btn.dataset.department;
+
+            // set form action
+            const form = document.getElementById('editStaffForm');
+            form.action = `{{ url_for('staff.edit_staff', id=0) }}`.replace('0', id);
+
+            // show modal
+            editStaffModal.classList.remove('hidden');
+        });
+    });
+
+    // Delete Confirmation Modal
+    const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+    const cancelDelete = document.getElementById('cancelDelete');
+
+    function confirmDelete(staffId, staffName) {
+        document.getElementById('staffName').textContent = staffName;
+        document.getElementById('deleteForm').action = `{{ url_for('staff.delete_staff', id=0) }}`.replace('0', staffId);
+        deleteConfirmModal.classList.remove('hidden');
+    }
+
+    cancelDelete.addEventListener('click', () => {
+        deleteConfirmModal.classList.add('hidden');
+    });
+    
+    // Password Change Modal
+    const passwordChangeModal = document.getElementById('passwordChangeModal');
+    const editChangePasswordBtn = document.getElementById('editChangePasswordBtn');
+    const closePasswordChangeModal = document.getElementById('closePasswordChangeModal');
+    const cancelPasswordChangeBtn = document.getElementById('cancelPasswordChangeBtn');
+    const savePasswordChangeBtn = document.getElementById('savePasswordChangeBtn');
+    
+    // Modal input fields
+    const modalCurrentPassword = document.getElementById('edit_modal_current_password');
+    const modalNewPassword = document.getElementById('edit_modal_new_password');
+    const modalConfirmPassword = document.getElementById('edit_modal_confirm_password');
+    
+    // Hidden form fields
+    const editPasswordField = document.getElementById('edit_password');
+    const editConfirmPasswordField = document.getElementById('edit_confirm_password');
+    const editCurrentPasswordField = document.getElementById('edit_current_password');
+    
+    // Error message elements
+    const currentPasswordError = document.getElementById('edit_current_password_error');
+    const newPasswordError = document.getElementById('edit_new_password_error');
+    const confirmPasswordError = document.getElementById('edit_confirm_password_error');
+    
+    // Open password change modal
+    if (editChangePasswordBtn) {
+        editChangePasswordBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            passwordChangeModal.classList.remove('hidden');
+        });
+    }
+    
+    // Close password change modal
+    if (closePasswordChangeModal) {
+        closePasswordChangeModal.addEventListener('click', function() {
+            passwordChangeModal.classList.add('hidden');
+            resetModalFields();
+        });
+    }
+    
+    // Cancel button in modal
+    if (cancelPasswordChangeBtn) {
+        cancelPasswordChangeBtn.addEventListener('click', function() {
+            passwordChangeModal.classList.add('hidden');
+            resetModalFields();
+        });
+    }
+    
+    // Save password button in modal
+    if (savePasswordChangeBtn) {
+        savePasswordChangeBtn.addEventListener('click', function() {
+            // Reset error messages
+            currentPasswordError.classList.add('hidden');
+            newPasswordError.classList.add('hidden');
+            confirmPasswordError.classList.add('hidden');
+            
+            // Validate inputs
+            let isValid = true;
+            
+            if (!modalCurrentPassword.value) {
+                currentPasswordError.classList.remove('hidden');
+                isValid = false;
+            }
+            
+            if (!modalNewPassword.value) {
+                newPasswordError.classList.remove('hidden');
+                isValid = false;
+            }
+            
+            if (modalNewPassword.value !== modalConfirmPassword.value) {
+                confirmPasswordError.classList.remove('hidden');
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // Set the values in the hidden form fields
+                editPasswordField.value = modalNewPassword.value;
+                editConfirmPasswordField.value = modalConfirmPassword.value;
+                editCurrentPasswordField.value = modalCurrentPassword.value;
+                
+                // Close the modal
+                passwordChangeModal.classList.add('hidden');
+                
+                // Add a message to show the user that the password will be changed
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'bg-blue-100 border-blue-400 text-blue-700 px-4 py-3 mb-4 rounded relative border';
+                messageDiv.innerHTML = '<span class="block sm:inline">Password will be changed when you save the form.</span>';
+                
+                // Add the message to the form
+                const form = document.getElementById('editStaffForm');
+                if (form.querySelector('.password-message')) {
+                    form.querySelector('.password-message').remove();
+                }
+                messageDiv.classList.add('password-message');
+                form.insertBefore(messageDiv, form.firstChild);
+            }
+        });
+    }
+    
+    // Reset modal fields
+    function resetModalFields() {
+        if (modalCurrentPassword) modalCurrentPassword.value = '';
+        if (modalNewPassword) modalNewPassword.value = '';
+        if (modalConfirmPassword) modalConfirmPassword.value = '';
+        if (currentPasswordError) currentPasswordError.classList.add('hidden');
+        if (newPasswordError) newPasswordError.classList.add('hidden');
+        if (confirmPasswordError) confirmPasswordError.classList.add('hidden');
+    }
+
+    // Close modals when clicking outside
+    window.addEventListener('click', (event) => {
+        if (event.target === addStaffModal) {
+            addStaffModal.classList.add('hidden');
+        }
+        if (event.target === editStaffModal) {
+            editStaffModal.classList.add('hidden');
+        }
+        if (event.target === deleteConfirmModal) {
+            deleteConfirmModal.classList.add('hidden');
+        }
+        if (event.target === passwordChangeModal) {
+            passwordChangeModal.classList.add('hidden');
+            resetModalFields();
+        }
+    });
+</script>
+</body>
+
+</html>

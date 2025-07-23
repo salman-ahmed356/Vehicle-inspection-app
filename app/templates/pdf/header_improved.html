@@ -1,0 +1,93 @@
+<style>
+  .header {
+    height: 100px;
+    color: #333;
+    border-bottom: 2px solid #a82b2e;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+  }
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  .logo-container {
+    height: 80px;
+    display: flex;
+    align-items: center;
+  }
+
+  .logo-container img {
+    height: 70px;
+    width: auto;
+    object-fit: contain;
+  }
+
+  .header-text {
+    flex: 1;
+    text-align: right;
+    line-height: 1.4;
+  }
+
+  .header-text h1 {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0 0 5px 0;
+    color: #a82b2e;
+  }
+
+  .header-text p {
+    margin: 2px 0;
+    font-size: 11px;
+  }
+
+  .report-number {
+    color: #a82b2e;
+    font-weight: bold;
+    font-size: 14px;
+  }
+
+  .date-time {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+  }
+
+  .date-time span {
+    font-weight: bold;
+  }
+</style>
+
+<header class="header">
+  <div class="header-content">
+    <div class="logo-container">
+      {% for image in images %}
+        {% if image.filename == 'logo.jpeg' %}
+          <img src="{{ image.url }}" alt="{{ _('Company Logo') }}">
+        {% endif %}
+      {% endfor %}
+    </div>
+    <div class="header-text">
+      <h1>{{ company.name }}</h1>
+      <p>
+        {{ _('REPORT NO') }}:
+        <span class="report-number">{{ report.id }}</span>
+      </p>
+      <div class="date-time">
+        <p>
+          {{ _('DATE') }}:
+          <span>{{ report.inspection_date.strftime('%d/%m/%Y') if report.inspection_date else '' }}</span>
+        </p>
+        <p>
+          {{ _('TIME') }}:
+          <span>{{ report.inspection_date.strftime('%H:%M') if report.inspection_date else '' }}</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</header>

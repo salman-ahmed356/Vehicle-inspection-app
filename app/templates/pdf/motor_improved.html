@@ -1,0 +1,165 @@
+{#— grab the Engine Expertise block (if any) —#}
+{% set pckg_report = (package_expertise_reports
+     | selectattr('expertise_type_name','equalto','Engine Expertise')
+     | first)
+   | default({}) %}
+
+{#— now use default filters to avoid missing-attribute errors —#}
+{% set features = pckg_report.features | default([]) %}
+{% set comment = pckg_report.comment | default('') %}
+
+<style>
+  .expertise-container {
+    margin-bottom: 30px;
+  }
+
+  .expertise-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .expertise-icon {
+    width: 60px;
+    height: 60px;
+    margin-right: 20px;
+  }
+
+  .expertise-title {
+    flex: 1;
+    font-size: 18px;
+    font-weight: bold;
+    color: #a82b2e;
+  }
+
+  .expertise-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .expertise-item {
+    flex: 1 0 30%;
+    min-width: 180px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .expertise-item-header {
+    background-color: #f2f2f2;
+    padding: 10px;
+    font-weight: bold;
+    font-size: 12px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .expertise-item-status {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+    align-items: center;
+  }
+
+  .status-indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .status-good {
+    background-color: #4CAF50;
+  }
+
+  .status-warning {
+    background-color: #FFC107;
+  }
+
+  .status-bad {
+    background-color: #F44336;
+  }
+
+  .status-none {
+    background-color: #000;
+    color: white;
+    width: auto;
+    height: auto;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 10px;
+  }
+
+  .status-label {
+    font-size: 10px;
+    text-align: center;
+    margin-top: 5px;
+  }
+
+  .comment-section {
+    margin-top: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .comment-header {
+    background-color: #a82b2e;
+    color: white;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .comment-body {
+    padding: 15px;
+    font-size: 12px;
+    min-height: 80px;
+    background-color: #f9f9f9;
+  }
+</style>
+
+<div class="expertise-container">
+  <div class="expertise-header">
+    <img src="{{ motor_image_url }}" alt="{{ _('Engine') }}" class="expertise-icon">
+    <div class="expertise-title">{{ _('Engine Expertise') }}</div>
+  </div>
+
+  <div class="expertise-grid">
+    {% for feature in features %}
+      <div class="expertise-item">
+        <div class="expertise-item-header">{{ _(feature.name) }}</div>
+        <div class="expertise-item-status">
+          {% if feature.status == 'No Issue' %}
+            <div>
+              <span class="status-indicator status-good"></span>
+              <div class="status-label">{{ _('No Issue') }}</div>
+            </div>
+          {% elif feature.status == 'May Cause Issues' %}
+            <div>
+              <span class="status-indicator status-warning"></span>
+              <div class="status-label">{{ _('May Cause Issues') }}</div>
+            </div>
+          {% elif feature.status == 'Maintenance Required' %}
+            <div>
+              <span class="status-indicator status-bad"></span>
+              <div class="status-label">{{ _('Maintenance Required') }}</div>
+            </div>
+          {% else %}
+            <span class="status-none">{{ _('None') }}</span>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="comment-section">
+    <div class="comment-header">
+      {{ _('Engine Inspection Summary') }}
+    </div>
+    <div class="comment-body">
+      {{ comment }}
+    </div>
+  </div>
+</div>
