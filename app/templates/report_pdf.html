@@ -213,7 +213,10 @@
       {% include 'pdf/beyin.html' %}
     {% elif pckg_report.expertise_type_name == "Paint & Body Expertise" %}
       <div class="page-break"></div>
-      {% include 'pdf/boya.html' %}
+      {% include 'pdf/boya_fixed.html' %}
+    {% elif pckg_report.expertise_type_name == "Mechanical Expertise" %}
+      <div class="page-break"></div>
+      {% include 'pdf/mechanical_fixed.html' %}
     {% endif %}
   {% endfor %}
 

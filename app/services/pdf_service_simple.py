@@ -10,6 +10,7 @@ from ..models import (
     Report, Company, Vehicle, Customer, Staff,
     ExpertiseReport, ExpertiseType
 )
+from .status_translator import StatusTranslator
 
 
 def create_pdf(report_id):
@@ -21,7 +22,7 @@ def create_pdf(report_id):
     filename = _build_output_filename(customer)
 
     rendered_html = render_template(
-        'pdf/simple_report_fixed.html',
+        'pdf/simple_report_bilingual.html',
         report=report,
         company=company,
         vehicle=vehicle,

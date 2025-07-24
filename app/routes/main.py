@@ -21,13 +21,16 @@ def index():
     # Upcoming appointments count
     upcoming_appointments_count = Appointment.query.filter(Appointment.date >= today).count()
     
-    # This week's completed reports
+    # This week's completed reports (Monday to Sunday)
     week_start = today - timedelta(days=today.weekday())
     week_end = week_start + timedelta(days=6)
+    
+    # Since we don't have a completion_date field, we'll use created_at as proxy
+    # In a real system, you'd want a separate completion_date field
     weekly_completed_reports = Report.query.filter(
         Report.status == ReportStatus.COMPLETED,
-        Report.inspection_date >= week_start,
-        Report.inspection_date <= week_end
+        Report.created_at >= datetime.combine(week_start, datetime.min.time()),
+        Report.created_at <= datetime.combine(week_end, datetime.max.time())
     ).count()
     
     # Debug

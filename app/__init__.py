@@ -1,6 +1,7 @@
 import os
 from flask import Flask, request, session, redirect, url_for
 from flask_babel import Babel
+from flask_migrate import Migrate
 from datetime import timedelta
 
 from .database import db
@@ -60,6 +61,7 @@ def create_app(test_config=None):
 
     # Initialize extensions
     db.init_app(app)
+    migrate = Migrate(app, db)
     babel.init_app(app)
 
     # Register blueprints

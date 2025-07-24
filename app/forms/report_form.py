@@ -36,7 +36,7 @@ class ReportForm(FlaskForm):
     engine_number = StringField('Engine Number', validators=[Optional(), Length(max=30)])
 
     # Inspection Information
-    created_at = DateTimeField('Created At', validators=[DataRequired()], format='%Y-%m-%dT%H:%M')
+    created_at = DateTimeField('Created At', validators=[Optional()], format='%Y-%m-%dT%H:%M')
     inspection_date = DateTimeField('Inspection Date', validators=[Optional()], format='%Y-%m-%dT%H:%M')
     package_id = SelectField('Package ID', coerce=int, validators=[DataRequired()], choices=[])
     created_by = SelectField('Created By', coerce=int, validators=[DataRequired()], choices=[])

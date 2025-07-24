@@ -9,6 +9,7 @@ from ..models import (
     Report, Company, Vehicle, Customer, Staff,
     ExpertiseReport, ExpertiseType
 )
+from .status_translator import StatusTranslator
 
 
 def create_pdf(report_id):
@@ -108,7 +109,7 @@ def _extract_paint_body(report):
                 paint = [
                     {
                         'name'      : f.name,
-                        'status'    : f.status,
+                        'status'    : StatusTranslator.get_translated_status("Paint Expertise", f.status),
                         'image_url' : (
                             url_for('static', filename=f.image_path, _external=True)
                             if f.image_path else ''
@@ -123,7 +124,7 @@ def _extract_paint_body(report):
                 body = [
                     {
                         'name'      : f.name,
-                        'status'    : f.status,
+                        'status'    : StatusTranslator.get_translated_status("Body Expertise", f.status),
                         'image_url' : (
                             url_for('static', filename=f.image_path, _external=True)
                             if f.image_path else ''
@@ -143,7 +144,7 @@ def _build_block_dict(report):
     feats = [
         {
             'name'      : f.name,
-            'status'    : f.status,
+            'status'    : StatusTranslator.get_translated_status(report.expertise_type.name, f.status),
             'image_url' : (
                 url_for('static', filename=f.image_path, _external=True)
                 if f.image_path else ''

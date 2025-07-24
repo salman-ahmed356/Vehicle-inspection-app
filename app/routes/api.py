@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request, send_file, Response
 from io import BytesIO
 from ..models import Vehicle, Report
 from ..auth import login_required
+from ..services.expertise_batch_processor import ExpertiseBatchProcessor
 
 api = Blueprint('api', __name__, url_prefix='/api')
 
@@ -62,3 +63,27 @@ def vehicle_image(vehicle_id):
         BytesIO(report.image_data),
         mimetype='image/jpeg'
     )
+
+@api.route('/expertise/batch/<int:batch_num>', methods=['POST'])
+@login_required
+def process_expertise_batch(batch_num):
+    """Process expertise batches 3 at a time"""
+    try:
+        if batch_num == 1:
+            result = ExpertiseBatchProcessor.process_batch_1()
+        elif batch_num == 2:
+            result = ExpertiseBatchProcessor.process_batch_2()
+        elif batch_num == 3:
+            result = ExpertiseBatchProcessor.process_batch_3()
+        elif batch_num == 4:
+            result = ExpertiseBatchProcessor.process_batch_4()
+        else:
+            return jsonify({"error": "Invalid batch number. Use 1-4."}), 400
+        
+        return jsonify({
+            "success": True,
+            "batch": batch_num,
+            "result": result
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

@@ -111,6 +111,15 @@ def edit_staff(id):
 
         try:
             db.session.commit()
+            
+            # Update session if user is editing their own profile
+            from flask import session
+            current_user_id = session.get('user_id')
+            if current_user_id and int(current_user_id) == staff_member.id:
+                # Update the session with new name
+                session['user_name'] = staff_member.full_name
+                print(f"DEBUG: Updated session user_name to: {staff_member.full_name}")
+            
             if password_changed:
                 flash('Staff member updated successfully! Password has been changed.', 'success')
                 print("Password changed successfully for staff member")

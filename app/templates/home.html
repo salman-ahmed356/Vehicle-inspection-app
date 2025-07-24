@@ -180,6 +180,11 @@
           </div>
           <div class="text-blue-500 text-3xl"><i class="fas fa-users"></i></div>
         </div>
+        <div class="mt-4">
+          <a href="{{ url_for('customers.customer_list') }}" class="bg-blue-500 text-white px-4 py-2 rounded inline-block hover:bg-blue-600">
+            {{ _('See All Customers') }}
+          </a>
+        </div>
       </div>
       <div class="bg-white p-6 rounded-lg shadow">
         <div class="flex justify-between items-center">

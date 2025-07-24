@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vehicle Inspection Report - تقرير فحص المركبة</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 15mm 15mm 15mm 15mm;
+      @bottom-right {
+        content: "Page " counter(page) " of " counter(pages);
+        font-size: 8pt;
+      }
+    }
+    
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 10pt;
+      line-height: 1.2;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    
+    .arabic {
+      font-family: 'Arial Unicode MS', Arial, sans-serif;
+      direction: rtl;
+      text-align: right;
+      font-size: 9pt;
+      color: #555;
+      margin-top: 2px;
+    }
+    
+    .header {
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo-container {
+      width: 40%;
+    }
+    
+    .report-title {
+      width: 60%;
+      text-align: right;
+      font-size: 14pt;
+      font-weight: normal;
+    }
+    
+    .report-number {
+      text-align: right;
+      font-size: 8pt;
+      color: #666;
+      margin-bottom: 5px;
+    }
+    
+    .vehicle-section {
+      display: flex;
+      margin-bottom: 15px;
+    }
+    
+    .vehicle-image {
+      width: 40%;
+      height: 180px;
+      background-color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid #ddd;
+    }
+    
+    .vehicle-details {
+      width: 60%;
+      padding-left: 15px;
+    }
+    
+    .vehicle-details table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .vehicle-details td {
+      padding: 4px;
+      vertical-align: top;
+      border-bottom: 1px dotted #eee;
+    }
+    
+    .vehicle-details td:first-child {
+      font-weight: bold;
+      width: 40%;
+      text-align: left;
+    }
+    
+    .vehicle-details td:last-child {
+      text-align: right;
+      width: 60%;
+    }
+    
+    .customer-section {
+      margin-bottom: 15px;
+    }
+    
+    .customer-header {
+      background-color: #f0f0f0;
+      padding: 6px;
+      font-weight: bold;
+      border: 1px solid #ddd;
+      border-bottom: none;
+    }
+    
+    .customer-details {
+      border: 1px solid #ddd;
+      padding: 10px;
+    }
+    
+    .customer-details table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .customer-details td {
+      padding: 4px;
+      vertical-align: top;
+      border-bottom: 1px dotted #eee;
+    }
+    
+    .customer-details td:first-child {
+      font-weight: bold;
+      width: 40%;
+      text-align: left;
+    }
+    
+    .customer-details td:last-child {
+      text-align: right;
+      width: 60%;
+    }
+    
+    .expertise-section {
+      margin-bottom: 20px;
+      page-break-inside: avoid;
+    }
+    
+    .expertise-title {
+      font-size: 12pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      background-color: #f0f0f0;
+      padding: 6px;
+      border: 1px solid #ddd;
+      border-bottom: none;
+    }
+    
+    .feature-table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid #ddd;
+    }
+    
+    .feature-table td {
+      padding: 4px 6px;
+      border-bottom: 1px dotted #ddd;
+      vertical-align: top;
+    }
+    
+    .feature-name {
+      font-weight: bold;
+      width: 25%;
+      text-align: left;
+    }
+    
+    .feature-status {
+      width: 25%;
+      text-align: right;
+    }
+    
+    .comments {
+      margin-top: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      padding: 6px;
+    }
+    
+    .comments-title {
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    
+    .comments-text {
+      padding: 6px;
+      background-color: #f9f9f9;
+      min-height: 30px;
+    }
+    
+    .footer {
+      margin-top: 20px;
+      font-size: 8pt;
+      color: #666;
+      border-top: 1px solid #ddd;
+      padding-top: 8px;
+    }
+    
+    .staff-info {
+      float: left;
+    }
+    
+    .company-info {
+      float: right;
+      text-align: right;
+    }
+    
+    .clearfix::after {
+      content: "";
+      clear: both;
+      display: table;
+    }
+    
+    .page-break {
+      page-break-before: always;
+    }
+    
+    .company-info-page {
+      page-break-before: always;
+      page-break-after: always;
+      min-height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <!-- Arabic translations for expertise types -->
+  {% set arabic_expertise = {
+    'Paint': 'الطلاء',
+    'Body': 'الهيكل',
+    'Paint & Body': 'الطلاء والهيكل',
+    'Engine': 'المحرك',
+    'Brake': 'الفرامل',
+    'Suspension': 'نظام التعليق',
+    'Interior': 'الداخلية',
+    'Exterior': 'الخارجية',
+    'Interior & Exterior': 'الداخلية والخارجية',
+    'Mechanical': 'الميكانيكية',
+    'ECU': 'وحدة التحكم الإلكترونية',
+    'Dyno': 'اختبار القوة',
+    'Road': 'الطريق',
+    'Road & Dyno': 'الطريق واختبار القوة',
+    'Lateral Drift': 'الانحراف الجانبي',
+    'Paint Expertise': 'خبرة الطلاء',
+    'Body Expertise': 'خبرة الهيكل',
+    'Paint & Body Expertise': 'خبرة الطلاء والهيكل',
+    'Engine Expertise': 'خبرة المحرك',
+    'Brake Expertise': 'خبرة الفرامل',
+    'Suspension Expertise': 'خبرة نظام التعليق',
+    'Interior Expertise': 'خبرة الداخلية',
+    'Exterior Expertise': 'خبرة الخارجية',
+    'Interior & Exterior Expertise': 'خبرة الداخلية والخارجية',
+    'Mechanical Expertise': 'خبرة الميكانيكية',
+    'ECU Expertise': 'خبرة وحدة التحكم الإلكترونية',
+    'Dyno Expertise': 'خبرة اختبار القوة',
+    'Road Expertise': 'خبرة الطريق',
+    'Road & Dyno Expertise': 'خبرة الطريق واختبار القوة',
+    'Lateral Drift Expertise': 'خبرة الانحراف الجانبي'
+  } %}
+  
+  <!-- Arabic translations for statuses -->
+  {% set arabic_status = {
+    'Original': 'أصلي',
+    'Painted': 'مطلي',
+    'Locally Painted': 'مطلي محلياً',
+    'Replaced': 'مستبدل',
+    'Plastic': 'بلاستيك',
+    'Coated': 'مطلي بطبقة',
+    'No Issue': 'لا يوجد مشكلة',
+    'Issue Found': 'تم العثور على مشكلة',
+    'Needs Attention': 'يحتاج انتباه',
+    'Good': 'جيد',
+    'Fair': 'مقبول',
+    'Poor': 'ضعيف',
+    'Repaired': 'مصلح',
+    'Repaired/Painted': 'مصلح/مطلي',
+    'Scratched': 'مخدوش',
+    'Scratch': 'خدش',
+    'Dented': 'مخدوش',
+    'Dent': 'خدشة',
+    'Dent/Crack/Deformation': 'مقعر/شق/تشويه',
+    'Cracked': 'متشقق',
+    'Crack': 'شق',
+    'Broken': 'مكسور',
+    'Damaged': 'تالف',
+    'Worn': 'مهترئ',
+    'Rusted': 'صدئ',
+    'Rust': 'صدأ',
+    'Corroded': 'متآكل',
+    'Corrosion': 'تآكل',
+    'Leaking': 'متسرب',
+    'Leak': 'تسرب',
+    'Loose': 'مفكوك',
+    'Tight': 'محكم',
+    'Missing': 'مفقود',
+    'Present': 'موجود',
+    'Working': 'يعمل',
+    'Not Working': 'لا يعمل',
+    'Functional': 'يعمل',
+    'Non-Functional': 'لا يعمل',
+    'OK': 'جيد',
+    'Not OK': 'غير جيد',
+    'Pass': 'نجح',
+    'Fail': 'فشل',
+    'Clean': 'نظيف',
+    'Dirty': 'متسخ',
+    'New': 'جديد',
+    'Old': 'قديم',
+    'Used': 'مستعمل',
+    'Worn Out': 'مهترئ تماماً',
+    'Excellent': 'ممتاز',
+    'Very Good': 'جيد جداً',
+    'Average': 'متوسط',
+    'Below Average': 'دون المتوسط',
+    'Bad': 'سيئ',
+    'Very Bad': 'سيئ جداً',
+    'Acceptable': 'مقبول',
+    'Unacceptable': 'غير مقبول',
+    'Safe': 'آمن',
+    'Unsafe': 'غير آمن',
+    'Normal': 'طبيعي',
+    'Abnormal': 'غير طبيعي',
+    'High': 'عالي',
+    'Low': 'منخفض',
+    'Medium': 'متوسط',
+    'Critical': 'حرج',
+    'Warning': 'تحذير',
+    'Attention': 'انتباه',
+    'Immediate': 'فوري',
+    'Urgent': 'عاجل',
+    'Minor': 'طفيف',
+    'Major': 'رئيسي',
+    'Severe': 'شديد',
+    'Light': 'خفيف',
+    'Heavy': 'ثقيل',
+    'Moderate': 'معتدل',
+    'Slight': 'طفيف',
+    'Complete': 'مكتمل',
+    'Incomplete': 'غير مكتمل',
+    'Partial': 'جزئي',
+    'Full': 'كامل',
+    'Empty': 'فارغ',
+    'Half': 'نصف',
+    'Quarter': 'ربع',
+    'Three Quarter': 'ثلاثة أرباع',
+    'Minimum': 'أدنى',
+    'Maximum': 'أقصى',
+    'Standard': 'قياسي',
+    'Custom': 'مخصص',
+    'Default': 'افتراضي',
+    'Modified': 'معدل',
+    'Upgraded': 'محدث',
+    'Downgraded': 'مخفض',
+    'Maintained': 'مصان',
+    'Serviced': 'مخدوم',
+    'Inspected': 'مفحوص',
+    'Tested': 'مختبر',
+    'Approved': 'معتمد',
+    'Rejected': 'مرفوض',
+    'Pending': 'معلق',
+    'In Progress': 'قيد التنفيذ',
+    'Completed': 'مكتمل',
+    'Cancelled': 'ملغى',
+    'Active': 'نشط',
+    'Inactive': 'غير نشط',
+    'Enabled': 'مفعل',
+    'Disabled': 'معطل',
+    'On': 'مشغل',
+    'Off': 'مطفأ',
+    'Open': 'مفتوح',
+    'Closed': 'مغلق',
+    'Available': 'متاح',
+    'Unavailable': 'غير متاح',
+    'Ready': 'جاهز',
+    'Not Ready': 'غير جاهز',
+    'Connected': 'متصل',
+    'Disconnected': 'منقطع',
+    'Stable': 'مستقر',
+    'Unstable': 'غير مستقر',
+    'Secure': 'آمن',
+    'Insecure': 'غير آمن',
+    'Valid': 'صحيح',
+    'Invalid': 'غير صحيح',
+    'Correct': 'صحيح',
+    'Incorrect': 'غير صحيح',
+    'True': 'صحيح',
+    'False': 'خاطئ',
+    'Yes': 'نعم',
+    'No': 'لا',
+    'Passed': 'نجح',
+    'Failed': 'فشل',
+    'Inspection': 'فحص',
+    'Maintenance': 'صيانة',
+    'Required': 'مطلوب',
+    'May Cause': 'قد يسبب',
+    'Issues': 'مشاكل',
+    'Passed Inspection': 'نجح في الفحص',
+    'Maintenance Required': 'صيانة مطلوبة',
+    'May Cause Issues': 'قد يسبب مشاكل',
+    '(Good)': '(جيد)',
+    '(Bad)': '(سيئ)',
+    '(Moderate)': '(متوسط)',
+    '(Excellent)': '(ممتاز)',
+    '(Poor)': '(ضعيف)',
+    'Good Passed': 'نجح جيد',
+    'Bad Maintenance': 'صيانة سيئة',
+    'Moderate May Cause': 'متوسط قد يسبب',
+    'Good Passed Inspection': 'نجح جيد في الفحص',
+    'Bad Maintenance Required': 'صيانة سيئة مطلوبة',
+    'Moderate May Cause Issues': 'متوسط قد يسبب مشاكل',
+    'Needs Repair': 'يحتاج إصلاح',
+    'Needs Service': 'يحتاج خدمة',
+    'Needs Replacement': 'يحتاج استبدال',
+    'Service Required': 'خدمة مطلوبة',
+    'Repair Required': 'إصلاح مطلوب',
+    'Replacement Required': 'استبدال مطلوب',
+    'Check Required': 'فحص مطلوب',
+    'Adjustment Required': 'تعديل مطلوب',
+    'Calibration Required': 'معايرة مطلوبة',
+    'Lubrication Required': 'تشحيم مطلوب',
+    'Cleaning Required': 'تنظيف مطلوب',
+    'Tightening Required': 'ربط مطلوب',
+    'Alignment Required': 'محاذاة مطلوبة',
+    'Balancing Required': 'موازنة مطلوبة',
+    'Fluid Change Required': 'تغيير السائل مطلوب',
+    'Filter Change Required': 'تغيير الفلتر مطلوب',
+    'Oil Change Required': 'تغيير الزيت مطلوب',
+    'Belt Replacement Required': 'استبدال الحزام مطلوب',
+    'Brake Service Required': 'خدمة الفرامل مطلوبة',
+    'Tire Service Required': 'خدمة الإطارات مطلوبة',
+    'Engine Service Required': 'خدمة المحرك مطلوبة',
+    'Transmission Service Required': 'خدمة ناقل الحركة مطلوبة',
+    'Suspension Service Required': 'خدمة التعليق مطلوبة',
+    'Steering Service Required': 'خدمة التوجيه مطلوبة',
+    'Electrical Service Required': 'خدمة كهربائية مطلوبة',
+    'AC Service Required': 'خدمة التكييف مطلوبة',
+    'Cooling System Service Required': 'خدمة نظام التبريد مطلوبة',
+    'Fuel System Service Required': 'خدمة نظام الوقود مطلوبة',
+    'Exhaust System Service Required': 'خدمة نظام العادم مطلوبة',
+    '(Good) Passed Inspection': '(جيد) نجح في الفحص',
+    '(Bad) Maintenance Required': '(سيئ) صيانة مطلوبة',
+    '(Moderate) May Cause Issues': '(متوسط) قد يسبب مشاكل',
+    'Error Logged': 'تم تسجيل خطأ',
+    'No Error Logged': 'لم يتم تسجيل خطأ',
+    'Connection Failed': 'فشل في الاتصال',
+    'Part 2': 'الجزء 2',
+    'Engine Warning Light': 'ضوء تحذير المحرك',
+    'AC Electronics': 'إلكترونيات التكييف',
+    'Electric Steering': 'التوجيه الكهربائي',
+    'Transmission Electronics': 'إلكترونيات ناقل الحركة',
+    'Front Right': 'الأمامي الأيمن',
+    'Rear Right': 'الخلفي الأيمن',
+    '01': '01',
+    '02': '02',
+    '03': '03',
+    '04': '04',
+    'None': 'لا يوجد',
+    '(Good) Passed Inspection': '(جيد) نجح في الفحص',
+    '(Moderate) May Cause Issues': '(متوسط) قد يسبب مشاكل',
+    '(Bad) Maintenance Required': '(سيئ) صيانة مطلوبة',
+    'No Error Logged': 'لم يتم تسجيل خطأ',
+    'Error Logged': 'تم تسجيل خطأ',
+    'Connection Failed': 'فشل في الاتصال'
+  } %}
+  
+  <!-- Arabic translations for feature names -->
+  {% set arabic_features = {
+    'Left Front Fender': 'الرفرف الأمامي الأيسر',
+    'Left Front Door': 'الباب الأمامي الأيسر',
+    'Left Rear Fender': 'الرفرف الخلفي الأيسر',
+    'Left Rear Door': 'الباب الخلفي الأيسر',
+    'Right Front Fender': 'الرفرف الأمامي الأيمن',
+    'Right Front Door': 'الباب الأمامي الأيمن',
+    'Right Rear Door': 'الباب الخلفي الأيمن',
+    'Right Rear Fender': 'الرفرف الخلفي الأيمن',
+    'Front Bumper': 'المصد الأمامي',
+    'Rear Bumper': 'المصد الخلفي',
+    'Hood': 'غطاء المحرك',
+    'Trunk Lid': 'غطاء الصندوق',
+    'Roof': 'السقف',
+    'Left Front Chassis': 'الهيكل الأمامي الأيسر',
+    'Right Front Chassis': 'الهيكل الأمامي الأيمن',
+    'Left Rear Chassis': 'الهيكل الخلفي الأيسر',
+    'Right Rear Chassis': 'الهيكل الخلفي الأيمن',
+    'Left Inner Rocker Panel': 'اللوحة الداخلية اليسرى',
+    'Right Inner Rocker Panel': 'اللوحة الداخلية اليمنى',
+    'Left A-Pillar Inner': 'العمود الأمامي الداخلي الأيسر',
+    'Right A-Pillar Inner': 'العمود الأمامي الداخلي الأيمن',
+    'Left Upper Pillar': 'العمود العلوي الأيسر',
+    'Right Upper Pillar': 'العمود العلوي الأيمن',
+    'Left Side Skirt': 'التنورة الجانبية اليسرى',
+    'Right Side Skirt': 'التنورة الجانبية اليمنى',
+    'Front Panel': 'اللوحة الأمامية',
+    'Rear Panel': 'اللوحة الخلفية',
+    'Front Windshield': 'الزجاج الأمامي',
+    'Rear Windshield': 'الزجاج الخلفي',
+    'Rear Wheel Well': 'بئر العجلة الخلفية',
+    'Horn': 'البوق',
+    'Headlights': 'المصابيح الأمامية',
+    'Headlight Wash': 'غسيل المصابيح الأمامية',
+    'Front/Rear Fog Lights': 'أضواء الضباب الأمامية/الخلفية',
+    'Turn Signals & Hazard Lights': 'إشارات الانعطاف وأضواء الخطر',
+    'Wipers': 'المساحات',
+    'Mirrors': 'المرايا',
+    'Sunroof or Moonroof': 'فتحة السقف',
+    'Windows': 'النوافذ',
+    'Door Handles': 'مقابض الأبواب',
+    'Tail Lights': 'المصابيح الخلفية',
+    'License Plate Light': 'إضاءة لوحة الترخيص',
+    'Trunk Interior': 'داخل الصندوق',
+    'Spare Tire': 'الإطار الاحتياطي',
+    'Chassis Number Check': 'فحص رقم الهيكل',
+    'Interior Lighting': 'الإضاءة الداخلية',
+    'Rearview Mirror': 'مرآة الرؤية الخلفية',
+    'Seat Belt Check': 'فحص حزام الأمان',
+    'Sun Visor Check': 'فحص واقي الشمس',
+    'Glovebox Check': 'فحص صندوق القفازات',
+    'Steering Wheel Check': 'فحص عجلة القيادة',
+    'Seat Check': 'فحص المقاعد',
+    'Headliner Check': 'فحص بطانة السقف',
+    'Interior Upholstery Check': 'فحص التنجيد الداخلي',
+    'Window Control Check': 'فحص تحكم النوافذ',
+    'AC Control': 'تحكم التكييف',
+    'Instrument Panel Check': 'فحص لوحة العدادات',
+    'Radio/Navigation Check': 'فحص الراديو/الملاحة',
+    'Engine Block': 'كتلة المحرك',
+    'Cylinder Head': 'رأس الأسطوانة',
+    'Pistons': 'المكابس',
+    'Crankshaft': 'عمود المرفق',
+    'Camshaft': 'عمود الكامات',
+    'Valves': 'الصمامات',
+    'Timing Belt': 'حزام التوقيت',
+    'Oil System': 'نظام الزيت',
+    'Cooling System': 'نظام التبريد',
+    'Fuel System': 'نظام الوقود',
+    'Exhaust System': 'نظام العادم',
+    'Air Filter': 'فلتر الهواء',
+    'Spark Plugs': 'شمعات الإشعال',
+    'Battery': 'البطارية',
+    'Alternator': 'المولد',
+    'Starter': 'بادئ التشغيل',
+    'Brake Pads': 'وسائد الفرامل',
+    'Brake Discs': 'أقراص الفرامل',
+    'Brake Fluid': 'سائل الفرامل',
+    'Brake Lines': 'خطوط الفرامل',
+    'Master Cylinder': 'الأسطوانة الرئيسية',
+    'Brake Booster': 'معزز الفرامل',
+    'ABS System': 'نظام ABS',
+    'Parking Brake': 'فرامل اليد',
+    'Front Suspension': 'التعليق الأمامي',
+    'Rear Suspension': 'التعليق الخلفي',
+    'Shock Absorbers': 'ماصات الصدمات',
+    'Springs': 'النوابض',
+    'Struts': 'الدعامات',
+    'Control Arms': 'أذرع التحكم',
+    'Ball Joints': 'المفاصل الكروية',
+    'Tie Rods': 'قضبان الربط',
+    'Steering Rack': 'رف التوجيه',
+    'Power Steering': 'التوجيه المعزز',
+    'Wheel Alignment': 'محاذاة العجلات',
+    'Tires': 'الإطارات',
+    'Wheels': 'العجلات',
+    'Transmission': 'ناقل الحركة',
+    'Clutch': 'القابض',
+    'Differential': 'التفاضلي',
+    'Drive Shaft': 'عمود الإدارة',
+    'CV Joints': 'مفاصل CV',
+    'ECU': 'وحدة التحكم الإلكترونية',
+    'Sensors': 'أجهزة الاستشعار',
+    'Wiring': 'الأسلاك',
+    'Fuses': 'المصاهر',
+    'Relays': 'المرحلات',
+    'Part 1': 'الجزء 1',
+    'Part 2': 'الجزء 2',
+    'Part 3': 'الجزء 3',
+    'Front Left Fender': 'الرفرف الأمامي الأيسر',
+    'Front Right Fender': 'الرفرف الأمامي الأيمن',
+    'Rear Left Fender': 'الرفرف الخلفي الأيسر',
+    'Rear Right Fender': 'الرفرف الخلفي الأيمن',
+    'Left Door': 'الباب الأيسر',
+    'Right Door': 'الباب الأيمن',
+    'Front Door': 'الباب الأمامي',
+    'Rear Door': 'الباب الخلفي',
+    'Left Front': 'الأمامي الأيسر',
+    'Right Front': 'الأمامي الأيمن',
+    'Left Rear': 'الخلفي الأيسر',
+    'Right Rear': 'الخلفي الأيمن',
+    'Bumper': 'المصد',
+    'Fender': 'الرفرف',
+    'Door': 'الباب',
+    'Panel': 'اللوحة',
+    'Light': 'الضوء',
+    'Lamp': 'المصباح',
+    'Mirror': 'المرآة',
+    'Handle': 'المقبض',
+    'Window': 'النافذة',
+    'Glass': 'الزجاج',
+    'Tire': 'الإطار',
+    'Wheel': 'العجلة',
+    'Brake': 'الفرامل',
+    'Engine': 'المحرك',
+    'Motor': 'المحرك',
+    'Transmission': 'ناقل الحركة',
+    'Gearbox': 'علبة التروس',
+    'Suspension': 'التعليق',
+    'Shock': 'الصدمة',
+    'Spring': 'النابض',
+    'Strut': 'الدعامة',
+    'Axle': 'المحور',
+    'Differential': 'التفاضلي',
+    'Driveshaft': 'عمود الإدارة',
+    'CV Joint': 'مفصل CV',
+    'Ball Joint': 'المفصل الكروي',
+    'Tie Rod': 'قضيب الربط',
+    'Control Arm': 'ذراع التحكم',
+    'Stabilizer': 'المثبت',
+    'Sway Bar': 'قضيب التوازن',
+    'Bushing': 'الجلبة',
+    'Bearing': 'المحمل',
+    'Seal': 'الختم',
+    'Gasket': 'الحشية',
+    'Filter': 'الفلتر',
+    'Fluid': 'السائل',
+    'Oil': 'الزيت',
+    'Coolant': 'سائل التبريد',
+    'Radiator': 'الرادياتير',
+    'Fan': 'المروحة',
+    'Belt': 'الحزام',
+    'Hose': 'الخرطوم',
+    'Pipe': 'الأنبوب',
+    'Tube': 'الأنبوبة',
+    'Line': 'الخط',
+    'Cable': 'الكابل',
+    'Wire': 'السلك',
+    'Connector': 'الموصل',
+    'Sensor': 'المستشعر',
+    'Switch': 'المفتاح',
+    'Relay': 'المرحل',
+    'Fuse': 'المصهر',
+    'Circuit': 'الدائرة',
+    'Module': 'الوحدة',
+    'Computer': 'الكمبيوتر',
+    'Controller': 'وحدة التحكم',
+    'Actuator': 'المشغل',
+    'Solenoid': 'الملف اللولبي',
+    'Valve': 'الصمام',
+    'Pump': 'المضخة',
+    'Compressor': 'الضاغط',
+    'Condenser': 'المكثف',
+    'Evaporator': 'المبخر',
+    'Accumulator': 'المجمع',
+    'Receiver': 'المستقبل',
+    'Dryer': 'المجفف',
+    'Expansion': 'التمدد',
+    'Thermostat': 'منظم الحرارة',
+    'Temperature': 'درجة الحرارة',
+    'Pressure': 'الضغط',
+    'Vacuum': 'الفراغ',
+    'Boost': 'التعزيز',
+    'Turbo': 'التوربو',
+    'Supercharger': 'الشاحن الفائق',
+    'Intercooler': 'المبرد البيني',
+    'Intake': 'المدخل',
+    'Exhaust': 'العادم',
+    'Manifold': 'المجمع',
+    'Catalytic': 'التحفيزي',
+    'Converter': 'المحول',
+    'Muffler': 'كاتم الصوت',
+    'Silencer': 'كاتم الصوت',
+    'Resonator': 'الرنان',
+    'Tailpipe': 'أنبوب العادم',
+    'Heat Shield': 'واقي الحرارة',
+    'Insulation': 'العزل',
+    'Padding': 'الحشو',
+    'Carpet': 'السجادة',
+    'Mat': 'الحصيرة',
+    'Cover': 'الغطاء',
+    'Trim': 'التشطيب',
+    'Molding': 'القولبة',
+    'Weatherstrip': 'شريط الطقس',
+    'Seal Strip': 'شريط الختم',
+    'Rubber': 'المطاط',
+    'Plastic': 'البلاستيك',
+    'Metal': 'المعدن',
+    'Steel': 'الفولاذ',
+    'Aluminum': 'الألومنيوم',
+    'Carbon': 'الكربون',
+    'Fiber': 'الألياف',
+    'Composite': 'المركب',
+    'Alloy': 'السبيكة',
+    'Chrome': 'الكروم',
+    'Stainless': 'المقاوم للصدأ',
+    'Galvanized': 'المجلفن',
+    'Coated': 'المطلي',
+    'Painted': 'المطلي',
+    'Primed': 'المبطن',
+    'Finished': 'المنتهي',
+    'Polished': 'المصقول',
+    'Brushed': 'المصقول بالفرشاة',
+    'Textured': 'المحبب',
+    'Smooth': 'الأملس',
+    'Rough': 'الخشن',
+    'Clean': 'النظيف',
+    'Dirty': 'المتسخ',
+    'Worn': 'المهترئ',
+    'Damaged': 'التالف',
+    'Cracked': 'المتشقق',
+    'Broken': 'المكسور',
+    'Bent': 'المنحني',
+    'Dented': 'المخدوش',
+    'Scratched': 'المخدوش',
+    'Rusted': 'الصدئ',
+    'Corroded': 'المتآكل',
+    'Leaking': 'المتسرب',
+    'Loose': 'المفكوك',
+    'Tight': 'المحكم',
+    'Missing': 'المفقود',
+    'Present': 'الموجود',
+    'Functional': 'يعمل',
+    'Non-Functional': 'لا يعمل',
+    'Working': 'يعمل',
+    'Not Working': 'لا يعمل',
+    'OK': 'جيد',
+    'Not OK': 'غير جيد',
+    'Pass': 'نجح',
+    'Fail': 'فشل',
+    'Yes': 'نعم',
+    'No': 'لا',
+    'Left': 'الأيسر',
+    'Right': 'الأيمن',
+    'Front': 'الأمامي',
+    'Rear': 'الخلفي',
+    'Upper': 'العلوي',
+    'Lower': 'السفلي',
+    'Inner': 'الداخلي',
+    'Outer': 'الخارجي',
+    'Side': 'الجانب',
+    'Center': 'الوسط',
+    'Middle': 'الوسط',
+    'Top': 'الأعلى',
+    'Bottom': 'الأسفل',
+    'Main': 'الرئيسي',
+    'Secondary': 'الثانوي',
+    'Primary': 'الأساسي',
+    'Auxiliary': 'المساعد',
+    'Emergency': 'الطوارئ',
+    'Backup': 'الاحتياطي',
+    'Spare': 'الاحتياطي',
+    'Replacement': 'البديل',
+    'New': 'الجديد',
+    'Old': 'القديم',
+    'Used': 'المستعمل',
+    'Refurbished': 'المجدد',
+    'Rebuilt': 'المعاد بناؤه',
+    'Remanufactured': 'المعاد تصنيعه',
+    'Engine Cover': 'غطاء المحرك',
+    'Air Filter Housing': 'بيت فلتر الهواء',
+    'Engine Electrical System': 'نظام كهرباء المحرك',
+    'Engine Oil and Seals': 'زيت المحرك والأختام',
+    'Engine Oil Level': 'مستوى زيت المحرك',
+    'Oil Cooler': 'مبرد الزيت',
+    'Engine Heat and Sound Insulation': 'عزل الحرارة والصوت للمحرك',
+    'Turbo Intercooler Check': 'فحص مبرد التوربو',
+    'EGR Valve and Injector Check': 'فحص صمام EGR والحاقن',
+    'All Visible Belts': 'جميع الأحزمة المرئية',
+    'Engine Coolant Leak Check': 'فحص تسرب سائل تبريد المحرك',
+    'Fuel System and Leak Check': 'فحص نظام الوقود والتسرب',
+    'Power Steering Pump Check': 'فحص مضخة التوجيه المعزز',
+    'Cooling Fans': 'مراوح التبريد',
+    'Engine Radiator and Shroud': 'رادياتير المحرك والغطاء',
+    'AC Condenser and Lines': 'مكثف التكييف والخطوط',
+    'Engine Blow-by': 'تسرب المحرك',
+    'Engine Knocking/Running Rough': 'طرق المحرك/عمل غير منتظم',
+    'Turbo General Check': 'فحص عام للتوربو',
+    'Front Left Brake': 'فرامل أمامي أيسر',
+    'Front Right Brake': 'فرامل أمامي أيمن',
+    'Rear Left Brake': 'فرامل خلفي أيسر',
+    'Rear Right Brake': 'فرامل خلفي أيمن',
+    'Parking Brake Left': 'فرامل اليد الأيسر',
+    'Parking Brake Right': 'فرامل اليد الأيمن',
+    'Engine Power': 'قوة المحرك',
+    'Horsepower': 'القوة بالحصان',
+    'Performance': 'الأداء',
+    'Airbag Electronics': 'إلكترونيات الوسادة الهوائية',
+    'Engine Warning Light': 'ضوء تحذير المحرك',
+    'ABS/ESP/ESR Electronics': 'إلكترونيات ABS/ESP/ESR',
+    'AC Electronics': 'إلكترونيات التكييف',
+    'Tire Pressure Electronics': 'إلكترونيات ضغط الإطارات',
+    'Electric Steering': 'التوجيه الكهربائي',
+    'Engine Control Unit': 'وحدة تحكم المحرك',
+    'Transmission Electronics': 'إلكترونيات ناقل الحركة',
+    'Spring & Shock (Front Right)': 'النابض والصدمة (أمامي أيمن)',
+    'Spring & Shock (Front Left)': 'النابض والصدمة (أمامي أيسر)',
+    'Spring & Shock (Rear Right)': 'النابض والصدمة (خلفي أيمن)',
+    'Spring & Shock (Rear Left)': 'النابض والصدمة (خلفي أيسر)',
+    'Brake Disc Condition (Front Right)': 'حالة قرص الفرامل (أمامي أيمن)',
+    'Brake Disc Condition (Front Left)': 'حالة قرص الفرامل (أمامي أيسر)',
+    'Brake Disc Condition (Rear Right)': 'حالة قرص الفرامل (خلفي أيمن)',
+    'Brake Disc Condition (Rear Left)': 'حالة قرص الفرامل (خلفي أيسر)',
+    'Brake Pad (Front Right)': 'وسادة الفرامل (أمامي أيمن)',
+    'Brake Pad (Front Left)': 'وسادة الفرامل (أمامي أيسر)',
+    'Brake Pad (Rear Right)': 'وسادة الفرامل (خلفي أيمن)',
+    'Brake Pad (Rear Left)': 'وسادة الفرامل (خلفي أيسر)',
+    'Tie Rods & Ends': 'قضبان الربط والأطراف',
+    'Control Arm Bushings & Ball Joints': 'جلب أذرع التحكم والمفاصل الكروية',
+    'Axles & CV Boots': 'المحاور وأغطية CV',
+    'Wheel & Tire (Front Right)': 'العجلة والإطار (أمامي أيمن)',
+    'Wheel & Tire (Front Left)': 'العجلة والإطار (أمامي أيسر)',
+    'Wheel & Tire (Rear Right)': 'العجلة والإطار (خلفي أيمن)',
+    'Wheel & Tire (Rear Left)': 'العجلة والإطار (خلفي أيسر)',
+    'Engine Splash Shield Check': 'فحص واقي رذاذ المحرك',
+    'Engine & Transmission Mounts': 'حوامل المحرك وناقل الحركة',
+    'Engine Oil Leak': 'تسرب زيت المحرك',
+    'Transmission Oil Leak': 'تسرب زيت ناقل الحركة',
+    'Differential Oil Leak': 'تسرب زيت التفاضلي',
+    'Steering Box Oil Leak': 'تسرب زيت صندوق التوجيه',
+    'AC Compressor Oil Leak': 'تسرب زيت ضاغط التكييف',
+    'Clutch Check': 'فحص القابض',
+    'Black Smoke in Exhaust': 'دخان أسود في العادم',
+    'Blue Smoke in Exhaust': 'دخان أزرق في العادم',
+    'Catalytic Converter System': 'نظام المحول الحفاز',
+    'No Error Logged': 'لم يتم تسجيل خطأ',
+    'Window Control Check': 'فحص تحكم النوافذ',
+    'No ISSUE': 'لا يوجد مشكلة'
+  } %}
+
+  <!-- First Page -->
+  <!-- Header -->
+  <div class="header">
+    <div class="logo-container">
+      <div style="color: black; font-weight: bold; font-size: 16pt;">
+        {{ company.name }}
+      </div>
+    </div>
+    <div>
+      <div class="report-number">Report #{{ report.id }} - تقرير رقم {{ report.id }}</div>
+      <div class="report-title">
+        VEHICLE INSPECTION REPORT
+        <div class="arabic">تقرير فحص المركبة</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Vehicle Information -->
+  <div class="vehicle-section">
+    <div class="vehicle-image">
+      {% if report.has_image and report.image_data %}
+      <img src="data:image/jpeg;base64,{{ report.image_data|b64encode }}" alt="Vehicle Image" style="max-width: 100%; max-height: 170px; object-fit: contain;">
+      {% else %}
+      <div>Vehicle Image<br><span class="arabic">صورة المركبة</span></div>
+      {% endif %}
+    </div>
+    <div class="vehicle-details">
+      <table>
+        <tr>
+          <td>
+            Make:<br>
+            <span class="arabic">الماركة:</span>
+          </td>
+          <td>{{ vehicle.brand }}</td>
+        </tr>
+        <tr>
+          <td>
+            Model:<br>
+            <span class="arabic">الموديل:</span>
+          </td>
+          <td>{{ vehicle.model }}</td>
+        </tr>
+        <tr>
+          <td>
+            V.I.N.:<br>
+            <span class="arabic">رقم الهيكل:</span>
+          </td>
+          <td>{{ vehicle.chassis_number }}</td>
+        </tr>
+        <tr>
+          <td>
+            Plate Number:<br>
+            <span class="arabic">رقم اللوحة:</span>
+          </td>
+          <td>{{ vehicle.plate }}</td>
+        </tr>
+        <tr>
+          <td>
+            Transmission:<br>
+            <span class="arabic">ناقل الحركة:</span>
+          </td>
+          <td>{{ vehicle.transmission_type.value }}</td>
+        </tr>
+        <tr>
+          <td>
+            Engine Type:<br>
+            <span class="arabic">نوع المحرك:</span>
+          </td>
+          <td>{{ vehicle.engine_number|default('') }}</td>
+        </tr>
+        <tr>
+          <td>
+            Year:<br>
+            <span class="arabic">السنة:</span>
+          </td>
+          <td>{{ vehicle.model_year }}</td>
+        </tr>
+        <tr>
+          <td>
+            Color:<br>
+            <span class="arabic">اللون:</span>
+          </td>
+          <td>{{ vehicle.color.value }}</td>
+        </tr>
+        <tr>
+          <td>
+            KM / Mileage:<br>
+            <span class="arabic">المسافة المقطوعة:</span>
+          </td>
+          <td>{{ vehicle.mileage }}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  
+  <!-- Customer Information -->
+  <div class="customer-section">
+    <div class="customer-header">
+      Customer Information
+      <div class="arabic">معلومات العميل</div>
+    </div>
+    <div class="customer-details">
+      <table>
+        <tr>
+          <td>
+            Customer Name:<br>
+            <span class="arabic">اسم العميل:</span>
+          </td>
+          <td>{{ customer.full_name }}</td>
+        </tr>
+        <tr>
+          <td>
+            Phone Number:<br>
+            <span class="arabic">رقم الهاتف:</span>
+          </td>
+          <td>{{ customer.phone_number }}</td>
+        </tr>
+        {% if customer.email %}
+        <tr>
+          <td>
+            Email:<br>
+            <span class="arabic">البريد الإلكتروني:</span>
+          </td>
+          <td>{{ customer.email }}</td>
+        </tr>
+        {% endif %}
+        {% if customer.tc_tax_number %}
+        <tr>
+          <td>
+            Tax/ID Number:<br>
+            <span class="arabic">رقم الهوية/الضريبة:</span>
+          </td>
+          <td>{{ customer.tc_tax_number }}</td>
+        </tr>
+        {% endif %}
+      </table>
+    </div>
+  </div>
+  
+  <!-- Owner Information -->
+  <div class="customer-section">
+    <div class="customer-header">
+      Owner Information
+      <div class="arabic">معلومات المالك</div>
+    </div>
+    <div class="customer-details">
+      <table>
+        <tr>
+          <td>
+            Owner Name:<br>
+            <span class="arabic">اسم المالك:</span>
+          </td>
+          <td>{{ vehicle_owner.full_name }}</td>
+        </tr>
+        <tr>
+          <td>
+            Phone Number:<br>
+            <span class="arabic">رقم الهاتف:</span>
+          </td>
+          <td>{{ vehicle_owner.phone_number }}</td>
+        </tr>
+        <tr>
+          <td>
+            Tax/ID Number:<br>
+            <span class="arabic">رقم الهوية/الضريبة:</span>
+          </td>
+          <td>{{ vehicle_owner.tc_tax_number }}</td>
+        </tr>
+        <tr>
+          <td>
+            Address:<br>
+            <span class="arabic">العنوان:</span>
+          </td>
+          <td>{{ vehicle_owner.address }}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  
+  <!-- Process expertise reports -->
+  {% set expertise_types = {} %}
+  {% for pckg_report in package_expertise_reports %}
+    {% set expertise_name = pckg_report.expertise_type_name|replace(' Expertise', '') %}
+    {% if expertise_name not in expertise_types %}
+      {% if expertise_types.update({expertise_name: pckg_report}) %}{% endif %}
+    {% endif %}
+  {% endfor %}
+  
+  <!-- First page expertise sections -->
+  {% set first_page_count = 0 %}
+  {% for expertise_name, pckg_report in expertise_types.items() %}
+    {% if first_page_count < 2 %}
+      <div class="expertise-section">
+        <div class="expertise-title">
+          {{ expertise_name|upper }}
+          <div class="arabic">{{ arabic_expertise.get(expertise_name, expertise_name) }}</div>
+        </div>
+        
+        <table class="feature-table">
+          {% for i in range(0, pckg_report.features|length, 2) %}
+            <tr>
+              <td class="feature-name">
+                {{ pckg_report.features[i].name }}
+                <div class="arabic">{{ arabic_features.get(pckg_report.features[i].name, pckg_report.features[i].name) }}</div>
+              </td>
+              <td class="feature-status">
+                {{ pckg_report.features[i].status }}
+                <div class="arabic">{{ arabic_status.get(pckg_report.features[i].status, pckg_report.features[i].status) }}</div>
+              </td>
+              
+              {% if i + 1 < pckg_report.features|length %}
+                <td class="feature-name">
+                  {{ pckg_report.features[i+1].name }}
+                  <div class="arabic">{{ arabic_features.get(pckg_report.features[i+1].name, pckg_report.features[i+1].name) }}</div>
+                </td>
+                <td class="feature-status">
+                  {{ pckg_report.features[i+1].status }}
+                  <div class="arabic">{{ arabic_status.get(pckg_report.features[i+1].status, pckg_report.features[i+1].status) }}</div>
+                </td>
+              {% else %}
+                <td class="feature-name"></td>
+                <td class="feature-status"></td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+        </table>
+        
+        {% if pckg_report.comment %}
+          <div class="comments">
+            <div class="comments-title">
+              Comments:
+              <span class="arabic">التعليقات:</span>
+            </div>
+            <div class="comments-text">{{ pckg_report.comment }}</div>
+          </div>
+        {% endif %}
+      </div>
+      {% set first_page_count = first_page_count + 1 %}
+    {% endif %}
+  {% endfor %}
+  
+  <!-- Additional Expertise Sections (on new pages) -->
+  {% set remaining_count = 0 %}
+  {% for expertise_name, pckg_report in expertise_types.items() %}
+    {% if remaining_count >= 2 %}
+      {% if remaining_count % 2 == 0 %}
+        <div class="page-break"></div>
+        
+        <!-- Header on each page -->
+        <div class="header">
+          <div class="logo-container">
+            <div style="color: black; font-weight: bold; font-size: 16pt;">
+              {{ company.name }}
+            </div>
+          </div>
+          <div>
+            <div class="report-number">Report #{{ report.id }} - تقرير رقم {{ report.id }}</div>
+            <div class="report-title">
+              VEHICLE INSPECTION REPORT
+              <div class="arabic">تقرير فحص المركبة</div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      
+      <div class="expertise-section">
+        <div class="expertise-title">
+          {{ expertise_name|upper }}
+          <div class="arabic">{{ arabic_expertise.get(expertise_name, expertise_name) }}</div>
+        </div>
+        
+        <table class="feature-table">
+          {% for i in range(0, pckg_report.features|length, 2) %}
+            <tr>
+              <td class="feature-name">
+                {{ pckg_report.features[i].name }}
+                <div class="arabic">{{ arabic_features.get(pckg_report.features[i].name, pckg_report.features[i].name) }}</div>
+              </td>
+              <td class="feature-status">
+                {{ pckg_report.features[i].status }}
+                <div class="arabic">{{ arabic_status.get(pckg_report.features[i].status, pckg_report.features[i].status) }}</div>
+              </td>
+              
+              {% if i + 1 < pckg_report.features|length %}
+                <td class="feature-name">
+                  {{ pckg_report.features[i+1].name }}
+                  <div class="arabic">{{ arabic_features.get(pckg_report.features[i+1].name, pckg_report.features[i+1].name) }}</div>
+                </td>
+                <td class="feature-status">
+                  {{ pckg_report.features[i+1].status }}
+                  <div class="arabic">{{ arabic_status.get(pckg_report.features[i+1].status, pckg_report.features[i+1].status) }}</div>
+                </td>
+              {% else %}
+                <td class="feature-name"></td>
+                <td class="feature-status"></td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+        </table>
+        
+        {% if pckg_report.comment %}
+          <div class="comments">
+            <div class="comments-title">
+              Comments:
+              <span class="arabic">التعليقات:</span>
+            </div>
+            <div class="comments-text">{{ pckg_report.comment }}</div>
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+    {% set remaining_count = remaining_count + 1 %}
+  {% endfor %}
+  
+  <!-- Footer -->
+  <div class="footer clearfix">
+    <div class="staff-info">
+      Inspector: {{ staff.full_name }}<br>
+      <span class="arabic">المفتش: {{ staff.full_name }}</span><br>
+      Inspection Date: {{ report.inspection_date.strftime('%d/%m/%Y') if report.inspection_date else '' }}<br>
+      <span class="arabic">تاريخ الفحص: {{ report.inspection_date.strftime('%d/%m/%Y') if report.inspection_date else '' }}</span>
+    </div>
+    <div class="company-info">
+      {{ company.name }}<br>
+      {{ company.phone }}<br>
+      {{ company.email }}
+    </div>
+  </div>
+  
+  <!-- Company Information Page -->
+  <div class="company-info-page">
+    <!-- Header on company page -->
+    <div class="header">
+      <div class="logo-container">
+        <div style="color: black; font-weight: bold; font-size: 16pt;">
+          {{ company.name }}
+        </div>
+      </div>
+      <div>
+        <div class="report-number">Report #{{ report.id }} - تقرير رقم {{ report.id }}</div>
+        <div class="report-title">
+          COMPANY INFORMATION
+          <div class="arabic">معلومات الشركة</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="customer-section">
+      <div class="customer-header">
+        Company Details
+        <div class="arabic">تفاصيل الشركة</div>
+      </div>
+      <div class="customer-details">
+        <table>
+          <tr>
+            <td>
+              Company Name:<br>
+              <span class="arabic">اسم الشركة:</span>
+            </td>
+            <td>{{ company.name }}</td>
+          </tr>
+          <tr>
+            <td>
+              Phone:<br>
+              <span class="arabic">الهاتف:</span>
+            </td>
+            <td>{{ company.phone }}</td>
+          </tr>
+          {% if company.fax %}
+          <tr>
+            <td>
+              Fax:<br>
+              <span class="arabic">الفاكس:</span>
+            </td>
+            <td>{{ company.fax }}</td>
+          </tr>
+          {% endif %}
+          <tr>
+            <td>
+              Email:<br>
+              <span class="arabic">البريد الإلكتروني:</span>
+            </td>
+            <td>{{ company.email }}</td>
+          </tr>
+          {% if company.website %}
+          <tr>
+            <td>
+              Website:<br>
+              <span class="arabic">الموقع الإلكتروني:</span>
+            </td>
+            <td>{{ company.website }}</td>
+          </tr>
+          {% endif %}
+        </table>
+      </div>
+    </div>
+    
+    {% if company.address %}
+    <div class="customer-section">
+      <div class="customer-header">
+        Company Address
+        <div class="arabic">عنوان الشركة</div>
+      </div>
+      <div class="customer-details">
+        <table>
+          <tr>
+            <td>
+              Street Address:<br>
+              <span class="arabic">عنوان الشارع:</span>
+            </td>
+            <td>{{ company.address.street_address }}</td>
+          </tr>
+          <tr>
+            <td>
+              City:<br>
+              <span class="arabic">المدينة:</span>
+            </td>
+            <td>{{ company.address.city }}</td>
+          </tr>
+          {% if company.address.state %}
+          <tr>
+            <td>
+              State/Province:<br>
+              <span class="arabic">الولاية/المحافظة:</span>
+            </td>
+            <td>{{ company.address.state }}</td>
+          </tr>
+          {% endif %}
+          {% if company.address.postal_code %}
+          <tr>
+            <td>
+              Postal Code:<br>
+              <span class="arabic">الرمز البريدي:</span>
+            </td>
+            <td>{{ company.address.postal_code }}</td>
+          </tr>
+          {% endif %}
+        </table>
+      </div>
+    </div>
+    {% endif %}
+    
+    <div style="margin-top: 40px; text-align: center;">
+      <p>
+        This report was generated by {{ company.name }}<br>
+        <span class="arabic">تم إنشاء هذا التقرير بواسطة {{ company.name }}</span>
+      </p>
+      <p>
+        Report Date: {{ report.created_at.strftime('%d/%m/%Y') if report.created_at else '' }}<br>
+        <span class="arabic">تاريخ التقرير: {{ report.created_at.strftime('%d/%m/%Y') if report.created_at else '' }}</span>
+      </p>
+    </div>
+    
+    <!-- Footer on company page -->
+    <div class="footer clearfix">
+      <div class="staff-info">
+        Inspector: {{ staff.full_name }}<br>
+        <span class="arabic">المفتش: {{ staff.full_name }}</span><br>
+        Inspection Date: {{ report.inspection_date.strftime('%d/%m/%Y') if report.inspection_date else '' }}<br>
+        <span class="arabic">تاريخ الفحص: {{ report.inspection_date.strftime('%d/%m/%Y') if report.inspection_date else '' }}</span>
+      </div>
+      <div class="company-info">
+        {{ company.name }}<br>
+        {{ company.phone }}<br>
+        {{ company.email }}
+      </div>
+    </div>
+  </div>
+</body>
+</html>

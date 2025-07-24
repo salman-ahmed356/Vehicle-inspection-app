@@ -105,6 +105,25 @@ def add_report():
             chassis = form.chassis_number.data.strip()
             plate   = form.vehicle_plate.data.strip()
 
+            # Check if there's already an open report for this chassis number
+            existing_open_report = Report.query.join(Vehicle).filter(
+                Vehicle.chassis_number == chassis,
+                Report.status == ReportStatus.OPENED
+            ).first()
+            
+            if existing_open_report:
+                flash(f'Cannot create report: There is already an open report for chassis number {chassis}. Please complete or cancel the existing report first.', 'error')
+                return render_template(
+                    'reports.html',
+                    form=form,
+                    fuel_types=[(f.name, f.value) for f in FuelType],
+                    transmission_types=[(t.name, t.value) for t in TransmissionType],
+                    colors=[(c.name, c.value) for c in Color],
+                    vehicle_info=None,
+                    packages=get_active_packages(),
+                    current_year=datetime.now().year
+                )
+            
             # First check if a vehicle with this chassis number exists
             vehicle = Vehicle.query.filter_by(chassis_number=chassis).first()
 
@@ -148,15 +167,33 @@ def add_report():
             customer = Customer.query.filter_by(phone_number=phone).first()
             if not customer:
                 names = form.customer_name.data.strip().split(' ', 1)
+                
+                # Create address if customer address is provided
+                address_id = None
+                if form.customer_address.data.strip():
+                    from ..models.all_models import Address
+                    address = Address(
+                        street_address=form.customer_address.data.strip(),
+                        city="Unknown",  # Default city since we don't have separate fields
+                        state=None,
+                        postal_code=None
+                    )
+                    db.session.add(address)
+                    db.session.flush()
+                    address_id = address.id
+                    print(f"DEBUG: Created customer address: {address.street_address}")
+                
                 customer = Customer(
                     first_name   = names[0],
                     last_name    = names[1] if len(names)>1 else '',
                     phone_number = phone,
                     email        = form.customer_email.data.strip() or None,
-                    tc_tax_number= form.customer_tax_no.data.strip() or None
+                    tc_tax_number= form.customer_tax_no.data.strip() or None,
+                    address_id   = address_id
                 )
                 db.session.add(customer)
                 db.session.flush()
+                print(f"DEBUG: Created customer with address_id: {address_id}")
 
             # 3) REPORT
             # Handle image upload if has_image is 'yes'
@@ -209,7 +246,27 @@ def add_report():
             db.session.add(new_report)
             db.session.flush()
 
-            # 4) Optional: link vehicle owner & agent here (same as before)
+            # 4) Create Agent and VehicleOwner records if provided
+            if form.agent_name.data.strip():
+                agent_names = form.agent_name.data.strip().split(' ', 1)
+                agent = Agent(
+                    first_name=agent_names[0],
+                    last_name=agent_names[1] if len(agent_names) > 1 else '',
+                    report_id=new_report.id
+                )
+                db.session.add(agent)
+                print(f"DEBUG: Created agent: {agent.first_name} {agent.last_name}")
+            
+            if form.owner_name.data.strip():
+                owner_names = form.owner_name.data.strip().split(' ', 1)
+                owner = VehicleOwner(
+                    first_name=owner_names[0],
+                    last_name=owner_names[1] if len(owner_names) > 1 else '',
+                    tc_tax_number=form.owner_tax_no.data.strip() or None,
+                    phone_number=form.owner_phone.data.strip() or f"owner-{new_report.id}"
+                )
+                db.session.add(owner)
+                print(f"DEBUG: Created vehicle owner: {owner.first_name} {owner.last_name}")
 
             # 5) Delete appointment if this report was created from an appointment
             from flask import session
@@ -227,7 +284,7 @@ def add_report():
             # 6) FINAL COMMIT
             db.session.commit()
             
-            # Save form data to session for later editing
+            # Save form data to session for later editing (backup)
             from flask import session
             session[f'report_{new_report.id}_data'] = {
                 'owner_name': form.owner_name.data,
@@ -237,6 +294,7 @@ def add_report():
                 'agent_name': form.agent_name.data,
                 'customer_address': form.customer_address.data
             }
+            print(f"DEBUG: Saved session data for report {new_report.id}")
             
             flash('Report created successfully!', 'success')
             return redirect(url_for('reports.report_list'))
@@ -333,6 +391,13 @@ def edit_report(report_id):
     form.fuel_type.choices = [(f.name, f.value) for f in FuelType]
     form.created_by.choices = [(s.id, s.full_name) for s in Staff.query.all()]
     
+    print(f"DEBUG: Request method: {request.method}")
+    if request.method == 'POST':
+        print(f"DEBUG: Form data received: {dict(request.form)}")
+        print(f"DEBUG: Form validation result: {form.validate()}")
+        if form.errors:
+            print(f"DEBUG: Form errors: {form.errors}")
+    
     if request.method == 'GET':
         # Populate form with existing data
         # Customer information
@@ -366,27 +431,46 @@ def edit_report(report_id):
         form.registration_document_seen.data = report.registration_document_seen
         form.inspection_date.data = report.inspection_date
         form.created_at.data = report.created_at
+        print(f"DEBUG: Set created_at to: {form.created_at.data}")
         
         # Load agent information from the database
         agent = Agent.query.filter_by(report_id=report_id).first()
-        if agent and agent.customer:
-            form.agent_name.data = agent.customer.full_name
+        print(f"DEBUG: Looking for agent with report_id={report_id}, found: {agent}")
+        if agent:
+            form.agent_name.data = f"{agent.first_name} {agent.last_name}"
+            print(f"DEBUG: Agent name set to: {form.agent_name.data}")
         else:
-            form.agent_name.data = request.form.get('agent_name', '')
+            form.agent_name.data = ""
+            print("DEBUG: No agent found, setting empty")
         
-        # Set empty values for owner fields - user will fill these in
-        form.owner_name.data = ""
-        form.owner_phone.data = ""
-        form.owner_tax_no.data = ""
-        form.owner_address.data = ""
+        # Load owner and customer address from session data
+        from flask import session
+        session_data = session.get(f'report_{report_id}_data', {})
+        print(f"DEBUG: Session data for report_{report_id}: {session_data}")
         
-        # Customer address - no address field in Customer model, so we use form data
-        form.customer_address.data = request.form.get('customer_address', '')
+        form.owner_name.data = session_data.get('owner_name', '')
+        form.owner_phone.data = session_data.get('owner_phone', '')
+        form.owner_tax_no.data = session_data.get('owner_tax_no', '')
+        form.owner_address.data = session_data.get('owner_address', '')
+        form.customer_address.data = session_data.get('customer_address', '')
+        
+        print(f"DEBUG: Form data populated - owner_name: '{form.owner_name.data}', agent_name: '{form.agent_name.data}', customer_address: '{form.customer_address.data}'")
+        
+        # If no session data, try to get from customer's address relationship
+        if not form.customer_address.data and report.customer.address:
+            address = report.customer.address
+            form.customer_address.data = address.street_address or ''
+            print(f"DEBUG: Customer address from DB: {form.customer_address.data}")
+        elif not form.customer_address.data:
+            print("DEBUG: No customer address found in session or DB")
     
     if form.validate_on_submit():
         try:
+            print(f"DEBUG: Starting edit_report save for report_id={report_id}")
+            
             # Update vehicle data
             vehicle = report.vehicle
+            print(f"DEBUG: Updating vehicle - old plate: {vehicle.plate}, new plate: {form.vehicle_plate.data.strip()}")
             vehicle.plate = form.vehicle_plate.data.strip()
             vehicle.engine_number = form.engine_number.data.strip()
             vehicle.brand = form.brand.data.strip()
@@ -397,64 +481,105 @@ def edit_report(report_id):
             vehicle.transmission_type = map_to_enum(form.gear_type.data, TransmissionType)
             vehicle.fuel_type = map_to_enum(form.fuel_type.data, FuelType)
             vehicle.mileage = form.vehicle_km.data
+            db.session.add(vehicle)  # Explicitly mark for update
+            print(f"DEBUG: Vehicle data updated and marked for save")
             
             # Update customer data
             customer = report.customer
             names = form.customer_name.data.strip().split(' ', 1)
+            print(f"DEBUG: Updating customer - old name: {customer.first_name} {customer.last_name}, new name: {names[0]} {names[1] if len(names) > 1 else ''}")
             customer.first_name = names[0]
             customer.last_name = names[1] if len(names) > 1 else ''
             customer.phone_number = form.customer_phone.data.strip()
             customer.email = form.customer_email.data.strip() or None
             customer.tc_tax_number = form.customer_tax_no.data.strip() or None
+            db.session.add(customer)  # Explicitly mark for update
+            print(f"DEBUG: Customer data updated and marked for save")
+            
+            # Update customer address
+            customer_address = form.customer_address.data.strip()
+            if customer_address:
+                from ..models.all_models import Address
+                if customer.address:
+                    # Update existing address
+                    print(f"DEBUG: Updating existing address from '{customer.address.street_address}' to '{customer_address}'")
+                    customer.address.street_address = customer_address
+                    db.session.add(customer.address)  # Explicitly mark for update
+                    print(f"DEBUG: Updated customer address: {customer_address}")
+                else:
+                    # Create new address
+                    address = Address(
+                        street_address=customer_address,
+                        city="Unknown",
+                        state=None,
+                        postal_code=None
+                    )
+                    db.session.add(address)
+                    db.session.flush()
+                    customer.address_id = address.id
+                    db.session.add(customer)  # Update customer with new address_id
+                    print(f"DEBUG: Created new customer address: {customer_address}")
             
             # Update report data
+            print(f"DEBUG: Updating report - old package_id: {report.package_id}, new package_id: {form.package_id.data}")
             report.package_id = form.package_id.data
             report.operation = form.operation.data or None
             report.created_by = form.created_by.data
             report.registration_document_seen = form.registration_document_seen.data
             report.inspection_date = form.inspection_date.data
+            db.session.add(report)  # Explicitly mark for update
+            print(f"DEBUG: Report data updated and marked for save")
             
             # Update or create agent if agent name is provided
             agent_name = form.agent_name.data.strip()
+            print(f"DEBUG: Processing agent name: '{agent_name}'")
             if agent_name:
                 # Try to find existing agent
                 agent = Agent.query.filter_by(report_id=report_id).first()
+                agent_names = agent_name.split(' ', 1)
+                agent_first_name = agent_names[0]
+                agent_last_name = agent_names[1] if len(agent_names) > 1 else ''
+                
                 if not agent:
-                    # Create a new agent customer with a unique phone number
-                    agent_names = agent_name.split(' ', 1)
-                    agent_first_name = agent_names[0]
-                    agent_last_name = agent_names[1] if len(agent_names) > 1 else ''
-                    
-                    # Create a unique phone number for the agent
-                    unique_phone = f"agent-{report_id}-{datetime.now().timestamp()}"
-                    
-                    agent_customer = Customer(
+                    # Create new agent
+                    agent = Agent(
                         first_name=agent_first_name,
                         last_name=agent_last_name,
-                        phone_number=unique_phone,
-                        email=None,
-                        tc_tax_number=None
-                    )
-                    db.session.add(agent_customer)
-                    db.session.flush()
-                    
-                    # Create agent
-                    agent = Agent(
-                        report_id=report_id,
-                        customer_id=agent_customer.id
+                        report_id=report_id
                     )
                     db.session.add(agent)
-                    db.session.flush()
+                    print(f"DEBUG: Created new agent during edit: {agent_first_name} {agent_last_name}")
                 else:
-                    # Update existing agent's customer information
-                    agent_names = agent_name.split(' ', 1)
-                    agent_customer = Customer.query.get(agent.customer_id)
-                    if agent_customer:
-                        agent_customer.first_name = agent_names[0]
-                        agent_customer.last_name = agent_names[1] if len(agent_names) > 1 else ''
-                        db.session.add(agent_customer)
+                    # Update existing agent
+                    print(f"DEBUG: Updating agent from '{agent.first_name} {agent.last_name}' to '{agent_first_name} {agent_last_name}'")
+                    agent.first_name = agent_first_name
+                    agent.last_name = agent_last_name
+                    print(f"DEBUG: Updated existing agent: {agent_first_name} {agent_last_name}")
+                    db.session.add(agent)  # Ensure it's marked for update
+            else:
+                # Delete existing agent if name is cleared
+                existing_agent = Agent.query.filter_by(report_id=report_id).first()
+                if existing_agent:
+                    db.session.delete(existing_agent)
+                    print(f"DEBUG: Deleted existing agent because name was cleared")
             
-            # We'll skip vehicle owner handling for now to simplify the code
+            # Update or create vehicle owner if owner name is provided
+            owner_name = form.owner_name.data.strip()
+            if owner_name:
+                # For now, we'll just save to session since VehicleOwner isn't linked to Report
+                print(f"DEBUG: Owner name provided: {owner_name}")
+            
+            # Save form data to session for future editing
+            from flask import session
+            session[f'report_{report_id}_data'] = {
+                'owner_name': form.owner_name.data,
+                'owner_phone': form.owner_phone.data,
+                'owner_tax_no': form.owner_tax_no.data,
+                'owner_address': form.owner_address.data,
+                'agent_name': form.agent_name.data,
+                'customer_address': form.customer_address.data
+            }
+            print(f"DEBUG: Updated session data for report {report_id}")
             
             # Handle image upload if has_image is 'yes'
             has_image = request.form.get('has_image') == 'yes'
@@ -501,16 +626,26 @@ def edit_report(report_id):
                         )
             
             # Save changes
+            print(f"DEBUG: About to commit all changes to database")
             db.session.commit()
+            print(f"DEBUG: Successfully committed changes to database")
+            
+            # Verify all data was saved by re-querying
+            updated_report = Report.query.get(report_id)
+            updated_vehicle = updated_report.vehicle
+            updated_customer = updated_report.customer
+            updated_agent = Agent.query.filter_by(report_id=report_id).first()
+            
+            print(f"DEBUG: Verification - Vehicle plate: {updated_vehicle.plate}")
+            print(f"DEBUG: Verification - Customer name: {updated_customer.first_name} {updated_customer.last_name}")
+            print(f"DEBUG: Verification - Customer address: {updated_customer.address.street_address if updated_customer.address else 'None'}")
+            print(f"DEBUG: Verification - Agent: {updated_agent.first_name + ' ' + updated_agent.last_name if updated_agent else 'None'}")
+            print(f"DEBUG: Verification - Report package_id: {updated_report.package_id}")
+            
             flash('Report updated successfully!', 'success')
             
-            # Use JavaScript to force a redirect and close the modal
-            from flask import Response
-            return Response("""
-            <script type="text/javascript">
-                window.top.location.href = "/reports";
-            </script>
-            """, mimetype="text/html")
+            # Redirect back to reports list
+            return redirect(url_for('reports.report_list'))
             
         except IntegrityError as e:
             db.session.rollback()
@@ -520,6 +655,20 @@ def edit_report(report_id):
             db.session.rollback()
             flash('Unexpected error—check your data and try again.', 'error')
             print(f"Exception in edit_report: {e}", flush=True)
+    else:
+        if request.method == 'POST':
+            print(f"DEBUG: Form validation failed on POST request")
+            print(f"DEBUG: Form errors: {form.errors}")
+            # Fix missing created_at field
+            if 'created_at' in form.errors:
+                form.created_at.data = report.created_at
+                print(f"DEBUG: Fixed created_at field with: {form.created_at.data}")
+                # Try validation again
+                if form.validate():
+                    print(f"DEBUG: Form validation passed after fixing created_at")
+                    # Process the form submission
+                    return redirect(url_for('reports.edit_report', report_id=report_id))
+            flash('Please check the form for errors.', 'error')
     
     # Get vehicle info for display
     vehicle_info = None

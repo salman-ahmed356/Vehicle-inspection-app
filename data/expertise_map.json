@@ -64,7 +64,9 @@
 
   "Lateral Drift Expertise": [
     { "part_name": "Front Left",   "default_status": 0 },
-    { "part_name": "Rear Left",    "default_status": 0 }
+    { "part_name": "Front Right",  "default_status": 0 },
+    { "part_name": "Rear Left",    "default_status": 0 },
+    { "part_name": "Rear Right",   "default_status": 0 }
   ],
 
   "Suspension Expertise": [
