@@ -51,7 +51,7 @@ The **Vehicle Inspection Web App** is a web-based application designed to facili
 This software is proprietary and all rights are reserved. You may view the source code for educational purposes only. Any commercial use, modification, distribution, or derivative works require explicit written permission from the author.
 
 **Author**: Salman Ahmed  
-**Repository**: https://github.com/salman-ahmed356/blackpoint.git  
+**Repository**: https://github.com/salman-ahmed356/Vehicle-inspection-app.git  
 **Contact**: salmanahmad356240@gmail.com
 
 See [LICENSE](LICENSE) file for complete terms and conditions.
