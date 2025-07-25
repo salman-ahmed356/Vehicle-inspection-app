@@ -1,5 +1,7 @@
 # Vehicle Inspection Web App
 
+⚠️ **PROPRIETARY SOFTWARE** - All rights reserved. Commercial use, modification, or distribution requires written permission. See [LICENSE](LICENSE) for details.
+
 ## Overview
 The **Vehicle Inspection Web App** is a web-based application designed to facilitate vehicle inspections, appointments, and report generation. The app provides features for managing customers, appointments, reports, and more, making it a comprehensive tool for vehicle inspection centers.
 
@@ -44,4 +46,12 @@ The **Vehicle Inspection Web App** is a web-based application designed to facili
 - **Port Issues**: Check if port 5000 is free or modify the port mapping in the `docker run` command.
 - **PDF Generation Errors**: Ensure all WeasyPrint dependencies (`libpango`, `libcairo`) are installed and available in your Docker image.
 
+## License
 
+This software is proprietary and all rights are reserved. You may view the source code for educational purposes only. Any commercial use, modification, distribution, or derivative works require explicit written permission from the author.
+
+**Author**: Salman Ahmed  
+**Repository**: https://github.com/salman-ahmed356/blackpoint.git  
+**Contact**: salmanahmad356240@gmail.com
+
+See [LICENSE](LICENSE) file for complete terms and conditions.
