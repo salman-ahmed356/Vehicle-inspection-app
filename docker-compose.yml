@@ -10,6 +10,7 @@ services:
     depends_on:
       - db
     environment:
+      - DATABASE_URL=mysql+pymysql://dbms:dbms123@db:3306/flask_app
       - SQLALCHEMY_DATABASE_URI=mysql+pymysql://dbms:dbms123@db:3306/flask_app
 
   db:
