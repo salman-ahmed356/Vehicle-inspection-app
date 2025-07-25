@@ -6,7 +6,7 @@ def check_license():
     """Display license notice on startup"""
     print("=" * 60)
     print("PROPRIETARY SOFTWARE - Salman Ahmed")
-    print("Repository: https://github.com/salman-ahmed356/blackpoint.git")
+    print("Repository: https://github.com/salman-ahmed356/Vehicle-inspection-app.git")
     print("Contact: salmanahmad356240@gmail.com")
     print("=" * 60)
     print("This software is for authorized use only.")

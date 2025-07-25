@@ -33,8 +33,8 @@ The **Vehicle Inspection Web App** is a web-based application designed to facili
 
 1. **Clone the repository**:
     ```bash
-    git clone https://github.com/salman-ahmed356/blackpoint.git
-    cd blackpoint
+    git clone https://github.com/salman-ahmed356/Vehicle-inspection-app.git
+    cd Vehicle-inspection-app
     ```
 
 2. **Start the application with database**:
@@ -89,8 +89,8 @@ The **Vehicle Inspection Web App** is a web-based application designed to facili
 
 2. **Clone and deploy**:
     ```bash
-    git clone https://github.com/salman-ahmed356/blackpoint.git
-    cd blackpoint
+    git clone https://github.com/salman-ahmed356/Vehicle-inspection-app.git
+    cd Vehicle-inspection-app
     docker-compose up -d
     ```
 
