@@ -1,6 +1,7 @@
 from flask_wtf import CSRFProtect
 from app import create_app
 from app.auth import login_required
+from app.license_check import check_license
 import logging
 import base64
 
@@ -27,5 +28,6 @@ def b64encode(data):
 
 
 if __name__ == '__main__':
+    check_license()  # Display license notice
     app.run(host="0.0.0.0", port="5000", debug=True)
 
