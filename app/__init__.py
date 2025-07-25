@@ -78,9 +78,8 @@ def create_app(test_config=None):
     app.register_blueprint(report_settings)
     app.register_blueprint(api)
 
-    # Create database tables
-    with app.app_context():
-        db.create_all()
+    # Remove automatic table creation to avoid startup issues
+    # Tables will be created manually after database is ready
 
     # Make get_locale available to templates
     @app.context_processor
