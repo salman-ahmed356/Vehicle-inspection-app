@@ -26,25 +26,85 @@ The **Vehicle Inspection Web App** is a web-based application designed to facili
 
 ### Prerequisites
 - [Python 3.10+](https://www.python.org/downloads/)
-- [Docker](https://www.docker.com/get-started)
-- [pip](https://pip.pypa.io/en/stable/installation/)
+- [Docker](https://www.docker.com/get-started) & Docker Compose
+- [Git](https://git-scm.com/downloads)
 
-### Using Docker
-1. **Build the Docker image**:
+### Quick Start with Docker (Recommended)
+
+1. **Clone the repository**:
     ```bash
-    docker build -t vehicle-inspection-web-app .
+    git clone https://github.com/salman-ahmed356/blackpoint.git
+    cd blackpoint
     ```
 
-2. **Run the Docker container**:
+2. **Start the application with database**:
     ```bash
+    docker-compose up -d
+    ```
+
+3. **Access the application**:
+    - Open your browser and go to `http://localhost:5000`
+    - The MySQL database will be automatically set up
+
+4. **Stop the application**:
+    ```bash
+    docker-compose down
+    ```
+
+### Alternative: Single Container
+
+1. **Build and run without database**:
+    ```bash
+    docker build -t vehicle-inspection-web-app .
     docker run -p 5000:5000 vehicle-inspection-web-app
     ```
 
+### Local Development Setup
+
+1. **Install dependencies**:
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+2. **Set up environment variables**:
+    ```bash
+    cp .env.example .env  # Edit with your database settings
+    ```
+
+3. **Run the application**:
+    ```bash
+    python run.py
+    ```
+
+
+## Production Deployment
+
+### VPS Hosting (Hostinger, DigitalOcean, etc.)
+
+1. **Install Docker on your VPS**:
+    ```bash
+    curl -fsSL https://get.docker.com -o get-docker.sh
+    sh get-docker.sh
+    ```
+
+2. **Clone and deploy**:
+    ```bash
+    git clone https://github.com/salman-ahmed356/blackpoint.git
+    cd blackpoint
+    docker-compose up -d
+    ```
+
+3. **Set up reverse proxy (Nginx)**:
+    ```bash
+    # Configure Nginx to proxy port 5000
+    # Add SSL certificate with Certbot
+    ```
 
 ## Troubleshooting
-- **Environment Variables Not Loading**: Ensure the `.env` file is present and correctly configured.
-- **Port Issues**: Check if port 5000 is free or modify the port mapping in the `docker run` command.
-- **PDF Generation Errors**: Ensure all WeasyPrint dependencies (`libpango`, `libcairo`) are installed and available in your Docker image.
+- **Port 5000 in use**: Change port mapping in `docker-compose.yml`
+- **Database connection issues**: Check MySQL container logs with `docker-compose logs db`
+- **PDF generation errors**: Docker image includes all WeasyPrint dependencies
+- **Permission issues**: Ensure Docker has proper permissions on your system
 
 ## License
 
