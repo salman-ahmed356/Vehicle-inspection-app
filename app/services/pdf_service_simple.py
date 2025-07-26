@@ -17,16 +17,18 @@ def create_pdf(report_id):
     """
     Generate a simple PDF report for the given report_id.
     """
-    print(f"=== PDF SIMPLE: Starting PDF generation for report {report_id} ===")
+    import sys
+    print(f"=== PDF SIMPLE: Starting PDF generation for report {report_id} ===", flush=True)
+    sys.stdout.flush()
     
     report, company, vehicle, customer, staff, vehicle_owner = _fetch_report_data(report_id)
     package_expertise_reports = _process_expertise_reports(report)
     
-    print(f"=== PDF SIMPLE: Found {len(package_expertise_reports)} expertise reports ===")
+    print(f"=== PDF SIMPLE: Found {len(package_expertise_reports)} expertise reports ===", flush=True)
     for expertise in package_expertise_reports:
-        print(f"=== PDF SIMPLE: Expertise: {expertise['expertise_type_name']} ===")
+        print(f"=== PDF SIMPLE: Expertise: {expertise['expertise_type_name']} ===", flush=True)
         for feature in expertise.get('features', []):
-            print(f"=== PDF SIMPLE: Feature: {feature['name']}, Status: {feature['status']} ===")
+            print(f"=== PDF SIMPLE: Feature: {feature['name']}, Status: {feature['status']} ===", flush=True)
     
     filename = _build_output_filename(customer)
 
@@ -106,7 +108,7 @@ def _process_expertise_reports(report):
             paint_features = [
                 {
                     'name': f.name,
-                    'status': f.status,
+                    'status': StatusTranslator.get_translated_status("Paint Expertise", f.status),
                 }
                 for f in paint_report.features
             ]
@@ -115,7 +117,7 @@ def _process_expertise_reports(report):
             body_features = [
                 {
                     'name': f.name,
-                    'status': f.status,
+                    'status': StatusTranslator.get_translated_status("Body Expertise", f.status),
                 }
                 for f in body_report.features
             ]
@@ -143,7 +145,7 @@ def _process_expertise_reports(report):
                 features = [
                     {
                         'name': f.name,
-                        'status': f.status,
+                        'status': StatusTranslator.get_translated_status(er.expertise_type.name, f.status),
                     }
                     for f in er.features
                 ]

@@ -10,7 +10,9 @@ def generate_report_pdf(report_id):
     """
     Generate a simple PDF report for the given report_id.
     """
-    print(f"=== PDF ROUTE: Starting PDF generation for report {report_id} ===")
+    import sys
+    print(f"=== PDF ROUTE: Starting PDF generation for report {report_id} ===", flush=True)
+    sys.stdout.flush()
     try:
         # Add detailed debugging
         from ..models import Report, ExpertiseReport
