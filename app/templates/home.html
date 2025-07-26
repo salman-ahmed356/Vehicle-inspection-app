@@ -10,6 +10,19 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
   <link rel="icon" type="image/x-icon"
         href="{{ url_for('static', filename='assets/favicon.ico') }}">
+  
+  <!-- Mobile Dashboard CSS -->
+  <style>
+    @media (max-width: 768px) {
+      .grid-cols-2 { grid-template-columns: 1fr; }
+      .grid-cols-3 { grid-template-columns: 1fr; }
+      .container { padding: 0 1rem; }
+      .text-4xl { font-size: 2rem; }
+      .flex.space-x-4 { flex-direction: column; gap: 0.5rem; }
+      .flex.space-x-4 > * { margin: 0; }
+      .px-4.py-2 { padding: 0.75rem 1rem; font-size: 0.875rem; }
+    }
+  </style>
 </head>
 
 <body class="bg-gray-100">

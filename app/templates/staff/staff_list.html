@@ -100,8 +100,8 @@
             </button>
         </div>
 
-        <!-- Staff Table -->
-        <table class="min-w-full bg-white">
+        <!-- Desktop Staff Table -->
+        <table class="desktop-table min-w-full bg-white">
             <thead class="bg-gray-200">
             <tr>
                 <th class="py-2">{{ _('Full Name') }}</th>
@@ -140,6 +140,44 @@
             {% endfor %}
             </tbody>
         </table>
+        
+        <!-- Mobile Staff Cards -->
+        <div class="mobile-cards">
+            {% for member in staff %}
+            <div class="bg-white border border-gray-200 rounded-lg p-4 mb-4">
+                <div class="font-semibold text-lg mb-2">{{ member.full_name }}</div>
+                <div class="text-gray-600 mb-1">
+                    <i class="fas fa-phone mr-2"></i>{{ member.phone_number }}
+                </div>
+                <div class="text-gray-600 mb-1">
+                    <i class="fas fa-user-tag mr-2"></i>{{ member.role }}
+                </div>
+                <div class="text-gray-600 mb-3">
+                    <i class="fas fa-building mr-2"></i>{{ member.department }}
+                </div>
+                
+                <div class="flex gap-2">
+                    <button 
+                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 open-edit-modal flex-1"
+                        data-id="{{ member.id }}"
+                        data-first_name="{{ member.first_name }}"
+                        data-last_name="{{ member.last_name }}"
+                        data-phone_number="{{ member.phone_number }}"
+                        data-role="{{ member.role }}"
+                        data-department="{{ member.department }}"
+                    >
+                        <i class="fas fa-edit mr-1"></i>{{ _('Edit') }}
+                    </button>
+                    {% if member.role|lower != 'manager' %}
+                    <button onclick="confirmDelete({{ member.id }}, '{{ member.full_name }}')" 
+                            class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 flex-1">
+                        <i class="fas fa-trash mr-1"></i>{{ _('Delete') }}
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 </main>
 

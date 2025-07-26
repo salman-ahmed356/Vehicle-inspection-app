@@ -23,7 +23,8 @@
         </div>
     </div>
     <div class="overflow-x-auto">
-        <table class="min-w-full bg-white border border-gray-300">
+        <!-- Desktop Table -->
+        <table class="desktop-table min-w-full bg-white border border-gray-300">
             <thead class="bg-gray-200">
             <tr>
                 <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">
@@ -106,6 +107,40 @@
             {% endfor %}
             </tbody>
         </table>
+        
+        <!-- Mobile Cards -->
+        <div class="mobile-cards">
+            {% for report in reports %}
+            <div class="bg-white border border-gray-200 rounded-lg p-4 mb-4">
+                <div class="flex items-center mb-3">
+                    {% if report.has_image and report.image_data %}
+                    <img src="data:image/jpeg;base64,{{ report.image_data|b64encode }}" alt="Vehicle Image" class="w-16 h-16 object-cover rounded mr-3">
+                    {% else %}
+                    <div class="w-16 h-16 bg-gray-200 flex items-center justify-center rounded mr-3">
+                        <i class="fas fa-car text-gray-400"></i>
+                    </div>
+                    {% endif %}
+                    <div>
+                        <div class="font-semibold">{{ report.vehicle.brand }} {{ report.vehicle.model }}</div>
+                        <div class="text-sm text-gray-600">{{ report.vehicle.plate }}</div>
+                        <div class="text-xs text-gray-500">{{ report.inspection_date.strftime('%d.%m.%Y') }}</div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-2 text-sm mb-3">
+                    <div><strong>{{ _('Customer') }}:</strong> {{ report.customer.full_name }}</div>
+                    <div><strong>{{ _('Package') }}:</strong> {{ report.package.name }}</div>
+                </div>
+                
+                <div class="flex justify-center">
+                    <button onclick="confirmDelete({{ report.id }}, '{{ report.vehicle.plate }}')"
+                            class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded">
+                        <i class="fas fa-trash-alt mr-1"></i>{{ _('Delete') }}
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
 
         <!-- Pagination -->
         <div class="flex justify-between items-center mt-4">

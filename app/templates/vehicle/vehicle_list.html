@@ -34,7 +34,8 @@
       {% endwith %}
 
       <div class="overflow-x-auto">
-        <table class="min-w-full bg-white">
+        <!-- Desktop Table -->
+        <table class="desktop-table min-w-full bg-white">
           <thead class="bg-gray-200">
             <tr>
               <th class="py-2 px-4 text-left">{{ _('Image') }}</th>
@@ -79,6 +80,45 @@
             {% endfor %}
           </tbody>
         </table>
+        
+        <!-- Mobile Cards -->
+        <div class="mobile-cards">
+          {% for vehicle_data in vehicles %}
+          <div class="bg-white border border-gray-200 rounded-lg p-4 mb-4">
+            <div class="flex items-center mb-3">
+              {% if vehicle_data.has_image and vehicle_data.image_data %}
+              <img src="data:image/jpeg;base64,{{ vehicle_data.image_data|b64encode }}" alt="Vehicle Image" class="w-16 h-16 object-cover rounded mr-3">
+              {% else %}
+              <div class="w-16 h-16 bg-gray-200 flex items-center justify-center rounded mr-3">
+                <i class="fas fa-car text-gray-400"></i>
+              </div>
+              {% endif %}
+              <div>
+                <div class="font-semibold">{{ vehicle_data.vehicle.brand }} {{ vehicle_data.vehicle.model }}</div>
+                <div class="text-sm text-gray-600">{{ vehicle_data.vehicle.plate }}</div>
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-2 text-sm mb-3">
+              <div><strong>{{ _('Chassis') }}:</strong> {{ vehicle_data.vehicle.chassis_number }}</div>
+              <div><strong>{{ _('Year') }}:</strong> {{ vehicle_data.vehicle.model_year }}</div>
+              <div><strong>{{ _('Engine') }}:</strong> {{ vehicle_data.vehicle.engine_number }}</div>
+              <div><strong>{{ _('Mileage') }}:</strong> {{ vehicle_data.vehicle.mileage }}</div>
+            </div>
+            
+            <div class="flex gap-2">
+              <a href="{{ url_for('vehicles.edit_vehicle', vehicle_id=vehicle_data.vehicle.id) }}" 
+                 class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex-1 text-center">
+                <i class="fas fa-edit mr-1"></i>{{ _('Edit') }}
+              </a>
+              <button onclick="confirmDelete({{ vehicle_data.vehicle.id }}, '{{ vehicle_data.vehicle.brand }} {{ vehicle_data.vehicle.model }}')" 
+                      class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 flex-1">
+                <i class="fas fa-trash mr-1"></i>{{ _('Delete') }}
+              </button>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
       </div>
 
       <!-- Pagination -->

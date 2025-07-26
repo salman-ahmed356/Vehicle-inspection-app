@@ -35,7 +35,7 @@
       'Yol Ekspertiz':             'Road Expertise'
     } %}
 
-    <div class="grid grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
       <!-- Sidebar for Expertise Types -->
       <div class="bg-white shadow-md rounded-lg p-4">
         {% if report.has_image and report.image_data %}
@@ -65,7 +65,7 @@
       <!-- Main Content Area -->
       <div
         id="expertiseDetailContainer"
-        class="col-span-3 bg-white shadow-md rounded-lg p-4"
+        class="lg:col-span-3 bg-white shadow-md rounded-lg p-4"
       >
         <h2 class="text-lg font-semibold mb-4">{{ _('General Information') }}</h2>
         <p>{{ _('Select an inspection type...') }}</p>

@@ -8,6 +8,45 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  
+  <!-- Mobile Appointments CSS -->
+  <style>
+    @media (max-width: 768px) {
+      .container { padding: 0 1rem; }
+      
+      /* Hide table on mobile, show cards instead */
+      .desktop-table { display: none; }
+      .mobile-cards { display: block; }
+      
+      .appointment-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      
+      .appointment-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 1rem;
+      }
+      
+      .appointment-actions button,
+      .appointment-actions a {
+        width: 100%;
+        text-align: center;
+        padding: 0.75rem;
+        font-size: 0.875rem;
+      }
+    }
+    
+    @media (min-width: 769px) {
+      .mobile-cards { display: none; }
+      .desktop-table { display: table; }
+    }
+  </style>
 </head>
 
 <body class="bg-gray-100">
@@ -26,7 +65,9 @@
 
     <div class="bg-white p-4 rounded-lg shadow mt-4">
       {% if appointments %}
-      <table class="min-w-full bg-white">
+      
+      <!-- Desktop Table -->
+      <table class="desktop-table min-w-full bg-white">
         <thead>
           <tr>
             <th class="py-2 px-4 border-b text-left text-gray-600">
@@ -88,6 +129,51 @@
           {% endfor %}
         </tbody>
       </table>
+      
+      <!-- Mobile Cards -->
+      <div class="mobile-cards">
+        {% for appointment in appointments %}
+        <div class="appointment-card">
+          <div class="font-semibold text-lg">{{ appointment.customer.full_name }}</div>
+          <div class="text-gray-600 mt-1">
+            <i class="fas fa-calendar mr-2"></i>{{ appointment.date }} {{ appointment.time.strftime('%H:%M') }}
+          </div>
+          <div class="text-gray-600 mt-1">
+            <i class="fas fa-phone mr-2"></i>{{ appointment.customer.phone_number }}
+          </div>
+          <div class="text-gray-600 mt-1">
+            <i class="fas fa-car mr-2"></i>{{ appointment.brand }} {{ appointment.model }}
+          </div>
+          <div class="text-gray-600 mt-1">
+            <i class="fas fa-info-circle mr-2"></i>
+            {% if appointment.reminder_sent %}
+              {{ _('Sent') }}
+            {% else %}
+              {{ _('Not Sent') }}
+            {% endif %}
+          </div>
+          
+          <div class="appointment-actions">
+            <button onclick="openUpdateModal({{ appointment.id }})"
+                    class="bg-blue-500 text-white rounded">
+              {{ _('Update') }}
+            </button>
+            <a href="{{ url_for('appointments.create_report_from_appointment', appointment_id=appointment.id) }}" 
+               class="bg-green-500 text-white rounded inline-block">
+              {{ _('Create Report') }}
+            </a>
+            <form action="{{ url_for('appointments.cancel_appointment', appointment_id=appointment.id) }}" 
+                  method="POST" 
+                  onsubmit="return confirm('{{ _('Are you sure you want to cancel this appointment?') }}');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="bg-red-500 text-white rounded w-full">
+                {{ _('Cancel') }}
+              </button>
+            </form>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
 
       <!-- Pagination Controls -->
       <div class="flex justify-center items-center mt-4">
