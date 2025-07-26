@@ -16,10 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpangoft2-1.0-0 \
     fonts-liberation \
     fonts-dejavu \
-    fonts-dejavu-core \
-    fonts-dejavu-extra \
     fonts-noto \
-    fonts-arabic \
     libharfbuzz-icu0 \
     default-libmysqlclient-dev && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
