@@ -468,9 +468,9 @@ def edit_report(report_id):
             form.agent_name.data = ""
             print("DEBUG: No agent found, setting empty")
         
-        # Load owner information from database relationship
-        owner = VehicleOwner.query.filter_by(report_id=report_id).first()
-        print(f"DEBUG: Looking for owner with report_id={report_id}, found: {owner}")
+        # Load owner information from database using phone pattern
+        owner = VehicleOwner.query.filter_by(phone_number=f"owner-{report_id}").first()
+        print(f"DEBUG: Looking for owner with phone pattern 'owner-{report_id}', found: {owner}")
         
         if owner:
             form.owner_name.data = f"{owner.first_name} {owner.last_name}".strip()
@@ -604,7 +604,7 @@ def edit_report(report_id):
             
             # Update or create vehicle owner if owner name is provided
             owner_name = form.owner_name.data.strip()
-            existing_owner = VehicleOwner.query.filter_by(report_id=report_id).first()
+            existing_owner = VehicleOwner.query.filter_by(phone_number=f"owner-{report_id}").first()
             
             if owner_name:
                 print(f"DEBUG: Processing owner name: {owner_name}")
@@ -660,9 +660,8 @@ def edit_report(report_id):
                         first_name=owner_names[0],
                         last_name=owner_names[1] if len(owner_names) > 1 else '',
                         tc_tax_number=form.owner_tax_no.data.strip() or None,
-                        phone_number=owner_phone,
-                        address_id=address_id,
-                        report_id=report_id
+                        phone_number=f"owner-{report_id}",
+                        address_id=address_id
                     )
                     db.session.add(new_owner)
                     print(f"DEBUG: Created new owner during edit: {new_owner.first_name} {new_owner.last_name}")
@@ -749,7 +748,7 @@ def edit_report(report_id):
             print(f"DEBUG: Verification - Report package_id: {updated_report.package_id}")
             
             # Verify owner data
-            updated_owner = VehicleOwner.query.filter_by(report_id=report_id).first()
+            updated_owner = VehicleOwner.query.filter_by(phone_number=f"owner-{report_id}").first()
             if updated_owner:
                 print(f"DEBUG: Verification - Owner: {updated_owner.first_name} {updated_owner.last_name}, phone: {updated_owner.phone_number}, tax: {updated_owner.tc_tax_number}")
                 print(f"DEBUG: Verification - Owner address: {updated_owner.address.street_address if updated_owner.address else 'None'}")
@@ -844,7 +843,7 @@ def delete_report(report_id):
             db.session.delete(agent)
         
         # Delete vehicle owners linked to this report
-        owners = VehicleOwner.query.filter_by(report_id=report_id).all()
+        owners = VehicleOwner.query.filter_by(phone_number=f"owner-{report_id}").all()
         for owner in owners:
             if owner.address:
                 db.session.delete(owner.address)
