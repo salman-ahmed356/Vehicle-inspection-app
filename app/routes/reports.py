@@ -469,14 +469,17 @@ def edit_report(report_id):
             form.agent_name.data = ""
             print("DEBUG: No agent found, setting empty")
         
-        # Load owner information (same pattern as customer)
-        if report.vehicle_owner:
-            form.owner_name.data = report.vehicle_owner.full_name
-            form.owner_phone.data = report.vehicle_owner.phone_number
-            form.owner_tax_no.data = report.vehicle_owner.tc_tax_number
-            if report.vehicle_owner.address:
-                form.owner_address.data = report.vehicle_owner.address.street_address
-            print(f"DEBUG: Owner loaded: {report.vehicle_owner.full_name}")
+        # Load owner information - query directly by report_id
+        vehicle_owner = VehicleOwner.query.filter_by(report_id=report_id).first()
+        if vehicle_owner:
+            form.owner_name.data = vehicle_owner.full_name
+            form.owner_phone.data = vehicle_owner.phone_number
+            form.owner_tax_no.data = vehicle_owner.tc_tax_number
+            if vehicle_owner.address:
+                form.owner_address.data = vehicle_owner.address.street_address
+            else:
+                form.owner_address.data = ''
+            print(f"DEBUG: Owner loaded: {vehicle_owner.full_name}")
         else:
             form.owner_name.data = ''
             form.owner_phone.data = ''
