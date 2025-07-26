@@ -284,8 +284,7 @@ def add_report():
                     last_name=owner_names[1] if len(owner_names) > 1 else '',
                     tc_tax_number=form.owner_tax_no.data.strip() or None,
                     phone_number=form.owner_phone.data.strip() or f"owner-{new_report.id}",
-                    address_id=address_id,
-                    report_id=new_report.id
+                    address_id=address_id
                 )
                 db.session.add(owner)
                 print(f"DEBUG: Created vehicle owner: {owner.first_name} {owner.last_name} with address_id: {address_id}, phone: {owner.phone_number}")
