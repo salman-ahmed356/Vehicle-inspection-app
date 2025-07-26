@@ -315,7 +315,8 @@ def add_report():
                 'customer_address': form.customer_address.data
             }
             print(f"DEBUG: Saved session data for report {new_report.id}")
-            print(f"DEBUG: Owner data in session: name='{form.owner_name.data}', phone='{form.owner_phone.data or f"owner-{new_report.id}"}', tax='{form.owner_tax_no.data}', address='{form.owner_address.data}'")
+            owner_phone = form.owner_phone.data or f"owner-{new_report.id}"
+            print(f"DEBUG: Owner data in session: name='{form.owner_name.data}', phone='{owner_phone}', tax='{form.owner_tax_no.data}', address='{form.owner_address.data}'")
             
             flash('Report created successfully!', 'success')
             return redirect(url_for('reports.report_list'))
