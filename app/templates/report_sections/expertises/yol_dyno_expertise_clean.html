@@ -1,3 +1,112 @@
+<style>
+  /* Custom radio button styling */
+  input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 24px; height: 24px;
+    border: 2px solid #4A5568;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  input[type="radio"]:checked {
+    border-color: #38B2AC;
+    background-color: #38B2AC;
+  }
+  input[type="radio"]:checked::before {
+    content: '';
+    display: block;
+    width: 12px; height: 12px;
+    margin: 4px;
+    background-color: #38B2AC;
+    border-radius: 50%;
+  }
+  input[type="radio"]:hover {
+    border-color: #68D391;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th, td {
+    padding: 12px;
+    border-bottom: 1px solid #E2E8F0;
+  }
+  th {
+    text-align: left;
+    background-color: #F7FAFC;
+    color: #2D3748;
+    font-weight: 600;
+  }
+  td {
+    text-align: center;
+    color: #4A5568;
+  }
+  
+  /* Mobile responsive styles */
+  @media (max-width: 768px) {
+    table, thead, tbody, th, td, tr {
+      display: block;
+    }
+    thead tr {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+    }
+    tr {
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      background: #f9f9f9;
+    }
+    td {
+      border: none;
+      position: relative;
+      padding: 8px 8px 8px 50%;
+      text-align: left;
+    }
+    td:before {
+      content: attr(data-label);
+      position: absolute;
+      left: 6px;
+      width: 45%;
+      padding-right: 10px;
+      white-space: nowrap;
+      font-weight: bold;
+      color: #333;
+    }
+    .feature-name {
+      font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 10px;
+      text-align: center;
+      background: #e2e8f0;
+      padding: 8px;
+      border-radius: 4px;
+    }
+    .feature-name:before {
+      display: none;
+    }
+    .radio-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px;
+      margin: 4px 0;
+    }
+    .radio-option:before {
+      display: none;
+    }
+    .radio-label {
+      font-weight: normal;
+      margin-left: 8px;
+    }
+  }
+</style>
+
 {% include 'report_sections/expertises/vehicle_header.html' %}
 
 <h2 class="text-lg font-semibold mb-4">{{ _('Road & Dyno Inspection') }}</h2>
@@ -32,16 +141,20 @@
       <tbody>
         {% for feature in expertise_report.features %}
           <tr class="hover:bg-gray-50">
-            <td class="py-2 px-4 border-b">{{ feature.name }}</td>
+            <td class="py-2 px-4 border-b feature-name">{{ feature.name }}</td>
             {% for status in status_choices %}
-              <td class="py-2 px-4 border-b text-center">
-                <input 
-                  type="radio" 
-                  name="feature_{{ feature.id }}" 
-                  value="{{ status }}"
-                  class="form-radio h-5 w-5 text-blue-600"
-                  {% if feature.status == status %}checked{% endif %}
-                >
+              <td class="py-2 px-4 border-b text-center" data-label="{{ _(status) }}">
+                <div class="radio-option">
+                  <input 
+                    type="radio" 
+                    name="feature_{{ feature.id }}" 
+                    value="{{ status }}"
+                    id="road_feature_{{ feature.id }}_{{ loop.index }}"
+                    class="form-radio h-5 w-5 text-blue-600"
+                    {% if feature.status == status %}checked{% endif %}
+                  >
+                  <label for="road_feature_{{ feature.id }}_{{ loop.index }}" class="radio-label">{{ _(status) }}</label>
+                </div>
               </td>
             {% endfor %}
           </tr>
@@ -67,16 +180,20 @@
         {% for feature in expertise_report2.features %}
           {% if feature.name != 'Part 1' and feature.name != 'Part 2' and feature.name != 'Part 3' %}
             <tr class="hover:bg-gray-50">
-              <td class="py-2 px-4 border-b">{{ feature.name }}</td>
+              <td class="py-2 px-4 border-b feature-name">{{ feature.name }}</td>
               {% for status in status_choices %}
-                <td class="py-2 px-4 border-b text-center">
-                  <input 
-                    type="radio" 
-                    name="feature_{{ feature.id }}" 
-                    value="{{ status }}"
-                    class="form-radio h-5 w-5 text-blue-600"
-                    {% if feature.status == status %}checked{% endif %}
-                  >
+                <td class="py-2 px-4 border-b text-center" data-label="{{ _(status) }}">
+                  <div class="radio-option">
+                    <input 
+                      type="radio" 
+                      name="feature_{{ feature.id }}" 
+                      value="{{ status }}"
+                      id="dyno_feature_{{ feature.id }}_{{ loop.index }}"
+                      class="form-radio h-5 w-5 text-blue-600"
+                      {% if feature.status == status %}checked{% endif %}
+                    >
+                    <label for="dyno_feature_{{ feature.id }}_{{ loop.index }}" class="radio-label">{{ _(status) }}</label>
+                  </div>
                 </td>
               {% endfor %}
             </tr>

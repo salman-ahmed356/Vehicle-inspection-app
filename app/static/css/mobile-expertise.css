@@ -1,5 +1,6 @@
-/* Mobile responsive styles for expertise tables */
+/* Mobile responsive styles for expertise templates */
 @media (max-width: 768px) {
+  /* Table responsive styles */
   table, thead, tbody, th, td, tr {
     display: block;
   }
@@ -16,6 +17,7 @@
     padding: 10px;
     border-radius: 8px;
     background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   }
   
   td {
@@ -38,22 +40,79 @@
     color: #374151;
   }
   
-  td:first-child {
+  td:first-child, .feature-name {
     font-weight: bold;
     background: #f8f9fa;
     padding-left: 10px;
     border-radius: 6px 6px 0 0;
+    font-size: 16px;
+    text-align: center;
   }
   
-  td:first-child:before {
+  td:first-child:before, .feature-name:before {
     display: none;
   }
   
-  /* Radio button adjustments for mobile */
+  /* Form elements mobile styles */
   input[type="radio"] {
-    width: 20px;
-    height: 20px;
-    margin: 0 auto;
+    width: 20px !important;
+    height: 20px !important;
+    margin: 0 8px 0 0 !important;
+  }
+  
+  input[type="number"], input[type="text"], select {
+    font-size: 16px !important;
+    padding: 12px !important;
+    min-height: 44px !important;
+  }
+  
+  textarea {
+    font-size: 16px !important;
+    min-height: 100px !important;
+    padding: 12px !important;
+  }
+  
+  button, button[type="submit"] {
+    width: 100% !important;
+    padding: 12px !important;
+    font-size: 16px !important;
+    margin-top: 1rem !important;
+    min-height: 44px !important;
+  }
+  
+  /* Form groups and sections */
+  .form-group, .form-section, .test-section {
+    margin-bottom: 1rem !important;
+    padding: 1rem !important;
+    background: #f8f9fa !important;
+    border-radius: 8px !important;
+  }
+  
+  .form-group label, .form-section label {
+    font-size: 16px !important;
+    margin-bottom: 0.75rem !important;
+  }
+  
+  /* Radio option containers */
+  .radio-option {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    padding: 8px !important;
+    margin: 4px 0 !important;
+    background: white !important;
+    border-radius: 6px !important;
+    border: 1px solid #e2e8f0 !important;
+  }
+  
+  .radio-option:before {
+    display: none !important;
+  }
+  
+  .radio-label {
+    font-weight: normal !important;
+    margin-left: 8px !important;
+    flex: 1 !important;
   }
   
   /* Container adjustments */
@@ -65,15 +124,17 @@
     padding: 1rem !important;
   }
   
-  /* Form adjustments */
-  textarea {
-    font-size: 16px;
-    min-height: 100px;
+  /* Dropdown specific styles */
+  .dropdown {
+    font-size: 16px !important;
+    padding: 12px !important;
+    min-height: 44px !important;
   }
   
-  button {
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
+  /* Checkbox styles */
+  input[type="checkbox"] {
+    width: 18px !important;
+    height: 18px !important;
+    margin-right: 8px !important;
   }
 }

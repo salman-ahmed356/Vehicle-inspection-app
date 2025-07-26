@@ -49,6 +49,80 @@
     text-align: center;
     color: #4A5568;
   }
+  
+  /* Mobile responsive styles */
+  @media (max-width: 768px) {
+    table, thead, tbody, th, td, tr {
+      display: block;
+    }
+    thead tr {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+    }
+    tr {
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      background: #f9f9f9;
+    }
+    td {
+      border: none;
+      position: relative;
+      padding: 8px 8px 8px 50%;
+      text-align: left;
+    }
+    td:before {
+      content: attr(data-label);
+      position: absolute;
+      left: 6px;
+      width: 45%;
+      padding-right: 10px;
+      white-space: nowrap;
+      font-weight: bold;
+      color: #333;
+    }
+    .feature-name {
+      font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 10px;
+      text-align: center;
+      background: #e2e8f0;
+      padding: 8px;
+      border-radius: 4px;
+    }
+    .feature-name:before {
+      display: none;
+    }
+    .radio-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px;
+      margin: 4px 0;
+    }
+    .radio-option:before {
+      display: none;
+    }
+    .radio-label {
+      font-weight: normal;
+      margin-left: 8px;
+    }
+    
+    textarea {
+      font-size: 16px !important;
+      min-height: 100px !important;
+      padding: 12px !important;
+    }
+    
+    button {
+      width: 100% !important;
+      padding: 12px !important;
+      font-size: 16px !important;
+      margin-top: 1rem !important;
+    }
+  }
 </style>
 
 {% include 'report_sections/expertises/vehicle_header.html' %}
@@ -81,15 +155,19 @@
     <tbody>
       {% for feature in expertise_report.features %}
         <tr>
-          <td>{{ feature.name }}</td>
+          <td class="feature-name">{{ feature.name }}</td>
           {% for s in status_choices %}
-            <td>
-              <input
-                type="radio"
-                name="feature_{{ feature.id }}"
-                value="{{ s }}"
-                {% if feature.status == s %}checked{% endif %}
-              >
+            <td data-label="{{ _(s) }}">
+              <div class="radio-option">
+                <input
+                  type="radio"
+                  name="feature_{{ feature.id }}"
+                  value="{{ s }}"
+                  id="feature_{{ feature.id }}_{{ loop.index }}"
+                  {% if feature.status == s %}checked{% endif %}
+                >
+                <label for="feature_{{ feature.id }}_{{ loop.index }}" class="radio-label">{{ _(s) }}</label>
+              </div>
             </td>
           {% endfor %}
         </tr>

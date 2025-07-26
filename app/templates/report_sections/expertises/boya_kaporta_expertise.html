@@ -84,6 +84,30 @@
     td:first-child:before {
       display: none;
     }
+    .radio-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px;
+      margin: 4px 0;
+    }
+    .radio-label {
+      font-weight: normal;
+      margin-left: 8px;
+    }
+    
+    textarea {
+      font-size: 16px !important;
+      min-height: 100px !important;
+      padding: 12px !important;
+    }
+    
+    button {
+      width: 100% !important;
+      padding: 12px !important;
+      font-size: 16px !important;
+      margin-top: 1rem !important;
+    }
   }
 </style>
 
@@ -120,12 +144,16 @@
           <td class="text-left">{{ feature.name }}</td>
           {% for s in status_choices %}
             <td data-label="{{ _(s) }}">
-              <input
-                type="radio"
-                name="feature_{{ feature.id }}"
-                value="{{ s }}"
-                {% if feature.status == s %}checked{% endif %}
-              >
+              <div class="radio-option">
+                <input
+                  type="radio"
+                  name="feature_{{ feature.id }}"
+                  value="{{ s }}"
+                  id="feature_{{ feature.id }}_{{ loop.index }}"
+                  {% if feature.status == s %}checked{% endif %}
+                >
+                <label for="feature_{{ feature.id }}_{{ loop.index }}" class="radio-label">{{ _(s) }}</label>
+              </div>
             </td>
           {% endfor %}
         </tr>

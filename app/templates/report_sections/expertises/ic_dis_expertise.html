@@ -45,6 +45,64 @@
     text-align: center;
     color: #4A5568;
   }
+  
+  @media (max-width: 768px) {
+    table, thead, tbody, th, td, tr {
+      display: block;
+    }
+    thead tr {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+    }
+    tr {
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      background: white;
+    }
+    td {
+      border: none;
+      position: relative;
+      padding: 8px 8px 8px 50%;
+      text-align: left;
+    }
+    td:before {
+      content: attr(data-label);
+      position: absolute;
+      left: 6px;
+      width: 45%;
+      padding-right: 10px;
+      white-space: nowrap;
+      font-weight: bold;
+    }
+    td:first-child {
+      font-weight: bold;
+      background: #f8f9fa;
+      padding-left: 10px;
+      text-align: center;
+    }
+    td:first-child:before {
+      display: none;
+    }
+    input[type="radio"] {
+      width: 20px !important;
+      height: 20px !important;
+      margin: 0 auto;
+    }
+    textarea {
+      font-size: 16px !important;
+      min-height: 100px !important;
+      padding: 12px !important;
+    }
+    button {
+      width: 100% !important;
+      padding: 12px !important;
+      font-size: 16px !important;
+      margin-top: 1rem !important;
+    }
+  }
 </style>
 
 {% include 'report_sections/expertises/vehicle_header.html' %}

@@ -36,6 +36,34 @@
   button[type="submit"]:hover {
     background-color: #2B6CB0;
   }
+
+  /* Mobile responsive styles */
+  @media (max-width: 768px) {
+    .form-section {
+      margin-bottom: 1rem;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    
+    .form-section label {
+      font-size: 16px;
+      margin-bottom: 0.75rem;
+    }
+    
+    textarea {
+      font-size: 16px;
+      min-height: 120px;
+      padding: 12px;
+    }
+    
+    button[type="submit"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      margin-top: 1rem;
+    }
+  }
 </style>
 
 {% include 'report_sections/expertises/vehicle_header.html' %}
