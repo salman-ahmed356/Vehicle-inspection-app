@@ -22,39 +22,35 @@ def create_pdf(report_id):
     import logging
     from flask import g
     
-    # Set logging level to INFO
-    logging.basicConfig(level=logging.INFO)
-    logger = logging.getLogger(__name__)
-    
-    logger.info(f"PDF Generation Started - Report ID: {report_id}")
+    print(f"=== PDF Generation Started - Report ID: {report_id} ===")
     
     try:
         # Force Arabic locale for PDF generation
         g.locale = 'ar'
-        logger.info("Arabic locale set for PDF generation")
+        print("=== Arabic locale set for PDF generation ===")
         
         report, company, vehicle, customer, staff = _fetch_report_data(report_id)
-        logger.info(f"Report data fetched - Vehicle: {vehicle.plate if vehicle else 'N/A'}")
+        print(f"=== Report data fetched - Vehicle: {vehicle.plate if vehicle else 'N/A'} ===")
         
         package_expertise_reports = _process_expertise_reports(report)
-        logger.info(f"Expertise reports processed - Count: {len(package_expertise_reports)}")
+        print(f"=== Expertise reports processed - Count: {len(package_expertise_reports)} ===")
         
-        # Debug: Log the actual status values being passed
+        # Debug: Print the actual status values being passed
         for expertise in package_expertise_reports:
-            logger.info(f"Expertise type: {expertise.get('expertise_type_name', 'Unknown')}")
+            print(f"=== Expertise type: {expertise.get('expertise_type_name', 'Unknown')} ===")
             if 'features' in expertise:
                 for feature in expertise['features']:
-                    logger.info(f"Feature: {feature['name']}, Status: {feature['status']}")
+                    print(f"=== Feature: {feature['name']}, Status: {feature['status']} ===")
             if 'paint_features' in expertise:
                 for feature in expertise['paint_features']:
-                    logger.info(f"Paint Feature: {feature['name']}, Status: {feature['status']}")
+                    print(f"=== Paint Feature: {feature['name']}, Status: {feature['status']} ===")
             if 'body_features' in expertise:
                 for feature in expertise['body_features']:
-                    logger.info(f"Body Feature: {feature['name']}, Status: {feature['status']}")
+                    print(f"=== Body Feature: {feature['name']}, Status: {feature['status']} ===")
         
         images, motor_image_url, brake_image_url, info_image_url, obd_mapping = _gather_image_paths()
         filename = _build_output_filename(customer)
-        logger.info(f"PDF filename: {filename}")
+        print(f"=== PDF filename: {filename} ===")
 
         rendered_html = render_template(
             'report_pdf.html',
@@ -70,16 +66,16 @@ def create_pdf(report_id):
             obd_mapping=obd_mapping,
             info_image_url=info_image_url,
         )
-        logger.info("HTML template rendered successfully")
+        print("=== HTML template rendered successfully ===")
         
         # Simple approach - just generate PDF and let status translator handle Arabic
         HTML(string=rendered_html).write_pdf(filename)
-        logger.info(f"PDF generated successfully: {filename}")
+        print(f"=== PDF generated successfully: {filename} ===")
         
         return filename
         
     except Exception as e:
-        logger.error(f"PDF Generation Failed - Report ID: {report_id}, Error: {str(e)}")
+        print(f"=== PDF Generation Failed - Report ID: {report_id}, Error: {str(e)} ===")
         raise e
 
 
