@@ -14,13 +14,68 @@
   <!-- Mobile Dashboard CSS -->
   <style>
     @media (max-width: 768px) {
-      .grid-cols-2 { grid-template-columns: 1fr; }
-      .grid-cols-3 { grid-template-columns: 1fr; }
-      .container { padding: 0 1rem; }
-      .text-4xl { font-size: 2rem; }
-      .flex.space-x-4 { flex-direction: column; gap: 0.5rem; }
-      .flex.space-x-4 > * { margin: 0; }
-      .px-4.py-2 { padding: 0.75rem 1rem; font-size: 0.875rem; }
+      /* Force single column layout */
+      .grid-cols-2, .grid-cols-3 { 
+        grid-template-columns: 1fr !important; 
+        gap: 1rem !important;
+      }
+      
+      /* Container fixes */
+      .container { 
+        padding: 0.5rem !important; 
+        margin: 0 !important;
+        width: 100% !important;
+      }
+      
+      /* Card fixes */
+      .bg-white {
+        margin-bottom: 1rem !important;
+        padding: 1rem !important;
+      }
+      
+      /* Button fixes */
+      .flex.space-x-4 { 
+        flex-direction: column !important; 
+        gap: 0.5rem !important;
+        align-items: stretch !important;
+      }
+      
+      .flex.space-x-4 > * { 
+        margin: 0 !important;
+        width: 100% !important;
+        text-align: center !important;
+      }
+      
+      /* Button styling */
+      a.bg-teal-500, a.bg-orange-500, a.bg-red-500, a.bg-green-500, a.bg-blue-500 {
+        display: block !important;
+        width: 100% !important;
+        padding: 0.75rem 1rem !important;
+        margin-bottom: 0.5rem !important;
+        text-align: center !important;
+        font-size: 0.875rem !important;
+        border-radius: 0.375rem !important;
+      }
+      
+      /* Text sizing */
+      .text-4xl { font-size: 1.5rem !important; }
+      .text-3xl { font-size: 1.25rem !important; }
+      .text-2xl { font-size: 1.125rem !important; }
+      
+      /* Spacing fixes */
+      .mt-8, .mt-6, .mt-4 { margin-top: 1rem !important; }
+      .p-6 { padding: 1rem !important; }
+      
+      /* Stats cards */
+      .bg-white.p-6 {
+        padding: 1rem !important;
+        margin-bottom: 1rem !important;
+      }
+      
+      /* Recent reports section */
+      .max-h-48 {
+        max-height: 200px !important;
+      }
     }
   </style>
 </head>
