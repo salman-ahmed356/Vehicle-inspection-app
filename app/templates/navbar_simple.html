@@ -182,40 +182,42 @@
 <script src="{{ url_for('static', filename='js/dropdown-fix.js') }}"></script>
 
 <script>
-  // Mobile menu toggle
-  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-  const mobileMenu = document.getElementById('mobileMenu');
-  
-  if (mobileMenuBtn && mobileMenu) {
-    mobileMenuBtn.addEventListener('click', function() {
-      mobileMenu.classList.toggle('hidden');
-      const icon = mobileMenuBtn.querySelector('i');
-      icon.className = mobileMenu.classList.contains('hidden') ? 'fas fa-bars' : 'fas fa-times';
-    });
-  }
-
-  // Logout confirmation modal
-  const logoutBtn = document.getElementById('logoutBtn');
-  const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
-  const logoutModal = document.getElementById('logoutModal');
-  const cancelLogout = document.getElementById('cancelLogout');
-
-  function showLogoutModal(e) {
-    e.preventDefault();
-    logoutModal.classList.remove('hidden');
-  }
-
-  if (logoutBtn) logoutBtn.addEventListener('click', showLogoutModal);
-  if (mobileLogoutBtn) mobileLogoutBtn.addEventListener('click', showLogoutModal);
-  if (cancelLogout) {
-    cancelLogout.addEventListener('click', function() {
-      logoutModal.classList.add('hidden');
-    });
-  }
-
-  window.addEventListener('click', function(event) {
-    if (event.target === logoutModal) {
-      logoutModal.classList.add('hidden');
+  document.addEventListener('DOMContentLoaded', function() {
+    // Mobile menu toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    
+    if (mobileMenuBtn && mobileMenu) {
+      mobileMenuBtn.addEventListener('click', function() {
+        mobileMenu.classList.toggle('hidden');
+        const icon = mobileMenuBtn.querySelector('i');
+        icon.className = mobileMenu.classList.contains('hidden') ? 'fas fa-bars' : 'fas fa-times';
+      });
     }
+
+    // Logout confirmation modal
+    const logoutBtn = document.getElementById('logoutBtn');
+    const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+    const logoutModal = document.getElementById('logoutModal');
+    const cancelLogout = document.getElementById('cancelLogout');
+
+    function showLogoutModal(e) {
+      e.preventDefault();
+      if (logoutModal) logoutModal.classList.remove('hidden');
+    }
+
+    if (logoutBtn) logoutBtn.addEventListener('click', showLogoutModal);
+    if (mobileLogoutBtn) mobileLogoutBtn.addEventListener('click', showLogoutModal);
+    if (cancelLogout) {
+      cancelLogout.addEventListener('click', function() {
+        logoutModal.classList.add('hidden');
+      });
+    }
+
+    window.addEventListener('click', function(event) {
+      if (event.target === logoutModal) {
+        logoutModal.classList.add('hidden');
+      }
+    });
   });
 </script>
