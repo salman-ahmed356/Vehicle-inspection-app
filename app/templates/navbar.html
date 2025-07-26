@@ -252,51 +252,75 @@
 <script src="{{ url_for('static', filename='js/back-button.js') }}"></script>
 
 <script>
-  // Mobile menu toggle
-  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-  const mobileMenu = document.getElementById('mobileMenu');
-  
-  if (mobileMenuBtn && mobileMenu) {
-    mobileMenuBtn.addEventListener('click', function() {
-      mobileMenu.classList.toggle('hidden');
-      const icon = mobileMenuBtn.querySelector('i');
-      if (mobileMenu.classList.contains('hidden')) {
-        icon.className = 'fas fa-bars';
-      } else {
-        icon.className = 'fas fa-times';
+  // Ensure mobile menu works on all pages
+  document.addEventListener('DOMContentLoaded', function() {
+    // Mobile menu toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    
+    if (mobileMenuBtn && mobileMenu) {
+      // Remove any existing event listeners
+      mobileMenuBtn.replaceWith(mobileMenuBtn.cloneNode(true));
+      const newMobileMenuBtn = document.getElementById('mobileMenuBtn');
+      
+      newMobileMenuBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        console.log('Mobile menu button clicked');
+        mobileMenu.classList.toggle('hidden');
+        const icon = newMobileMenuBtn.querySelector('i');
+        if (mobileMenu.classList.contains('hidden')) {
+          icon.className = 'fas fa-bars';
+          console.log('Menu closed');
+        } else {
+          icon.className = 'fas fa-times';
+          console.log('Menu opened');
+        }
+      });
+      
+      // Close menu when clicking outside
+      document.addEventListener('click', function(event) {
+        if (!mobileMenu.contains(event.target) && !newMobileMenuBtn.contains(event.target)) {
+          if (!mobileMenu.classList.contains('hidden')) {
+            mobileMenu.classList.add('hidden');
+            const icon = newMobileMenuBtn.querySelector('i');
+            icon.className = 'fas fa-bars';
+          }
+        }
+      });
+    }
+
+    // Logout confirmation modal
+    const logoutBtn = document.getElementById('logoutBtn');
+    const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+    const logoutModal = document.getElementById('logoutModal');
+    const cancelLogout = document.getElementById('cancelLogout');
+
+    function showLogoutModal(e) {
+      e.preventDefault();
+      logoutModal.classList.remove('hidden');
+    }
+
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', showLogoutModal);
+    }
+    
+    if (mobileLogoutBtn) {
+      mobileLogoutBtn.addEventListener('click', showLogoutModal);
+    }
+
+    if (cancelLogout) {
+      cancelLogout.addEventListener('click', function() {
+        logoutModal.classList.add('hidden');
+      });
+    }
+
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+      if (event.target === logoutModal) {
+        logoutModal.classList.add('hidden');
       }
     });
-  }
-
-  // Logout confirmation modal
-  const logoutBtn = document.getElementById('logoutBtn');
-  const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
-  const logoutModal = document.getElementById('logoutModal');
-  const cancelLogout = document.getElementById('cancelLogout');
-
-  function showLogoutModal(e) {
-    e.preventDefault();
-    logoutModal.classList.remove('hidden');
-  }
-
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', showLogoutModal);
-  }
-  
-  if (mobileLogoutBtn) {
-    mobileLogoutBtn.addEventListener('click', showLogoutModal);
-  }
-
-  if (cancelLogout) {
-    cancelLogout.addEventListener('click', function() {
-      logoutModal.classList.add('hidden');
-    });
-  }
-
-  // Close modal when clicking outside
-  window.addEventListener('click', function(event) {
-    if (event.target === logoutModal) {
-      logoutModal.classList.add('hidden');
-    }
   });
 </script>

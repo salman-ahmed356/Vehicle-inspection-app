@@ -1,5 +1,6 @@
 <!-- Inspection Information -->
-<div class="grid grid-cols-2 gap-6">
+<h3 class="text-lg font-semibold mb-4">{{ _('Inspection Information') }}</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <!-- Created By Staff -->
     <div>
         <label class="block text-sm font-medium text-gray-700">
@@ -82,37 +83,35 @@
         {% endif %}
     </div>
 
-    <div class="grid grid-cols-2 gap-6">
-        <!-- Package Price -->
-        <div>
-            <label class="block text-sm font-medium text-gray-700">
-                {{ _('Package Price') }}
-            </label>
-            <input
-                type="text"
-                name="package_price"
-                id="package_price"
-                required
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                oninvalid="this.setCustomValidity('{{ _('Please enter the package price') }}')"
-                oninput="setCustomValidity(''); calculateVAT();"
-            >
-        </div>
+    <!-- Package Price -->
+    <div>
+        <label class="block text-sm font-medium text-gray-700">
+            {{ _('Package Price') }}
+        </label>
+        <input
+            type="text"
+            name="package_price"
+            id="package_price"
+            required
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            oninvalid="this.setCustomValidity('{{ _('Please enter the package price') }}')"
+            oninput="setCustomValidity(''); calculateVAT();"
+        >
+    </div>
 
-        <!-- Package Price (Including VAT) -->
-        <div>
-            <label class="block text-sm font-medium text-gray-700">
-                {{ _('Package Price (Including VAT)') }}
-            </label>
-            <input
-                type="text"
-                name="package_price_vat"
-                id="package_price_vat"
-                required
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                readonly
-            >
-        </div>
+    <!-- Package Price (Including VAT) -->
+    <div>
+        <label class="block text-sm font-medium text-gray-700">
+            {{ _('Package Price (Including VAT)') }}
+        </label>
+        <input
+            type="text"
+            name="package_price_vat"
+            id="package_price_vat"
+            required
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            readonly
+        >
     </div>
 </div>
 

@@ -23,13 +23,13 @@
 <div id="createAppointmentModal"></div>
 
 <div class="container mx-auto mt-6">
-    <div class="p-4 mb-4 flex justify-between items-center">
-        <h1 class="text-2xl font-semibold text-gray-800">
+    <div class="p-4 mb-4">
+        <h1 class="text-xl md:text-2xl font-semibold text-gray-800 mb-4">
             {{ _('Open Expertise Reports') }}
         </h1>
-        <div class="relative w-1/3">
+        <div class="relative w-full md:w-1/3 md:ml-auto">
             <input type="text" id="vehicleSearch" placeholder="{{ _('Search by chassis number...') }}" 
-                   class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                   class="w-full px-4 py-3 text-base border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
             <div id="searchResults" class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg hidden overflow-hidden max-h-60 overflow-y-auto"></div>
         </div>
     </div>
