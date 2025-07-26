@@ -402,6 +402,8 @@ def update_report(report_id):
 @reports.route('/report/edit/<int:report_id>', methods=['GET', 'POST'])
 @login_required
 def edit_report(report_id):
+    from flask import session
+    
     # Get the report
     report = Report.query.get_or_404(report_id)
     
@@ -486,7 +488,6 @@ def edit_report(report_id):
         if report.customer.address:
             form.customer_address.data = report.customer.address.street_address or ''
         else:
-            from flask import session
             session_data = session.get(f'report_{report_id}_data', {})
             form.customer_address.data = session_data.get('customer_address', '')
         
@@ -673,7 +674,6 @@ def edit_report(report_id):
                     print(f"DEBUG: Deleted existing owner because name was cleared")
             
             # Save form data to session for future editing
-            from flask import session
             session[f'report_{report_id}_data'] = {
                 'owner_name': form.owner_name.data,
                 'owner_phone': form.owner_phone.data,
