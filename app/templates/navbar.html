@@ -252,63 +252,77 @@
 <script src="{{ url_for('static', filename='js/back-button.js') }}"></script>
 
 <script>
-  // Ensure mobile menu works on all pages
-  document.addEventListener('DOMContentLoaded', function() {
-    // Mobile menu toggle
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const mobileMenu = document.getElementById('mobileMenu');
-    
-    if (mobileMenuBtn && mobileMenu) {
-      // Remove any existing event listeners
-      mobileMenuBtn.replaceWith(mobileMenuBtn.cloneNode(true));
-      const newMobileMenuBtn = document.getElementById('mobileMenuBtn');
+  // Mobile menu functionality - ensure it works on all pages
+  (function() {
+    function initMobileMenu() {
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      const mobileMenu = document.getElementById('mobileMenu');
       
-      newMobileMenuBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
+      console.log('Initializing mobile menu...', { mobileMenuBtn, mobileMenu });
+      
+      if (mobileMenuBtn && mobileMenu) {
+        // Clear any existing listeners
+        const newBtn = mobileMenuBtn.cloneNode(true);
+        mobileMenuBtn.parentNode.replaceChild(newBtn, mobileMenuBtn);
         
-        console.log('Mobile menu button clicked');
-        mobileMenu.classList.toggle('hidden');
-        const icon = newMobileMenuBtn.querySelector('i');
-        if (mobileMenu.classList.contains('hidden')) {
-          icon.className = 'fas fa-bars';
-          console.log('Menu closed');
-        } else {
-          icon.className = 'fas fa-times';
-          console.log('Menu opened');
-        }
-      });
-      
-      // Close menu when clicking outside
-      document.addEventListener('click', function(event) {
-        if (!mobileMenu.contains(event.target) && !newMobileMenuBtn.contains(event.target)) {
-          if (!mobileMenu.classList.contains('hidden')) {
+        newBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          console.log('Mobile menu clicked!');
+          
+          const isHidden = mobileMenu.classList.contains('hidden');
+          if (isHidden) {
+            mobileMenu.classList.remove('hidden');
+            newBtn.querySelector('i').className = 'fas fa-times';
+            console.log('Menu opened');
+          } else {
             mobileMenu.classList.add('hidden');
-            const icon = newMobileMenuBtn.querySelector('i');
-            icon.className = 'fas fa-bars';
+            newBtn.querySelector('i').className = 'fas fa-bars';
+            console.log('Menu closed');
           }
-        }
-      });
+        });
+        
+        // Close on outside click
+        document.addEventListener('click', function(e) {
+          if (!mobileMenu.contains(e.target) && !newBtn.contains(e.target)) {
+            mobileMenu.classList.add('hidden');
+            newBtn.querySelector('i').className = 'fas fa-bars';
+          }
+        });
+        
+        console.log('Mobile menu initialized successfully');
+      } else {
+        console.log('Mobile menu elements not found');
+      }
     }
-
-    // Logout confirmation modal
-    const logoutBtn = document.getElementById('logoutBtn');
-    const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+    
+    // Initialize immediately if DOM is ready, otherwise wait
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initMobileMenu);
+    } else {
+      initMobileMenu();
+    }
+    
+    // Also try after a short delay to handle dynamic content
+    setTimeout(initMobileMenu, 100);
+  })();
+  
+  // Logout modal functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const logoutBtns = ['logoutBtn', 'mobileLogoutBtn'];
     const logoutModal = document.getElementById('logoutModal');
     const cancelLogout = document.getElementById('cancelLogout');
 
     function showLogoutModal(e) {
       e.preventDefault();
-      logoutModal.classList.remove('hidden');
+      if (logoutModal) logoutModal.classList.remove('hidden');
     }
 
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', showLogoutModal);
-    }
-    
-    if (mobileLogoutBtn) {
-      mobileLogoutBtn.addEventListener('click', showLogoutModal);
-    }
+    logoutBtns.forEach(id => {
+      const btn = document.getElementById(id);
+      if (btn) btn.addEventListener('click', showLogoutModal);
+    });
 
     if (cancelLogout) {
       cancelLogout.addEventListener('click', function() {
@@ -316,7 +330,6 @@
       });
     }
 
-    // Close modal when clicking outside
     window.addEventListener('click', function(event) {
       if (event.target === logoutModal) {
         logoutModal.classList.add('hidden');
