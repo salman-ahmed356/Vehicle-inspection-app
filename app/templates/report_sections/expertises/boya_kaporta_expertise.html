@@ -44,6 +44,47 @@
     text-align: center;
     color: #4A5568;
   }
+  
+  @media (max-width: 768px) {
+    table, thead, tbody, th, td, tr {
+      display: block;
+    }
+    thead tr {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+    }
+    tr {
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      background: white;
+    }
+    td {
+      border: none;
+      position: relative;
+      padding-left: 50%;
+      text-align: left;
+    }
+    td:before {
+      content: attr(data-label);
+      position: absolute;
+      left: 6px;
+      width: 45%;
+      padding-right: 10px;
+      white-space: nowrap;
+      font-weight: bold;
+    }
+    td:first-child {
+      font-weight: bold;
+      background: #f8f9fa;
+      padding-left: 10px;
+    }
+    td:first-child:before {
+      display: none;
+    }
+  }
 </style>
 
 {% include 'report_sections/expertises/vehicle_header.html' %}
@@ -78,7 +119,7 @@
         <tr>
           <td class="text-left">{{ feature.name }}</td>
           {% for s in status_choices %}
-            <td>
+            <td data-label="{{ _(s) }}">
               <input
                 type="radio"
                 name="feature_{{ feature.id }}"

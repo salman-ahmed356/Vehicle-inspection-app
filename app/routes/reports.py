@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 import base64
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
+import datetime as dt
 from sqlalchemy import or_
 
 from ..database import db
@@ -484,9 +485,9 @@ def edit_report(report_id):
             potential_owners = VehicleOwner.query.all()
             
             # Look for owner created around the same time as this report
-            import datetime
+            import datetime as dt_module
             report_date = report.created_at
-            time_window = datetime.timedelta(hours=1)  # 1 hour window
+            time_window = dt_module.timedelta(hours=1)  # 1 hour window
             
             for owner in potential_owners:
                 # Check if owner was created around the same time as the report
@@ -869,6 +870,18 @@ def delete_report(report_id):
         # Delete expertise reports
         for er in report.expertise_reports:
             db.session.delete(er)
+        
+        # Delete agents
+        agents = Agent.query.filter_by(report_id=report_id).all()
+        for agent in agents:
+            db.session.delete(agent)
+        
+        # Delete vehicle owners (if linked by phone pattern)
+        owners = VehicleOwner.query.filter_by(phone_number=f"owner-{report_id}").all()
+        for owner in owners:
+            if owner.address:
+                db.session.delete(owner.address)
+            db.session.delete(owner)
         
         # Delete the report
         db.session.delete(report)
