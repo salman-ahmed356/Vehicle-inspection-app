@@ -299,6 +299,7 @@ class Report(db.Model):
     # Add vehicle_owner relationship like customer
     vehicle_owner = db.relationship(
         'VehicleOwner',
+        back_populates='report',
         uselist=False,
         lazy=True
     )
@@ -404,6 +405,11 @@ class VehicleOwner(db.Model):
     report_id = db.Column(db.Integer, db.ForeignKey('report.id'), nullable=False)
 
     address = db.relationship('Address', backref='vehicle_owners', lazy=True)
+    report = db.relationship('Report', back_populates='vehicle_owner', lazy=True)
+    
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
 
     def __repr__(self):
         return f'<VehicleOwner {self.first_name} {self.last_name}>'
