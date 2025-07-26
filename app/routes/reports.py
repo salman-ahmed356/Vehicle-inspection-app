@@ -424,12 +424,13 @@ def edit_report(report_id):
     
     if request.method == 'GET':
         # Populate form with existing data
-        # Customer information
+        # Customer information (direct from report relationship)
         form.customer_name.data = report.customer.full_name
         form.customer_phone.data = report.customer.phone_number
         form.customer_email.data = report.customer.email
         form.customer_tax_no.data = report.customer.tc_tax_number
         form.customer_address.data = ""
+        print(f"DEBUG: Customer loaded: {report.customer.full_name}")
         
         # Vehicle information
         form.vehicle_plate.data = report.vehicle.plate
@@ -467,23 +468,31 @@ def edit_report(report_id):
             form.agent_name.data = ""
             print("DEBUG: No agent found, setting empty")
         
-        # Load owner information from database using report_id (same as agent)
-        owner = VehicleOwner.query.filter_by(report_id=report_id).first()
-        print(f"DEBUG: Looking for owner with report_id={report_id}, found: {owner}")
-        
-        if owner:
+        # Load owner information directly from report (like customer data)
+        if hasattr(report, 'vehicle_owner') and report.vehicle_owner:
+            owner = report.vehicle_owner
             form.owner_name.data = f"{owner.first_name} {owner.last_name}".strip()
             form.owner_phone.data = owner.phone_number
             form.owner_tax_no.data = owner.tc_tax_number or ''
             if owner.address:
                 form.owner_address.data = owner.address.street_address or ''
-            print(f"DEBUG: Loaded owner from DB: {owner.first_name} {owner.last_name}")
+            print(f"DEBUG: Loaded owner from report relationship: {owner.first_name} {owner.last_name}")
         else:
-            form.owner_name.data = ''
-            form.owner_phone.data = ''
-            form.owner_tax_no.data = ''
-            form.owner_address.data = ''
-            print(f"DEBUG: No owner found for report {report_id}")
+            # Fallback to query
+            owner = VehicleOwner.query.filter_by(report_id=report_id).first()
+            if owner:
+                form.owner_name.data = f"{owner.first_name} {owner.last_name}".strip()
+                form.owner_phone.data = owner.phone_number
+                form.owner_tax_no.data = owner.tc_tax_number or ''
+                if owner.address:
+                    form.owner_address.data = owner.address.street_address or ''
+                print(f"DEBUG: Loaded owner from query: {owner.first_name} {owner.last_name}")
+            else:
+                form.owner_name.data = ''
+                form.owner_phone.data = ''
+                form.owner_tax_no.data = ''
+                form.owner_address.data = ''
+                print(f"DEBUG: No owner found for report {report_id}")
         
         # Load customer address from database
         from flask import session

@@ -295,6 +295,13 @@ class Report(db.Model):
         back_populates='report',
         lazy=True
     )
+    
+    # Add vehicle_owner relationship like customer
+    vehicle_owner = db.relationship(
+        'VehicleOwner',
+        uselist=False,
+        lazy=True
+    )
 
     def __repr__(self):
         return f'<Report {self.id}>'
