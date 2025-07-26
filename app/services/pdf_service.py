@@ -19,31 +19,50 @@ def create_pdf(report_id):
       - expertise blocks with Arabic translations
       - embedded images and OBD icons
     """
+    import logging
     from flask import g
-    # Force Arabic locale for PDF generation
-    g.locale = 'ar'
     
-    report, company, vehicle, customer, staff = _fetch_report_data(report_id)
-    package_expertise_reports = _process_expertise_reports(report)
-    images, motor_image_url, brake_image_url, info_image_url, obd_mapping = _gather_image_paths()
-    filename = _build_output_filename(customer)
+    logging.info(f"PDF Generation Started - Report ID: {report_id}")
+    
+    try:
+        # Force Arabic locale for PDF generation
+        g.locale = 'ar'
+        logging.info("Arabic locale set for PDF generation")
+        
+        report, company, vehicle, customer, staff = _fetch_report_data(report_id)
+        logging.info(f"Report data fetched - Vehicle: {vehicle.plate if vehicle else 'N/A'}")
+        
+        package_expertise_reports = _process_expertise_reports(report)
+        logging.info(f"Expertise reports processed - Count: {len(package_expertise_reports)}")
+        
+        images, motor_image_url, brake_image_url, info_image_url, obd_mapping = _gather_image_paths()
+        filename = _build_output_filename(customer)
+        logging.info(f"PDF filename: {filename}")
 
-    rendered_html = render_template(
-        'report_pdf.html',
-        report=report,
-        company=company,
-        vehicle=vehicle,
-        customer=customer,
-        staff=staff,
-        package_expertise_reports=package_expertise_reports,
-        motor_image_url=motor_image_url,
-        brake_image_url=brake_image_url,
-        images=images,
-        obd_mapping=obd_mapping,
-        info_image_url=info_image_url,
-    )
-    HTML(string=rendered_html).write_pdf(filename)
-    return filename
+        rendered_html = render_template(
+            'report_pdf.html',
+            report=report,
+            company=company,
+            vehicle=vehicle,
+            customer=customer,
+            staff=staff,
+            package_expertise_reports=package_expertise_reports,
+            motor_image_url=motor_image_url,
+            brake_image_url=brake_image_url,
+            images=images,
+            obd_mapping=obd_mapping,
+            info_image_url=info_image_url,
+        )
+        logging.info("HTML template rendered successfully")
+        
+        HTML(string=rendered_html).write_pdf(filename)
+        logging.info(f"PDF generated successfully: {filename}")
+        
+        return filename
+        
+    except Exception as e:
+        logging.error(f"PDF Generation Failed - Report ID: {report_id}, Error: {str(e)}")
+        raise e
 
 
 def _fetch_report_data(report_id):
