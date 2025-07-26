@@ -78,7 +78,9 @@
                     imageUploadSection.style.display = 'block';
                 } else {
                     imageUploadSection.style.display = 'none';
-                    fileInput.value = '';
+                    // Don't set file input value directly - create new input instead
+                    const newFileInput = fileInput.cloneNode(true);
+                    fileInput.parentNode.replaceChild(newFileInput, fileInput);
                     imagePreview.style.display = 'none';
                 }
             });
