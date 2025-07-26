@@ -92,6 +92,7 @@
       margin: 0 auto;
     }
     
+    .desktop-table { display: none; }
     .mobile-cards {
       display: block;
     }
@@ -176,7 +177,7 @@
   {# Interior Section #}
   <h3 class="text-md font-semibold mb-2">{{ _('Interior Inspection') }}</h3>
   <!-- Desktop Table -->
-  <table>
+  <table class="desktop-table">
     <thead>
       <tr>
         <th>{{ _('Checked Feature') }}</th>
@@ -230,7 +231,7 @@
   {# Exterior Section #}
   <h3 class="text-md font-semibold mb-2">{{ _('Exterior Inspection') }}</h3>
   <!-- Desktop Table -->
-  <table>
+  <table class="desktop-table">
     <thead>
       <tr>
         <th>{{ _('Checked Feature') }}</th>

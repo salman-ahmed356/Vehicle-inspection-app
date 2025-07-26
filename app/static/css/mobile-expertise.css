@@ -1,6 +1,7 @@
 /* Mobile responsive styles for expertise templates */
 @media (max-width: 768px) {
   /* Table responsive styles */
+  .desktop-table { display: none !important; }
   table, thead, tbody, th, td, tr {
     display: block;
   }
