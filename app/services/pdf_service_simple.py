@@ -17,8 +17,17 @@ def create_pdf(report_id):
     """
     Generate a simple PDF report for the given report_id.
     """
+    print(f"=== PDF SIMPLE: Starting PDF generation for report {report_id} ===")
+    
     report, company, vehicle, customer, staff, vehicle_owner = _fetch_report_data(report_id)
     package_expertise_reports = _process_expertise_reports(report)
+    
+    print(f"=== PDF SIMPLE: Found {len(package_expertise_reports)} expertise reports ===")
+    for expertise in package_expertise_reports:
+        print(f"=== PDF SIMPLE: Expertise: {expertise['expertise_type_name']} ===")
+        for feature in expertise.get('features', []):
+            print(f"=== PDF SIMPLE: Feature: {feature['name']}, Status: {feature['status']} ===")
+    
     filename = _build_output_filename(customer)
 
     rendered_html = render_template(
