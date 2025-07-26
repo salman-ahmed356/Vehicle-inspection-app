@@ -8,101 +8,116 @@
 />
 
 <div class="bg-blue-500 p-4">
-  <div class="container mx-auto flex justify-between items-center">
-
-    <!-- Dashboard and Back Links -->
-    <div class="text-white text-lg font-bold flex items-center space-x-4">
-      <a href="javascript:history.back()" class="hover:underline flex items-center">
-        <i class="fas fa-arrow-left mr-1"></i>
-        {{ _('Back') }}
-      </a>
-      <a href="/dashboard" class="hover:underline flex items-center">
-        <i class="fas fa-th-large mr-1"></i>
-        {{ _('Dashboard') }}
-      </a>
-    </div>
-
-    <!-- Main Menu -->
-    <div class="flex space-x-8 text-white">
-      <!-- Logged in user -->
+  <div class="container mx-auto">
+    <!-- Mobile Layout -->
+    <div class="md:hidden flex justify-between items-center">
+      <button id="mobileMenuBtn" class="text-white text-2xl">
+        <i class="fas fa-bars"></i>
+      </button>
       {% if session.user_name %}
-      <div class="relative group mr-4">
+      <div class="text-white text-sm">
         <i class="fas fa-user-circle text-yellow-300 mr-1"></i>
-        <span class="uppercase font-bold text-yellow-200">{{ session.user_name }}</span>
-      </div>
-      <div class="relative group mr-4">
-        <i class="fas fa-sign-out-alt"></i>
-        <a href="#" id="logoutBtn" class="hover:underline uppercase">{{ _('Logout') }}</a>
+        <span class="text-yellow-200">{{ session.user_name }}</span>
       </div>
       {% endif %}
+    </div>
 
-      <!-- Expertise -->
-      <div class="relative group">
-        <i class="fas fa-car"></i>
-        <a href="{{ url_for('reports.report_list') }}" class="hover:underline uppercase">{{ _('Expertise') }}</a>
-        <div class="dropdown-menu">
-          <a href="{{ url_for('reports.add_report') }}"
-             class="block px-4 py-2 hover:bg-gray-100">
-            {{ _('Create New Report') }}
-          </a>
-          <a href="{{ url_for('reports.report_list') }}"
-             class="block px-4 py-2 hover:bg-gray-100">
-            {{ _('Open Expertise Reports') }}
-          </a>
-          <a href="{{ url_for('reports.report_list', status='completed') }}"
-             class="block px-4 py-2 hover:bg-gray-100">
-            {{ _('Completed Expertise Reports') }}
-          </a>
-          <a href="{{ url_for('reports.report_list', status='cancelled') }}"
-             class="block px-4 py-2 hover:bg-gray-100">
-            {{ _('Cancelled Expertise Reports') }}
+    <!-- Desktop Layout -->
+    <div class="hidden md:flex justify-between items-center">
+      <div class="text-white text-lg font-bold flex items-center space-x-4">
+        <a href="javascript:history.back()" class="hover:underline flex items-center">
+          <i class="fas fa-arrow-left mr-1"></i>
+          {{ _('Back') }}
+        </a>
+        <a href="/dashboard" class="hover:underline flex items-center">
+          <i class="fas fa-th-large mr-1"></i>
+          {{ _('Dashboard') }}
+        </a>
+      </div>
+
+      <div class="flex space-x-8 text-white">
+        {% if session.user_name %}
+        <div class="relative group mr-4">
+          <i class="fas fa-user-circle text-yellow-300 mr-1"></i>
+          <span class="uppercase font-bold text-yellow-200">{{ session.user_name }}</span>
+        </div>
+        <div class="relative group mr-4">
+          <i class="fas fa-sign-out-alt"></i>
+          <a href="#" id="logoutBtn" class="hover:underline uppercase">{{ _('Logout') }}</a>
+        </div>
+        {% endif %}
+
+        <div class="relative group">
+          <i class="fas fa-car"></i>
+          <a href="{{ url_for('reports.report_list') }}" class="hover:underline uppercase">{{ _('Expertise') }}</a>
+          <div class="dropdown-menu">
+            <a href="{{ url_for('reports.add_report') }}" class="block px-4 py-2 hover:bg-gray-100">{{ _('Create New Report') }}</a>
+            <a href="{{ url_for('reports.report_list') }}" class="block px-4 py-2 hover:bg-gray-100">{{ _('Open Expertise Reports') }}</a>
+            <a href="{{ url_for('reports.report_list', status='completed') }}" class="block px-4 py-2 hover:bg-gray-100">{{ _('Completed Expertise Reports') }}</a>
+            <a href="{{ url_for('reports.report_list', status='cancelled') }}" class="block px-4 py-2 hover:bg-gray-100">{{ _('Cancelled Expertise Reports') }}</a>
+          </div>
+        </div>
+
+        <div class="relative group">
+          <i class="fas fa-calendar-alt"></i>
+          <a href="{{ url_for('appointments.appointment_list') }}" class="hover:underline uppercase">{{ _('Appointments') }}</a>
+          <div class="dropdown-menu">
+            <a href="{{ url_for('appointments.add_appointment') }}" class="block px-4 py-2 hover:bg-gray-100">{{ _('Create Appointment') }}</a>
+            <a href="{{ url_for('appointments.appointment_list') }}" class="block px-4 py-2 hover:bg-gray-100">{{ _('View Appointments') }}</a>
+          </div>
+        </div>
+
+        <div class="relative group">
+          <i class="fas fa-cog"></i>
+          <a href="{{ url_for('companies.company_detail') }}" class="hover:underline uppercase">{{ _('Settings') }}</a>
+          <div class="dropdown-menu">
+            <a href="{{ url_for('companies.company_detail') }}" class="block px-4 py-2 hover:bg-gray-100">{{ _('Company Settings') }}</a>
+            <a href="{{ url_for('packages.packages_list') }}" class="block px-4 py-2 hover:bg-gray-100">{{ _('Expertise Packages') }}</a>
+            <a href="{{ url_for('customers.customer_list') }}" class="block px-4 py-2 hover:bg-gray-100">{{ _('Customers') }}</a>
+            <a href="{{ url_for('staff.staff_list') }}" class="block px-4 py-2 hover:bg-gray-100">{{ _('Staff Management') }}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="md:hidden hidden bg-blue-600 mt-4 rounded-lg">
+      <div class="p-4 space-y-3">
+        <a href="javascript:history.back()" class="block text-white py-2 hover:bg-blue-700 px-3 rounded">
+          <i class="fas fa-arrow-left mr-2"></i>{{ _('Back') }}
+        </a>
+        <a href="/dashboard" class="block text-white py-2 hover:bg-blue-700 px-3 rounded">
+          <i class="fas fa-th-large mr-2"></i>{{ _('Dashboard') }}
+        </a>
+        
+        <div class="border-t border-blue-400 pt-3">
+          <div class="text-white font-semibold mb-2"><i class="fas fa-car mr-2"></i>{{ _('Expertise') }}</div>
+          <a href="{{ url_for('reports.add_report') }}" class="block text-blue-100 py-1 pl-6 hover:bg-blue-700 px-3 rounded text-sm">{{ _('Create New Report') }}</a>
+          <a href="{{ url_for('reports.report_list') }}" class="block text-blue-100 py-1 pl-6 hover:bg-blue-700 px-3 rounded text-sm">{{ _('Open Expertise Reports') }}</a>
+          <a href="{{ url_for('reports.report_list', status='completed') }}" class="block text-blue-100 py-1 pl-6 hover:bg-blue-700 px-3 rounded text-sm">{{ _('Completed Reports') }}</a>
+          <a href="{{ url_for('reports.report_list', status='cancelled') }}" class="block text-blue-100 py-1 pl-6 hover:bg-blue-700 px-3 rounded text-sm">{{ _('Cancelled Reports') }}</a>
+        </div>
+        
+        <div class="border-t border-blue-400 pt-3">
+          <div class="text-white font-semibold mb-2"><i class="fas fa-calendar-alt mr-2"></i>{{ _('Appointments') }}</div>
+          <a href="{{ url_for('appointments.add_appointment') }}" class="block text-blue-100 py-1 pl-6 hover:bg-blue-700 px-3 rounded text-sm">{{ _('Create Appointment') }}</a>
+          <a href="{{ url_for('appointments.appointment_list') }}" class="block text-blue-100 py-1 pl-6 hover:bg-blue-700 px-3 rounded text-sm">{{ _('View Appointments') }}</a>
+        </div>
+        
+        <div class="border-t border-blue-400 pt-3">
+          <div class="text-white font-semibold mb-2"><i class="fas fa-cog mr-2"></i>{{ _('Settings') }}</div>
+          <a href="{{ url_for('companies.company_detail') }}" class="block text-blue-100 py-1 pl-6 hover:bg-blue-700 px-3 rounded text-sm">{{ _('Company Settings') }}</a>
+          <a href="{{ url_for('packages.packages_list') }}" class="block text-blue-100 py-1 pl-6 hover:bg-blue-700 px-3 rounded text-sm">{{ _('Expertise Packages') }}</a>
+          <a href="{{ url_for('customers.customer_list') }}" class="block text-blue-100 py-1 pl-6 hover:bg-blue-700 px-3 rounded text-sm">{{ _('Customers') }}</a>
+          <a href="{{ url_for('staff.staff_list') }}" class="block text-blue-100 py-1 pl-6 hover:bg-blue-700 px-3 rounded text-sm">{{ _('Staff Management') }}</a>
+        </div>
+        
+        <div class="border-t border-blue-400 pt-3">
+          <a href="#" id="mobileLogoutBtn" class="block text-red-300 py-2 hover:bg-blue-700 px-3 rounded">
+            <i class="fas fa-sign-out-alt mr-2"></i>{{ _('Logout') }}
           </a>
         </div>
       </div>
-
-      <!-- Appointments -->
-      <div class="relative group">
-        <i class="fas fa-calendar-alt"></i>
-        <a href="{{ url_for('appointments.appointment_list') }}"
-           class="hover:underline uppercase">{{ _('Appointments') }}</a>
-        <div class="dropdown-menu">
-          <a href="{{ url_for('appointments.add_appointment') }}"
-             class="block px-4 py-2 hover:bg-gray-100">
-            {{ _('Create Appointment') }}
-          </a>
-          <a href="{{ url_for('appointments.appointment_list') }}"
-             class="block px-4 py-2 hover:bg-gray-100">
-            {{ _('View Appointments') }}
-          </a>
-        </div>
-      </div>
-
-      <!-- Settings -->
-      <div class="relative group">
-        <i class="fas fa-cog"></i>
-        <a href="{{ url_for('companies.company_detail') }}" class="hover:underline uppercase">{{ _('Settings') }}</a>
-        <div class="dropdown-menu">
-          <a href="{{ url_for('companies.company_detail') }}"
-             class="block px-4 py-2 hover:bg-gray-100">
-            {{ _('Company Settings') }}
-          </a>
-          <a href="{{ url_for('packages.packages_list') }}"
-             class="block px-4 py-2 hover:bg-gray-100">
-            {{ _('Expertise Packages') }}
-          </a>
-          <a href="{{ url_for('customers.customer_list') }}"
-             class="block px-4 py-2 hover:bg-gray-100">
-            {{ _('Customers') }}
-          </a>
-          <a href="{{ url_for('staff.staff_list') }}"
-             class="block px-4 py-2 hover:bg-gray-100">
-            {{ _('Staff Management') }}
-          </a>
-        </div>
-      </div>
-
-
-
     </div>
   </div>
 </div>
@@ -167,25 +182,37 @@
 <script src="{{ url_for('static', filename='js/dropdown-fix.js') }}"></script>
 
 <script>
-  // Logout confirmation modal
-  const logoutBtn = document.getElementById('logoutBtn');
-  const logoutModal = document.getElementById('logoutModal');
-  const cancelLogout = document.getElementById('cancelLogout');
-
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      logoutModal.classList.remove('hidden');
+  // Mobile menu toggle
+  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  
+  if (mobileMenuBtn && mobileMenu) {
+    mobileMenuBtn.addEventListener('click', function() {
+      mobileMenu.classList.toggle('hidden');
+      const icon = mobileMenuBtn.querySelector('i');
+      icon.className = mobileMenu.classList.contains('hidden') ? 'fas fa-bars' : 'fas fa-times';
     });
   }
 
+  // Logout confirmation modal
+  const logoutBtn = document.getElementById('logoutBtn');
+  const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+  const logoutModal = document.getElementById('logoutModal');
+  const cancelLogout = document.getElementById('cancelLogout');
+
+  function showLogoutModal(e) {
+    e.preventDefault();
+    logoutModal.classList.remove('hidden');
+  }
+
+  if (logoutBtn) logoutBtn.addEventListener('click', showLogoutModal);
+  if (mobileLogoutBtn) mobileLogoutBtn.addEventListener('click', showLogoutModal);
   if (cancelLogout) {
     cancelLogout.addEventListener('click', function() {
       logoutModal.classList.add('hidden');
     });
   }
 
-  // Close modal when clicking outside
   window.addEventListener('click', function(event) {
     if (event.target === logoutModal) {
       logoutModal.classList.add('hidden');
