@@ -48,63 +48,69 @@
   
   /* Mobile responsive styles */
   @media (max-width: 768px) {
-    table, thead, tbody, th, td, tr {
+    table { display: none; }
+    
+    .mobile-cards {
       display: block;
     }
-    thead tr {
-      position: absolute;
-      top: -9999px;
-      left: -9999px;
-    }
-    tr {
-      border: 1px solid #ccc;
-      margin-bottom: 10px;
-      padding: 10px;
+    
+    .feature-card {
+      background: white;
+      border: 1px solid #E2E8F0;
       border-radius: 8px;
-      background: #f9f9f9;
+      padding: 1rem;
+      margin-bottom: 1rem;
     }
-    td {
-      border: none;
-      position: relative;
-      padding: 8px 8px 8px 50%;
-      text-align: left;
-    }
-    td:before {
-      content: attr(data-label);
-      position: absolute;
-      left: 6px;
-      width: 45%;
-      padding-right: 10px;
-      white-space: nowrap;
-      font-weight: bold;
-      color: #333;
-    }
+    
     .feature-name {
-      font-weight: bold;
-      font-size: 16px;
-      margin-bottom: 10px;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: #2D3748;
       text-align: center;
-      background: #e2e8f0;
-      padding: 8px;
-      border-radius: 4px;
+      font-size: 16px;
     }
-    .feature-name:before {
-      display: none;
+    
+    .radio-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
     }
+    
     .radio-option {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 8px;
-      margin: 4px 0;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      border: 1px solid #E2E8F0;
+      border-radius: 4px;
     }
-    .radio-option:before {
-      display: none;
+    
+    .radio-option input[type="radio"] {
+      width: 20px;
+      height: 20px;
     }
-    .radio-label {
-      font-weight: normal;
-      margin-left: 8px;
+    
+    .radio-option label {
+      flex: 1;
+      font-size: 0.875rem;
     }
+    
+    textarea {
+      font-size: 16px !important;
+      min-height: 100px !important;
+      padding: 12px !important;
+    }
+    
+    button {
+      width: 100% !important;
+      padding: 12px !important;
+      font-size: 16px !important;
+      margin-top: 1rem !important;
+    }
+  }
+  
+  @media (min-width: 769px) {
+    .mobile-cards { display: none; }
   }
 </style>
 
@@ -126,6 +132,7 @@
      ]
   %}
 
+  <!-- Desktop Table -->
   <table class="min-w-full bg-white shadow-md rounded-lg mb-4">
     <thead>
       <tr>
@@ -138,25 +145,44 @@
     <tbody>
       {% for feature in expertise_report.features %}
       <tr>
-        <td class="feature-name">{{ feature.name }}</td>
+        <td>{{ feature.name }}</td>
         {% for status in status_choices %}
-        <td data-label="{{ _(status) }}">
-          <div class="radio-option">
-            <input
-              type="radio"
-              name="feature_{{ feature.id }}"
-              value="{{ status }}"
-              id="feature_{{ feature.id }}_{{ loop.index }}"
-              {% if feature.status == status %}checked{% endif %}
-            >
-            <label for="feature_{{ feature.id }}_{{ loop.index }}" class="radio-label">{{ _(status) }}</label>
-          </div>
+        <td>
+          <input
+            type="radio"
+            name="feature_{{ feature.id }}"
+            value="{{ status }}"
+            {% if feature.status == status %}checked{% endif %}
+          >
         </td>
         {% endfor %}
       </tr>
       {% endfor %}
     </tbody>
   </table>
+  
+  <!-- Mobile Cards -->
+  <div class="mobile-cards">
+    {% for feature in expertise_report.features %}
+    <div class="feature-card">
+      <div class="feature-name">{{ feature.name }}</div>
+      <div class="radio-options">
+        {% for status in status_choices %}
+        <div class="radio-option">
+          <input
+            type="radio"
+            name="feature_{{ feature.id }}"
+            value="{{ status }}"
+            id="mobile_feature_{{ feature.id }}_{{ loop.index }}"
+            {% if feature.status == status %}checked{% endif %}
+          >
+          <label for="mobile_feature_{{ feature.id }}_{{ loop.index }}">{{ _(status) }}</label>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
 
   <div class="mb-4">
     <label for="technician_comment" class="block text-gray-700 font-semibold mb-2">

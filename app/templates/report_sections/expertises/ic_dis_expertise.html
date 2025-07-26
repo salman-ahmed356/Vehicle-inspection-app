@@ -91,6 +91,52 @@
       height: 20px !important;
       margin: 0 auto;
     }
+    
+    .mobile-cards {
+      display: block;
+    }
+    
+    .feature-card {
+      background: white;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .feature-name {
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: #2D3748;
+      text-align: center;
+      font-size: 16px;
+    }
+    
+    .radio-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      border: 1px solid #E2E8F0;
+      border-radius: 4px;
+    }
+    
+    .radio-option input[type="radio"] {
+      width: 20px;
+      height: 20px;
+    }
+    
+    .radio-option label {
+      flex: 1;
+      font-size: 0.875rem;
+    }
+    
     textarea {
       font-size: 16px !important;
       min-height: 100px !important;
@@ -102,6 +148,10 @@
       font-size: 16px !important;
       margin-top: 1rem !important;
     }
+  }
+  
+  @media (min-width: 769px) {
+    .mobile-cards { display: none; }
   }
 </style>
 
@@ -125,6 +175,7 @@
 
   {# Interior Section #}
   <h3 class="text-md font-semibold mb-2">{{ _('Interior Inspection') }}</h3>
+  <!-- Desktop Table -->
   <table>
     <thead>
       <tr>
@@ -152,9 +203,33 @@
       {% endfor %}
     </tbody>
   </table>
+  
+  <!-- Mobile Cards -->
+  <div class="mobile-cards">
+    {% for feature in expertise_report.features %}
+    <div class="feature-card">
+      <div class="feature-name">{{ feature.name }}</div>
+      <div class="radio-options">
+        {% for s in status_choices %}
+        <div class="radio-option">
+          <input
+            type="radio"
+            name="feature_{{ feature.id }}"
+            value="{{ s }}"
+            id="mobile_interior_{{ feature.id }}_{{ loop.index }}"
+            {% if feature.status == s %}checked{% endif %}
+          >
+          <label for="mobile_interior_{{ feature.id }}_{{ loop.index }}">{{ _(s) }}</label>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
 
   {# Exterior Section #}
   <h3 class="text-md font-semibold mb-2">{{ _('Exterior Inspection') }}</h3>
+  <!-- Desktop Table -->
   <table>
     <thead>
       <tr>
@@ -182,6 +257,29 @@
       {% endfor %}
     </tbody>
   </table>
+  
+  <!-- Mobile Cards -->
+  <div class="mobile-cards">
+    {% for feature in expertise_report2.features %}
+    <div class="feature-card">
+      <div class="feature-name">{{ feature.name }}</div>
+      <div class="radio-options">
+        {% for s in status_choices %}
+        <div class="radio-option">
+          <input
+            type="radio"
+            name="feature_{{ feature.id }}"
+            value="{{ s }}"
+            id="mobile_exterior_{{ feature.id }}_{{ loop.index }}"
+            {% if feature.status == s %}checked{% endif %}
+          >
+          <label for="mobile_exterior_{{ feature.id }}_{{ loop.index }}">{{ _(s) }}</label>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
 
   <div class="mb-4">
     <label for="technician_comment" class="block text-gray-700 font-semibold mb-2">
