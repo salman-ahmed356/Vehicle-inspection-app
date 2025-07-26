@@ -16,9 +16,13 @@ def create_pdf(report_id):
     """
     Generate a PDF for the given report_id, pulling:
       - report, company, vehicle, customer, staff
-      - expertise blocks with English labels
+      - expertise blocks with Arabic translations
       - embedded images and OBD icons
     """
+    from flask import g
+    # Force Arabic locale for PDF generation
+    g.locale = 'ar'
+    
     report, company, vehicle, customer, staff = _fetch_report_data(report_id)
     package_expertise_reports = _process_expertise_reports(report)
     images, motor_image_url, brake_image_url, info_image_url, obd_mapping = _gather_image_paths()

@@ -142,20 +142,24 @@
   <div class="bg-blue-500 p-4">
     <div class="container mx-auto">
       
+      <!-- Mobile Header -->
+      <div class="md:hidden flex justify-between items-center">
+        <a href="{{ url_for('main.index') }}" class="text-white font-bold text-sm">
+          <i class="fas fa-home mr-1"></i>Home
+        </a>
+        <button class="text-white" onclick="toggleMobileMenu()">
+          <i class="fas fa-bars text-lg"></i>
+        </button>
+      </div>
+      
       <!-- Desktop Header -->
-      <div class="flex justify-between items-center">
-        <!-- Logo / Dashboard -->
+      <div class="hidden md:flex justify-between items-center">
         <div class="text-white text-lg font-bold flex items-center space-x-2">
           <i class="fas fa-th-large"></i>
           <a href="{{ url_for('main.index') }}" class="hover:underline">
             {{ _('Dashboard') }}
           </a>
         </div>
-
-        <!-- Mobile Menu Button -->
-        <button class="md:hidden text-white text-xl" onclick="toggleMobileMenu()">
-          <i class="fas fa-bars"></i>
-        </button>
       </div>
 
       <!-- Desktop Navigation -->
@@ -273,23 +277,35 @@
 
       </nav>
 
-      <!-- Mobile Navigation -->
-      <nav class="md:hidden hidden mt-2 text-white bg-blue-600 rounded" id="mobileMenu">
-        <div class="p-2">
-          <a href="{{ url_for('reports.add_report') }}" class="block py-3 px-3 hover:bg-blue-700 rounded mb-1">
-            <i class="fas fa-plus mr-2"></i>{{ _('New Report') }}
+      <!-- Mobile Navigation Dropdown -->
+      <nav class="md:hidden hidden mt-2 bg-white rounded shadow-lg" id="mobileMenu">
+        <div class="py-2">
+          <a href="{{ url_for('reports.add_report') }}" class="block py-3 px-4 text-gray-800 hover:bg-gray-100 border-b">
+            <i class="fas fa-plus text-blue-500 mr-3"></i>{{ _('New Report') }}
           </a>
-          <a href="{{ url_for('reports.report_list') }}" class="block py-3 px-3 hover:bg-blue-700 rounded mb-1">
-            <i class="fas fa-list mr-2"></i>{{ _('Reports') }}
+          <a href="{{ url_for('reports.report_list') }}" class="block py-3 px-4 text-gray-800 hover:bg-gray-100 border-b">
+            <i class="fas fa-list text-blue-500 mr-3"></i>{{ _('All Reports') }}
           </a>
-          <a href="{{ url_for('appointments.add_appointment') }}" class="block py-3 px-3 hover:bg-blue-700 rounded mb-1">
-            <i class="fas fa-calendar-plus mr-2"></i>{{ _('Appointment') }}
+          <a href="{{ url_for('appointments.add_appointment') }}" class="block py-3 px-4 text-gray-800 hover:bg-gray-100 border-b">
+            <i class="fas fa-calendar-plus text-green-500 mr-3"></i>{{ _('New Appointment') }}
           </a>
-          <a href="{{ url_for('customers.customer_list') }}" class="block py-3 px-3 hover:bg-blue-700 rounded mb-1">
-            <i class="fas fa-users mr-2"></i>{{ _('Customers') }}
+          <a href="{{ url_for('appointments.appointment_list') }}" class="block py-3 px-4 text-gray-800 hover:bg-gray-100 border-b">
+            <i class="fas fa-calendar text-green-500 mr-3"></i>{{ _('Appointments') }}
           </a>
-          <a href="{{ url_for('companies.company_detail') }}" class="block py-3 px-3 hover:bg-blue-700 rounded">
-            <i class="fas fa-cog mr-2"></i>{{ _('Settings') }}
+          <a href="{{ url_for('customers.customer_list') }}" class="block py-3 px-4 text-gray-800 hover:bg-gray-100 border-b">
+            <i class="fas fa-users text-purple-500 mr-3"></i>{{ _('Customers') }}
+          </a>
+          <a href="{{ url_for('staff.staff_list') }}" class="block py-3 px-4 text-gray-800 hover:bg-gray-100 border-b">
+            <i class="fas fa-user-tie text-orange-500 mr-3"></i>{{ _('Staff') }}
+          </a>
+          <a href="{{ url_for('vehicles.vehicle_list') }}" class="block py-3 px-4 text-gray-800 hover:bg-gray-100 border-b">
+            <i class="fas fa-car text-red-500 mr-3"></i>{{ _('Vehicles') }}
+          </a>
+          <a href="{{ url_for('packages.packages_list') }}" class="block py-3 px-4 text-gray-800 hover:bg-gray-100 border-b">
+            <i class="fas fa-box text-teal-500 mr-3"></i>{{ _('Packages') }}
+          </a>
+          <a href="{{ url_for('companies.company_detail') }}" class="block py-3 px-4 text-gray-800 hover:bg-gray-100">
+            <i class="fas fa-cog text-gray-500 mr-3"></i>{{ _('Settings') }}
           </a>
         </div>
       </nav>
