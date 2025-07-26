@@ -32,6 +32,26 @@
         <div class="bg-white p-6 rounded-lg shadow">
             <h2 class="text-xl font-semibold mb-4">{{ _('Edit Report') if edit_mode else _('Create Report') }}</h2>
 
+            <!-- Direct error message display -->
+            {% if error_message %}
+                <div class="mb-4 p-4 rounded-md bg-red-100 text-red-700">
+                    {{ error_message }}
+                </div>
+            {% endif %}
+            
+            <!-- Flash messages for success only -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        {% if category == 'success' %}
+                            <div class="mb-4 p-4 rounded-md bg-green-100 text-green-700">
+                                {{ message }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
             <form action="{{ url_for('reports.edit_report', report_id=report.id) if edit_mode else url_for('reports.add_report') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 {{ form.hidden_tag() }}
 

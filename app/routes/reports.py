@@ -112,7 +112,8 @@ def add_report():
             ).first()
             
             if existing_open_report:
-                flash(f'Cannot create report: There is already an open report for chassis number {chassis}. Please complete or cancel the existing report first.', 'error')
+                # Don't use flash - pass error directly to template
+                error_message = f'Cannot create report: There is already an open report for chassis number {chassis}. Please complete or cancel the existing report first.'
                 return render_template(
                     'reports.html',
                     form=form,
@@ -121,7 +122,8 @@ def add_report():
                     colors=[(c.name, c.value) for c in Color],
                     vehicle_info=None,
                     packages=get_active_packages(),
-                    current_year=datetime.now().year
+                    current_year=datetime.now().year,
+                    error_message=error_message
                 )
             
             # First check if a vehicle with this chassis number exists
@@ -301,9 +303,8 @@ def add_report():
 
         except IntegrityError as e:
             db.session.rollback()
-            flash('Data conflict—duplicate plate or chassis. Please correct.', 'error')
+            error_message = 'Data conflict—duplicate plate or chassis. Please correct.'
             print("IntegrityError in add_report:", e, flush=True)
-            # Don't clear the form data
             return render_template(
                 'reports.html',
                 form=form,
@@ -312,14 +313,14 @@ def add_report():
                 colors=[(c.name, c.value) for c in Color],
                 vehicle_info=None,
                 packages=get_active_packages(),
-                current_year=datetime.now().year
+                current_year=datetime.now().year,
+                error_message=error_message
             )
 
         except Exception as e:
             db.session.rollback()
-            flash('Unexpected error—check your data and try again.', 'error')
+            error_message = 'Unexpected error—check your data and try again.'
             print("Exception in add_report:", e, flush=True)
-            # Don't clear the form data
             return render_template(
                 'reports.html',
                 form=form,
@@ -328,7 +329,8 @@ def add_report():
                 colors=[(c.name, c.value) for c in Color],
                 vehicle_info=None,
                 packages=get_active_packages(),
-                current_year=datetime.now().year
+                current_year=datetime.now().year,
+                error_message=error_message
             )
 
     # on GET or validation-error POST, render the form

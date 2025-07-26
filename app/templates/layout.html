@@ -22,30 +22,19 @@
     .mobile-cards { display: none; }
     
     @media (max-width: 768px) {
-      /* Hide desktop navigation completely */
-      .desktop-nav { display: none !important; }
-      
-      /* Navigation bar fixes */
-      .bg-blue-500 {
-        padding: 0.5rem !important;
-        overflow: hidden !important;
-      }
-      
-      .bg-blue-500 .container {
-        padding: 0 !important;
+      /* Force mobile layout */
+      body {
+        overflow-x: hidden !important;
+        width: 100vw !important;
         margin: 0 !important;
-        width: 100% !important;
+        padding: 0 !important;
       }
       
-      .bg-blue-500 .flex {
-        flex-wrap: nowrap !important;
-        justify-content: space-between !important;
-        align-items: center !important;
-      }
-      
-      .bg-blue-500 .text-lg {
-        font-size: 0.875rem !important;
-        white-space: nowrap !important;
+      /* Navigation fixes */
+      .bg-blue-500 {
+        width: 100vw !important;
+        margin: 0 !important;
+        padding: 0.5rem !important;
       }
       
       /* Container fixes */
@@ -56,7 +45,7 @@
         margin: 0 !important;
       }
       
-      /* Grid fixes - force single column */
+      /* Grid fixes */
       .grid-cols-2, .grid-cols-3, .grid-cols-4 {
         grid-template-columns: 1fr !important;
         gap: 0.5rem !important;
@@ -66,27 +55,34 @@
       .desktop-table { display: none !important; }
       .mobile-cards { display: block !important; }
       
-      /* Card styling */
-      .mobile-cards > div {
-        margin-bottom: 1rem !important;
-        padding: 1rem !important;
-        border-radius: 0.5rem !important;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+      /* Flex fixes */
+      .flex.justify-between {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 1rem !important;
+      }
+      
+      .flex.space-x-4,
+      .flex.space-x-2 {
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+      }
+      
+      .flex.space-x-4 > *,
+      .flex.space-x-2 > * {
+        margin: 0 !important;
       }
       
       /* Button fixes */
-      button, .btn, a[class*="bg-"] {
+      button, .btn {
         min-height: 44px !important;
-        padding: 0.75rem !important;
+        padding: 0.75rem 1rem !important;
         font-size: 0.875rem !important;
-        margin: 0.25rem 0 !important;
-        display: block !important;
         width: 100% !important;
-        text-align: center !important;
-        border-radius: 0.375rem !important;
+        margin-bottom: 0.5rem !important;
       }
       
-      /* Form inputs */
+      /* Input fixes */
       input, select, textarea {
         width: 100% !important;
         min-height: 44px !important;
@@ -94,42 +90,28 @@
         padding: 0.75rem !important;
       }
       
-      /* Text sizing */
-      .text-4xl { font-size: 1.5rem !important; }
-      .text-3xl { font-size: 1.25rem !important; }
-      .text-2xl { font-size: 1.125rem !important; }
-      .text-xl { font-size: 1rem !important; }
+      /* Text responsive */
+      .text-2xl { font-size: 1.25rem !important; }
+      .text-xl { font-size: 1.125rem !important; }
       
-      /* Spacing fixes */
-      .mt-8, .mt-6, .mt-4 { margin-top: 1rem !important; }
-      .mb-8, .mb-6, .mb-4 { margin-bottom: 1rem !important; }
+      /* Spacing */
       .p-6 { padding: 1rem !important; }
       .p-4 { padding: 0.75rem !important; }
-      
-      /* Flex direction fixes */
-      .flex:not(.flex-col) {
-        flex-direction: column !important;
-        gap: 0.5rem !important;
-      }
-      
-      .flex.space-x-4 > *,
-      .flex.space-x-2 > * {
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-      }
+      .mt-6, .mb-6 { margin-top: 1rem !important; margin-bottom: 1rem !important; }
       
       /* Modal fixes */
-      .modal-content, .w-1\/3, .w-96 {
+      .modal-content,
+      .w-1\/3,
+      .w-96 {
         width: 95vw !important;
         max-width: none !important;
         margin: 1rem !important;
       }
       
-      /* Prevent horizontal scroll */
-      body, html {
-        overflow-x: hidden !important;
-        width: 100% !important;
-      }
+      /* Width fixes */
+      .w-1\/3 { width: 100% !important; }
+      .w-2\/3 { width: 100% !important; }
+      .w-1\/2 { width: 100% !important; }
     }
   </style>
 </head>
