@@ -394,6 +394,7 @@ class VehicleOwner(db.Model):
     tc_tax_number = db.Column(db.String(11), nullable=True, index=True)
     phone_number = db.Column(db.String(15), nullable=False, index=True)
     address_id = db.Column(db.Integer, db.ForeignKey('address.id'), nullable=True, index=True)
+    report_id = db.Column(db.Integer, db.ForeignKey('report.id'), nullable=False)
 
     address = db.relationship('Address', backref='vehicle_owners', lazy=True)
 
