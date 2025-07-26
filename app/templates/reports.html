@@ -52,12 +52,16 @@
                 </div>
             {% endif %}
             
-            <!-- Flash messages for success only -->
+            <!-- Flash messages for reports only -->
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
-                        {% if category == 'success' %}
+                        {% if category == 'report_success' %}
                             <div class="mb-4 p-4 rounded-md bg-green-100 text-green-700">
+                                {{ message }}
+                            </div>
+                        {% elif category == 'report_error' %}
+                            <div class="mb-4 p-4 rounded-md bg-red-100 text-red-700">
                                 {{ message }}
                             </div>
                         {% endif %}

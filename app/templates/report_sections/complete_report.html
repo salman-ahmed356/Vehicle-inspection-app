@@ -24,6 +24,15 @@
         font-size: 14px !important;
         margin-bottom: 8px !important;
       }
+      .grid-cols-1.lg\:grid-cols-4 {
+        gap: 1rem !important;
+      }
+      .order-1 {
+        order: 1 !important;
+      }
+      .order-2 {
+        order: 2 !important;
+      }
     }
   </style>
 </head>
@@ -54,7 +63,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
       <!-- Sidebar for Expertise Types -->
-      <div class="bg-white shadow-md rounded-lg p-4 lg:order-1 order-2">
+      <div class="bg-white shadow-md rounded-lg p-4 order-1">
         {% if report.has_image and report.image_data %}
         <div class="mb-4 flex justify-center">
           <img src="data:image/jpeg;base64,{{ report.image_data|b64encode }}" alt="Vehicle Image" class="w-full h-40 object-cover rounded-md">
@@ -82,7 +91,7 @@
       <!-- Main Content Area -->
       <div
         id="expertiseDetailContainer"
-        class="lg:col-span-3 bg-white shadow-md rounded-lg p-4"
+        class="lg:col-span-3 bg-white shadow-md rounded-lg p-4 order-2"
       >
         <h2 class="text-lg font-semibold mb-4">{{ _('General Information') }}</h2>
         <p>{{ _('Select an inspection type...') }}</p>

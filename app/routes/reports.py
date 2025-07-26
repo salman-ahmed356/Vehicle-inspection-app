@@ -284,10 +284,12 @@ def add_report():
                     last_name=owner_names[1] if len(owner_names) > 1 else '',
                     tc_tax_number=form.owner_tax_no.data.strip() or None,
                     phone_number=form.owner_phone.data.strip() or f"owner-{new_report.id}",
-                    address_id=address_id
+                    address_id=address_id,
+                    report_id=new_report.id
                 )
                 db.session.add(owner)
-                print(f"DEBUG: Created vehicle owner: {owner.first_name} {owner.last_name} with address_id: {address_id}")
+                print(f"DEBUG: Created vehicle owner: {owner.first_name} {owner.last_name} with address_id: {address_id}, phone: {owner.phone_number}")
+            print(f"DEBUG: Owner will be searchable with phone pattern: owner-{new_report.id}")
 
             # 5) Delete appointment if this report was created from an appointment
             from flask import session
@@ -466,66 +468,32 @@ def edit_report(report_id):
             form.agent_name.data = ""
             print("DEBUG: No agent found, setting empty")
         
-        # Load owner information - try multiple sources
+        # Load owner information from database relationship
+        owner = VehicleOwner.query.filter_by(report_id=report_id).first()
+        print(f"DEBUG: Looking for owner with report_id={report_id}, found: {owner}")
+        
+        if owner:
+            form.owner_name.data = f"{owner.first_name} {owner.last_name}".strip()
+            form.owner_phone.data = owner.phone_number
+            form.owner_tax_no.data = owner.tc_tax_number or ''
+            if owner.address:
+                form.owner_address.data = owner.address.street_address or ''
+            print(f"DEBUG: Loaded owner from DB: {owner.first_name} {owner.last_name}")
+        else:
+            form.owner_name.data = ''
+            form.owner_phone.data = ''
+            form.owner_tax_no.data = ''
+            form.owner_address.data = ''
+            print(f"DEBUG: No owner found for report {report_id}")
+        
+        # Load customer address from database
         from flask import session
         session_data = session.get(f'report_{report_id}_data', {})
-        print(f"DEBUG: Session data for report_{report_id}: {session_data}")
-        
-        # First try session data
-        form.owner_name.data = session_data.get('owner_name', '')
-        form.owner_phone.data = session_data.get('owner_phone', '')
-        form.owner_tax_no.data = session_data.get('owner_tax_no', '')
-        form.owner_address.data = session_data.get('owner_address', '')
         form.customer_address.data = session_data.get('customer_address', '')
         
-        # If no session data, try to find VehicleOwner by chassis number or other criteria
-        if not form.owner_name.data:
-            # Try to find owner by vehicle chassis number (common practice)
-            chassis_number = report.vehicle.chassis_number
-            potential_owners = VehicleOwner.query.all()
-            
-            # Look for owner created around the same time as this report
-            import datetime as dt_module
-            report_date = report.created_at
-            time_window = dt_module.timedelta(hours=1)  # 1 hour window
-            
-            for owner in potential_owners:
-                # Check if owner was created around the same time as the report
-                # This is a heuristic since we don't have direct relationship
-                if hasattr(owner, 'created_at'):
-                    if abs((owner.created_at - report_date).total_seconds()) < time_window.total_seconds():
-                        form.owner_name.data = owner.full_name
-                        form.owner_phone.data = owner.phone_number
-                        form.owner_tax_no.data = owner.tc_tax_number or ''
-                        if owner.address:
-                            form.owner_address.data = owner.address.street_address or ''
-                        print(f"DEBUG: Found owner by time correlation: {owner.full_name}")
-                        break
-            
-            # If still no owner found, try to find by phone number pattern
-            if not form.owner_name.data:
-                # Look for owners with phone numbers that match pattern "owner-{report_id}"
-                owner_by_phone = VehicleOwner.query.filter_by(phone_number=f"owner-{report_id}").first()
-                if owner_by_phone:
-                    form.owner_name.data = owner_by_phone.full_name
-                    form.owner_phone.data = owner_by_phone.phone_number
-                    form.owner_tax_no.data = owner_by_phone.tc_tax_number or ''
-                    if owner_by_phone.address:
-                        form.owner_address.data = owner_by_phone.address.street_address or ''
-                    print(f"DEBUG: Found owner by phone pattern: {owner_by_phone.full_name}")
-                    
-                    # Update session with found data
-                    session[f'report_{report_id}_data'] = {
-                        'owner_name': form.owner_name.data,
-                        'owner_phone': form.owner_phone.data,
-                        'owner_tax_no': form.owner_tax_no.data,
-                        'owner_address': form.owner_address.data,
-                        'agent_name': session_data.get('agent_name', ''),
-                        'customer_address': session_data.get('customer_address', '')
-                    }
-                    print(f"DEBUG: Updated session with found owner data")
-        
-        print(f"DEBUG: Form data populated - owner_name: '{form.owner_name.data}', owner_phone: '{form.owner_phone.data}', owner_tax_no: '{form.owner_tax_no.data}', owner_address: '{form.owner_address.data}', agent_name: '{form.agent_name.data}', customer_address: '{form.customer_address.data}'")
+        print(f"DEBUG: FINAL Form data populated - owner_name: '{form.owner_name.data}', owner_phone: '{form.owner_phone.data}', owner_tax_no: '{form.owner_tax_no.data}', owner_address: '{form.owner_address.data}', agent_name: '{form.agent_name.data}', customer_address: '{form.customer_address.data}'")
+        print(f"DEBUG: Session data keys: {list(session.keys())}")
+        print(f"DEBUG: Report created at: {report.created_at}")
         
         # If no session data, try to get from customer's address relationship
         if not form.customer_address.data and report.customer.address:
@@ -636,17 +604,17 @@ def edit_report(report_id):
             
             # Update or create vehicle owner if owner name is provided
             owner_name = form.owner_name.data.strip()
+            existing_owner = VehicleOwner.query.filter_by(report_id=report_id).first()
+            
             if owner_name:
                 print(f"DEBUG: Processing owner name: {owner_name}")
-                
-                # Try to find existing owner by phone pattern first
-                existing_owner = VehicleOwner.query.filter_by(phone_number=f"owner-{report_id}").first()
+                owner_names = owner_name.split(' ', 1)
                 
                 if existing_owner:
                     # Update existing owner
-                    owner_names = owner_name.split(' ', 1)
                     existing_owner.first_name = owner_names[0]
                     existing_owner.last_name = owner_names[1] if len(owner_names) > 1 else ''
+                    existing_owner.phone_number = form.owner_phone.data.strip() or existing_owner.phone_number
                     existing_owner.tc_tax_number = form.owner_tax_no.data.strip() or None
                     
                     # Update owner address
@@ -668,10 +636,9 @@ def edit_report(report_id):
                             existing_owner.address_id = address.id
                     
                     db.session.add(existing_owner)
-                    print(f"DEBUG: Updated existing owner: {existing_owner.full_name}")
+                    print(f"DEBUG: Updated existing owner: {existing_owner.first_name} {existing_owner.last_name}")
                 else:
-                    # Create new owner if none exists
-                    owner_names = owner_name.split(' ', 1)
+                    # Create new owner
                     owner_phone = form.owner_phone.data.strip() or f"owner-{report_id}"
                     
                     # Create owner address if provided
@@ -694,13 +661,13 @@ def edit_report(report_id):
                         last_name=owner_names[1] if len(owner_names) > 1 else '',
                         tc_tax_number=form.owner_tax_no.data.strip() or None,
                         phone_number=owner_phone,
-                        address_id=address_id
+                        address_id=address_id,
+                        report_id=report_id
                     )
                     db.session.add(new_owner)
-                    print(f"DEBUG: Created new owner during edit: {new_owner.full_name}")
+                    print(f"DEBUG: Created new owner during edit: {new_owner.first_name} {new_owner.last_name}")
             else:
-                # If owner name is cleared, try to delete existing owner
-                existing_owner = VehicleOwner.query.filter_by(phone_number=f"owner-{report_id}").first()
+                # If owner name is cleared, delete existing owner
                 if existing_owner:
                     if existing_owner.address:
                         db.session.delete(existing_owner.address)
@@ -782,25 +749,25 @@ def edit_report(report_id):
             print(f"DEBUG: Verification - Report package_id: {updated_report.package_id}")
             
             # Verify owner data
-            updated_owner = VehicleOwner.query.filter_by(phone_number=f"owner-{report_id}").first()
+            updated_owner = VehicleOwner.query.filter_by(report_id=report_id).first()
             if updated_owner:
-                print(f"DEBUG: Verification - Owner: {updated_owner.full_name}, phone: {updated_owner.phone_number}, tax: {updated_owner.tc_tax_number}")
+                print(f"DEBUG: Verification - Owner: {updated_owner.first_name} {updated_owner.last_name}, phone: {updated_owner.phone_number}, tax: {updated_owner.tc_tax_number}")
                 print(f"DEBUG: Verification - Owner address: {updated_owner.address.street_address if updated_owner.address else 'None'}")
             else:
-                print(f"DEBUG: Verification - No owner found with phone pattern owner-{report_id}")
+                print(f"DEBUG: Verification - No owner found for report {report_id}")
             
-            flash('Report updated successfully!', 'success')
+            flash('Report updated successfully!', 'report_success')
             
             # Redirect back to reports list
             return redirect(url_for('reports.report_list'))
             
         except IntegrityError as e:
             db.session.rollback()
-            flash('Data conflict—duplicate plate or chassis. Please correct.', 'error')
+            flash('Data conflict—duplicate plate or chassis. Please correct.', 'report_error')
             print(f"IntegrityError in edit_report: {e}", flush=True)
         except Exception as e:
             db.session.rollback()
-            flash('Unexpected error—check your data and try again.', 'error')
+            flash('Unexpected error—check your data and try again.', 'report_error')
             print(f"Exception in edit_report: {e}", flush=True)
     else:
         if request.method == 'POST':
@@ -815,7 +782,7 @@ def edit_report(report_id):
                     print(f"DEBUG: Form validation passed after fixing created_at")
                     # Process the form submission
                     return redirect(url_for('reports.edit_report', report_id=report_id))
-            flash('Please check the form for errors.', 'error')
+            flash('Please check the form for errors.', 'report_error')
     
     # Get vehicle info for display
     vehicle_info = None
@@ -876,8 +843,8 @@ def delete_report(report_id):
         for agent in agents:
             db.session.delete(agent)
         
-        # Delete vehicle owners (if linked by phone pattern)
-        owners = VehicleOwner.query.filter_by(phone_number=f"owner-{report_id}").all()
+        # Delete vehicle owners linked to this report
+        owners = VehicleOwner.query.filter_by(report_id=report_id).all()
         for owner in owners:
             if owner.address:
                 db.session.delete(owner.address)
