@@ -24,7 +24,7 @@
 
     <!-- Mobile Menu Button -->
     <div class="md:hidden">
-      <button id="mobileMenuBtn" class="text-white text-2xl">
+      <button id="mobileMenuBtn" class="text-white text-2xl" onclick="toggleMobileMenu()">
         <i class="fas fa-bars"></i>
       </button>
     </div>
@@ -252,61 +252,20 @@
 <script src="{{ url_for('static', filename='js/back-button.js') }}"></script>
 
 <script>
-  // Mobile menu functionality - ensure it works on all pages
-  (function() {
-    function initMobileMenu() {
-      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-      const mobileMenu = document.getElementById('mobileMenu');
-      
-      console.log('Initializing mobile menu...', { mobileMenuBtn, mobileMenu });
-      
-      if (mobileMenuBtn && mobileMenu) {
-        // Clear any existing listeners
-        const newBtn = mobileMenuBtn.cloneNode(true);
-        mobileMenuBtn.parentNode.replaceChild(newBtn, mobileMenuBtn);
-        
-        newBtn.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          
-          console.log('Mobile menu clicked!');
-          
-          const isHidden = mobileMenu.classList.contains('hidden');
-          if (isHidden) {
-            mobileMenu.classList.remove('hidden');
-            newBtn.querySelector('i').className = 'fas fa-times';
-            console.log('Menu opened');
-          } else {
-            mobileMenu.classList.add('hidden');
-            newBtn.querySelector('i').className = 'fas fa-bars';
-            console.log('Menu closed');
-          }
-        });
-        
-        // Close on outside click
-        document.addEventListener('click', function(e) {
-          if (!mobileMenu.contains(e.target) && !newBtn.contains(e.target)) {
-            mobileMenu.classList.add('hidden');
-            newBtn.querySelector('i').className = 'fas fa-bars';
-          }
-        });
-        
-        console.log('Mobile menu initialized successfully');
-      } else {
-        console.log('Mobile menu elements not found');
-      }
-    }
+  // Direct mobile menu toggle function
+  function toggleMobileMenu() {
+    const mobileMenu = document.getElementById('mobileMenu');
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const icon = mobileMenuBtn.querySelector('i');
     
-    // Initialize immediately if DOM is ready, otherwise wait
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initMobileMenu);
+    if (mobileMenu.classList.contains('hidden')) {
+      mobileMenu.classList.remove('hidden');
+      icon.className = 'fas fa-times';
     } else {
-      initMobileMenu();
+      mobileMenu.classList.add('hidden');
+      icon.className = 'fas fa-bars';
     }
-    
-    // Also try after a short delay to handle dynamic content
-    setTimeout(initMobileMenu, 100);
-  })();
+  }
   
   // Logout modal functionality
   document.addEventListener('DOMContentLoaded', function() {

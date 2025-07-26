@@ -74,9 +74,31 @@
 
   <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
   
-  <!-- Script to remove any extra Save Settings buttons -->
+  <!-- Mobile menu fix for settings page -->
   <script>
+    // Mobile menu toggle function
+    function toggleMobileMenu() {
+      const mobileMenu = document.getElementById('mobileMenu');
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      if (mobileMenu && mobileMenuBtn) {
+        const icon = mobileMenuBtn.querySelector('i');
+        if (mobileMenu.classList.contains('hidden')) {
+          mobileMenu.classList.remove('hidden');
+          icon.className = 'fas fa-times';
+        } else {
+          mobileMenu.classList.add('hidden');
+          icon.className = 'fas fa-bars';
+        }
+      }
+    }
+    
     document.addEventListener('DOMContentLoaded', function() {
+      // Mobile menu button click handler
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      if (mobileMenuBtn) {
+        mobileMenuBtn.onclick = toggleMobileMenu;
+      }
+      
       // Find and remove any Save Settings buttons that might be added
       const buttons = document.querySelectorAll('button');
       for (let i = 0; i < buttons.length; i++) {
