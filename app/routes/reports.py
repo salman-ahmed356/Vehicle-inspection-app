@@ -284,7 +284,8 @@ def add_report():
                     last_name=owner_names[1] if len(owner_names) > 1 else '',
                     tc_tax_number=form.owner_tax_no.data.strip() or None,
                     phone_number=form.owner_phone.data.strip() or f"owner-{new_report.id}",
-                    address_id=address_id
+                    address_id=address_id,
+                    report_id=new_report.id
                 )
                 db.session.add(owner)
                 print(f"DEBUG: Created vehicle owner: {owner.first_name} {owner.last_name} with address_id: {address_id}, phone: {owner.phone_number}")
@@ -470,22 +471,34 @@ def edit_report(report_id):
             print("DEBUG: No agent found, setting empty")
         
         # Load owner information - query directly by report_id
+        print(f"DEBUG: Looking for vehicle owner with report_id={report_id}")
+        all_owners = VehicleOwner.query.all()
+        print(f"DEBUG: All owners in database: {[(o.id, o.first_name, o.last_name, o.report_id) for o in all_owners]}")
+        
         vehicle_owner = VehicleOwner.query.filter_by(report_id=report_id).first()
+        print(f"DEBUG: Found vehicle_owner: {vehicle_owner}")
+        
         if vehicle_owner:
+            print(f"DEBUG: Owner details - name: {vehicle_owner.first_name} {vehicle_owner.last_name}, phone: {vehicle_owner.phone_number}, tax: {vehicle_owner.tc_tax_number}")
             form.owner_name.data = vehicle_owner.full_name
             form.owner_phone.data = vehicle_owner.phone_number
             form.owner_tax_no.data = vehicle_owner.tc_tax_number
             if vehicle_owner.address:
                 form.owner_address.data = vehicle_owner.address.street_address
+                print(f"DEBUG: Owner address: {vehicle_owner.address.street_address}")
             else:
                 form.owner_address.data = ''
-            print(f"DEBUG: Owner loaded: {vehicle_owner.full_name}")
+                print(f"DEBUG: No address for owner")
+            print(f"DEBUG: Owner loaded successfully: {vehicle_owner.full_name}")
         else:
-            form.owner_name.data = ''
-            form.owner_phone.data = ''
-            form.owner_tax_no.data = ''
-            form.owner_address.data = ''
-            print(f"DEBUG: No owner found for report {report_id}")
+            # Try to get from session as fallback
+            session_data = session.get(f'report_{report_id}_data', {})
+            print(f"DEBUG: Session data for report {report_id}: {session_data}")
+            form.owner_name.data = session_data.get('owner_name', '')
+            form.owner_phone.data = session_data.get('owner_phone', '')
+            form.owner_tax_no.data = session_data.get('owner_tax_no', '')
+            form.owner_address.data = session_data.get('owner_address', '')
+            print(f"DEBUG: No owner found in DB for report {report_id}, loaded from session: name='{form.owner_name.data}', phone='{form.owner_phone.data}'")
         
         # Load customer address
         if report.customer.address:
@@ -663,8 +676,9 @@ def edit_report(report_id):
                         first_name=owner_names[0],
                         last_name=owner_names[1] if len(owner_names) > 1 else '',
                         tc_tax_number=form.owner_tax_no.data.strip() or None,
-                        phone_number=f"owner-{report_id}",
-                        address_id=address_id
+                        phone_number=owner_phone,
+                        address_id=address_id,
+                        report_id=report_id
                     )
                     db.session.add(new_owner)
                     print(f"DEBUG: Created new owner during edit: {new_owner.first_name} {new_owner.last_name}")
