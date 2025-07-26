@@ -276,6 +276,9 @@
     {% block content %}{% endblock %}
   </div>
 
+  <!-- File Input Protection -->
+  <script src="{{ url_for('static', filename='js/file-input-fix.js') }}"></script>
+  
   <!-- NAVBAR SCRIPT -->
   <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
   
