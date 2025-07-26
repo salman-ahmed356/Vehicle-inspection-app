@@ -13,100 +13,124 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
   />
   
-  <!-- Global Mobile Responsive CSS -->
+  <!-- Comprehensive Mobile CSS -->
   <style>
-    /* Force mobile-first approach */
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
+    
+    /* Desktop defaults */
+    .desktop-table { display: table; }
+    .mobile-cards { display: none; }
     
     @media (max-width: 768px) {
-      /* Force container width */
+      /* Hide desktop navigation completely */
+      .desktop-nav { display: none !important; }
+      
+      /* Navigation bar fixes */
+      .bg-blue-500 {
+        padding: 0.5rem !important;
+        overflow: hidden !important;
+      }
+      
+      .bg-blue-500 .container {
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+      }
+      
+      .bg-blue-500 .flex {
+        flex-wrap: nowrap !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+      }
+      
+      .bg-blue-500 .text-lg {
+        font-size: 0.875rem !important;
+        white-space: nowrap !important;
+      }
+      
+      /* Container fixes */
       .container {
         width: 100% !important;
         max-width: 100% !important;
-        padding-left: 0.5rem !important;
-        padding-right: 0.5rem !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-      }
-      
-      /* Navigation fixes */
-      .bg-blue-500 {
         padding: 0.5rem !important;
+        margin: 0 !important;
       }
       
-      /* Force single column grids */
-      .grid {
+      /* Grid fixes - force single column */
+      .grid-cols-2, .grid-cols-3, .grid-cols-4 {
         grid-template-columns: 1fr !important;
         gap: 0.5rem !important;
       }
       
-      /* Tables - hide on mobile, show cards */
+      /* Table/Card display */
       .desktop-table { display: none !important; }
       .mobile-cards { display: block !important; }
       
-      /* Forms - mobile friendly */
+      /* Card styling */
+      .mobile-cards > div {
+        margin-bottom: 1rem !important;
+        padding: 1rem !important;
+        border-radius: 0.5rem !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+      }
+      
+      /* Button fixes */
+      button, .btn, a[class*="bg-"] {
+        min-height: 44px !important;
+        padding: 0.75rem !important;
+        font-size: 0.875rem !important;
+        margin: 0.25rem 0 !important;
+        display: block !important;
+        width: 100% !important;
+        text-align: center !important;
+        border-radius: 0.375rem !important;
+      }
+      
+      /* Form inputs */
       input, select, textarea {
         width: 100% !important;
         min-height: 44px !important;
         font-size: 16px !important;
         padding: 0.75rem !important;
-        border: 1px solid #d1d5db !important;
-        border-radius: 0.375rem !important;
       }
       
-      /* Buttons - touch friendly */
-      button, .btn, a.bg-blue-500, a.bg-green-500, a.bg-red-500 {
-        min-height: 44px !important;
-        padding: 0.75rem 1rem !important;
-        font-size: 0.875rem !important;
-        width: 100% !important;
-        margin-bottom: 0.5rem !important;
-        display: block !important;
-        text-align: center !important;
-      }
+      /* Text sizing */
+      .text-4xl { font-size: 1.5rem !important; }
+      .text-3xl { font-size: 1.25rem !important; }
+      .text-2xl { font-size: 1.125rem !important; }
+      .text-xl { font-size: 1rem !important; }
       
-      /* Modals - full screen */
-      .modal-content, .w-1\/3, .w-96 {
-        width: 95vw !important;
-        max-width: none !important;
-        margin: 1rem auto !important;
-      }
+      /* Spacing fixes */
+      .mt-8, .mt-6, .mt-4 { margin-top: 1rem !important; }
+      .mb-8, .mb-6, .mb-4 { margin-bottom: 1rem !important; }
+      .p-6 { padding: 1rem !important; }
+      .p-4 { padding: 0.75rem !important; }
       
-      /* Text responsive */
-      .text-2xl { font-size: 1.25rem !important; }
-      .text-xl { font-size: 1.125rem !important; }
-      
-      /* Flex fixes */
-      .flex {
+      /* Flex direction fixes */
+      .flex:not(.flex-col) {
         flex-direction: column !important;
         gap: 0.5rem !important;
       }
       
-      .flex.justify-between {
-        align-items: stretch !important;
+      .flex.space-x-4 > *,
+      .flex.space-x-2 > * {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
       }
       
-      /* Card spacing */
-      .p-6, .p-4 {
-        padding: 0.75rem !important;
+      /* Modal fixes */
+      .modal-content, .w-1\/3, .w-96 {
+        width: 95vw !important;
+        max-width: none !important;
+        margin: 1rem !important;
       }
       
-      /* Hide overflow */
-      body {
+      /* Prevent horizontal scroll */
+      body, html {
         overflow-x: hidden !important;
+        width: 100% !important;
       }
     }
-    
-    @media (min-width: 769px) {
-      .mobile-cards { display: none !important; }
-      .desktop-table { display: table !important; }
-    }
-    
-    /* Force desktop table to show by default */
-    .desktop-table { display: table; }
-    .mobile-cards { display: none; }
   </style>
 </head>
 
@@ -250,24 +274,21 @@
       </nav>
 
       <!-- Mobile Navigation -->
-      <nav class="md:hidden hidden mt-4 text-white" id="mobileMenu">
-        <div class="space-y-2">
-          <a href="{{ url_for('reports.add_report') }}" class="block py-2 px-4 hover:bg-blue-600 rounded">
-            <i class="fas fa-car mr-2"></i>{{ _('New Report') }}
+      <nav class="md:hidden hidden mt-2 text-white bg-blue-600 rounded" id="mobileMenu">
+        <div class="p-2">
+          <a href="{{ url_for('reports.add_report') }}" class="block py-3 px-3 hover:bg-blue-700 rounded mb-1">
+            <i class="fas fa-plus mr-2"></i>{{ _('New Report') }}
           </a>
-          <a href="{{ url_for('reports.report_list') }}" class="block py-2 px-4 hover:bg-blue-600 rounded">
+          <a href="{{ url_for('reports.report_list') }}" class="block py-3 px-3 hover:bg-blue-700 rounded mb-1">
             <i class="fas fa-list mr-2"></i>{{ _('Reports') }}
           </a>
-          <a href="{{ url_for('appointments.add_appointment') }}" class="block py-2 px-4 hover:bg-blue-600 rounded">
-            <i class="fas fa-calendar-plus mr-2"></i>{{ _('New Appointment') }}
+          <a href="{{ url_for('appointments.add_appointment') }}" class="block py-3 px-3 hover:bg-blue-700 rounded mb-1">
+            <i class="fas fa-calendar-plus mr-2"></i>{{ _('Appointment') }}
           </a>
-          <a href="{{ url_for('appointments.appointment_list') }}" class="block py-2 px-4 hover:bg-blue-600 rounded">
-            <i class="fas fa-calendar-alt mr-2"></i>{{ _('Appointments') }}
-          </a>
-          <a href="{{ url_for('customers.customer_list') }}" class="block py-2 px-4 hover:bg-blue-600 rounded">
+          <a href="{{ url_for('customers.customer_list') }}" class="block py-3 px-3 hover:bg-blue-700 rounded mb-1">
             <i class="fas fa-users mr-2"></i>{{ _('Customers') }}
           </a>
-          <a href="{{ url_for('companies.company_detail') }}" class="block py-2 px-4 hover:bg-blue-600 rounded">
+          <a href="{{ url_for('companies.company_detail') }}" class="block py-3 px-3 hover:bg-blue-700 rounded">
             <i class="fas fa-cog mr-2"></i>{{ _('Settings') }}
           </a>
         </div>
