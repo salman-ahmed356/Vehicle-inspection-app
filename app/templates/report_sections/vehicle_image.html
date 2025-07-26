@@ -78,16 +78,24 @@
                     imageUploadSection.style.display = 'block';
                 } else {
                     imageUploadSection.style.display = 'none';
-                    // Don't set file input value directly - create new input instead
-                    const newFileInput = fileInput.cloneNode(true);
+                    // Clear file input by replacing it
+                    const newFileInput = document.createElement('input');
+                    newFileInput.type = 'file';
+                    newFileInput.id = 'vehicle_image';
+                    newFileInput.name = 'vehicle_image';
+                    newFileInput.className = 'sr-only';
+                    newFileInput.accept = 'image/*';
                     fileInput.parentNode.replaceChild(newFileInput, fileInput);
+                    // Update reference
+                    const updatedFileInput = document.getElementById('vehicle_image');
+                    updatedFileInput.addEventListener('change', handleFileChange);
                     imagePreview.style.display = 'none';
                 }
             });
         });
         
         // Handle file input change
-        fileInput.addEventListener('change', function() {
+        function handleFileChange() {
             if (this.files && this.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -98,7 +106,9 @@
             } else {
                 imagePreview.style.display = 'none';
             }
-        });
+        }
+        
+        fileInput.addEventListener('change', handleFileChange);
         
         // Handle drag and drop
         const dropArea = imageUploadSection.querySelector('.border-dashed');

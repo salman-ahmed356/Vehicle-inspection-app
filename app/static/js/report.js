@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (element.name && element.type !== 'submit' && element.type !== 'hidden') {
         if (element.type === 'checkbox') {
           formData[element.name] = element.checked;
-        } else {
+        } else if (element.type !== 'file') {
           formData[element.name] = element.value;
         }
       }
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (element.name && formData[element.name] !== undefined) {
         if (element.type === 'checkbox') {
           element.checked = formData[element.name];
-        } else {
+        } else if (element.type !== 'file') {
           element.value = formData[element.name];
         }
       }
