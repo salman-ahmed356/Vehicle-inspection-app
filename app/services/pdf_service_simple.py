@@ -108,7 +108,7 @@ def _process_expertise_reports(report):
             paint_features = [
                 {
                     'name': f.name,
-                    'status': StatusTranslator.get_translated_status("Paint Expertise", f.status),
+                    'status': f.status,  # Keep original English status
                 }
                 for f in paint_report.features
             ]
@@ -117,7 +117,7 @@ def _process_expertise_reports(report):
             body_features = [
                 {
                     'name': f.name,
-                    'status': StatusTranslator.get_translated_status("Body Expertise", f.status),
+                    'status': f.status,  # Keep original English status
                 }
                 for f in body_report.features
             ]
@@ -145,7 +145,7 @@ def _process_expertise_reports(report):
                 features = [
                     {
                         'name': f.name,
-                        'status': StatusTranslator.get_translated_status(er.expertise_type.name, f.status),
+                        'status': f.status,  # Keep original English status
                     }
                     for f in er.features
                 ]
