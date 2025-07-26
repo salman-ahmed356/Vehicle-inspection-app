@@ -35,6 +35,18 @@ def create_pdf(report_id):
         package_expertise_reports = _process_expertise_reports(report)
         logging.info(f"Expertise reports processed - Count: {len(package_expertise_reports)}")
         
+        # Debug: Log the actual status values being passed
+        for expertise in package_expertise_reports:
+            if 'features' in expertise:
+                for feature in expertise['features']:
+                    logging.info(f"Feature: {feature['name']}, Status: {feature['status']}")
+            if 'paint_features' in expertise:
+                for feature in expertise['paint_features']:
+                    logging.info(f"Paint Feature: {feature['name']}, Status: {feature['status']}")
+            if 'body_features' in expertise:
+                for feature in expertise['body_features']:
+                    logging.info(f"Body Feature: {feature['name']}, Status: {feature['status']}")
+        
         images, motor_image_url, brake_image_url, info_image_url, obd_mapping = _gather_image_paths()
         filename = _build_output_filename(customer)
         logging.info(f"PDF filename: {filename}")
@@ -55,28 +67,9 @@ def create_pdf(report_id):
         )
         logging.info("HTML template rendered successfully")
         
-        # Add Arabic font CSS to the HTML
-        arabic_css = '''
-        <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap');
-        body, * {
-            font-family: 'Noto Sans Arabic', Arial, sans-serif !important;
-        }
-        .arabic-text {
-            direction: rtl;
-            text-align: right;
-        }
-        </style>
-        '''
-        
-        # Insert CSS into HTML head
-        if '<head>' in rendered_html:
-            rendered_html = rendered_html.replace('<head>', f'<head>{arabic_css}')
-        else:
-            rendered_html = f'{arabic_css}{rendered_html}'
-        
+        # Simple approach - just generate PDF and let status translator handle Arabic
         HTML(string=rendered_html).write_pdf(filename)
-        logging.info(f"PDF generated successfully with Arabic font: {filename}")
+        logging.info(f"PDF generated successfully: {filename}")
         
         return filename
         
