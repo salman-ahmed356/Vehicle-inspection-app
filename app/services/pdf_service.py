@@ -55,8 +55,28 @@ def create_pdf(report_id):
         )
         logging.info("HTML template rendered successfully")
         
+        # Add Arabic font CSS to the HTML
+        arabic_css = '''
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap');
+        body, * {
+            font-family: 'Noto Sans Arabic', Arial, sans-serif !important;
+        }
+        .arabic-text {
+            direction: rtl;
+            text-align: right;
+        }
+        </style>
+        '''
+        
+        # Insert CSS into HTML head
+        if '<head>' in rendered_html:
+            rendered_html = rendered_html.replace('<head>', f'<head>{arabic_css}')
+        else:
+            rendered_html = f'{arabic_css}{rendered_html}'
+        
         HTML(string=rendered_html).write_pdf(filename)
-        logging.info(f"PDF generated successfully: {filename}")
+        logging.info(f"PDF generated successfully with Arabic font: {filename}")
         
         return filename
         
