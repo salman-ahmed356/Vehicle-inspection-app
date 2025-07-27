@@ -7,17 +7,18 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
-        .desktop-table { display: table; height: calc(100vh - 200px); }
+        .desktop-table { display: table; }
         .mobile-cards { display: none; }
-        .logs-table { height: calc(100vh - 250px); }
-        .table-container { min-height: calc(100vh - 250px); }
+        .table-container { overflow-x: auto; }
         @media (max-width: 768px) {
             .desktop-table { display: none !important; }
             .mobile-cards { display: block !important; }
             .container { padding: 0.5rem !important; }
-            .w-96 { width: 100% !important; }
-            .flex { flex-direction: column !important; gap: 1rem !important; }
-            .justify-between { justify-content: flex-start !important; }
+            .search-input { width: 100% !important; }
+            .header-flex { flex-direction: column !important; gap: 1rem !important; align-items: flex-start !important; }
+        }
+        @media (max-width: 1024px) {
+            .search-input { width: 300px !important; }
         }
     </style>
 </head>
@@ -36,8 +37,8 @@
         {% endif %}
     {% endwith %}
     
-    <div class="bg-white p-6 rounded-lg shadow min-h-screen w-full">
-        <div class="flex justify-between items-center mb-4">
+    <div class="bg-white p-6 rounded-lg shadow w-full">
+        <div class="flex justify-between items-center mb-6 header-flex">
             <div class="flex items-center gap-4">
                 <h2 class="text-xl font-semibold">{{ _('System Logs') }}</h2>
                 <button onclick="confirmDeleteAll()" 
@@ -51,31 +52,31 @@
                 <input type="text" 
                        id="liveLogSearch"
                        placeholder="{{ _('Search logs...') }}"
-                       class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 w-96">
+                       class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 w-80 search-input">
                 <div id="logSuggestions" class="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg hidden max-h-64 overflow-y-auto"></div>
             </div>
         </div>
 
         <!-- Desktop Table -->
-        <div class="desktop-table overflow-x-auto table-container">
-            <table class="w-full bg-white logs-table">
-                <thead class="bg-gray-200">
+        <div class="desktop-table table-container">
+            <table class="w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
+                <thead class="bg-gray-50">
                     <tr>
-                        <th class="py-3 px-4 text-left w-1/6">{{ _('Timestamp') }}</th>
-                        <th class="py-3 px-4 text-left w-1/5">{{ _('User') }}</th>
-                        <th class="py-3 px-4 text-left w-1/6">{{ _('Action') }}</th>
-                        <th class="py-3 px-4 text-left w-1/3">{{ _('Details') }}</th>
-                        <th class="py-3 px-4 text-left w-1/6">{{ _('IP Address') }}</th>
-                        <th class="py-3 px-4 text-left w-16">{{ _('Actions') }}</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700 border-b">{{ _('Timestamp') }}</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700 border-b">{{ _('User') }}</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700 border-b">{{ _('Action') }}</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700 border-b">{{ _('Details') }}</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700 border-b">{{ _('IP Address') }}</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700 border-b">{{ _('Actions') }}</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-gray-200">
                     {% for log in logs %}
-                    <tr class="border-b hover:bg-gray-50 h-12" id="logRow-{{ log.id }}">
-                        <td class="py-3 px-4">{{ log.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}</td>
-                        <td class="py-3 px-4">
+                    <tr class="hover:bg-gray-50" id="logRow-{{ log.id }}">
+                        <td class="py-3 px-4 text-sm text-gray-900">{{ log.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+                        <td class="py-3 px-4 text-sm text-gray-900">
                             {% if log.user %}
-                                {{ log.user.full_name }} ({{ log.user.role|title }})
+                                {{ log.user.full_name }} <span class="text-gray-500">({{ log.user.role|title }})</span>
                             {% else %}
                                 System
                             {% endif %}
@@ -90,36 +91,25 @@
                                 {{ log.action }}
                             </span>
                         </td>
-                        <td class="py-3 px-4">
-                            <div class="max-w-xs truncate" title="{{ log.details }}">
+                        <td class="py-3 px-4 text-sm text-gray-900">
+                            <div class="max-w-md truncate" title="{{ log.details }}">
                                 {{ log.details or "-" }}
                             </div>
                         </td>
-                        <td class="py-3 px-4">{{ log.ip_address or "-" }}</td>
+                        <td class="py-3 px-4 text-sm text-gray-900">{{ log.ip_address or "-" }}</td>
                         <td class="py-3 px-4">
                             <button onclick="confirmDelete({{ log.id }})" 
-                                    class="text-red-500 hover:text-red-700">
+                                    class="text-red-500 hover:text-red-700 p-1">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </td>
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="6" class="py-8 px-4 text-center text-gray-500">
-                            {{ _("No logs available.") }}
+                        <td colspan="6" class="py-12 px-4 text-center text-gray-500">
+                            <i class="fas fa-inbox text-4xl mb-4 text-gray-300"></i>
+                            <div>{{ _("No logs available.") }}</div>
                         </td>
-                    </tr>
-                    {% endfor %}
-                    
-                    <!-- Fill remaining space with empty rows -->
-                    {% for i in range(20) %}
-                    <tr class="border-b h-12">
-                        <td class="py-3 px-4">&nbsp;</td>
-                        <td class="py-3 px-4">&nbsp;</td>
-                        <td class="py-3 px-4">&nbsp;</td>
-                        <td class="py-3 px-4">&nbsp;</td>
-                        <td class="py-3 px-4">&nbsp;</td>
-                        <td class="py-3 px-4">&nbsp;</td>
                     </tr>
                     {% endfor %}
                 </tbody>
