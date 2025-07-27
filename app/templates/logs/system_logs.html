@@ -14,6 +14,8 @@
             .mobile-cards { display: block !important; }
             .container { padding: 0.5rem !important; }
             .w-96 { width: 100% !important; }
+            .flex { flex-direction: column !important; gap: 1rem !important; }
+            .justify-between { justify-content: flex-start !important; }
         }
     </style>
 </head>
@@ -34,7 +36,13 @@
     
     <div class="bg-white p-6 rounded-lg shadow">
         <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-semibold">{{ _('System Logs') }}</h2>
+            <div class="flex items-center gap-4">
+                <h2 class="text-xl font-semibold">{{ _('System Logs') }}</h2>
+                <button onclick="confirmDeleteAll()" 
+                        class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600">
+                    <i class="fas fa-trash-alt mr-1"></i>{{ _('Delete All') }}
+                </button>
+            </div>
             
             <!-- Live Search Box -->
             <div class="relative">
@@ -208,22 +216,50 @@
     </div>
 </div>
 
+<!-- Delete All Confirmation Modal -->
+<div id="deleteAllModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center hidden z-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
+        <h3 class="text-lg font-bold mb-4 text-red-600">{{ _("Delete All Logs") }}</h3>
+        <p class="mb-6">{{ _("Are you sure you want to delete ALL log entries? This action cannot be undone.") }}</p>
+        <div class="flex justify-end space-x-4">
+            <button id="cancelDeleteAll" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded">{{ _("Cancel") }}</button>
+            <form id="deleteAllForm" method="POST" action="{{ url_for('logs.delete_all_logs') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">{{ _("Delete All") }}</button>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
     const deleteConfirmModal = document.getElementById("deleteConfirmModal");
     const cancelDelete = document.getElementById("cancelDelete");
+    const deleteAllModal = document.getElementById("deleteAllModal");
+    const cancelDeleteAll = document.getElementById("cancelDeleteAll");
 
     function confirmDelete(logId) {
         document.getElementById("deleteForm").action = `{{ url_for("logs.delete_log_entry", log_id=0) }}`.replace("0", logId);
         deleteConfirmModal.classList.remove("hidden");
     }
+    
+    function confirmDeleteAll() {
+        deleteAllModal.classList.remove("hidden");
+    }
 
     cancelDelete.addEventListener("click", function() {
         deleteConfirmModal.classList.add("hidden");
+    });
+    
+    cancelDeleteAll.addEventListener("click", function() {
+        deleteAllModal.classList.add("hidden");
     });
 
     window.addEventListener("click", function(event) {
         if (event.target === deleteConfirmModal) {
             deleteConfirmModal.classList.add("hidden");
+        }
+        if (event.target === deleteAllModal) {
+            deleteAllModal.classList.add("hidden");
         }
     });
 
@@ -281,18 +317,23 @@
                 suggestionItem.addEventListener('click', function() {
                     // Find and scroll to the log row (desktop) or card (mobile)
                     let targetElement = document.getElementById('logRow-' + log.id);
-                    if (!targetElement) {
+                    if (!targetElement || window.innerWidth <= 768) {
                         targetElement = document.getElementById('logCard-' + log.id);
                     }
                     if (targetElement) {
-                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        targetElement.classList.add('bg-yellow-200');
+                        // Close suggestions first
+                        suggestions.classList.add('hidden');
+                        searchInput.value = '';
+                        
+                        // Small delay to ensure DOM updates
                         setTimeout(function() {
-                            targetElement.classList.remove('bg-yellow-200');
-                        }, 3000);
+                            targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            targetElement.classList.add('bg-yellow-200');
+                            setTimeout(function() {
+                                targetElement.classList.remove('bg-yellow-200');
+                            }, 3000);
+                        }, 100);
                     }
-                    suggestions.classList.add('hidden');
-                    searchInput.value = '';
                 });
                 
                 suggestions.appendChild(suggestionItem);

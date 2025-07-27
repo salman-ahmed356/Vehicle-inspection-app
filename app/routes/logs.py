@@ -32,6 +32,20 @@ def delete_log_entry(log_id):
     
     return redirect(url_for('logs.system_logs'))
 
+@logs.route('/logs/delete-all', methods=['POST'])
+@role_required('admin')
+def delete_all_logs():
+    try:
+        SystemLog.query.delete()
+        db.session.commit()
+        log_action('LOGS_CLEARED', 'All system logs deleted')
+        flash('All log entries deleted successfully.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('Error deleting all logs.', 'error')
+    
+    return redirect(url_for('logs.system_logs'))
+
 @logs.route('/logs/search')
 @role_required('admin')
 def search_logs():
