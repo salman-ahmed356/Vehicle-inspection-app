@@ -225,30 +225,8 @@ def add_report():
                     if image_file and image_file.filename:
                         # Read the image data
                         image_data = image_file.read()
-                    else:
-                        flash('Please upload a vehicle image or select "No" for the image option.', 'error')
-                        return render_template(
-                            'reports.html',
-                            form=form,
-                            fuel_types=[(f.name, f.value) for f in FuelType],
-                            transmission_types=[(t.name, t.value) for t in TransmissionType],
-                            colors=[(c.name, c.value) for c in Color],
-                            vehicle_info=vehicle_info,
-                            packages=get_active_packages(),
-                            current_year=datetime.now().year
-                        )
-                else:
-                    flash('Please upload a vehicle image or select "No" for the image option.', 'error')
-                    return render_template(
-                        'reports.html',
-                        form=form,
-                        fuel_types=[(f.name, f.value) for f in FuelType],
-                        transmission_types=[(t.name, t.value) for t in TransmissionType],
-                        colors=[(c.name, c.value) for c in Color],
-                        vehicle_info=vehicle_info,
-                        packages=get_active_packages(),
-                        current_year=datetime.now().year
-                    )
+                    # If no file uploaded but has_image is yes, just continue without image
+                # If no file field, just continue without image
             
             new_report = Report(
                 inspection_date            = form.inspection_date.data,
@@ -730,40 +708,10 @@ def edit_report(report_id):
                         # Read the image data
                         report.image_data = image_file.read()
                         report.has_image = True
-                    else:
-                        # If no new image is uploaded but the report already has an image, that's OK
-                        if not report.has_image or not report.image_data:
-                            flash('Please upload a vehicle image or select "No" for the image option.', 'error')
-                            return render_template(
-                                'reports.html',
-                                form=form,
-                                fuel_types=[(f.name, f.value) for f in FuelType],
-                                transmission_types=[(t.name, t.value) for t in TransmissionType],
-                                colors=[(c.name, c.value) for c in Color],
-                                vehicle_info=vehicle_info,
-                                packages=get_active_packages(),
-                                current_year=datetime.now().year,
-                                edit_mode=True,
-                                report=report,
-                                b64encode=base64.b64encode
-                            )
-                else:
-                    # If no new image is uploaded but the report already has an image, that's OK
-                    if not report.has_image or not report.image_data:
-                        flash('Please upload a vehicle image or select "No" for the image option.', 'error')
-                        return render_template(
-                            'reports.html',
-                            form=form,
-                            fuel_types=[(f.name, f.value) for f in FuelType],
-                            transmission_types=[(t.name, t.value) for t in TransmissionType],
-                            colors=[(c.name, c.value) for c in Color],
-                            vehicle_info=vehicle_info,
-                            packages=get_active_packages(),
-                            current_year=datetime.now().year,
-                            edit_mode=True,
-                            report=report,
-                            b64encode=base64.b64encode
-                        )
+            else:
+                # If has_image is 'no', set image fields to False/None
+                report.has_image = False
+                report.image_data = None
             
             # Save changes
             print(f"DEBUG: About to commit all changes to database")
