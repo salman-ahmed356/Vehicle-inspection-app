@@ -26,7 +26,6 @@ instance/*.db*
 instance/*.sqlite*
 
 # Logs
-logs/
 *.log
 
 # Generated PDFs
