@@ -103,8 +103,12 @@ def edit_staff(id):
         current_user_id = session.get('user_id')
         requested_role = request.form.get('role', '').lower()
         
+        # Users cannot change their own role
+        if int(current_user_id) == staff_member.id:
+            requested_role = staff_member.role.lower()  # Keep current role
+        
         # Manager can only set role to worker (unless editing themselves)
-        if current_user_role == 'manager' and int(current_user_id) != staff_member.id and requested_role != 'worker':
+        elif current_user_role == 'manager' and requested_role != 'worker':
             flash('Managers can only set worker role for other users.', 'error')
             return redirect(url_for('staff.staff_list'))
         
@@ -153,9 +157,11 @@ def edit_staff(id):
             from flask import session
             current_user_id = session.get('user_id')
             if current_user_id and int(current_user_id) == staff_member.id:
-                # Update the session with new name
+                # Update the session with new name and role
                 session['user_name'] = staff_member.full_name
+                session['user_role'] = staff_member.role
                 print(f"DEBUG: Updated session user_name to: {staff_member.full_name}")
+                print(f"DEBUG: Updated session user_role to: {staff_member.role}")
             
             log_action('STAFF_UPDATED', f'Updated staff member: {staff_member.full_name}')
             if password_changed:
