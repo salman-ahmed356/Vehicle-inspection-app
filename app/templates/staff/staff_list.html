@@ -349,24 +349,30 @@
     const openAddStaffModal = document.getElementById('openAddStaffModal');
     const closeAddStaffModal = document.getElementById('closeAddStaffModal');
 
-    openAddStaffModal.addEventListener('click', () => {
-        addStaffModal.classList.remove('hidden');
-    });
+    if (openAddStaffModal) {
+        openAddStaffModal.addEventListener('click', function() {
+            addStaffModal.classList.remove('hidden');
+        });
+    }
 
-    closeAddStaffModal.addEventListener('click', () => {
-        addStaffModal.classList.add('hidden');
-    });
+    if (closeAddStaffModal) {
+        closeAddStaffModal.addEventListener('click', function() {
+            addStaffModal.classList.add('hidden');
+        });
+    }
 
     // Edit Staff Modal
     const editStaffModal = document.getElementById('editStaffModal');
     const closeEditStaffModal = document.getElementById('closeEditStaffModal');
 
-    closeEditStaffModal.addEventListener('click', () => {
-        editStaffModal.classList.add('hidden');
-    });
+    if (closeEditStaffModal) {
+        closeEditStaffModal.addEventListener('click', function() {
+            editStaffModal.classList.add('hidden');
+        });
+    }
 
     document.querySelectorAll('.open-edit-modal').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', function() {
             const id = btn.dataset.id;
             // populate form fields
             document.getElementById('edit_first_name').value = btn.dataset.first_name;
@@ -421,9 +427,11 @@
         deleteConfirmModal.classList.remove('hidden');
     }
 
-    cancelDelete.addEventListener('click', () => {
-        deleteConfirmModal.classList.add('hidden');
-    });
+    if (cancelDelete) {
+        cancelDelete.addEventListener('click', function() {
+            deleteConfirmModal.classList.add('hidden');
+        });
+    }
     
     // Password Change Modal
     const passwordChangeModal = document.getElementById('passwordChangeModal');
