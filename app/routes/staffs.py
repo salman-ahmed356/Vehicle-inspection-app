@@ -187,9 +187,11 @@ def delete_staff(id):
     try:
         # Update reports created by this staff member to avoid foreign key constraint
         from ..models import Report
-        reports = Report.query.filter_by(created_by=staff_member.id).all()
-        for report in reports:
-            report.created_by = None  # Set to null or assign to another staff member
+        admin_user = Staff.query.filter_by(role='admin').first()
+        if admin_user:
+            reports = Report.query.filter_by(created_by=staff_member.id).all()
+            for report in reports:
+                report.created_by = admin_user.id  # Assign to admin user
         
         log_action('STAFF_DELETED', f'Deleted staff member: {staff_member.full_name}')
         db.session.delete(staff_member)
