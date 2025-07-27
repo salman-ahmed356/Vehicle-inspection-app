@@ -83,12 +83,16 @@
                 <td class="py-2 px-4">{{ vehicle_data.vehicle.model_year }}</td>
                 <td class="py-2 px-4">{{ vehicle_data.vehicle.mileage }}</td>
                 <td class="py-2 px-4 flex space-x-2">
+                  {% if session.user_role and session.user_role.lower() == 'admin' %}
                   <a href="{{ url_for('vehicles.edit_vehicle', vehicle_id=vehicle_data.vehicle.id) }}" class="text-blue-500 hover:text-blue-700">
                     <i class="fas fa-edit"></i>
                   </a>
                   <button onclick="confirmDelete({{ vehicle_data.vehicle.id }}, '{{ vehicle_data.vehicle.brand }} {{ vehicle_data.vehicle.model }}')" class="text-red-500 hover:text-red-700">
                     <i class="fas fa-trash"></i>
                   </button>
+                  {% else %}
+                  <span class="text-gray-400">{{ _('View Only') }}</span>
+                  {% endif %}
                 </td>
               </tr>
             {% endfor %}
@@ -120,6 +124,7 @@
               <div><strong>{{ _('Mileage') }}:</strong> {{ vehicle_data.vehicle.mileage }}</div>
             </div>
             
+            {% if session.user_role and session.user_role.lower() == 'admin' %}
             <div class="flex gap-2">
               <a href="{{ url_for('vehicles.edit_vehicle', vehicle_id=vehicle_data.vehicle.id) }}" 
                  class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex-1 text-center">
@@ -130,6 +135,7 @@
                 <i class="fas fa-trash mr-1"></i>{{ _('Delete') }}
               </button>
             </div>
+            {% endif %}
           </div>
           {% endfor %}
         </div>

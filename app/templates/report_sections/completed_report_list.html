@@ -116,12 +116,14 @@
                         {{ _('View PDF') }}
                     </a>
                     
-                    <!-- Delete Report Button -->
+                    <!-- Delete Report Button (Admin Only) -->
+                    {% if session.user_role and session.user_role.lower() == 'admin' %}
                     <button onclick="confirmDelete({{ report.id }}, '{{ report.vehicle.plate }}')"
                             class="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1 rounded inline-flex items-center">
                         <i class="fas fa-trash-alt mr-1"></i>
                         {{ _('Delete') }}
                     </button>
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}
@@ -158,10 +160,12 @@
                        class="bg-green-500 hover:bg-green-600 text-white text-center py-2 px-3 rounded">
                         <i class="fas fa-file-pdf mr-1"></i>{{ _('View PDF') }}
                     </a>
+                    {% if session.user_role and session.user_role.lower() == 'admin' %}
                     <button onclick="confirmDelete({{ report.id }}, '{{ report.vehicle.plate }}')"
                             class="bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded">
                         <i class="fas fa-trash-alt mr-1"></i>{{ _('Delete') }}
                     </button>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}

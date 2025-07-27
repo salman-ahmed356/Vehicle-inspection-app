@@ -108,12 +108,14 @@
                     {{ report.package.name }}
                 </td>
                 <td class="px-4 py-3 text-sm">
-                    <!-- Delete Report Button -->
+                    <!-- Delete Report Button (Admin Only) -->
+                    {% if session.user_role and session.user_role.lower() == 'admin' %}
                     <button onclick="confirmDelete({{ report.id }}, '{{ report.vehicle.plate }}')"
                             class="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1 rounded inline-flex items-center">
                         <i class="fas fa-trash-alt mr-1"></i>
                         {{ _('Delete') }}
                     </button>
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}
@@ -144,12 +146,14 @@
                     <div><strong>{{ _('Package') }}:</strong> {{ report.package.name }}</div>
                 </div>
                 
+                {% if session.user_role and session.user_role.lower() == 'admin' %}
                 <div class="flex justify-center">
                     <button onclick="confirmDelete({{ report.id }}, '{{ report.vehicle.plate }}')"
                             class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded">
                         <i class="fas fa-trash-alt mr-1"></i>{{ _('Delete') }}
                     </button>
                 </div>
+                {% endif %}
             </div>
             {% endfor %}
         </div>
