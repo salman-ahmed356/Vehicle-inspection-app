@@ -7,8 +7,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
-        .desktop-table { display: table; }
+        .desktop-table { display: table; height: calc(100vh - 200px); }
         .mobile-cards { display: none; }
+        .logs-table { height: calc(100vh - 250px); }
+        .table-container { min-height: calc(100vh - 250px); }
         @media (max-width: 768px) {
             .desktop-table { display: none !important; }
             .mobile-cards { display: block !important; }
@@ -55,8 +57,8 @@
         </div>
 
         <!-- Desktop Table -->
-        <div class="desktop-table overflow-x-auto">
-            <table class="min-w-full bg-white">
+        <div class="desktop-table overflow-x-auto table-container">
+            <table class="min-w-full bg-white logs-table">
                 <thead class="bg-gray-200">
                     <tr>
                         <th class="py-3 px-4 text-left">{{ _('Timestamp') }}</th>
@@ -106,6 +108,18 @@
                         <td colspan="6" class="py-8 px-4 text-center text-gray-500">
                             {{ _("No logs available.") }}
                         </td>
+                    </tr>
+                    {% endfor %}
+                    
+                    <!-- Fill remaining space with empty rows -->
+                    {% for i in range(20) %}
+                    <tr class="border-b h-12">
+                        <td class="py-3 px-4">&nbsp;</td>
+                        <td class="py-3 px-4">&nbsp;</td>
+                        <td class="py-3 px-4">&nbsp;</td>
+                        <td class="py-3 px-4">&nbsp;</td>
+                        <td class="py-3 px-4">&nbsp;</td>
+                        <td class="py-3 px-4">&nbsp;</td>
                     </tr>
                     {% endfor %}
                 </tbody>
