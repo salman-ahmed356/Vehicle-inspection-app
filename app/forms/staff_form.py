@@ -43,11 +43,11 @@ class StaffForm(FlaskForm):
         'Department',
         validators=[Optional(), Length(max=50, message="Departman 50 karakterden fazla olamaz.")]
     )
-    role = StringField(
+    role = SelectField(
         'Role',
+        choices=[('worker', 'Worker'), ('manager', 'Manager'), ('admin', 'Admin')],
         validators=[
-            DataRequired(message="Rol alanı gereklidir."),
-            Length(max=50, message="Rol 50 karakterden fazla olamaz.")
+            DataRequired(message="Rol alanı gereklidir.")
         ]
     )
     branch_id = IntegerField(

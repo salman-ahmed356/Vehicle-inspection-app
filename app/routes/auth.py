@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from ..database import db
 from ..models import Staff
 from ..auth import login_required
+from ..services.log_service import log_action
 
 auth = Blueprint('auth', __name__)
 
@@ -23,6 +24,8 @@ def login():
             session['user_role'] = staff.role
             session['expiry'] = (datetime.now() + timedelta(hours=3)).isoformat()
             
+            log_action('LOGIN', f'User logged in: {staff.full_name} ({staff.role})', staff.id)
+            
             next_page = request.args.get('next')
             if next_page:
                 return redirect(next_page)
@@ -34,6 +37,8 @@ def login():
 
 @auth.route('/logout')
 def logout():
+    if 'user_id' in session:
+        log_action('LOGOUT', f'User logged out', session['user_id'])
     session.clear()
     flash('You have been logged out', 'success')
     return redirect(url_for('auth.login'))

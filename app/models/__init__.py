@@ -18,3 +18,4 @@ from .all_models import (
 )
 
 from .report_settings import ReportSettings
+from .system_log import SystemLog

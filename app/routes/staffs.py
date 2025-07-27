@@ -5,6 +5,8 @@ from ..database import db
 from ..models import Staff
 from ..forms import StaffForm
 from ..auth import login_required
+from ..rbac import role_required, get_visible_staff, can_edit_staff, can_delete_staff, can_add_staff
+from ..services.log_service import log_action
 
 staff = Blueprint('staff', __name__)
 
@@ -12,13 +14,17 @@ staff = Blueprint('staff', __name__)
 @staff.route('/staff')
 @login_required
 def staff_list():
-    staff_members = Staff.query.all()
+    staff_members = get_visible_staff()
     form = StaffForm()
     return render_template('staff/staff_list.html', staff=staff_members, form=form)
 
 
 @staff.route('/staff/add', methods=['GET', 'POST'])
+@login_required
 def add_staff():
+    if not can_add_staff():
+        flash('You do not have permission to add staff members.', 'error')
+        return redirect(url_for('staff.staff_list'))
     form = StaffForm()
     if form.validate_on_submit():
         # Check if passwords match
@@ -41,18 +47,29 @@ def add_staff():
             salt_length=16
         )
         
+        # Role validation based on current user
+        from flask import session
+        current_user_role = session.get('user_role', '').lower()
+        requested_role = form.role.data.lower()
+        
+        # Manager can only create workers
+        if current_user_role == 'manager' and requested_role != 'worker':
+            flash('Managers can only create worker accounts.', 'error')
+            return redirect(url_for('staff.staff_list'))
+        
         new_staff = Staff(
             first_name=form.first_name.data,
             last_name=form.last_name.data,
             password=hashed_password,
             phone_number=form.phone_number.data,
             department=form.department.data or "Default",
-            role=form.role.data,
+            role=requested_role,
             branch_id=branch.id
         )
         try:
             db.session.add(new_staff)
             db.session.commit()
+            log_action('STAFF_CREATED', f'Created staff member: {new_staff.full_name} with role: {new_staff.role}')
             flash('Staff member successfully added!', 'success')
         except IntegrityError as e:
             db.session.rollback()
@@ -64,7 +81,12 @@ def add_staff():
 
 
 @staff.route('/staff/edit/<int:id>', methods=['POST'])
+@login_required
 def edit_staff(id):
+    if not can_edit_staff(id):
+        flash('You do not have permission to edit this staff member.', 'error')
+        return redirect(url_for('staff.staff_list'))
+    
     staff_member = Staff.query.get_or_404(id)
     form = StaffForm(request.form)
     
@@ -73,10 +95,21 @@ def edit_staff(id):
     form.confirm_password.validators = []
 
     if form.validate_on_submit():
+        # Role validation based on current user
+        from flask import session
+        current_user_role = session.get('user_role', '').lower()
+        current_user_id = session.get('user_id')
+        requested_role = form.role.data.lower()
+        
+        # Manager can only set role to worker (unless editing themselves)
+        if current_user_role == 'manager' and int(current_user_id) != staff_member.id and requested_role != 'worker':
+            flash('Managers can only set worker role for other users.', 'error')
+            return redirect(url_for('staff.staff_list'))
+        
         staff_member.first_name   = form.first_name.data
         staff_member.last_name    = form.last_name.data
         staff_member.phone_number = form.phone_number.data
-        staff_member.role         = form.role.data
+        staff_member.role         = requested_role
         if form.department.data:
             staff_member.department = form.department.data
 
@@ -120,6 +153,7 @@ def edit_staff(id):
                 session['user_name'] = staff_member.full_name
                 print(f"DEBUG: Updated session user_name to: {staff_member.full_name}")
             
+            log_action('STAFF_UPDATED', f'Updated staff member: {staff_member.full_name}')
             if password_changed:
                 flash('Staff member updated successfully! Password has been changed.', 'success')
                 print("Password changed successfully for staff member")
@@ -138,7 +172,12 @@ def edit_staff(id):
 
 
 @staff.route('/staff/delete/<int:id>', methods=['POST'])
+@login_required
 def delete_staff(id):
+    if not can_delete_staff(id):
+        flash('You do not have permission to delete this staff member.', 'error')
+        return redirect(url_for('staff.staff_list'))
+    
     from flask import session
     
     staff_member = Staff.query.get_or_404(id)
@@ -146,6 +185,7 @@ def delete_staff(id):
     is_self_delete = current_user_id and int(current_user_id) == staff_member.id
     
     try:
+        log_action('STAFF_DELETED', f'Deleted staff member: {staff_member.full_name}')
         db.session.delete(staff_member)
         db.session.commit()
         flash('Staff member successfully deleted!', 'success')

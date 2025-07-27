@@ -4,6 +4,7 @@ from ..models import Appointment, Customer
 from datetime import datetime, date
 from ..forms import AppointmentForm
 from ..auth import login_required
+from ..services.log_service import log_action
 
 appointments = Blueprint('appointments', __name__)
 
@@ -59,6 +60,7 @@ def add_appointment():
         )
         db.session.add(new_appointment)
         db.session.commit()
+        log_action('APPOINTMENT_CREATED', f'Created appointment for {customer.full_name} on {date_obj} at {time_obj} ({brand} {model})')
         flash('New appointment successfully created!', 'success')
         return redirect(url_for('appointments.appointment_list'))
     elif request.method == 'POST':
@@ -99,6 +101,7 @@ def update_appointment(appointment_id):
         appointment.reminder_sent = form.reminder_sent.data
 
         db.session.commit()
+        log_action('APPOINTMENT_UPDATED', f'Updated appointment for {appointment.customer.full_name} on {appointment.date}')
         flash('Randevu başarıyla güncellendi!')
         return redirect(url_for('appointments.appointment_list'))
 
@@ -110,6 +113,7 @@ def cancel_appointment(appointment_id):
     appointment = Appointment.query.get_or_404(appointment_id)
     
     # Delete the appointment
+    log_action('APPOINTMENT_CANCELLED', f'Cancelled appointment for {appointment.customer.full_name} on {appointment.date}')
     db.session.delete(appointment)
     db.session.commit()
     

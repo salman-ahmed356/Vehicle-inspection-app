@@ -12,6 +12,8 @@ import logging
 from sqlalchemy.exc import OperationalError
 from werkzeug.security import generate_password_hash
 from ..auth import login_required
+from ..rbac import can_access_company_settings
+from ..services.log_service import log_action
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +23,9 @@ companies = Blueprint('companies', __name__)
 @companies.route('/company')
 @login_required
 def company_detail():
+    if not can_access_company_settings():
+        flash('You do not have permission to access company settings.', 'error')
+        return redirect(url_for('main.index'))
     import logging
     logger = logging.getLogger(__name__)
     
@@ -103,7 +108,11 @@ def company_detail():
 
 
 @companies.route('/company/update', methods=['POST'])
+@login_required
 def update_company():
+    if not can_access_company_settings():
+        flash('You do not have permission to update company settings.', 'error')
+        return redirect(url_for('main.index'))
     import logging
     logger = logging.getLogger(__name__)
     
@@ -168,6 +177,7 @@ def update_company():
                 logger.info(f"Current address: {company.address.street_address}, {company.address.city}, {company.address.state}, {company.address.postal_code}")
                 
             update_company_service(company, data)
+            log_action('COMPANY_UPDATED', f'Updated company settings: {company.name}')
             flash('Company settings updated!', 'success')
         else:
             # create Address
@@ -220,6 +230,7 @@ def update_company():
             db.session.commit()
             logger.info(f"Created staff with ID: {default_staff.id}")
             
+            log_action('COMPANY_CREATED', f'Created company: {company.name} with default admin user')
             flash('Company created with default staff member!', 'success')
             # Redirect to staff tab after company creation
             return redirect(url_for('companies.company_detail', active_tab='staff'))

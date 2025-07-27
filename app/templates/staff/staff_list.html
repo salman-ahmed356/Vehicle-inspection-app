@@ -23,7 +23,7 @@
 </head>
 
 <body class="bg-gray-100 text-gray-800">
-{% include 'navbar.html' %}
+{% include 'navbar_simple.html' %}
 
 <!-- Add Staff Modal -->
 <div id="addStaffModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center hidden z-50">
@@ -73,7 +73,16 @@
             </div>
             <div class="mb-4">
                 <label for="role" class="block text-sm font-medium text-gray-700">{{ _('Role') }}</label>
-                {{ form.role(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+                <select name="role" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">{{ _('Select Role') }}</option>
+                    {% if session.user_role.lower() == 'admin' %}
+                    <option value="worker">Worker</option>
+                    <option value="manager">Manager</option>
+                    <option value="admin">Admin</option>
+                    {% elif session.user_role.lower() == 'manager' %}
+                    <option value="worker">Worker</option>
+                    {% endif %}
+                </select>
                 {% if form.role.errors %}
                 <p class="text-red-500 text-xs mt-1">{{ form.role.errors[0] }}</p>
                 {% endif %}
@@ -108,9 +117,11 @@
     <div class="bg-white p-6 rounded-lg shadow">
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-semibold">{{ _('Staff Management') }}</h2>
+            {% if session.user_role and session.user_role.lower() in ['admin', 'manager'] %}
             <button id="openAddStaffModal" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                 <i class="fas fa-plus mr-2"></i>{{ _('Add Staff Member') }}
             </button>
+            {% endif %}
         </div>
 
         <!-- Desktop Staff Table -->
@@ -132,6 +143,7 @@
                 <td class="border px-4 py-2">{{ member.role }}</td>
                 <td class="border px-4 py-2">{{ member.department }}</td>
                 <td class="border px-4 py-2">
+                    {% if (session.user_role.lower() == 'admin') or (session.user_id|int == member.id) or (session.user_role.lower() == 'manager' and member.role.lower() == 'worker') %}
                     <button 
                         class="text-blue-500 hover:text-blue-700 mr-2 open-edit-modal"
                         data-id="{{ member.id }}"
@@ -143,7 +155,8 @@
                     >
                         <i class="fas fa-edit"></i>
                     </button>
-                    {% if member.role|lower != 'manager' %}
+                    {% endif %}
+                    {% if (session.user_role.lower() == 'admin' and session.user_id|int != member.id) or (session.user_role.lower() == 'manager' and member.role.lower() == 'worker') %}
                     <button onclick="confirmDelete({{ member.id }}, '{{ member.full_name }}')" class="text-red-500 hover:text-red-700">
                         <i class="fas fa-trash"></i>
                     </button>
@@ -170,6 +183,7 @@
                 </div>
                 
                 <div class="flex gap-2">
+                    {% if (session.user_role.lower() == 'admin') or (session.user_id|int == member.id) or (session.user_role.lower() == 'manager' and member.role.lower() == 'worker') %}
                     <button 
                         class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 open-edit-modal flex-1"
                         data-id="{{ member.id }}"
@@ -181,7 +195,8 @@
                     >
                         <i class="fas fa-edit mr-1"></i>{{ _('Edit') }}
                     </button>
-                    {% if member.role|lower != 'manager' %}
+                    {% endif %}
+                    {% if (session.user_role.lower() == 'admin' and session.user_id|int != member.id) or (session.user_role.lower() == 'manager' and member.role.lower() == 'worker') %}
                     <button onclick="confirmDelete({{ member.id }}, '{{ member.full_name }}')" 
                             class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 flex-1">
                         <i class="fas fa-trash mr-1"></i>{{ _('Delete') }}
@@ -230,7 +245,17 @@
             </div>
             <div class="mb-4">
                 <label for="role" class="block text-sm font-medium text-gray-700">{{ _('Role') }}</label>
-                <input type="text" name="role" id="edit_role" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                <select name="role" id="edit_role" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    {% if session.user_role.lower() == 'admin' %}
+                    <option value="worker">Worker</option>
+                    <option value="manager">Manager</option>
+                    <option value="admin">Admin</option>
+                    {% elif session.user_role.lower() == 'manager' %}
+                    <option value="worker">Worker</option>
+                    {% else %}
+                    <option value="worker">Worker</option>
+                    {% endif %}
+                </select>
             </div>
             <div class="mb-4">
                 <label for="department" class="block text-sm font-medium text-gray-700">{{ _('Department') }}</label>
@@ -347,7 +372,11 @@
             document.getElementById('edit_first_name').value = btn.dataset.first_name;
             document.getElementById('edit_last_name').value = btn.dataset.last_name;
             document.getElementById('edit_phone_number').value = btn.dataset.phone_number;
-            document.getElementById('edit_role').value = btn.dataset.role;
+            
+            // Set role dropdown value
+            const roleSelect = document.getElementById('edit_role');
+            roleSelect.value = btn.dataset.role.toLowerCase();
+            
             document.getElementById('edit_department').value = btn.dataset.department;
 
             // set form action

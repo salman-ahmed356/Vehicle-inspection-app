@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from ..models import Customer
 from ..database import db
 from ..forms.customer_form import CustomerForm
+from ..services.log_service import log_action
 
 customers = Blueprint('customers', __name__)
 
@@ -29,6 +30,7 @@ def add_customer():
         try:
             db.session.add(new_customer)
             db.session.commit()
+            log_action('CUSTOMER_CREATED', f'Created customer: {new_customer.full_name} ({new_customer.phone_number})')
             flash('Customer added successfully!', 'success')
         except Exception as e:
             db.session.rollback()
@@ -52,6 +54,7 @@ def edit_customer(customer_id):
         
         try:
             db.session.commit()
+            log_action('CUSTOMER_UPDATED', f'Updated customer: {customer.full_name} ({customer.phone_number})')
             flash('Customer updated successfully!', 'success')
             return redirect(url_for('customers.customer_list'))
         except Exception as e:
@@ -64,6 +67,7 @@ def edit_customer(customer_id):
 def delete_customer(customer_id):
     customer = Customer.query.get_or_404(customer_id)
     try:
+        log_action('CUSTOMER_DELETED', f'Deleted customer: {customer.full_name} ({customer.phone_number})')
         db.session.delete(customer)
         db.session.commit()
         flash('Customer deleted successfully!', 'success')

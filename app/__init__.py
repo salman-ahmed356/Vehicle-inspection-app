@@ -18,6 +18,7 @@ from .routes.vehicles import vehicles
 from .routes.report_settings import report_settings
 from .routes.auth import auth
 from .routes.api import api
+from .routes.logs import logs
 
 babel = Babel()
 
@@ -77,6 +78,7 @@ def create_app(test_config=None):
     app.register_blueprint(vehicles)
     app.register_blueprint(report_settings)
     app.register_blueprint(api)
+    app.register_blueprint(logs)
 
     # Remove automatic table creation to avoid startup issues
     # Tables will be created manually after database is ready

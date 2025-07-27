@@ -8,6 +8,8 @@ from sqlalchemy import or_
 from ..database import db
 from ..enums import FuelType, TransmissionType, Color, ReportStatus
 from ..auth import login_required
+from ..rbac import can_delete_reports
+from ..services.log_service import log_action
 from ..models import (
     Report, Customer, Package, Staff, Vehicle, Agent, VehicleOwner,
     PackageExpertise, ExpertiseReport, ExpertiseType, ExpertiseFeature
@@ -306,6 +308,9 @@ def add_report():
             
             # 6) FINAL COMMIT
             db.session.commit()
+            
+            # Log report creation
+            log_action('REPORT_CREATED', f'Created report for vehicle: {chassis} (Customer: {customer.full_name})')
             
             # Save form data to session for later editing (backup)
             from flask import session
@@ -773,6 +778,8 @@ def edit_report(report_id):
             
             flash('Report updated successfully!', 'report_success')
             
+            log_action('REPORT_UPDATED', f'Updated report ID: {report_id} for vehicle: {updated_vehicle.chassis_number}')
+            
             # Redirect back to reports list
             return redirect(url_for('reports.report_list'))
             
@@ -831,7 +838,12 @@ def edit_report(report_id):
 
 
 @reports.route('/report/delete/<int:report_id>', methods=['POST'])
+@login_required
 def delete_report(report_id):
+    if not can_delete_reports():
+        flash('You do not have permission to delete reports.', 'error')
+        return redirect(url_for('reports.report_list'))
+    
     report = Report.query.get_or_404(report_id)
     
     # Store the status before deleting
@@ -866,6 +878,7 @@ def delete_report(report_id):
             db.session.delete(owner)
         
         # Delete the report
+        log_action('REPORT_DELETED', f'Deleted report ID: {report_id} for vehicle: {report.vehicle.chassis_number if report.vehicle else "Unknown"}')
         db.session.delete(report)
         db.session.commit()
         flash('Report successfully deleted!', 'success')
@@ -879,8 +892,10 @@ def delete_report(report_id):
 
 
 @reports.route('/report/cancel/<int:report_id>', methods=['POST'])
+@login_required
 def cancel_report(report_id):
     report = Report.query.get_or_404(report_id)
+    log_action('REPORT_CANCELLED', f'Cancelled report ID: {report_id} for vehicle: {report.vehicle.chassis_number if report.vehicle else "Unknown"}')
     report.status = ReportStatus.CANCELLED
     db.session.commit()
     flash('Report cancelled successfully!', 'success')
@@ -894,10 +909,12 @@ def complete_report(report_id):
 
 
 @reports.route('/report/mark_complete/<int:report_id>', methods=['POST'])
+@login_required
 def mark_complete(report_id):
     # Mark the report as completed
     try:
         report = Report.query.get_or_404(report_id)
+        log_action('REPORT_COMPLETED', f'Completed report ID: {report_id} for vehicle: {report.vehicle.chassis_number if report.vehicle else "Unknown"}')
         report.status = ReportStatus.COMPLETED
         db.session.commit()
         flash('Report marked as completed!', 'success')

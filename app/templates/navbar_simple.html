@@ -17,7 +17,7 @@
       {% if session.user_name %}
       <div class="text-white text-sm">
         <i class="fas fa-user-circle text-yellow-300 mr-1"></i>
-        <span class="text-yellow-200">{{ session.user_name }}</span>
+        <span class="text-yellow-200">{{ session.user_name }} ({{ session.user_role|title }})</span>
       </div>
       {% endif %}
     </div>
@@ -39,7 +39,7 @@
         {% if session.user_name %}
         <div class="relative group mr-4">
           <i class="fas fa-user-circle text-yellow-300 mr-1"></i>
-          <span class="uppercase font-bold text-yellow-200">{{ session.user_name }}</span>
+          <span class="uppercase font-bold text-yellow-200">{{ session.user_name }} ({{ session.user_role|title }})</span>
         </div>
         <div class="relative group mr-4">
           <i class="fas fa-sign-out-alt"></i>
@@ -71,10 +71,15 @@
           <i class="fas fa-cog"></i>
           <a href="{{ url_for('companies.company_detail') }}" class="hover:underline uppercase">{{ _('Settings') }}</a>
           <div class="dropdown-menu">
+            {% if session.user_role and session.user_role.lower() == 'admin' %}
             <a href="{{ url_for('companies.company_detail') }}" class="block px-4 py-2 hover:bg-gray-100">{{ _('Company Settings') }}</a>
+            {% endif %}
             <a href="{{ url_for('packages.packages_list') }}" class="block px-4 py-2 hover:bg-gray-100">{{ _('Expertise Packages') }}</a>
             <a href="{{ url_for('customers.customer_list') }}" class="block px-4 py-2 hover:bg-gray-100">{{ _('Customers') }}</a>
             <a href="{{ url_for('staff.staff_list') }}" class="block px-4 py-2 hover:bg-gray-100">{{ _('Staff Management') }}</a>
+            {% if session.user_role and session.user_role.lower() == 'admin' %}
+            <a href="{{ url_for('logs.system_logs') }}" class="block px-4 py-2 hover:bg-gray-100">{{ _('System Logs') }}</a>
+            {% endif %}
           </div>
         </div>
       </div>
@@ -106,10 +111,15 @@
         
         <div class="border-t border-blue-400 pt-3">
           <div class="text-white font-semibold mb-2"><i class="fas fa-cog mr-2"></i>{{ _('Settings') }}</div>
+          {% if session.user_role and session.user_role.lower() == 'admin' %}
           <a href="{{ url_for('companies.company_detail') }}" class="block text-blue-100 py-1 pl-6 hover:bg-blue-700 px-3 rounded text-sm">{{ _('Company Settings') }}</a>
+          {% endif %}
           <a href="{{ url_for('packages.packages_list') }}" class="block text-blue-100 py-1 pl-6 hover:bg-blue-700 px-3 rounded text-sm">{{ _('Expertise Packages') }}</a>
           <a href="{{ url_for('customers.customer_list') }}" class="block text-blue-100 py-1 pl-6 hover:bg-blue-700 px-3 rounded text-sm">{{ _('Customers') }}</a>
           <a href="{{ url_for('staff.staff_list') }}" class="block text-blue-100 py-1 pl-6 hover:bg-blue-700 px-3 rounded text-sm">{{ _('Staff Management') }}</a>
+          {% if session.user_role and session.user_role.lower() == 'admin' %}
+          <a href="{{ url_for('logs.system_logs') }}" class="block text-blue-100 py-1 pl-6 hover:bg-blue-700 px-3 rounded text-sm">{{ _('System Logs') }}</a>
+          {% endif %}
         </div>
         
         <div class="border-t border-blue-400 pt-3">
