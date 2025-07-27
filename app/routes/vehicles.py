@@ -5,6 +5,9 @@ from ..enums import TransmissionType, FuelType, Color
 from sqlalchemy.exc import IntegrityError
 import base64
 from datetime import datetime
+from ..auth import login_required
+from ..rbac import can_delete_customers
+from ..services.log_service import log_action
 
 vehicles = Blueprint('vehicles', __name__)
 
@@ -65,7 +68,11 @@ def vehicle_list():
     )
 
 @vehicles.route('/vehicle/edit/<int:vehicle_id>', methods=['GET', 'POST'])
+@login_required
 def edit_vehicle(vehicle_id):
+    if not can_delete_customers():  # Using same permission as customers
+        flash('You do not have permission to edit vehicles.', 'error')
+        return redirect(url_for('vehicles.vehicle_list'))
     vehicle = Vehicle.query.get_or_404(vehicle_id)
     
     # Find the latest report for this vehicle that has an image
@@ -94,6 +101,7 @@ def edit_vehicle(vehicle_id):
         
         try:
             db.session.commit()
+            log_action('VEHICLE_UPDATED', f'Updated vehicle: {vehicle.chassis_number} ({vehicle.brand} {vehicle.model})')
             flash('Vehicle updated successfully!', 'success')
             return redirect(url_for('vehicles.vehicle_list'))
         except IntegrityError as e:
@@ -118,7 +126,12 @@ def edit_vehicle(vehicle_id):
     )
 
 @vehicles.route('/vehicle/delete/<int:vehicle_id>', methods=['POST'])
+@login_required
 def delete_vehicle(vehicle_id):
+    if not can_delete_customers():  # Using same permission as customers
+        flash('You do not have permission to delete vehicles.', 'error')
+        return redirect(url_for('vehicles.vehicle_list'))
+    
     vehicle = Vehicle.query.get_or_404(vehicle_id)
     
     try:
@@ -127,6 +140,7 @@ def delete_vehicle(vehicle_id):
             flash('Cannot delete vehicle as it is associated with reports.', 'error')
             return redirect(url_for('vehicles.vehicle_list'))
         
+        log_action('VEHICLE_DELETED', f'Deleted vehicle: {vehicle.chassis_number} ({vehicle.brand} {vehicle.model})')
         db.session.delete(vehicle)
         db.session.commit()
         flash('Vehicle deleted successfully!', 'success')

@@ -3,6 +3,8 @@ from ..models import Customer
 from ..database import db
 from ..forms.customer_form import CustomerForm
 from ..services.log_service import log_action
+from ..auth import login_required
+from ..rbac import can_delete_customers
 
 customers = Blueprint('customers', __name__)
 
@@ -41,7 +43,12 @@ def add_customer():
     return render_template('customer/add_customer.html', form=form)
 
 @customers.route('/customers/edit/<int:customer_id>', methods=['GET', 'POST'])
+@login_required
 def edit_customer(customer_id):
+    if not can_delete_customers():
+        flash('You do not have permission to edit customers.', 'error')
+        return redirect(url_for('customers.customer_list'))
+    
     customer = Customer.query.get_or_404(customer_id)
     form = CustomerForm(obj=customer)
     
@@ -64,7 +71,13 @@ def edit_customer(customer_id):
     return render_template('customer/edit_customer.html', form=form, customer=customer)
 
 @customers.route('/customers/delete/<int:customer_id>', methods=['POST'])
+@login_required
 def delete_customer(customer_id):
+    from ..rbac import can_delete_customers
+    if not can_delete_customers():
+        flash('You do not have permission to delete customers.', 'error')
+        return redirect(url_for('customers.customer_list'))
+    
     customer = Customer.query.get_or_404(customer_id)
     try:
         log_action('CUSTOMER_DELETED', f'Deleted customer: {customer.full_name} ({customer.phone_number})')
