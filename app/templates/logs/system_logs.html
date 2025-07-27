@@ -36,7 +36,7 @@
         {% endif %}
     {% endwith %}
     
-    <div class="bg-white p-6 rounded-lg shadow min-h-screen">
+    <div class="bg-white p-6 rounded-lg shadow min-h-screen w-full">
         <div class="flex justify-between items-center mb-4">
             <div class="flex items-center gap-4">
                 <h2 class="text-xl font-semibold">{{ _('System Logs') }}</h2>
@@ -58,15 +58,15 @@
 
         <!-- Desktop Table -->
         <div class="desktop-table overflow-x-auto table-container">
-            <table class="min-w-full bg-white logs-table">
+            <table class="w-full bg-white logs-table">
                 <thead class="bg-gray-200">
                     <tr>
-                        <th class="py-3 px-4 text-left">{{ _('Timestamp') }}</th>
-                        <th class="py-3 px-4 text-left">{{ _('User') }}</th>
-                        <th class="py-3 px-4 text-left">{{ _('Action') }}</th>
-                        <th class="py-3 px-4 text-left">{{ _('Details') }}</th>
-                        <th class="py-3 px-4 text-left">{{ _('IP Address') }}</th>
-                        <th class="py-3 px-4 text-left">{{ _('Actions') }}</th>
+                        <th class="py-3 px-4 text-left w-1/6">{{ _('Timestamp') }}</th>
+                        <th class="py-3 px-4 text-left w-1/5">{{ _('User') }}</th>
+                        <th class="py-3 px-4 text-left w-1/6">{{ _('Action') }}</th>
+                        <th class="py-3 px-4 text-left w-1/3">{{ _('Details') }}</th>
+                        <th class="py-3 px-4 text-left w-1/6">{{ _('IP Address') }}</th>
+                        <th class="py-3 px-4 text-left w-16">{{ _('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
