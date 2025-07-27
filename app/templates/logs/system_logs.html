@@ -62,12 +62,12 @@
             <table class="w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700 border-b">{{ _('Timestamp') }}</th>
-                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700 border-b">{{ _('User') }}</th>
-                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700 border-b">{{ _('Action') }}</th>
-                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700 border-b">{{ _('Details') }}</th>
-                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700 border-b">{{ _('IP Address') }}</th>
-                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700 border-b">{{ _('Actions') }}</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700 border-b w-1/6">{{ _('Timestamp') }}</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700 border-b w-1/4">{{ _('User') }}</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700 border-b w-1/8">{{ _('Action') }}</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700 border-b w-2/5">{{ _('Details') }}</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700 border-b w-1/8">{{ _('IP Address') }}</th>
+                        <th class="py-3 px-4 text-left text-sm font-medium text-gray-700 border-b w-16">{{ _('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
@@ -92,7 +92,7 @@
                             </span>
                         </td>
                         <td class="py-3 px-4 text-sm text-gray-900">
-                            <div class="max-w-md truncate" title="{{ log.details }}">
+                            <div class="truncate" title="{{ log.details }}">
                                 {{ log.details or "-" }}
                             </div>
                         </td>
