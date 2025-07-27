@@ -97,9 +97,6 @@ def edit_staff(id):
     
     # Skip validation and process form data directly
     if request.method == 'POST':
-
-    # Process form data without validation since we handle validation manually
-    if True:  # Skip form validation
         # Role validation based on current user
         from flask import session
         current_user_role = session.get('user_role', '').lower()
