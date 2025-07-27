@@ -133,14 +133,28 @@ def add_report():
             vehicle = Vehicle.query.filter_by(chassis_number=chassis).first()
 
             if not vehicle:
+                # Check if engine number already exists and modify if needed
+                engine_num = form.engine_number.data.strip()
+                existing_engine = Vehicle.query.filter_by(engine_number=engine_num).first()
+                if existing_engine:
+                    # Make engine number unique by appending chassis suffix
+                    engine_num = f"{engine_num}_{chassis[-4:]}"
+                
+                # Check if plate already exists and modify if needed  
+                plate_num = plate
+                existing_plate = Vehicle.query.filter_by(plate=plate_num).first()
+                if existing_plate:
+                    # Make plate unique by appending chassis suffix
+                    plate_num = f"{plate}_{chassis[-4:]}"
+
                 # Convert string enum names to actual enum values
                 color_enum = map_to_enum(form.color.data, Color)
                 transmission_enum = map_to_enum(form.gear_type.data, TransmissionType)
                 fuel_enum = map_to_enum(form.fuel_type.data, FuelType)
                 
                 vehicle = Vehicle(
-                    plate             = plate,
-                    engine_number     = form.engine_number.data.strip(),
+                    plate             = plate_num,
+                    engine_number     = engine_num,
                     brand             = form.brand.data.strip(),
                     model             = form.model.data.strip(),
                     chassis_number    = chassis,
