@@ -376,7 +376,7 @@
             // Set role dropdown value
             const roleSelect = document.getElementById('edit_role');
             const currentRole = btn.dataset.role.toLowerCase();
-            const currentUserId = {{ session.user_id }};
+            const currentUserId = {{ current_user_id|default(0) }};
             const editingUserId = parseInt(id);
             
             // If editing own profile, disable role change and show current role

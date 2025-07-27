@@ -14,9 +14,10 @@ staff = Blueprint('staff', __name__)
 @staff.route('/staff')
 @login_required
 def staff_list():
+    from flask import session
     staff_members = get_visible_staff()
     form = StaffForm()
-    return render_template('staff/staff_list.html', staff=staff_members, form=form)
+    return render_template('staff/staff_list.html', staff=staff_members, form=form, current_user_id=session.get('user_id'))
 
 
 @staff.route('/staff/add', methods=['GET', 'POST'])
