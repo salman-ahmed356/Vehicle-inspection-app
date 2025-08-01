@@ -1,211 +1,3 @@
-<link rel="stylesheet" href="{{ url_for('static', filename='css/paint-expertise-mobile.css') }}">
-
-<style>
-  .car-diagram-container {
-    max-width: 1000px;
-    margin: 0 auto;
-    position: relative;
-    background: #f8f9fa;
-    border-radius: 10px;
-    padding: 20px;
-  }
-  
-  .car-and-legend {
-    display: flex;
-    align-items: flex-start;
-    gap: 30px;
-    justify-content: center;
-  }
-  
-  .car-svg {
-    width: 450px;
-    height: auto;
-    cursor: pointer;
-    flex-shrink: 0;
-  }
-  
-  .car-part {
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  
-  .car-part:hover {
-    opacity: 0.8;
-    stroke-width: 3;
-  }
-  
-  .car-part {
-    cursor: pointer;
-    transition: all 0.3s ease;
-    stroke-width: 2;
-    stroke: #333;
-  }
-  
-  .car-part:hover {
-    stroke-width: 3;
-    stroke: #007bff;
-  }
-  
-  .status-original { fill: #e9ecef; }
-  .status-painted { fill: #dc3545; }
-  .status-locally-painted { fill: #ffc107; }
-  .status-replaced { fill: #28a745; }
-  .status-damaged { fill: #fd7e14; }
-  .status-not-available { fill: #6c757d; }
-  
-  .legend {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin: 0;
-    padding: 20px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    min-width: 200px;
-  }
-  
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-  }
-  
-  .legend-color {
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
-    border: 2px solid #333;
-  }
-  
-  .part-selector {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    padding: 20px;
-    z-index: 1000;
-    min-width: 300px;
-    display: none;
-  }
-  
-  .part-selector h3 {
-    margin: 0 0 15px 0;
-    color: #333;
-    text-align: center;
-  }
-  
-  .status-options {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 20px;
-  }
-  
-  .status-option {
-    padding: 12px;
-    border: 2px solid #ddd;
-    border-radius: 6px;
-    cursor: pointer;
-    text-align: left;
-    transition: all 0.3s ease;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .status-option-color {
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
-    border: 2px solid #333;
-  }
-  
-  .status-option:hover {
-    border-color: #007bff;
-    background: #f8f9fa;
-  }
-  
-  .status-option.selected {
-    border-color: #007bff;
-    background: #007bff;
-    color: white;
-  }
-  
-  .selector-buttons {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-  }
-  
-  .btn {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 500;
-  }
-  
-  .btn-primary {
-    background: #007bff;
-    color: white;
-  }
-  
-  .btn-secondary {
-    background: #6c757d;
-    color: white;
-  }
-  
-  .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    z-index: 999;
-    display: none;
-  }
-  
-  @media (max-width: 768px) {
-    .car-diagram-container {
-      padding: 10px;
-    }
-    
-    .car-and-legend {
-      flex-direction: column;
-      align-items: center;
-    }
-    
-    .car-svg {
-      width: 100%;
-      max-width: 350px;
-    }
-    
-    .legend {
-      flex-direction: row;
-      flex-wrap: wrap;
-      justify-content: center;
-      min-width: auto;
-      width: 100%;
-    }
-    
-    .part-selector {
-      width: 90%;
-      max-width: 350px;
-    }
-    
-    .status-options {
-      flex-direction: column;
-    }
-  }
-</style>
-
 {% include 'report_sections/expertises/vehicle_header.html' %}
 
 <h2 class="text-lg font-semibold mb-4">
@@ -213,154 +5,313 @@
 </h2>
 <p class="mb-4">{{ _('Click on car parts to mark their paint condition') }}</p>
 
-<div class="car-diagram-container">
-  <div class="car-and-legend">
-    <svg class="car-svg" viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
-      <!-- Car outline exactly like the original -->
-      
-      <!-- Front Bumper -->
-      <path class="car-part" data-part="Front Bumper" 
-            d="M120 40 Q120 20 140 20 L260 20 Q280 20 280 40 L280 60 L120 60 Z" 
-            fill="#e9ecef" stroke="#333" stroke-width="2"/>
-      
-      <!-- Hood -->
-      <rect class="car-part" data-part="Hood" 
-            x="140" y="60" width="120" height="100" 
-            fill="#e9ecef" stroke="#333" stroke-width="2"/>
-      
-      <!-- Left Front Fender -->
-      <rect class="car-part" data-part="Left Front Fender" 
-            x="80" y="80" width="60" height="80" 
-            fill="#e9ecef" stroke="#333" stroke-width="2"/>
-      
-      <!-- Right Front Fender -->
-      <rect class="car-part" data-part="Right Front Fender" 
-            x="260" y="80" width="60" height="80" 
-            fill="#e9ecef" stroke="#333" stroke-width="2"/>
-      
-      <!-- Left Front Door -->
-      <rect class="car-part" data-part="Left Front Door" 
-            x="80" y="160" width="60" height="100" 
-            fill="#e9ecef" stroke="#333" stroke-width="2"/>
-      
-      <!-- Right Front Door -->
-      <rect class="car-part" data-part="Right Front Door" 
-            x="260" y="160" width="60" height="100" 
-            fill="#e9ecef" stroke="#333" stroke-width="2"/>
-      
-      <!-- Roof -->
-      <rect class="car-part" data-part="Roof" 
-            x="140" y="160" width="120" height="200" 
-            fill="#e9ecef" stroke="#333" stroke-width="2"/>
-      
-      <!-- Left Rear Door -->
-      <rect class="car-part" data-part="Left Rear Door" 
-            x="80" y="260" width="60" height="100" 
-            fill="#e9ecef" stroke="#333" stroke-width="2"/>
-      
-      <!-- Right Rear Door -->
-      <rect class="car-part" data-part="Right Rear Door" 
-            x="260" y="260" width="60" height="100" 
-            fill="#e9ecef" stroke="#333" stroke-width="2"/>
-      
-      <!-- Trunk -->
-      <rect class="car-part" data-part="Trunk Lid" 
-            x="140" y="360" width="120" height="100" 
-            fill="#e9ecef" stroke="#333" stroke-width="2"/>
-      
-      <!-- Left Rear Fender -->
-      <rect class="car-part" data-part="Left Rear Fender" 
-            x="80" y="380" width="60" height="80" 
-            fill="#e9ecef" stroke="#333" stroke-width="2"/>
-      
-      <!-- Right Rear Fender -->
-      <rect class="car-part" data-part="Right Rear Fender" 
-            x="260" y="380" width="60" height="80" 
-            fill="#e9ecef" stroke="#333" stroke-width="2"/>
-      
-      <!-- Rear Bumper -->
-      <path class="car-part" data-part="Rear Bumper" 
-            d="M120 460 L280 460 Q280 480 260 480 L140 480 Q120 480 120 460 Z" 
-            fill="#e9ecef" stroke="#333" stroke-width="2"/>
-      
-      <!-- Labels -->
-      <text x="200" y="50" text-anchor="middle" font-size="12" fill="#333">Front Bumper</text>
-      <text x="200" y="115" text-anchor="middle" font-size="12" fill="#333">Hood</text>
-      <text x="110" y="125" text-anchor="middle" font-size="10" fill="#333">L Front Fender</text>
-      <text x="290" y="125" text-anchor="middle" font-size="10" fill="#333">R Front Fender</text>
-      <text x="110" y="215" text-anchor="middle" font-size="10" fill="#333">L Front Door</text>
-      <text x="290" y="215" text-anchor="middle" font-size="10" fill="#333">R Front Door</text>
-      <text x="200" y="265" text-anchor="middle" font-size="12" fill="#333">Roof</text>
-      <text x="110" y="315" text-anchor="middle" font-size="10" fill="#333">L Rear Door</text>
-      <text x="290" y="315" text-anchor="middle" font-size="10" fill="#333">R Rear Door</text>
-      <text x="200" y="415" text-anchor="middle" font-size="12" fill="#333">Trunk</text>
-      <text x="110" y="425" text-anchor="middle" font-size="10" fill="#333">L Rear Fender</text>
-      <text x="290" y="425" text-anchor="middle" font-size="10" fill="#333">R Rear Fender</text>
-      <text x="200" y="475" text-anchor="middle" font-size="12" fill="#333">Rear Bumper</text>
-    </svg>
-    
-    <div class="legend">
-      <div class="legend-item">
-        <div class="legend-color" style="background-color: #e9ecef; border: 2px solid #333;"></div>
-        <span>{{ _('Original Paint') }}</span>
-      </div>
-      <div class="legend-item">
-        <div class="legend-color" style="background-color: #dc3545; border: 2px solid #333;"></div>
-        <span>{{ _('Repainted') }}</span>
-      </div>
-      <div class="legend-item">
-        <div class="legend-color" style="background-color: #ffc107; border: 2px solid #333;"></div>
-        <span>{{ _('Portion Repainted') }}</span>
-      </div>
-      <div class="legend-item">
-        <div class="legend-color" style="background-color: #28a745; border: 2px solid #333;"></div>
-        <span>{{ _('Replaced') }}</span>
-      </div>
-      <div class="legend-item">
-        <div class="legend-color" style="background-color: #fd7e14; border: 2px solid #333;"></div>
-        <span>{{ _('Damaged') }}</span>
-      </div>
-      <div class="legend-item">
-        <div class="legend-color" style="background-color: #6c757d; border: 2px solid #333;"></div>
-        <span>{{ _('Not Available') }}</span>
-      </div>
+<style>
+.car-container {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.car-diagram {
+  display: grid;
+  grid-template-columns: 80px 120px 80px;
+  grid-template-rows: 50px 80px 80px 80px 80px 50px;
+  gap: 2px;
+  border: 3px solid #333;
+  border-radius: 15px;
+  padding: 10px;
+  background: #f8f9fa;
+}
+
+.car-part {
+  border: 2px solid #333;
+  background: #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  padding: 5px;
+}
+
+.car-part:hover {
+  opacity: 0.8;
+  border-width: 3px;
+}
+
+.front-bumper {
+  grid-column: 1 / 4;
+  border-radius: 25px 25px 5px 5px;
+}
+
+.hood {
+  grid-column: 2 / 3;
+  border-radius: 5px;
+}
+
+.left-front-fender {
+  grid-column: 1 / 2;
+  border-radius: 5px;
+}
+
+.right-front-fender {
+  grid-column: 3 / 4;
+  border-radius: 5px;
+}
+
+.left-front-door {
+  grid-column: 1 / 2;
+  border-radius: 5px;
+}
+
+.roof {
+  grid-column: 2 / 3;
+  border-radius: 5px;
+}
+
+.right-front-door {
+  grid-column: 3 / 4;
+  border-radius: 5px;
+}
+
+.left-rear-door {
+  grid-column: 1 / 2;
+  border-radius: 5px;
+}
+
+.trunk {
+  grid-column: 2 / 3;
+  border-radius: 5px;
+}
+
+.right-rear-door {
+  grid-column: 3 / 4;
+  border-radius: 5px;
+}
+
+.left-rear-fender {
+  grid-column: 1 / 2;
+  border-radius: 5px;
+}
+
+.right-rear-fender {
+  grid-column: 3 / 4;
+  border-radius: 5px;
+}
+
+.rear-bumper {
+  grid-column: 1 / 4;
+  border-radius: 5px 5px 25px 25px;
+}
+
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  min-width: 200px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 2px solid #333;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+}
+
+.modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  min-width: 300px;
+}
+
+.status-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.status-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.status-option:hover {
+  border-color: #007bff;
+  background: #f8f9fa;
+}
+
+.status-option.selected {
+  border-color: #007bff;
+  background: #007bff;
+  color: white;
+}
+
+.status-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 2px solid #333;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-primary {
+  background: #007bff;
+  color: white;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+/* Color classes */
+.status-original { background-color: #e9ecef !important; }
+.status-painted { background-color: #dc3545 !important; }
+.status-locally-painted { background-color: #ffc107 !important; }
+.status-replaced { background-color: #28a745 !important; }
+.status-damaged { background-color: #fd7e14 !important; }
+.status-not-available { background-color: #6c757d !important; }
+
+@media (max-width: 768px) {
+  .car-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .legend {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    min-width: auto;
+  }
+}
+</style>
+
+<div class="car-container">
+  <div class="car-diagram">
+    <div class="car-part front-bumper" onclick="openModal('Front Bumper', this)">Front Bumper</div>
+    <div class="car-part left-front-fender" onclick="openModal('Left Front Fender', this)">L Front Fender</div>
+    <div class="car-part hood" onclick="openModal('Hood', this)">Hood</div>
+    <div class="car-part right-front-fender" onclick="openModal('Right Front Fender', this)">R Front Fender</div>
+    <div class="car-part left-front-door" onclick="openModal('Left Front Door', this)">L Front Door</div>
+    <div class="car-part roof" onclick="openModal('Roof', this)">Roof</div>
+    <div class="car-part right-front-door" onclick="openModal('Right Front Door', this)">R Front Door</div>
+    <div class="car-part left-rear-door" onclick="openModal('Left Rear Door', this)">L Rear Door</div>
+    <div class="car-part trunk" onclick="openModal('Trunk Lid', this)">Trunk</div>
+    <div class="car-part right-rear-door" onclick="openModal('Right Rear Door', this)">R Rear Door</div>
+    <div class="car-part left-rear-fender" onclick="openModal('Left Rear Fender', this)">L Rear Fender</div>
+    <div class="car-part right-rear-fender" onclick="openModal('Right Rear Fender', this)">R Rear Fender</div>
+    <div class="car-part rear-bumper" onclick="openModal('Rear Bumper', this)">Rear Bumper</div>
+  </div>
+  
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #e9ecef;"></div>
+      <span>{{ _('Original Paint') }}</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #dc3545;"></div>
+      <span>{{ _('Repainted') }}</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #ffc107;"></div>
+      <span>{{ _('Portion Repainted') }}</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #28a745;"></div>
+      <span>{{ _('Replaced') }}</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #fd7e14;"></div>
+      <span>{{ _('Damaged') }}</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #6c757d;"></div>
+      <span>{{ _('Not Available') }}</span>
     </div>
   </div>
 </div>
 
-<!-- Part Selector Modal -->
-<div class="overlay" id="overlay"></div>
-<div class="part-selector" id="partSelector">
-  <h3 id="partName">Select Status</h3>
-  <div class="status-options">
-    <div class="status-option" data-status="Original">
-      <div class="status-option-color" style="background-color: #e9ecef;"></div>
-      <span>{{ _('Original Paint') }}</span>
+<!-- Modal -->
+<div id="partModal" class="modal">
+  <div class="modal-content">
+    <h3 id="modalTitle">Select Status</h3>
+    <div class="status-options">
+      <div class="status-option" onclick="selectStatus('Original', this)">
+        <div class="status-color" style="background-color: #e9ecef;"></div>
+        <span>{{ _('Original Paint') }}</span>
+      </div>
+      <div class="status-option" onclick="selectStatus('Painted', this)">
+        <div class="status-color" style="background-color: #dc3545;"></div>
+        <span>{{ _('Repainted') }}</span>
+      </div>
+      <div class="status-option" onclick="selectStatus('Locally Painted', this)">
+        <div class="status-color" style="background-color: #ffc107;"></div>
+        <span>{{ _('Portion Repainted') }}</span>
+      </div>
+      <div class="status-option" onclick="selectStatus('Replaced', this)">
+        <div class="status-color" style="background-color: #28a745;"></div>
+        <span>{{ _('Replaced') }}</span>
+      </div>
+      <div class="status-option" onclick="selectStatus('Damaged', this)">
+        <div class="status-color" style="background-color: #fd7e14;"></div>
+        <span>{{ _('Damaged') }}</span>
+      </div>
+      <div class="status-option" onclick="selectStatus('None', this)">
+        <div class="status-color" style="background-color: #6c757d;"></div>
+        <span>{{ _('Not Available') }}</span>
+      </div>
     </div>
-    <div class="status-option" data-status="Painted">
-      <div class="status-option-color" style="background-color: #dc3545;"></div>
-      <span>{{ _('Repainted') }}</span>
+    <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+      <button class="btn btn-secondary" onclick="closeModal()">{{ _('Cancel') }}</button>
+      <button class="btn btn-primary" onclick="saveStatus()">{{ _('Save') }}</button>
     </div>
-    <div class="status-option" data-status="Locally Painted">
-      <div class="status-option-color" style="background-color: #ffc107;"></div>
-      <span>{{ _('Portion Repainted') }}</span>
-    </div>
-    <div class="status-option" data-status="Replaced">
-      <div class="status-option-color" style="background-color: #28a745;"></div>
-      <span>{{ _('Replaced') }}</span>
-    </div>
-    <div class="status-option" data-status="Damaged">
-      <div class="status-option-color" style="background-color: #fd7e14;"></div>
-      <span>{{ _('Damaged') }}</span>
-    </div>
-    <div class="status-option" data-status="None">
-      <div class="status-option-color" style="background-color: #6c757d;"></div>
-      <span>{{ _('Not Available') }}</span>
-    </div>
-  </div>
-  <div class="selector-buttons">
-    <button class="btn btn-secondary" onclick="closePartSelector()">{{ _('Cancel') }}</button>
-    <button class="btn btn-primary" onclick="savePartStatus()">{{ _('Save') }}</button>
   </div>
 </div>
 
@@ -368,7 +319,6 @@
   <input type="hidden" name="current_expertise_type" value="{{ current_expertise_type }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   
-  <!-- Hidden inputs for each car part -->
   {% for feature in expertise_report.features %}
     <input type="hidden" name="feature_{{ feature.id }}" id="feature_{{ feature.id }}" value="{{ feature.status }}">
   {% endfor %}
@@ -396,118 +346,58 @@
 <script>
 let currentPart = null;
 let selectedStatus = null;
-let partFeatureMap = {};
 
-// Map part names to feature IDs
-{% for feature in expertise_report.features %}
-partFeatureMap['{{ feature.name }}'] = {{ feature.id }};
-console.log('Mapped feature: {{ feature.name }} -> {{ feature.id }}');
-{% endfor %}
-
-console.log('All feature mappings:', partFeatureMap);
-
-// Status to CSS class mapping
-const statusClasses = {
-  'Original': 'status-original',
-  'Painted': 'status-painted',
-  'Locally Painted': 'status-locally-painted',
-  'Replaced': 'status-replaced',
-  'Damaged': 'status-damaged',
-  'None': 'status-not-available'
+// Feature mapping
+const partFeatureMap = {
+  {% for feature in expertise_report.features %}
+  '{{ feature.name }}': {{ feature.id }},
+  {% endfor %}
 };
 
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('DOM loaded, initializing car parts...');
-  
-  // Wait a bit for everything to load
-  setTimeout(function() {
-    // Initialize car parts with current status
-    {% for feature in expertise_report.features %}
-    const part{{ loop.index }} = document.querySelector('[data-part="{{ feature.name }}"]');
-    if (part{{ loop.index }}) {
-      const currentClass = statusClasses['{{ feature.status }}'] || 'status-original';
-      part{{ loop.index }}.className = 'car-part ' + currentClass;
-      console.log('Initialized part: {{ feature.name }} with status: {{ feature.status }}');
-    } else {
-      console.error('Part not found: {{ feature.name }}');
-    }
-    {% endfor %}
-    
-    // Add click listeners to car parts
-    const carParts = document.querySelectorAll('.car-part');
-    console.log('Found', carParts.length, 'car parts');
-    
-    carParts.forEach(function(part, index) {
-      const partName = part.getAttribute('data-part');
-      console.log('Adding click listener to part', index + 1, ':', partName);
-      
-      part.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('CLICKED on part:', partName);
-        openPartSelector(partName, this);
-      });
-      
-      // Test click with a simple alert
-      part.addEventListener('mousedown', function() {
-        console.log('Mouse down on:', partName);
-      });
-    });
-    
-    // Add click listeners to status options
-    document.querySelectorAll('.status-option').forEach(function(option) {
-      option.addEventListener('click', function() {
-        document.querySelectorAll('.status-option').forEach(function(opt) {
-          opt.classList.remove('selected');
-        });
-        this.classList.add('selected');
-        selectedStatus = this.getAttribute('data-status');
-        console.log('Selected status:', selectedStatus);
-      });
-    });
-    
-    // Close modal when clicking overlay
-    const overlay = document.getElementById('overlay');
-    if (overlay) {
-      overlay.addEventListener('click', closePartSelector);
-    }
-    
-    console.log('All event listeners added successfully');
-  }, 100);
-});
+const statusColors = {
+  'Original': '#e9ecef',
+  'Painted': '#dc3545',
+  'Locally Painted': '#ffc107',
+  'Replaced': '#28a745',
+  'Damaged': '#fd7e14',
+  'None': '#6c757d'
+};
 
-function openPartSelector(partName, partElement) {
-  console.log('Opening part selector for:', partName);
+function openModal(partName, partElement) {
+  console.log('Opening modal for:', partName);
   currentPart = partElement;
-  document.getElementById('partName').textContent = partName;
-  document.getElementById('overlay').style.display = 'block';
-  document.getElementById('partSelector').style.display = 'block';
+  document.getElementById('modalTitle').textContent = partName;
+  document.getElementById('partModal').style.display = 'block';
   
   // Clear previous selection
   document.querySelectorAll('.status-option').forEach(opt => opt.classList.remove('selected'));
   selectedStatus = null;
-  
-  console.log('Part selector opened successfully');
 }
 
-function closePartSelector() {
-  document.getElementById('overlay').style.display = 'none';
-  document.getElementById('partSelector').style.display = 'none';
+function closeModal() {
+  document.getElementById('partModal').style.display = 'none';
   currentPart = null;
   selectedStatus = null;
 }
 
-function savePartStatus() {
-  console.log('Saving part status...', currentPart, selectedStatus);
-  
+function selectStatus(status, element) {
+  document.querySelectorAll('.status-option').forEach(opt => opt.classList.remove('selected'));
+  element.classList.add('selected');
+  selectedStatus = status;
+  console.log('Selected status:', status);
+}
+
+function saveStatus() {
   if (!currentPart || !selectedStatus) {
     alert('Please select a status');
     return;
   }
   
-  const partName = currentPart.getAttribute('data-part');
-  const featureId = partFeatureMap[partName];
+  const partName = currentPart.textContent.includes('L ') ? 'Left ' + currentPart.textContent.replace('L ', '') :
+                   currentPart.textContent.includes('R ') ? 'Right ' + currentPart.textContent.replace('R ', '') :
+                   currentPart.textContent === 'Trunk' ? 'Trunk Lid' : currentPart.textContent;
   
+  const featureId = partFeatureMap[partName];
   console.log('Part name:', partName, 'Feature ID:', featureId);
   
   if (featureId) {
@@ -519,28 +409,35 @@ function savePartStatus() {
     }
     
     // Update visual appearance
-    const newClass = 'car-part ' + statusClasses[selectedStatus];
-    currentPart.className = newClass;
-    
-    // Also update the fill attribute directly
-    const statusColors = {
-      'Original': '#e9ecef',
-      'Painted': '#dc3545',
-      'Locally Painted': '#ffc107',
-      'Replaced': '#28a745',
-      'Damaged': '#fd7e14',
-      'None': '#6c757d'
-    };
-    
-    currentPart.setAttribute('fill', statusColors[selectedStatus]);
-    
+    currentPart.style.backgroundColor = statusColors[selectedStatus];
     console.log('Updated', partName, 'to', selectedStatus, 'with color', statusColors[selectedStatus]);
-  } else {
-    console.error('No feature ID found for part:', partName);
   }
   
-  closePartSelector();
+  closeModal();
 }
+
+// Initialize parts with current status
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('Initializing car parts...');
+  {% for feature in expertise_report.features %}
+  const partName = '{{ feature.name }}';
+  const status = '{{ feature.status }}';
+  const color = statusColors[status] || '#e9ecef';
+  
+  // Find the part element
+  const partElements = document.querySelectorAll('.car-part');
+  partElements.forEach(function(element) {
+    const elementPartName = element.textContent.includes('L ') ? 'Left ' + element.textContent.replace('L ', '') :
+                           element.textContent.includes('R ') ? 'Right ' + element.textContent.replace('R ', '') :
+                           element.textContent === 'Trunk' ? 'Trunk Lid' : element.textContent;
+    
+    if (elementPartName === partName) {
+      element.style.backgroundColor = color;
+      console.log('Initialized', partName, 'with color', color);
+    }
+  });
+  {% endfor %}
+});
 
 // Form submission
 document.getElementById('expertiseForm').addEventListener('submit', function(e) {
