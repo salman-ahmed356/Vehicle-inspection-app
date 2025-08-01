@@ -1,136 +1,201 @@
 {% include 'report_sections/expertises/vehicle_header.html' %}
 
 <h2 class="text-lg font-semibold mb-4">
-  {{ expertise_report.expertise_type.name }} {{ _('Paint Inspection') }}
+  {{ expertise_report.expertise_type.name }} Paint Inspection
 </h2>
-<p class="mb-4">{{ _('Click on car parts to mark their paint condition') }}</p>
+<p class="mb-4">Click on car parts to mark their paint condition</p>
 
-<script>
-let currentPart = null;
-let selectedStatus = null;
-
-// Feature mapping
-const partFeatureMap = {
-  {% for feature in expertise_report.features %}
-  '{{ feature.name }}': {{ feature.id }},
-  {% endfor %}
-};
-
-const statusColors = {
-  'Original': '#ffffff',
-  'Painted': '#dc3545',
-  'Locally Painted': '#ffc107',
-  'Replaced': '#0066cc',
-  'Damaged': '#fd7e14',
-  'None': '#6c757d'
-};
-
-function openModal(partName, partElement) {
-  console.log('Opening modal for:', partName);
-  currentPart = partElement;
-  document.getElementById('modalTitle').textContent = partName;
-  document.getElementById('partModal').style.display = 'block';
-  
-  // Clear previous selection
-  document.querySelectorAll('.status-option').forEach(opt => opt.classList.remove('selected'));
-  selectedStatus = null;
-}
-
-function closeModal() {
-  document.getElementById('partModal').style.display = 'none';
-  currentPart = null;
-  selectedStatus = null;
-}
-
-function selectStatus(status, element) {
-  document.querySelectorAll('.status-option').forEach(opt => opt.classList.remove('selected'));
-  element.classList.add('selected');
-  selectedStatus = status;
-  console.log('Selected status:', status);
-}
-
-function saveStatus() {
-  if (!currentPart || !selectedStatus) {
-    alert('Please select a status');
-    return;
-  }
-  
-  const partName = currentPart.textContent.includes('L ') ? 'Left ' + currentPart.textContent.replace('L ', '') :
-                   currentPart.textContent.includes('R ') ? 'Right ' + currentPart.textContent.replace('R ', '') :
-                   currentPart.textContent === 'Trunk' ? 'Trunk Lid' : currentPart.textContent;
-  
-  const featureId = partFeatureMap[partName];
-  console.log('Part name:', partName, 'Feature ID:', featureId);
-  
-  if (featureId) {
-    // Update hidden form input
-    const hiddenInput = document.getElementById('feature_' + featureId);
-    if (hiddenInput) {
-      hiddenInput.value = selectedStatus;
-      console.log('Updated hidden input:', hiddenInput.name, '=', selectedStatus);
-    }
+<div class="car-container">
+  <svg width="400" height="600" viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
+    <!-- Exact replica of the reference car image -->
     
-    // Update visual appearance
-    currentPart.style.backgroundColor = statusColors[selectedStatus];
-    console.log('Updated', partName, 'to', selectedStatus, 'with color', statusColors[selectedStatus]);
-  }
-  
-  closeModal();
-}
-
-// Initialize parts with current status
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('Initializing car parts...');
-  {% for feature in expertise_report.features %}
-  const partName = '{{ feature.name }}';
-  const status = '{{ feature.status }}';
-  const color = statusColors[status] || '#e9ecef';
-  
-  // Find the part element
-  const partElements = document.querySelectorAll('.car-part');
-  partElements.forEach(function(element) {
-    const elementPartName = element.textContent.includes('L ') ? 'Left ' + element.textContent.replace('L ', '') :
-                           element.textContent.includes('R ') ? 'Right ' + element.textContent.replace('R ', '') :
-                           element.textContent === 'Trunk' ? 'Trunk Lid' : element.textContent;
+    <!-- Front Bumper (Top Red) -->
+    <rect class="car-part" onclick="openModal('Front Bumper', this)" 
+          x="140" y="30" width="120" height="25" 
+          fill="#dc3545" stroke="#333" stroke-width="2" rx="12"/>
+    <rect x="145" y="35" width="110" height="15" 
+          fill="none" stroke="#333" stroke-width="1" rx="8"/>
     
-    if (elementPartName === partName) {
-      element.style.backgroundColor = color;
-      console.log('Initialized', partName, 'with color', color);
-    }
-  });
+    <!-- Main car body outline -->
+    <path d="M120 70 Q100 70 100 90 L100 140 Q90 150 90 160 L90 200 Q90 210 100 220 L100 260 Q90 270 90 280 L90 320 Q90 330 100 340 L100 380 Q90 390 90 400 L90 440 Q90 450 100 460 L100 500 Q100 520 120 520 L280 520 Q300 520 300 500 L300 460 Q310 450 310 440 L310 400 Q310 390 300 380 L300 340 Q310 330 310 320 L310 280 Q310 270 300 260 L300 220 Q310 210 310 200 L310 160 Q310 150 300 140 L300 90 Q300 70 280 70 Z" 
+          fill="none" stroke="#333" stroke-width="3"/>
+    
+    <!-- Hood -->
+    <path class="car-part" onclick="openModal('Hood', this)" 
+          d="M140 55 L260 55 L290 70 Q290 90 270 110 L260 130 L140 130 L130 110 Q110 90 110 70 Z" 
+          fill="#b3d9ff" stroke="#333" stroke-width="2"/>
+    
+    <!-- Front Windshield -->
+    <path d="M140 130 L260 130 L240 170 L160 170 Z" 
+          fill="#b3d9ff" stroke="#333" stroke-width="1" opacity="0.8"/>
+    
+    <!-- Left Front Fender -->
+    <path class="car-part" onclick="openModal('Left Front Fender', this)" 
+          d="M100 90 Q90 90 90 100 L90 140 Q90 160 110 160 L140 160 L140 130 Q120 110 110 100 Q105 90 100 90 Z" 
+          fill="#ffffff" stroke="#333" stroke-width="2"/>
+    
+    <!-- Right Front Fender -->
+    <path class="car-part" onclick="openModal('Right Front Fender', this)" 
+          d="M300 90 Q310 90 310 100 L310 140 Q310 160 290 160 L260 160 L260 130 Q280 110 290 100 Q295 90 300 90 Z" 
+          fill="#ffffff" stroke="#333" stroke-width="2"/>
+    
+    <!-- Left Front Door -->
+    <path class="car-part" onclick="openModal('Left Front Door', this)" 
+          d="M90 160 Q90 170 100 180 L100 240 Q90 250 90 260 L90 300 Q90 310 100 310 L140 310 L140 160 Z" 
+          fill="#ffffff" stroke="#333" stroke-width="2"/>
+    
+    <!-- Right Front Door -->
+    <path class="car-part" onclick="openModal('Right Front Door', this)" 
+          d="M260 160 L300 160 L300 310 Q310 310 310 300 L310 260 Q310 250 300 240 L300 180 Q310 170 310 160 Z" 
+          fill="#ffffff" stroke="#333" stroke-width="2"/>
+    
+    <!-- Roof -->
+    <path class="car-part" onclick="openModal('Roof', this)" 
+          d="M140 170 L260 170 L260 310 L140 310 Z" 
+          fill="#ffffff" stroke="#333" stroke-width="2"/>
+    
+    <!-- Left Rear Door -->
+    <path class="car-part" onclick="openModal('Left Rear Door', this)" 
+          d="M90 310 Q90 320 100 330 L100 390 Q90 400 90 410 L90 450 Q90 460 100 460 L140 460 L140 310 Z" 
+          fill="#ffffff" stroke="#333" stroke-width="2"/>
+    
+    <!-- Right Rear Door -->
+    <path class="car-part" onclick="openModal('Right Rear Door', this)" 
+          d="M260 310 L300 310 L300 460 Q310 460 310 450 L310 410 Q310 400 300 390 L300 330 Q310 320 310 310 Z" 
+          fill="#ffffff" stroke="#333" stroke-width="2"/>
+    
+    <!-- Trunk Lid -->
+    <path class="car-part" onclick="openModal('Trunk Lid', this)" 
+          d="M140 430 L260 430 L290 460 Q290 480 270 500 L260 520 L140 520 L130 500 Q110 480 110 460 Z" 
+          fill="#b3d9ff" stroke="#333" stroke-width="2"/>
+    
+    <!-- Rear Windshield -->
+    <path d="M140 430 L260 430 L240 470 L160 470 Z" 
+          fill="#b3d9ff" stroke="#333" stroke-width="1" opacity="0.8"/>
+    
+    <!-- Left Rear Fender -->
+    <path class="car-part" onclick="openModal('Left Rear Fender', this)" 
+          d="M100 460 Q90 460 90 470 L90 510 Q90 530 110 530 L140 530 L140 500 Q120 480 110 470 Q105 460 100 460 Z" 
+          fill="#ffffff" stroke="#333" stroke-width="2"/>
+    
+    <!-- Right Rear Fender -->
+    <path class="car-part" onclick="openModal('Right Rear Fender', this)" 
+          d="M300 460 Q310 460 310 470 L310 510 Q310 530 290 530 L260 530 L260 500 Q280 480 290 470 Q295 460 300 460 Z" 
+          fill="#ffffff" stroke="#333" stroke-width="2"/>
+    
+    <!-- Rear Bumper (Bottom Red) -->
+    <rect class="car-part" onclick="openModal('Rear Bumper', this)" 
+          x="140" y="545" width="120" height="25" 
+          fill="#dc3545" stroke="#333" stroke-width="2" rx="12"/>
+    <rect x="145" y="550" width="110" height="15" 
+          fill="none" stroke="#333" stroke-width="1" rx="8"/>
+    
+    <!-- Wheels -->
+    <circle cx="130" cy="140" r="20" fill="#666" stroke="#333" stroke-width="2"/>
+    <circle cx="130" cy="140" r="12" fill="#999" stroke="#333" stroke-width="1"/>
+    
+    <circle cx="270" cy="140" r="20" fill="#666" stroke="#333" stroke-width="2"/>
+    <circle cx="270" cy="140" r="12" fill="#999" stroke="#333" stroke-width="1"/>
+    
+    <circle cx="130" cy="460" r="20" fill="#666" stroke="#333" stroke-width="2"/>
+    <circle cx="130" cy="460" r="12" fill="#999" stroke="#333" stroke-width="1"/>
+    
+    <circle cx="270" cy="460" r="20" fill="#666" stroke="#333" stroke-width="2"/>
+    <circle cx="270" cy="460" r="12" fill="#999" stroke="#333" stroke-width="1"/>
+  </svg>
+  
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #ffffff; border: 2px solid #333;"></div>
+      <span>Original Paint</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #dc3545;"></div>
+      <span>Repainted</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #ffc107;"></div>
+      <span>Portion Repainted</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #0066cc;"></div>
+      <span>Foiled</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #fd7e14;"></div>
+      <span>Damaged</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #6c757d;"></div>
+      <span>Not Available</span>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="partModal" class="modal">
+  <div class="modal-content">
+    <h3 id="modalTitle">Select Status</h3>
+    <div class="status-options">
+      <div class="status-option" onclick="selectStatus('Original', this)">
+        <div class="status-color" style="background-color: #ffffff; border: 2px solid #333;"></div>
+        <span>Original Paint</span>
+      </div>
+      <div class="status-option" onclick="selectStatus('Painted', this)">
+        <div class="status-color" style="background-color: #dc3545;"></div>
+        <span>Repainted</span>
+      </div>
+      <div class="status-option" onclick="selectStatus('Locally Painted', this)">
+        <div class="status-color" style="background-color: #ffc107;"></div>
+        <span>Portion Repainted</span>
+      </div>
+      <div class="status-option" onclick="selectStatus('Replaced', this)">
+        <div class="status-color" style="background-color: #0066cc;"></div>
+        <span>Foiled</span>
+      </div>
+      <div class="status-option" onclick="selectStatus('Damaged', this)">
+        <div class="status-color" style="background-color: #fd7e14;"></div>
+        <span>Damaged</span>
+      </div>
+      <div class="status-option" onclick="selectStatus('None', this)">
+        <div class="status-color" style="background-color: #6c757d;"></div>
+        <span>Not Available</span>
+      </div>
+    </div>
+    <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveStatus()">Save</button>
+    </div>
+  </div>
+</div>
+
+<form id="expertiseForm" method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
+  <input type="hidden" name="current_expertise_type" value="{{ current_expertise_type }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  
+  {% for feature in expertise_report.features %}
+    <input type="hidden" name="feature_{{ feature.id }}" id="feature_{{ feature.id }}" value="{{ feature.status }}">
   {% endfor %}
   
-  // Form submission handler
-  const form = document.getElementById('expertiseForm');
-  if (form) {
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      const formData = new FormData(this);
-      
-      fetch(this.action, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: new URLSearchParams(formData)
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert('Paint expertise updated successfully!');
-        } else {
-          alert('Update failed: ' + (data.error || 'Unknown error'));
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('Update failed. Please check your inputs!');
-      });
-    });
-  }
-});
-</script>
+  <div class="mb-4">
+    <label for="technician_comment" class="block text-gray-700 font-semibold mb-2">
+      Technician Comment
+    </label>
+    <textarea
+      id="technician_comment"
+      name="technician_comment"
+      rows="4"
+      class="w-full p-2 border border-gray-300 rounded"
+      placeholder="Enter technician comment here..."
+    >{{ expertise_report.comment }}</textarea>
+  </div>
+
+  <div class="flex justify-end mt-4">
+    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
+      Save
+    </button>
+  </div>
+</form>
 
 <style>
 .car-container {
@@ -255,14 +320,6 @@ document.addEventListener('DOMContentLoaded', function() {
   color: white;
 }
 
-/* Color classes */
-.status-original { background-color: #ffffff !important; }
-.status-painted { background-color: #dc3545 !important; }
-.status-locally-painted { background-color: #ffc107 !important; }
-.status-replaced { background-color: #0066cc !important; }
-.status-damaged { background-color: #fd7e14 !important; }
-.status-not-available { background-color: #6c757d !important; }
-
 @media (max-width: 768px) {
   .car-container {
     flex-direction: column;
@@ -278,195 +335,123 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 </style>
 
-<div class="car-container">
-  <svg width="400" height="600" viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
-    <!-- Exact replica of the reference car image -->
-    
-    <!-- Front Bumper (Top) -->
-    <rect class="car-part" onclick="openModal('Front Bumper', this)" 
-          x="120" y="30" width="160" height="25" 
-          fill="#ffffff" stroke="#333" stroke-width="2" rx="12"/>
-    <rect x="125" y="35" width="150" height="15" 
-          fill="none" stroke="#333" stroke-width="1" rx="8"/>
-    
-    <!-- Main car body outline -->
-    <path d="M80 80 Q70 80 70 90 L70 150 Q60 160 60 170 L60 220 Q60 230 70 240 L70 290 Q60 300 60 310 L60 360 Q60 370 70 380 L70 430 Q60 440 60 450 L60 500 Q60 510 70 520 L70 550 Q70 560 80 560 L320 560 Q330 560 330 550 L330 520 Q340 510 340 500 L340 450 Q340 440 330 430 L330 380 Q340 370 340 360 L340 310 Q340 300 330 290 L330 240 Q340 230 340 220 L340 170 Q340 160 330 150 L330 90 Q330 80 320 80 Z" 
-          fill="none" stroke="#333" stroke-width="2"/>
-    
-    <!-- Hood -->
-    <path class="car-part" onclick="openModal('Hood', this)" 
-          d="M120 55 L280 55 L310 80 Q310 100 290 120 L280 140 L120 140 L110 120 Q90 100 90 80 Z" 
-          fill="#b3d9ff" stroke="#333" stroke-width="2"/>
-    
-    <!-- Front Windshield -->
-    <path d="M120 140 L280 140 L260 180 L140 180 Z" 
-          fill="#b3d9ff" stroke="#333" stroke-width="1" opacity="0.8"/>
-    
-    <!-- Left Front Fender -->
-    <path class="car-part" onclick="openModal('Left Front Fender', this)" 
-          d="M70 90 Q60 90 60 100 L60 150 Q60 170 80 170 L120 170 L120 140 Q100 120 90 100 Q80 90 70 90 Z" 
-          fill="#ffffff" stroke="#333" stroke-width="2"/>
-    
-    <!-- Right Front Fender -->
-    <path class="car-part" onclick="openModal('Right Front Fender', this)" 
-          d="M330 90 Q340 90 340 100 L340 150 Q340 170 320 170 L280 170 L280 140 Q300 120 310 100 Q320 90 330 90 Z" 
-          fill="#ffffff" stroke="#333" stroke-width="2"/>
-    
-    <!-- Left Front Door -->
-    <path class="car-part" onclick="openModal('Left Front Door', this)" 
-          d="M60 170 Q60 180 70 190 L70 250 Q60 260 60 270 L60 310 Q60 320 70 320 L120 320 L120 170 Z" 
-          fill="#ffffff" stroke="#333" stroke-width="2"/>
-    
-    <!-- Right Front Door -->
-    <path class="car-part" onclick="openModal('Right Front Door', this)" 
-          d="M280 170 L330 170 L330 320 Q340 320 340 310 L340 270 Q340 260 330 250 L330 190 Q340 180 340 170 Z" 
-          fill="#ffffff" stroke="#333" stroke-width="2"/>
-    
-    <!-- Roof -->
-    <path class="car-part" onclick="openModal('Roof', this)" 
-          d="M120 180 L280 180 L280 320 L120 320 Z" 
-          fill="#ffffff" stroke="#333" stroke-width="2"/>
-    
-    <!-- Left Rear Door -->
-    <path class="car-part" onclick="openModal('Left Rear Door', this)" 
-          d="M60 320 Q60 330 70 340 L70 400 Q60 410 60 420 L60 460 Q60 470 70 470 L120 470 L120 320 Z" 
-          fill="#ffffff" stroke="#333" stroke-width="2"/>
-    
-    <!-- Right Rear Door -->
-    <path class="car-part" onclick="openModal('Right Rear Door', this)" 
-          d="M280 320 L330 320 L330 470 Q340 470 340 460 L340 420 Q340 410 330 400 L330 340 Q340 330 340 320 Z" 
-          fill="#ffffff" stroke="#333" stroke-width="2"/>
-    
-    <!-- Trunk Lid -->
-    <path class="car-part" onclick="openModal('Trunk Lid', this)" 
-          d="M120 420 L280 420 L310 450 Q310 470 290 490 L280 510 L120 510 L110 490 Q90 470 90 450 Z" 
-          fill="#b3d9ff" stroke="#333" stroke-width="2"/>
-    
-    <!-- Rear Windshield -->
-    <path d="M120 420 L280 420 L260 460 L140 460 Z" 
-          fill="#b3d9ff" stroke="#333" stroke-width="1" opacity="0.8"/>
-    
-    <!-- Left Rear Fender -->
-    <path class="car-part" onclick="openModal('Left Rear Fender', this)" 
-          d="M70 470 Q60 470 60 480 L60 530 Q60 550 80 550 L120 550 L120 510 Q100 490 90 480 Q80 470 70 470 Z" 
-          fill="#ffffff" stroke="#333" stroke-width="2"/>
-    
-    <!-- Right Rear Fender -->
-    <path class="car-part" onclick="openModal('Right Rear Fender', this)" 
-          d="M330 470 Q340 470 340 480 L340 530 Q340 550 320 550 L280 550 L280 510 Q300 490 310 480 Q320 470 330 470 Z" 
-          fill="#ffffff" stroke="#333" stroke-width="2"/>
-    
-    <!-- Rear Bumper (Bottom) -->
-    <rect class="car-part" onclick="openModal('Rear Bumper', this)" 
-          x="120" y="545" width="160" height="25" 
-          fill="#ffffff" stroke="#333" stroke-width="2" rx="12"/>
-    <rect x="125" y="550" width="150" height="15" 
-          fill="none" stroke="#333" stroke-width="1" rx="8"/>
-    
-    <!-- Wheels -->
-    <circle cx="100" cy="150" r="20" fill="#666" stroke="#333" stroke-width="2"/>
-    <circle cx="100" cy="150" r="12" fill="#999" stroke="#333" stroke-width="1"/>
-    
-    <circle cx="300" cy="150" r="20" fill="#666" stroke="#333" stroke-width="2"/>
-    <circle cx="300" cy="150" r="12" fill="#999" stroke="#333" stroke-width="1"/>
-    
-    <circle cx="100" cy="450" r="20" fill="#666" stroke="#333" stroke-width="2"/>
-    <circle cx="100" cy="450" r="12" fill="#999" stroke="#333" stroke-width="1"/>
-    
-    <circle cx="300" cy="450" r="20" fill="#666" stroke="#333" stroke-width="2"/>
-    <circle cx="300" cy="450" r="12" fill="#999" stroke="#333" stroke-width="1"/>
-  </svg>
-  
-  <div class="legend">
-    <div class="legend-item">
-      <div class="legend-color" style="background-color: #ffffff; border: 2px solid #333;"></div>
-      <span>Original Paint</span>
-    </div>
-    <div class="legend-item">
-      <div class="legend-color" style="background-color: #dc3545;"></div>
-      <span>Repainted</span>
-    </div>
-    <div class="legend-item">
-      <div class="legend-color" style="background-color: #ffc107;"></div>
-      <span>Portion Repainted</span>
-    </div>
-    <div class="legend-item">
-      <div class="legend-color" style="background-color: #0066cc;"></div>
-      <span>Foiled</span>
-    </div>
-    <div class="legend-item">
-      <div class="legend-color" style="background-color: #fd7e14;"></div>
-      <span>Damaged</span>
-    </div>
-    <div class="legend-item">
-      <div class="legend-color" style="background-color: #6c757d;"></div>
-      <span>Not Available</span>
-    </div>
-  </div>
-</div>
+<script>
+let currentPart = null;
+let selectedStatus = null;
 
-<!-- Modal -->
-<div id="partModal" class="modal">
-  <div class="modal-content">
-    <h3 id="modalTitle">Select Status</h3>
-    <div class="status-options">
-      <div class="status-option" onclick="selectStatus('Original', this)">
-        <div class="status-color" style="background-color: #ffffff; border: 2px solid #333;"></div>
-        <span>{{ _('Original Paint') }}</span>
-      </div>
-      <div class="status-option" onclick="selectStatus('Painted', this)">
-        <div class="status-color" style="background-color: #dc3545;"></div>
-        <span>{{ _('Repainted') }}</span>
-      </div>
-      <div class="status-option" onclick="selectStatus('Locally Painted', this)">
-        <div class="status-color" style="background-color: #ffc107;"></div>
-        <span>{{ _('Portion Repainted') }}</span>
-      </div>
-      <div class="status-option" onclick="selectStatus('Replaced', this)">
-        <div class="status-color" style="background-color: #0066cc;"></div>
-        <span>Foiled</span>
-      </div>
-      <div class="status-option" onclick="selectStatus('Damaged', this)">
-        <div class="status-color" style="background-color: #fd7e14;"></div>
-        <span>{{ _('Damaged') }}</span>
-      </div>
-      <div class="status-option" onclick="selectStatus('None', this)">
-        <div class="status-color" style="background-color: #6c757d;"></div>
-        <span>{{ _('Not Available') }}</span>
-      </div>
-    </div>
-    <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
-      <button class="btn btn-secondary" onclick="closeModal()">{{ _('Cancel') }}</button>
-      <button class="btn btn-primary" onclick="saveStatus()">{{ _('Save') }}</button>
-    </div>
-  </div>
-</div>
-
-<form id="expertiseForm" method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
-  <input type="hidden" name="current_expertise_type" value="{{ current_expertise_type }}">
-  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-  
+// Feature mapping
+const partFeatureMap = {
   {% for feature in expertise_report.features %}
-    <input type="hidden" name="feature_{{ feature.id }}" id="feature_{{ feature.id }}" value="{{ feature.status }}">
+  '{{ feature.name }}': {{ feature.id }},
+  {% endfor %}
+};
+
+const statusColors = {
+  'Original': '#ffffff',
+  'Painted': '#dc3545',
+  'Locally Painted': '#ffc107',
+  'Replaced': '#0066cc',
+  'Damaged': '#fd7e14',
+  'None': '#6c757d'
+};
+
+function openModal(partName, partElement) {
+  console.log('Opening modal for:', partName);
+  currentPart = partElement;
+  document.getElementById('modalTitle').textContent = partName;
+  document.getElementById('partModal').style.display = 'block';
+  
+  // Clear previous selection
+  document.querySelectorAll('.status-option').forEach(opt => opt.classList.remove('selected'));
+  selectedStatus = null;
+}
+
+function closeModal() {
+  document.getElementById('partModal').style.display = 'none';
+  currentPart = null;
+  selectedStatus = null;
+}
+
+function selectStatus(status, element) {
+  document.querySelectorAll('.status-option').forEach(opt => opt.classList.remove('selected'));
+  element.classList.add('selected');
+  selectedStatus = status;
+  console.log('Selected status:', status);
+}
+
+function saveStatus() {
+  if (!currentPart || !selectedStatus) {
+    alert('Please select a status');
+    return;
+  }
+  
+  const partName = currentPart.getAttribute('onclick').match(/'([^']+)'/)[1];
+  const featureId = partFeatureMap[partName];
+  console.log('Part name:', partName, 'Feature ID:', featureId);
+  
+  if (featureId) {
+    // Update hidden form input
+    const hiddenInput = document.getElementById('feature_' + featureId);
+    if (hiddenInput) {
+      hiddenInput.value = selectedStatus;
+      console.log('Updated hidden input:', hiddenInput.name, '=', selectedStatus);
+    }
+    
+    // Update visual appearance
+    currentPart.style.fill = statusColors[selectedStatus];
+    console.log('Updated', partName, 'to', selectedStatus, 'with color', statusColors[selectedStatus]);
+  }
+  
+  closeModal();
+}
+
+// Initialize parts with current status
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('Initializing car parts...');
+  {% for feature in expertise_report.features %}
+  const partName = '{{ feature.name }}';
+  const status = '{{ feature.status }}';
+  const color = statusColors[status] || '#ffffff';
+  
+  // Find the part element by onclick attribute
+  const partElements = document.querySelectorAll('.car-part');
+  partElements.forEach(function(element) {
+    const onclick = element.getAttribute('onclick');
+    if (onclick && onclick.includes(partName)) {
+      element.style.fill = color;
+      console.log('Initialized', partName, 'with color', color);
+    }
+  });
   {% endfor %}
   
-  <div class="mb-4">
-    <label for="technician_comment" class="block text-gray-700 font-semibold mb-2">
-      {{ _('Technician Comment') }}
-    </label>
-    <textarea
-      id="technician_comment"
-      name="technician_comment"
-      rows="4"
-      class="w-full p-2 border border-gray-300 rounded"
-      placeholder="{{ _('Enter technician comment here...') }}"
-    >{{ expertise_report.comment }}</textarea>
-  </div>
-
-  <div class="flex justify-end mt-4">
-    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
-      {{ _('Save') }}
-    </button>
-  </div>
-</form>
-
+  // Form submission handler
+  const form = document.getElementById('expertiseForm');
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      
+      fetch(this.action, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams(formData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Paint expertise updated successfully!');
+        } else {
+          alert('Update failed: ' + (data.error || 'Unknown error'));
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Update failed. Please check your inputs!');
+      });
+    });
+  }
+});
+</script>
