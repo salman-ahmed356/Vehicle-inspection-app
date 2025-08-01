@@ -1,0 +1,215 @@
+{#— grab the Paint Expertise block —#}
+{% set paint_report = (package_expertise_reports
+     | selectattr('expertise_type_name','equalto','Paint Expertise')
+     | first)
+   | default({}) %}
+
+{#— now use default filters to avoid missing-attribute errors —#}
+{% set paint_features = paint_report.features | default([]) %}
+{% set paint_comment = paint_report.comment | default('') %}
+
+<style>
+  .paint-bordered-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+  }
+  .paint-bordered-table th,
+  .paint-bordered-table td {
+    border: 1px solid #dcdcdc;
+    padding: 15px;
+  }
+  
+  .car-diagram-pdf {
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+    text-align: center;
+  }
+  
+  .car-svg-pdf {
+    width: 100%;
+    height: auto;
+  }
+  
+  .car-part-pdf {
+    stroke-width: 2;
+    stroke: #333;
+  }
+  
+  .pdf-status-original { fill: #e9ecef; }
+  .pdf-status-painted { fill: #dc3545; }
+  .pdf-status-locally-painted { fill: #ffc107; }
+  .pdf-status-replaced { fill: #28a745; }
+  .pdf-status-damaged { fill: #fd7e14; }
+  .pdf-status-not-available { fill: #6c757d; }
+  
+  .pdf-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin: 15px 0;
+    font-size: 12px;
+  }
+  
+  .pdf-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .pdf-legend-color {
+    width: 15px;
+    height: 15px;
+    border: 1px solid #333;
+  }
+</style>
+
+<div class="title-large primary-color primary-bg-color" style="position: relative; padding: 15px;">
+  <span style="color: white;">{{ _('Paint Inspection') }}</span>
+  <div class="sasi-wrapper"
+       style="position: absolute; right: 1%; top: 50%; transform: translateY(-50%); padding: 0 10px; background-color: white;">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="font-size: 12px; font-weight: bold;">
+            {{ _('Chassis No') }}<span style="font-size: 14px;">:</span>
+          </td>
+          <td class="text-medium" rowspan="2"
+              style="font-size: 20px; font-weight: bold;">
+            {{ vehicle.chassis_number[-6:] }}
+          </td>
+        </tr>
+        <tr>
+          <td style="font-size: 8px; text-align: center;">
+            {{ _('Last 6 Digits') }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="car-diagram-pdf">
+  <svg class="car-svg-pdf" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+    <!-- Car outline and parts with status-based coloring -->
+    {% set feature_status = {} %}
+    {% for feature in paint_features %}
+      {% set _ = feature_status.update({feature.name: feature.status}) %}
+    {% endfor %}
+    
+    <!-- Hood -->
+    <rect class="car-part-pdf {% if feature_status.get('Hood') == 'Original' %}pdf-status-original{% elif feature_status.get('Hood') == 'Painted' %}pdf-status-painted{% elif feature_status.get('Hood') == 'Locally Painted' %}pdf-status-locally-painted{% elif feature_status.get('Hood') == 'Replaced' %}pdf-status-replaced{% elif feature_status.get('Hood') == 'Damaged' %}pdf-status-damaged{% else %}pdf-status-not-available{% endif %}" 
+          x="200" y="50" width="200" height="80" rx="10"/>
+    
+    <!-- Front Bumper -->
+    <rect class="car-part-pdf {% if feature_status.get('Front Bumper') == 'Original' %}pdf-status-original{% elif feature_status.get('Front Bumper') == 'Painted' %}pdf-status-painted{% elif feature_status.get('Front Bumper') == 'Locally Painted' %}pdf-status-locally-painted{% elif feature_status.get('Front Bumper') == 'Replaced' %}pdf-status-replaced{% elif feature_status.get('Front Bumper') == 'Damaged' %}pdf-status-damaged{% else %}pdf-status-not-available{% endif %}" 
+          x="180" y="20" width="240" height="30" rx="15"/>
+    
+    <!-- Left Front Fender -->
+    <rect class="car-part-pdf {% if feature_status.get('Left Front Fender') == 'Original' %}pdf-status-original{% elif feature_status.get('Left Front Fender') == 'Painted' %}pdf-status-painted{% elif feature_status.get('Left Front Fender') == 'Locally Painted' %}pdf-status-locally-painted{% elif feature_status.get('Left Front Fender') == 'Replaced' %}pdf-status-replaced{% elif feature_status.get('Left Front Fender') == 'Damaged' %}pdf-status-damaged{% else %}pdf-status-not-available{% endif %}" 
+          x="150" y="60" width="50" height="100" rx="8"/>
+    
+    <!-- Right Front Fender -->
+    <rect class="car-part-pdf {% if feature_status.get('Right Front Fender') == 'Original' %}pdf-status-original{% elif feature_status.get('Right Front Fender') == 'Painted' %}pdf-status-painted{% elif feature_status.get('Right Front Fender') == 'Locally Painted' %}pdf-status-locally-painted{% elif feature_status.get('Right Front Fender') == 'Replaced' %}pdf-status-replaced{% elif feature_status.get('Right Front Fender') == 'Damaged' %}pdf-status-damaged{% else %}pdf-status-not-available{% endif %}" 
+          x="400" y="60" width="50" height="100" rx="8"/>
+    
+    <!-- Left Front Door -->
+    <rect class="car-part-pdf {% if feature_status.get('Left Front Door') == 'Original' %}pdf-status-original{% elif feature_status.get('Left Front Door') == 'Painted' %}pdf-status-painted{% elif feature_status.get('Left Front Door') == 'Locally Painted' %}pdf-status-locally-painted{% elif feature_status.get('Left Front Door') == 'Replaced' %}pdf-status-replaced{% elif feature_status.get('Left Front Door') == 'Damaged' %}pdf-status-damaged{% else %}pdf-status-not-available{% endif %}" 
+          x="150" y="160" width="50" height="80" rx="8"/>
+    
+    <!-- Right Front Door -->
+    <rect class="car-part-pdf {% if feature_status.get('Right Front Door') == 'Original' %}pdf-status-original{% elif feature_status.get('Right Front Door') == 'Painted' %}pdf-status-painted{% elif feature_status.get('Right Front Door') == 'Locally Painted' %}pdf-status-locally-painted{% elif feature_status.get('Right Front Door') == 'Replaced' %}pdf-status-replaced{% elif feature_status.get('Right Front Door') == 'Damaged' %}pdf-status-damaged{% else %}pdf-status-not-available{% endif %}" 
+          x="400" y="160" width="50" height="80" rx="8"/>
+    
+    <!-- Left Rear Door -->
+    <rect class="car-part-pdf {% if feature_status.get('Left Rear Door') == 'Original' %}pdf-status-original{% elif feature_status.get('Left Rear Door') == 'Painted' %}pdf-status-painted{% elif feature_status.get('Left Rear Door') == 'Locally Painted' %}pdf-status-locally-painted{% elif feature_status.get('Left Rear Door') == 'Replaced' %}pdf-status-replaced{% elif feature_status.get('Left Rear Door') == 'Damaged' %}pdf-status-damaged{% else %}pdf-status-not-available{% endif %}" 
+          x="150" y="240" width="50" height="80" rx="8"/>
+    
+    <!-- Right Rear Door -->
+    <rect class="car-part-pdf {% if feature_status.get('Right Rear Door') == 'Original' %}pdf-status-original{% elif feature_status.get('Right Rear Door') == 'Painted' %}pdf-status-painted{% elif feature_status.get('Right Rear Door') == 'Locally Painted' %}pdf-status-locally-painted{% elif feature_status.get('Right Rear Door') == 'Replaced' %}pdf-status-replaced{% elif feature_status.get('Right Rear Door') == 'Damaged' %}pdf-status-damaged{% else %}pdf-status-not-available{% endif %}" 
+          x="400" y="240" width="50" height="80" rx="8"/>
+    
+    <!-- Left Rear Fender -->
+    <rect class="car-part-pdf {% if feature_status.get('Left Rear Fender') == 'Original' %}pdf-status-original{% elif feature_status.get('Left Rear Fender') == 'Painted' %}pdf-status-painted{% elif feature_status.get('Left Rear Fender') == 'Locally Painted' %}pdf-status-locally-painted{% elif feature_status.get('Left Rear Fender') == 'Replaced' %}pdf-status-replaced{% elif feature_status.get('Left Rear Fender') == 'Damaged' %}pdf-status-damaged{% else %}pdf-status-not-available{% endif %}" 
+          x="150" y="320" width="50" height="60" rx="8"/>
+    
+    <!-- Right Rear Fender -->
+    <rect class="car-part-pdf {% if feature_status.get('Right Rear Fender') == 'Original' %}pdf-status-original{% elif feature_status.get('Right Rear Fender') == 'Painted' %}pdf-status-painted{% elif feature_status.get('Right Rear Fender') == 'Locally Painted' %}pdf-status-locally-painted{% elif feature_status.get('Right Rear Fender') == 'Replaced' %}pdf-status-replaced{% elif feature_status.get('Right Rear Fender') == 'Damaged' %}pdf-status-damaged{% else %}pdf-status-not-available{% endif %}" 
+          x="400" y="320" width="50" height="60" rx="8"/>
+    
+    <!-- Roof -->
+    <rect class="car-part-pdf {% if feature_status.get('Roof') == 'Original' %}pdf-status-original{% elif feature_status.get('Roof') == 'Painted' %}pdf-status-painted{% elif feature_status.get('Roof') == 'Locally Painted' %}pdf-status-locally-painted{% elif feature_status.get('Roof') == 'Replaced' %}pdf-status-replaced{% elif feature_status.get('Roof') == 'Damaged' %}pdf-status-damaged{% else %}pdf-status-not-available{% endif %}" 
+          x="200" y="130" width="200" height="140" rx="10"/>
+    
+    <!-- Trunk Lid -->
+    <rect class="car-part-pdf {% if feature_status.get('Trunk Lid') == 'Original' %}pdf-status-original{% elif feature_status.get('Trunk Lid') == 'Painted' %}pdf-status-painted{% elif feature_status.get('Trunk Lid') == 'Locally Painted' %}pdf-status-locally-painted{% elif feature_status.get('Trunk Lid') == 'Replaced' %}pdf-status-replaced{% elif feature_status.get('Trunk Lid') == 'Damaged' %}pdf-status-damaged{% else %}pdf-status-not-available{% endif %}" 
+          x="200" y="270" width="200" height="80" rx="10"/>
+    
+    <!-- Rear Bumper -->
+    <rect class="car-part-pdf {% if feature_status.get('Rear Bumper') == 'Original' %}pdf-status-original{% elif feature_status.get('Rear Bumper') == 'Painted' %}pdf-status-painted{% elif feature_status.get('Rear Bumper') == 'Locally Painted' %}pdf-status-locally-painted{% elif feature_status.get('Rear Bumper') == 'Replaced' %}pdf-status-replaced{% elif feature_status.get('Rear Bumper') == 'Damaged' %}pdf-status-damaged{% else %}pdf-status-not-available{% endif %}" 
+          x="180" y="350" width="240" height="30" rx="15"/>
+    
+    <!-- Part labels -->
+    <text x="300" y="95" text-anchor="middle" font-size="12" fill="#333">Hood</text>
+    <text x="300" y="40" text-anchor="middle" font-size="10" fill="#333">Front Bumper</text>
+    <text x="175" y="115" text-anchor="middle" font-size="10" fill="#333">L Front Fender</text>
+    <text x="425" y="115" text-anchor="middle" font-size="10" fill="#333">R Front Fender</text>
+    <text x="175" y="205" text-anchor="middle" font-size="10" fill="#333">L Front Door</text>
+    <text x="425" y="205" text-anchor="middle" font-size="10" fill="#333">R Front Door</text>
+    <text x="175" y="285" text-anchor="middle" font-size="10" fill="#333">L Rear Door</text>
+    <text x="425" y="285" text-anchor="middle" font-size="10" fill="#333">R Rear Door</text>
+    <text x="175" y="355" text-anchor="middle" font-size="10" fill="#333">L Rear Fender</text>
+    <text x="425" y="355" text-anchor="middle" font-size="10" fill="#333">R Rear Fender</text>
+    <text x="300" y="205" text-anchor="middle" font-size="12" fill="#333">Roof</text>
+    <text x="300" y="315" text-anchor="middle" font-size="12" fill="#333">Trunk</text>
+    <text x="300" y="370" text-anchor="middle" font-size="10" fill="#333">Rear Bumper</text>
+  </svg>
+  
+  <div class="pdf-legend">
+    <div class="pdf-legend-item">
+      <div class="pdf-legend-color pdf-status-original"></div>
+      <span>{{ _('Original Paint') }}</span>
+    </div>
+    <div class="pdf-legend-item">
+      <div class="pdf-legend-color pdf-status-painted"></div>
+      <span>{{ _('Repainted') }}</span>
+    </div>
+    <div class="pdf-legend-item">
+      <div class="pdf-legend-color pdf-status-locally-painted"></div>
+      <span>{{ _('Portion Repainted') }}</span>
+    </div>
+    <div class="pdf-legend-item">
+      <div class="pdf-legend-color pdf-status-replaced"></div>
+      <span>{{ _('Replaced') }}</span>
+    </div>
+    <div class="pdf-legend-item">
+      <div class="pdf-legend-color pdf-status-damaged"></div>
+      <span>{{ _('Damaged') }}</span>
+    </div>
+    <div class="pdf-legend-item">
+      <div class="pdf-legend-color pdf-status-not-available"></div>
+      <span>{{ _('Not Available') }}</span>
+    </div>
+  </div>
+</div>
+
+<div class="info-section">
+  <div class="paint-comment">
+    <div class="footer-expertise">
+      <div class="section-title">
+        {{ _('Paint Inspection Summary') }}
+      </div>
+      {% if paint_comment|length > 230 %}
+      <div class="summary-text summary-text-small">
+        {{ paint_comment }}
+      </div>
+      {% else %}
+      <div class="summary-text summary-text-normal">
+        {{ paint_comment }}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>

@@ -9,6 +9,7 @@ class StatusTranslator:
         "Locally Painted": "مطلي محلياً",
         "Replaced": "مستبدل",
         "Coated": "مطلي بالورنيش",
+        "Damaged": "تالف",
         "None": "لا يوجد"
     }
     

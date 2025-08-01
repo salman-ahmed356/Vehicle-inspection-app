@@ -955,7 +955,7 @@ def expertise_detail_ajax():
     }
     template_map = {
         'ECU Expertise':                 'report_sections/expertises/beyin_expertise.html',
-        'Paint Expertise':               'report_sections/expertises/boya_expertise.html',
+        'Paint Expertise':               'report_sections/expertises/boya_expertise_interactive.html',
         'Paint & Body Expertise':        'report_sections/expertises/boya_kaporta_expertise.html',
         'Exterior Expertise':            'report_sections/expertises/dis_expertise.html',
         'Dyno Expertise':                'report_sections/expertises/dyno_expertise_fixed.html',

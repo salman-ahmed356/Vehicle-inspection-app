@@ -211,6 +211,9 @@
     {% elif pckg_report.expertise_type_name == "ECU Expertise" %}
       <div class="page-break"></div>
       {% include 'pdf/beyin.html' %}
+    {% elif pckg_report.expertise_type_name == "Paint Expertise" %}
+      <div class="page-break"></div>
+      {% include 'pdf/boya_interactive.html' %}
     {% elif pckg_report.expertise_type_name == "Paint & Body Expertise" %}
       <div class="page-break"></div>
       {% include 'pdf/boya_fixed.html' %}
