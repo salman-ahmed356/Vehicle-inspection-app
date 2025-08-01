@@ -2,7 +2,7 @@
 
 <style>
   .car-diagram-container {
-    max-width: 800px;
+    max-width: 1000px;
     margin: 0 auto;
     position: relative;
     background: #f8f9fa;
@@ -10,10 +10,18 @@
     padding: 20px;
   }
   
+  .car-and-legend {
+    display: flex;
+    align-items: flex-start;
+    gap: 30px;
+    justify-content: center;
+  }
+  
   .car-svg {
-    width: 100%;
+    width: 400px;
     height: auto;
     cursor: pointer;
+    flex-shrink: 0;
   }
   
   .car-part {
@@ -37,14 +45,14 @@
   
   .legend {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-    margin: 20px 0;
-    padding: 15px;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0;
+    padding: 20px;
     background: white;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    min-width: 200px;
   }
   
   .legend-item {
@@ -149,9 +157,22 @@
       padding: 10px;
     }
     
-    .legend {
+    .car-and-legend {
       flex-direction: column;
       align-items: center;
+    }
+    
+    .car-svg {
+      width: 100%;
+      max-width: 350px;
+    }
+    
+    .legend {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      min-width: auto;
+      width: 100%;
     }
     
     .part-selector {
@@ -173,87 +194,90 @@
 <p class="mb-4">{{ _('Click on car parts to mark their paint condition') }}</p>
 
 <div class="car-diagram-container">
-  <svg class="car-svg" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
-    <!-- Car outline and parts -->
-    <!-- Hood -->
-    <rect class="car-part" data-part="Hood" x="200" y="50" width="200" height="80" rx="10"/>
+  <div class="car-and-legend">
+    <svg class="car-svg" viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
+      <!-- Car outline matching original image -->
+      
+      <!-- Front Bumper -->
+      <rect class="car-part" data-part="Front Bumper" x="100" y="20" width="200" height="40" rx="20" fill="#e9ecef" stroke="#333" stroke-width="2"/>
+      
+      <!-- Hood -->
+      <rect class="car-part" data-part="Hood" x="120" y="60" width="160" height="100" rx="5" fill="#e9ecef" stroke="#333" stroke-width="2"/>
+      
+      <!-- Left Front Fender -->
+      <rect class="car-part" data-part="Left Front Fender" x="60" y="80" width="60" height="80" rx="5" fill="#e9ecef" stroke="#333" stroke-width="2"/>
+      
+      <!-- Right Front Fender -->
+      <rect class="car-part" data-part="Right Front Fender" x="280" y="80" width="60" height="80" rx="5" fill="#e9ecef" stroke="#333" stroke-width="2"/>
+      
+      <!-- Left Front Door -->
+      <rect class="car-part" data-part="Left Front Door" x="60" y="160" width="60" height="90" rx="5" fill="#e9ecef" stroke="#333" stroke-width="2"/>
+      
+      <!-- Right Front Door -->
+      <rect class="car-part" data-part="Right Front Door" x="280" y="160" width="60" height="90" rx="5" fill="#e9ecef" stroke="#333" stroke-width="2"/>
+      
+      <!-- Roof -->
+      <rect class="car-part" data-part="Roof" x="120" y="160" width="160" height="180" rx="5" fill="#e9ecef" stroke="#333" stroke-width="2"/>
+      
+      <!-- Left Rear Door -->
+      <rect class="car-part" data-part="Left Rear Door" x="60" y="250" width="60" height="90" rx="5" fill="#e9ecef" stroke="#333" stroke-width="2"/>
+      
+      <!-- Right Rear Door -->
+      <rect class="car-part" data-part="Right Rear Door" x="280" y="250" width="60" height="90" rx="5" fill="#e9ecef" stroke="#333" stroke-width="2"/>
+      
+      <!-- Trunk Lid -->
+      <rect class="car-part" data-part="Trunk Lid" x="120" y="340" width="160" height="100" rx="5" fill="#e9ecef" stroke="#333" stroke-width="2"/>
+      
+      <!-- Left Rear Fender -->
+      <rect class="car-part" data-part="Left Rear Fender" x="60" y="420" width="60" height="80" rx="5" fill="#e9ecef" stroke="#333" stroke-width="2"/>
+      
+      <!-- Right Rear Fender -->
+      <rect class="car-part" data-part="Right Rear Fender" x="280" y="420" width="60" height="80" rx="5" fill="#e9ecef" stroke="#333" stroke-width="2"/>
+      
+      <!-- Rear Bumper -->
+      <rect class="car-part" data-part="Rear Bumper" x="100" y="500" width="200" height="40" rx="20" fill="#e9ecef" stroke="#333" stroke-width="2"/>
+      
+      <!-- Part labels -->
+      <text x="200" y="45" text-anchor="middle" font-size="10" fill="#333">Front Bumper</text>
+      <text x="200" y="115" text-anchor="middle" font-size="10" fill="#333">Hood</text>
+      <text x="90" y="125" text-anchor="middle" font-size="9" fill="#333">L Front Fender</text>
+      <text x="310" y="125" text-anchor="middle" font-size="9" fill="#333">R Front Fender</text>
+      <text x="90" y="210" text-anchor="middle" font-size="9" fill="#333">L Front Door</text>
+      <text x="310" y="210" text-anchor="middle" font-size="9" fill="#333">R Front Door</text>
+      <text x="200" y="255" text-anchor="middle" font-size="10" fill="#333">Roof</text>
+      <text x="90" y="300" text-anchor="middle" font-size="9" fill="#333">L Rear Door</text>
+      <text x="310" y="300" text-anchor="middle" font-size="9" fill="#333">R Rear Door</text>
+      <text x="200" y="395" text-anchor="middle" font-size="10" fill="#333">Trunk</text>
+      <text x="90" y="465" text-anchor="middle" font-size="9" fill="#333">L Rear Fender</text>
+      <text x="310" y="465" text-anchor="middle" font-size="9" fill="#333">R Rear Fender</text>
+      <text x="200" y="525" text-anchor="middle" font-size="10" fill="#333">Rear Bumper</text>
+    </svg>
     
-    <!-- Front Bumper -->
-    <rect class="car-part" data-part="Front Bumper" x="180" y="20" width="240" height="30" rx="15"/>
-    
-    <!-- Left Front Fender -->
-    <rect class="car-part" data-part="Left Front Fender" x="150" y="60" width="50" height="100" rx="8"/>
-    
-    <!-- Right Front Fender -->
-    <rect class="car-part" data-part="Right Front Fender" x="400" y="60" width="50" height="100" rx="8"/>
-    
-    <!-- Left Front Door -->
-    <rect class="car-part" data-part="Left Front Door" x="150" y="160" width="50" height="80" rx="8"/>
-    
-    <!-- Right Front Door -->
-    <rect class="car-part" data-part="Right Front Door" x="400" y="160" width="50" height="80" rx="8"/>
-    
-    <!-- Left Rear Door -->
-    <rect class="car-part" data-part="Left Rear Door" x="150" y="240" width="50" height="80" rx="8"/>
-    
-    <!-- Right Rear Door -->
-    <rect class="car-part" data-part="Right Rear Door" x="400" y="240" width="50" height="80" rx="8"/>
-    
-    <!-- Left Rear Fender -->
-    <rect class="car-part" data-part="Left Rear Fender" x="150" y="320" width="50" height="60" rx="8"/>
-    
-    <!-- Right Rear Fender -->
-    <rect class="car-part" data-part="Right Rear Fender" x="400" y="320" width="50" height="60" rx="8"/>
-    
-    <!-- Roof -->
-    <rect class="car-part" data-part="Roof" x="200" y="130" width="200" height="140" rx="10"/>
-    
-    <!-- Trunk Lid -->
-    <rect class="car-part" data-part="Trunk Lid" x="200" y="270" width="200" height="80" rx="10"/>
-    
-    <!-- Rear Bumper -->
-    <rect class="car-part" data-part="Rear Bumper" x="180" y="350" width="240" height="30" rx="15"/>
-    
-    <!-- Part labels -->
-    <text x="300" y="95" text-anchor="middle" font-size="12" fill="#333">Hood</text>
-    <text x="300" y="40" text-anchor="middle" font-size="10" fill="#333">Front Bumper</text>
-    <text x="175" y="115" text-anchor="middle" font-size="10" fill="#333">L Front Fender</text>
-    <text x="425" y="115" text-anchor="middle" font-size="10" fill="#333">R Front Fender</text>
-    <text x="175" y="205" text-anchor="middle" font-size="10" fill="#333">L Front Door</text>
-    <text x="425" y="205" text-anchor="middle" font-size="10" fill="#333">R Front Door</text>
-    <text x="175" y="285" text-anchor="middle" font-size="10" fill="#333">L Rear Door</text>
-    <text x="425" y="285" text-anchor="middle" font-size="10" fill="#333">R Rear Door</text>
-    <text x="175" y="355" text-anchor="middle" font-size="10" fill="#333">L Rear Fender</text>
-    <text x="425" y="355" text-anchor="middle" font-size="10" fill="#333">R Rear Fender</text>
-    <text x="300" y="205" text-anchor="middle" font-size="12" fill="#333">Roof</text>
-    <text x="300" y="315" text-anchor="middle" font-size="12" fill="#333">Trunk</text>
-    <text x="300" y="370" text-anchor="middle" font-size="10" fill="#333">Rear Bumper</text>
-  </svg>
-  
-  <div class="legend">
-    <div class="legend-item">
-      <div class="legend-color status-original"></div>
-      <span>{{ _('Original Paint') }}</span>
-    </div>
-    <div class="legend-item">
-      <div class="legend-color status-painted"></div>
-      <span>{{ _('Repainted') }}</span>
-    </div>
-    <div class="legend-item">
-      <div class="legend-color status-locally-painted"></div>
-      <span>{{ _('Portion Repainted') }}</span>
-    </div>
-    <div class="legend-item">
-      <div class="legend-color status-replaced"></div>
-      <span>{{ _('Replaced') }}</span>
-    </div>
-    <div class="legend-item">
-      <div class="legend-color status-damaged"></div>
-      <span>{{ _('Damaged') }}</span>
-    </div>
-    <div class="legend-item">
-      <div class="legend-color status-not-available"></div>
-      <span>{{ _('Not Available') }}</span>
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-color status-original"></div>
+        <span>{{ _('Original Paint') }}</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color status-painted"></div>
+        <span>{{ _('Repainted') }}</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color status-locally-painted"></div>
+        <span>{{ _('Portion Repainted') }}</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color status-replaced"></div>
+        <span>{{ _('Replaced') }}</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color status-damaged"></div>
+        <span>{{ _('Damaged') }}</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color status-not-available"></div>
+        <span>{{ _('Not Available') }}</span>
+      </div>
     </div>
   </div>
 </div>
