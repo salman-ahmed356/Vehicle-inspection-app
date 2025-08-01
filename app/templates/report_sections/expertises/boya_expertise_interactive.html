@@ -5,6 +5,133 @@
 </h2>
 <p class="mb-4">{{ _('Click on car parts to mark their paint condition') }}</p>
 
+<script>
+let currentPart = null;
+let selectedStatus = null;
+
+// Feature mapping
+const partFeatureMap = {
+  {% for feature in expertise_report.features %}
+  '{{ feature.name }}': {{ feature.id }},
+  {% endfor %}
+};
+
+const statusColors = {
+  'Original': '#e9ecef',
+  'Painted': '#dc3545',
+  'Locally Painted': '#ffc107',
+  'Replaced': '#28a745',
+  'Damaged': '#fd7e14',
+  'None': '#6c757d'
+};
+
+function openModal(partName, partElement) {
+  console.log('Opening modal for:', partName);
+  currentPart = partElement;
+  document.getElementById('modalTitle').textContent = partName;
+  document.getElementById('partModal').style.display = 'block';
+  
+  // Clear previous selection
+  document.querySelectorAll('.status-option').forEach(opt => opt.classList.remove('selected'));
+  selectedStatus = null;
+}
+
+function closeModal() {
+  document.getElementById('partModal').style.display = 'none';
+  currentPart = null;
+  selectedStatus = null;
+}
+
+function selectStatus(status, element) {
+  document.querySelectorAll('.status-option').forEach(opt => opt.classList.remove('selected'));
+  element.classList.add('selected');
+  selectedStatus = status;
+  console.log('Selected status:', status);
+}
+
+function saveStatus() {
+  if (!currentPart || !selectedStatus) {
+    alert('Please select a status');
+    return;
+  }
+  
+  const partName = currentPart.textContent.includes('L ') ? 'Left ' + currentPart.textContent.replace('L ', '') :
+                   currentPart.textContent.includes('R ') ? 'Right ' + currentPart.textContent.replace('R ', '') :
+                   currentPart.textContent === 'Trunk' ? 'Trunk Lid' : currentPart.textContent;
+  
+  const featureId = partFeatureMap[partName];
+  console.log('Part name:', partName, 'Feature ID:', featureId);
+  
+  if (featureId) {
+    // Update hidden form input
+    const hiddenInput = document.getElementById('feature_' + featureId);
+    if (hiddenInput) {
+      hiddenInput.value = selectedStatus;
+      console.log('Updated hidden input:', hiddenInput.name, '=', selectedStatus);
+    }
+    
+    // Update visual appearance
+    currentPart.style.backgroundColor = statusColors[selectedStatus];
+    console.log('Updated', partName, 'to', selectedStatus, 'with color', statusColors[selectedStatus]);
+  }
+  
+  closeModal();
+}
+
+// Initialize parts with current status
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('Initializing car parts...');
+  {% for feature in expertise_report.features %}
+  const partName = '{{ feature.name }}';
+  const status = '{{ feature.status }}';
+  const color = statusColors[status] || '#e9ecef';
+  
+  // Find the part element
+  const partElements = document.querySelectorAll('.car-part');
+  partElements.forEach(function(element) {
+    const elementPartName = element.textContent.includes('L ') ? 'Left ' + element.textContent.replace('L ', '') :
+                           element.textContent.includes('R ') ? 'Right ' + element.textContent.replace('R ', '') :
+                           element.textContent === 'Trunk' ? 'Trunk Lid' : element.textContent;
+    
+    if (elementPartName === partName) {
+      element.style.backgroundColor = color;
+      console.log('Initialized', partName, 'with color', color);
+    }
+  });
+  {% endfor %}
+  
+  // Form submission handler
+  const form = document.getElementById('expertiseForm');
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      
+      fetch(this.action, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams(formData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Paint expertise updated successfully!');
+        } else {
+          alert('Update failed: ' + (data.error || 'Unknown error'));
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Update failed. Please check your inputs!');
+      });
+    });
+  }
+});
+</script>
+
 <style>
 .car-container {
   display: flex;
@@ -14,99 +141,14 @@
   margin: 20px 0;
 }
 
-.car-diagram {
-  display: grid;
-  grid-template-columns: 80px 120px 80px;
-  grid-template-rows: 50px 80px 80px 80px 80px 50px;
-  gap: 2px;
-  border: 3px solid #333;
-  border-radius: 15px;
-  padding: 10px;
-  background: #f8f9fa;
-}
-
 .car-part {
-  border: 2px solid #333;
-  background: #e9ecef;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
-  text-align: center;
-  padding: 5px;
 }
 
 .car-part:hover {
   opacity: 0.8;
-  border-width: 3px;
-}
-
-.front-bumper {
-  grid-column: 1 / 4;
-  border-radius: 25px 25px 5px 5px;
-}
-
-.hood {
-  grid-column: 2 / 3;
-  border-radius: 5px;
-}
-
-.left-front-fender {
-  grid-column: 1 / 2;
-  border-radius: 5px;
-}
-
-.right-front-fender {
-  grid-column: 3 / 4;
-  border-radius: 5px;
-}
-
-.left-front-door {
-  grid-column: 1 / 2;
-  border-radius: 5px;
-}
-
-.roof {
-  grid-column: 2 / 3;
-  border-radius: 5px;
-}
-
-.right-front-door {
-  grid-column: 3 / 4;
-  border-radius: 5px;
-}
-
-.left-rear-door {
-  grid-column: 1 / 2;
-  border-radius: 5px;
-}
-
-.trunk {
-  grid-column: 2 / 3;
-  border-radius: 5px;
-}
-
-.right-rear-door {
-  grid-column: 3 / 4;
-  border-radius: 5px;
-}
-
-.left-rear-fender {
-  grid-column: 1 / 2;
-  border-radius: 5px;
-}
-
-.right-rear-fender {
-  grid-column: 3 / 4;
-  border-radius: 5px;
-}
-
-.rear-bumper {
-  grid-column: 1 / 4;
-  border-radius: 5px 5px 25px 25px;
+  stroke-width: 3;
 }
 
 .legend {
@@ -234,21 +276,101 @@
 </style>
 
 <div class="car-container">
-  <div class="car-diagram">
-    <div class="car-part front-bumper" onclick="openModal('Front Bumper', this)">Front Bumper</div>
-    <div class="car-part left-front-fender" onclick="openModal('Left Front Fender', this)">L Front Fender</div>
-    <div class="car-part hood" onclick="openModal('Hood', this)">Hood</div>
-    <div class="car-part right-front-fender" onclick="openModal('Right Front Fender', this)">R Front Fender</div>
-    <div class="car-part left-front-door" onclick="openModal('Left Front Door', this)">L Front Door</div>
-    <div class="car-part roof" onclick="openModal('Roof', this)">Roof</div>
-    <div class="car-part right-front-door" onclick="openModal('Right Front Door', this)">R Front Door</div>
-    <div class="car-part left-rear-door" onclick="openModal('Left Rear Door', this)">L Rear Door</div>
-    <div class="car-part trunk" onclick="openModal('Trunk Lid', this)">Trunk</div>
-    <div class="car-part right-rear-door" onclick="openModal('Right Rear Door', this)">R Rear Door</div>
-    <div class="car-part left-rear-fender" onclick="openModal('Left Rear Fender', this)">L Rear Fender</div>
-    <div class="car-part right-rear-fender" onclick="openModal('Right Rear Fender', this)">R Rear Fender</div>
-    <div class="car-part rear-bumper" onclick="openModal('Rear Bumper', this)">Rear Bumper</div>
-  </div>
+  <svg width="500" height="700" viewBox="0 0 500 700" xmlns="http://www.w3.org/2000/svg">
+    <!-- Realistic car outline matching the original exactly -->
+    
+    <!-- Car main body outline -->
+    <path d="M150 80 Q120 80 120 110 L120 200 Q110 210 110 220 L110 280 Q110 290 120 300 L120 400 Q110 410 110 420 L110 480 Q110 490 120 500 L120 590 Q120 620 150 620 L350 620 Q380 620 380 590 L380 500 Q390 490 390 480 L390 420 Q390 410 380 400 L380 300 Q390 290 390 280 L390 220 Q390 210 380 200 L380 110 Q380 80 350 80 Z" 
+          fill="none" stroke="#333" stroke-width="3"/>
+    
+    <!-- Front Bumper -->
+    <path class="car-part" onclick="openModal('Front Bumper', this)" 
+          d="M150 80 Q120 80 120 110 L380 110 Q380 80 350 80 Z" 
+          fill="#e9ecef" stroke="#333" stroke-width="2"/>
+    
+    <!-- Hood with windshield -->
+    <path class="car-part" onclick="openModal('Hood', this)" 
+          d="M140 110 L360 110 L340 200 Q250 210 160 200 Z" 
+          fill="#e9ecef" stroke="#333" stroke-width="2"/>
+    
+    <!-- Front windshield -->
+    <path d="M160 200 Q250 210 340 200 L320 240 Q250 250 180 240 Z" 
+          fill="#b3d9ff" stroke="#333" stroke-width="1" opacity="0.8"/>
+    
+    <!-- Left Front Fender -->
+    <path class="car-part" onclick="openModal('Left Front Fender', this)" 
+          d="M120 110 L140 110 L160 200 L140 240 Q110 230 110 220 L110 200 Q110 180 120 160 Z" 
+          fill="#e9ecef" stroke="#333" stroke-width="2"/>
+    
+    <!-- Right Front Fender -->
+    <path class="car-part" onclick="openModal('Right Front Fender', this)" 
+          d="M360 110 L380 110 L380 160 Q380 180 380 200 L380 220 Q390 230 360 240 L340 200 Z" 
+          fill="#e9ecef" stroke="#333" stroke-width="2"/>
+    
+    <!-- Left Front Door -->
+    <path class="car-part" onclick="openModal('Left Front Door', this)" 
+          d="M110 220 Q110 210 120 200 L140 240 L180 240 L160 340 L140 380 Q110 370 110 360 L110 280 Q110 250 110 220 Z" 
+          fill="#e9ecef" stroke="#333" stroke-width="2"/>
+    
+    <!-- Right Front Door -->
+    <path class="car-part" onclick="openModal('Right Front Door', this)" 
+          d="M380 200 Q390 210 390 220 L390 250 Q390 280 390 360 Q390 370 360 380 L340 340 L320 240 L360 240 Z" 
+          fill="#e9ecef" stroke="#333" stroke-width="2"/>
+    
+    <!-- Roof -->
+    <path class="car-part" onclick="openModal('Roof', this)" 
+          d="M180 240 L320 240 L340 340 L320 460 Q250 470 180 460 L160 340 Z" 
+          fill="#e9ecef" stroke="#333" stroke-width="2"/>
+    
+    <!-- Left Rear Door -->
+    <path class="car-part" onclick="openModal('Left Rear Door', this)" 
+          d="M110 360 Q110 370 120 380 L140 380 L160 340 L160 460 L140 500 Q110 490 110 480 L110 420 Q110 390 110 360 Z" 
+          fill="#e9ecef" stroke="#333" stroke-width="2"/>
+    
+    <!-- Right Rear Door -->
+    <path class="car-part" onclick="openModal('Right Rear Door', this)" 
+          d="M360 380 Q390 370 390 360 L390 390 Q390 420 390 480 Q390 490 360 500 L340 460 L340 340 Z" 
+          fill="#e9ecef" stroke="#333" stroke-width="2"/>
+    
+    <!-- Trunk with rear windshield -->
+    <path class="car-part" onclick="openModal('Trunk Lid', this)" 
+          d="M160 460 L320 460 Q250 470 180 460 L160 500 Q250 510 340 500 L360 590 L140 590 Z" 
+          fill="#e9ecef" stroke="#333" stroke-width="2"/>
+    
+    <!-- Rear windshield -->
+    <path d="M180 460 Q250 470 320 460 L300 500 Q250 510 200 500 Z" 
+          fill="#b3d9ff" stroke="#333" stroke-width="1" opacity="0.8"/>
+    
+    <!-- Left Rear Fender -->
+    <path class="car-part" onclick="openModal('Left Rear Fender', this)" 
+          d="M110 480 Q110 490 120 500 L140 500 L140 590 L120 590 Q120 570 120 550 L120 520 Q110 510 110 480 Z" 
+          fill="#e9ecef" stroke="#333" stroke-width="2"/>
+    
+    <!-- Right Rear Fender -->
+    <path class="car-part" onclick="openModal('Right Rear Fender', this)" 
+          d="M360 500 Q390 490 390 480 Q390 510 380 520 L380 550 Q380 570 380 590 L360 590 Z" 
+          fill="#e9ecef" stroke="#333" stroke-width="2"/>
+    
+    <!-- Rear Bumper -->
+    <path class="car-part" onclick="openModal('Rear Bumper', this)" 
+          d="M140 590 L360 590 L380 590 Q380 620 350 620 L150 620 Q120 620 120 590 Z" 
+          fill="#e9ecef" stroke="#333" stroke-width="2"/>
+    
+    <!-- Part labels -->
+    <text x="250" y="100" text-anchor="middle" font-size="12" fill="#333">Front Bumper</text>
+    <text x="250" y="160" text-anchor="middle" font-size="12" fill="#333">Hood</text>
+    <text x="130" y="170" text-anchor="middle" font-size="10" fill="#333">L Front Fender</text>
+    <text x="370" y="170" text-anchor="middle" font-size="10" fill="#333">R Front Fender</text>
+    <text x="130" y="300" text-anchor="middle" font-size="10" fill="#333">L Front Door</text>
+    <text x="370" y="300" text-anchor="middle" font-size="10" fill="#333">R Front Door</text>
+    <text x="250" y="350" text-anchor="middle" font-size="12" fill="#333">Roof</text>
+    <text x="130" y="430" text-anchor="middle" font-size="10" fill="#333">L Rear Door</text>
+    <text x="370" y="430" text-anchor="middle" font-size="10" fill="#333">R Rear Door</text>
+    <text x="250" y="540" text-anchor="middle" font-size="12" fill="#333">Trunk</text>
+    <text x="130" y="540" text-anchor="middle" font-size="10" fill="#333">L Rear Fender</text>
+    <text x="370" y="540" text-anchor="middle" font-size="10" fill="#333">R Rear Fender</text>
+    <text x="250" y="610" text-anchor="middle" font-size="12" fill="#333">Rear Bumper</text>
+  </svg>
   
   <div class="legend">
     <div class="legend-item">
@@ -343,126 +465,3 @@
   </div>
 </form>
 
-<script>
-let currentPart = null;
-let selectedStatus = null;
-
-// Feature mapping
-const partFeatureMap = {
-  {% for feature in expertise_report.features %}
-  '{{ feature.name }}': {{ feature.id }},
-  {% endfor %}
-};
-
-const statusColors = {
-  'Original': '#e9ecef',
-  'Painted': '#dc3545',
-  'Locally Painted': '#ffc107',
-  'Replaced': '#28a745',
-  'Damaged': '#fd7e14',
-  'None': '#6c757d'
-};
-
-function openModal(partName, partElement) {
-  console.log('Opening modal for:', partName);
-  currentPart = partElement;
-  document.getElementById('modalTitle').textContent = partName;
-  document.getElementById('partModal').style.display = 'block';
-  
-  // Clear previous selection
-  document.querySelectorAll('.status-option').forEach(opt => opt.classList.remove('selected'));
-  selectedStatus = null;
-}
-
-function closeModal() {
-  document.getElementById('partModal').style.display = 'none';
-  currentPart = null;
-  selectedStatus = null;
-}
-
-function selectStatus(status, element) {
-  document.querySelectorAll('.status-option').forEach(opt => opt.classList.remove('selected'));
-  element.classList.add('selected');
-  selectedStatus = status;
-  console.log('Selected status:', status);
-}
-
-function saveStatus() {
-  if (!currentPart || !selectedStatus) {
-    alert('Please select a status');
-    return;
-  }
-  
-  const partName = currentPart.textContent.includes('L ') ? 'Left ' + currentPart.textContent.replace('L ', '') :
-                   currentPart.textContent.includes('R ') ? 'Right ' + currentPart.textContent.replace('R ', '') :
-                   currentPart.textContent === 'Trunk' ? 'Trunk Lid' : currentPart.textContent;
-  
-  const featureId = partFeatureMap[partName];
-  console.log('Part name:', partName, 'Feature ID:', featureId);
-  
-  if (featureId) {
-    // Update hidden form input
-    const hiddenInput = document.getElementById('feature_' + featureId);
-    if (hiddenInput) {
-      hiddenInput.value = selectedStatus;
-      console.log('Updated hidden input:', hiddenInput.name, '=', selectedStatus);
-    }
-    
-    // Update visual appearance
-    currentPart.style.backgroundColor = statusColors[selectedStatus];
-    console.log('Updated', partName, 'to', selectedStatus, 'with color', statusColors[selectedStatus]);
-  }
-  
-  closeModal();
-}
-
-// Initialize parts with current status
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('Initializing car parts...');
-  {% for feature in expertise_report.features %}
-  const partName = '{{ feature.name }}';
-  const status = '{{ feature.status }}';
-  const color = statusColors[status] || '#e9ecef';
-  
-  // Find the part element
-  const partElements = document.querySelectorAll('.car-part');
-  partElements.forEach(function(element) {
-    const elementPartName = element.textContent.includes('L ') ? 'Left ' + element.textContent.replace('L ', '') :
-                           element.textContent.includes('R ') ? 'Right ' + element.textContent.replace('R ', '') :
-                           element.textContent === 'Trunk' ? 'Trunk Lid' : element.textContent;
-    
-    if (elementPartName === partName) {
-      element.style.backgroundColor = color;
-      console.log('Initialized', partName, 'with color', color);
-    }
-  });
-  {% endfor %}
-});
-
-// Form submission
-document.getElementById('expertiseForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  
-  const formData = new FormData(this);
-  
-  fetch(this.action, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    body: new URLSearchParams(formData)
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      alert('Paint expertise updated successfully!');
-    } else {
-      alert('Update failed: ' + (data.error || 'Unknown error'));
-    }
-  })
-  .catch(error => {
-    console.error('Error:', error);
-    alert('Update failed. Please check your inputs!');
-  });
-});
-</script>
