@@ -17,10 +17,10 @@ const partFeatureMap = {
 };
 
 const statusColors = {
-  'Original': '#e9ecef',
+  'Original': '#ffffff',
   'Painted': '#dc3545',
   'Locally Painted': '#ffc107',
-  'Replaced': '#28a745',
+  'Replaced': '#0066cc',
   'Damaged': '#fd7e14',
   'None': '#6c757d'
 };
@@ -139,6 +139,9 @@ document.addEventListener('DOMContentLoaded', function() {
   align-items: flex-start;
   justify-content: center;
   margin: 20px 0;
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
 }
 
 .car-part {
@@ -253,10 +256,10 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 /* Color classes */
-.status-original { background-color: #e9ecef !important; }
+.status-original { background-color: #ffffff !important; }
 .status-painted { background-color: #dc3545 !important; }
 .status-locally-painted { background-color: #ffc107 !important; }
-.status-replaced { background-color: #28a745 !important; }
+.status-replaced { background-color: #0066cc !important; }
 .status-damaged { background-color: #fd7e14 !important; }
 .status-not-available { background-color: #6c757d !important; }
 
@@ -276,126 +279,128 @@ document.addEventListener('DOMContentLoaded', function() {
 </style>
 
 <div class="car-container">
-  <svg width="500" height="700" viewBox="0 0 500 700" xmlns="http://www.w3.org/2000/svg">
-    <!-- Realistic car outline matching the original exactly -->
+  <svg width="400" height="600" viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
+    <!-- Exact replica of the reference car image -->
     
-    <!-- Car main body outline -->
-    <path d="M150 80 Q120 80 120 110 L120 200 Q110 210 110 220 L110 280 Q110 290 120 300 L120 400 Q110 410 110 420 L110 480 Q110 490 120 500 L120 590 Q120 620 150 620 L350 620 Q380 620 380 590 L380 500 Q390 490 390 480 L390 420 Q390 410 380 400 L380 300 Q390 290 390 280 L390 220 Q390 210 380 200 L380 110 Q380 80 350 80 Z" 
-          fill="none" stroke="#333" stroke-width="3"/>
+    <!-- Front Bumper (Top) -->
+    <rect class="car-part" onclick="openModal('Front Bumper', this)" 
+          x="120" y="30" width="160" height="25" 
+          fill="#ffffff" stroke="#333" stroke-width="2" rx="12"/>
+    <rect x="125" y="35" width="150" height="15" 
+          fill="none" stroke="#333" stroke-width="1" rx="8"/>
     
-    <!-- Front Bumper -->
-    <path class="car-part" onclick="openModal('Front Bumper', this)" 
-          d="M150 80 Q120 80 120 110 L380 110 Q380 80 350 80 Z" 
-          fill="#e9ecef" stroke="#333" stroke-width="2"/>
+    <!-- Main car body outline -->
+    <path d="M80 80 Q70 80 70 90 L70 150 Q60 160 60 170 L60 220 Q60 230 70 240 L70 290 Q60 300 60 310 L60 360 Q60 370 70 380 L70 430 Q60 440 60 450 L60 500 Q60 510 70 520 L70 550 Q70 560 80 560 L320 560 Q330 560 330 550 L330 520 Q340 510 340 500 L340 450 Q340 440 330 430 L330 380 Q340 370 340 360 L340 310 Q340 300 330 290 L330 240 Q340 230 340 220 L340 170 Q340 160 330 150 L330 90 Q330 80 320 80 Z" 
+          fill="none" stroke="#333" stroke-width="2"/>
     
-    <!-- Hood with windshield -->
+    <!-- Hood -->
     <path class="car-part" onclick="openModal('Hood', this)" 
-          d="M140 110 L360 110 L340 200 Q250 210 160 200 Z" 
-          fill="#e9ecef" stroke="#333" stroke-width="2"/>
+          d="M120 55 L280 55 L310 80 Q310 100 290 120 L280 140 L120 140 L110 120 Q90 100 90 80 Z" 
+          fill="#b3d9ff" stroke="#333" stroke-width="2"/>
     
-    <!-- Front windshield -->
-    <path d="M160 200 Q250 210 340 200 L320 240 Q250 250 180 240 Z" 
+    <!-- Front Windshield -->
+    <path d="M120 140 L280 140 L260 180 L140 180 Z" 
           fill="#b3d9ff" stroke="#333" stroke-width="1" opacity="0.8"/>
     
     <!-- Left Front Fender -->
     <path class="car-part" onclick="openModal('Left Front Fender', this)" 
-          d="M120 110 L140 110 L160 200 L140 240 Q110 230 110 220 L110 200 Q110 180 120 160 Z" 
-          fill="#e9ecef" stroke="#333" stroke-width="2"/>
+          d="M70 90 Q60 90 60 100 L60 150 Q60 170 80 170 L120 170 L120 140 Q100 120 90 100 Q80 90 70 90 Z" 
+          fill="#ffffff" stroke="#333" stroke-width="2"/>
     
     <!-- Right Front Fender -->
     <path class="car-part" onclick="openModal('Right Front Fender', this)" 
-          d="M360 110 L380 110 L380 160 Q380 180 380 200 L380 220 Q390 230 360 240 L340 200 Z" 
-          fill="#e9ecef" stroke="#333" stroke-width="2"/>
+          d="M330 90 Q340 90 340 100 L340 150 Q340 170 320 170 L280 170 L280 140 Q300 120 310 100 Q320 90 330 90 Z" 
+          fill="#ffffff" stroke="#333" stroke-width="2"/>
     
     <!-- Left Front Door -->
     <path class="car-part" onclick="openModal('Left Front Door', this)" 
-          d="M110 220 Q110 210 120 200 L140 240 L180 240 L160 340 L140 380 Q110 370 110 360 L110 280 Q110 250 110 220 Z" 
-          fill="#e9ecef" stroke="#333" stroke-width="2"/>
+          d="M60 170 Q60 180 70 190 L70 250 Q60 260 60 270 L60 310 Q60 320 70 320 L120 320 L120 170 Z" 
+          fill="#ffffff" stroke="#333" stroke-width="2"/>
     
     <!-- Right Front Door -->
     <path class="car-part" onclick="openModal('Right Front Door', this)" 
-          d="M380 200 Q390 210 390 220 L390 250 Q390 280 390 360 Q390 370 360 380 L340 340 L320 240 L360 240 Z" 
-          fill="#e9ecef" stroke="#333" stroke-width="2"/>
+          d="M280 170 L330 170 L330 320 Q340 320 340 310 L340 270 Q340 260 330 250 L330 190 Q340 180 340 170 Z" 
+          fill="#ffffff" stroke="#333" stroke-width="2"/>
     
     <!-- Roof -->
     <path class="car-part" onclick="openModal('Roof', this)" 
-          d="M180 240 L320 240 L340 340 L320 460 Q250 470 180 460 L160 340 Z" 
-          fill="#e9ecef" stroke="#333" stroke-width="2"/>
+          d="M120 180 L280 180 L280 320 L120 320 Z" 
+          fill="#ffffff" stroke="#333" stroke-width="2"/>
     
     <!-- Left Rear Door -->
     <path class="car-part" onclick="openModal('Left Rear Door', this)" 
-          d="M110 360 Q110 370 120 380 L140 380 L160 340 L160 460 L140 500 Q110 490 110 480 L110 420 Q110 390 110 360 Z" 
-          fill="#e9ecef" stroke="#333" stroke-width="2"/>
+          d="M60 320 Q60 330 70 340 L70 400 Q60 410 60 420 L60 460 Q60 470 70 470 L120 470 L120 320 Z" 
+          fill="#ffffff" stroke="#333" stroke-width="2"/>
     
     <!-- Right Rear Door -->
     <path class="car-part" onclick="openModal('Right Rear Door', this)" 
-          d="M360 380 Q390 370 390 360 L390 390 Q390 420 390 480 Q390 490 360 500 L340 460 L340 340 Z" 
-          fill="#e9ecef" stroke="#333" stroke-width="2"/>
+          d="M280 320 L330 320 L330 470 Q340 470 340 460 L340 420 Q340 410 330 400 L330 340 Q340 330 340 320 Z" 
+          fill="#ffffff" stroke="#333" stroke-width="2"/>
     
-    <!-- Trunk with rear windshield -->
+    <!-- Trunk Lid -->
     <path class="car-part" onclick="openModal('Trunk Lid', this)" 
-          d="M160 460 L320 460 Q250 470 180 460 L160 500 Q250 510 340 500 L360 590 L140 590 Z" 
-          fill="#e9ecef" stroke="#333" stroke-width="2"/>
+          d="M120 420 L280 420 L310 450 Q310 470 290 490 L280 510 L120 510 L110 490 Q90 470 90 450 Z" 
+          fill="#b3d9ff" stroke="#333" stroke-width="2"/>
     
-    <!-- Rear windshield -->
-    <path d="M180 460 Q250 470 320 460 L300 500 Q250 510 200 500 Z" 
+    <!-- Rear Windshield -->
+    <path d="M120 420 L280 420 L260 460 L140 460 Z" 
           fill="#b3d9ff" stroke="#333" stroke-width="1" opacity="0.8"/>
     
     <!-- Left Rear Fender -->
     <path class="car-part" onclick="openModal('Left Rear Fender', this)" 
-          d="M110 480 Q110 490 120 500 L140 500 L140 590 L120 590 Q120 570 120 550 L120 520 Q110 510 110 480 Z" 
-          fill="#e9ecef" stroke="#333" stroke-width="2"/>
+          d="M70 470 Q60 470 60 480 L60 530 Q60 550 80 550 L120 550 L120 510 Q100 490 90 480 Q80 470 70 470 Z" 
+          fill="#ffffff" stroke="#333" stroke-width="2"/>
     
     <!-- Right Rear Fender -->
     <path class="car-part" onclick="openModal('Right Rear Fender', this)" 
-          d="M360 500 Q390 490 390 480 Q390 510 380 520 L380 550 Q380 570 380 590 L360 590 Z" 
-          fill="#e9ecef" stroke="#333" stroke-width="2"/>
+          d="M330 470 Q340 470 340 480 L340 530 Q340 550 320 550 L280 550 L280 510 Q300 490 310 480 Q320 470 330 470 Z" 
+          fill="#ffffff" stroke="#333" stroke-width="2"/>
     
-    <!-- Rear Bumper -->
-    <path class="car-part" onclick="openModal('Rear Bumper', this)" 
-          d="M140 590 L360 590 L380 590 Q380 620 350 620 L150 620 Q120 620 120 590 Z" 
-          fill="#e9ecef" stroke="#333" stroke-width="2"/>
+    <!-- Rear Bumper (Bottom) -->
+    <rect class="car-part" onclick="openModal('Rear Bumper', this)" 
+          x="120" y="545" width="160" height="25" 
+          fill="#ffffff" stroke="#333" stroke-width="2" rx="12"/>
+    <rect x="125" y="550" width="150" height="15" 
+          fill="none" stroke="#333" stroke-width="1" rx="8"/>
     
-    <!-- Part labels -->
-    <text x="250" y="100" text-anchor="middle" font-size="12" fill="#333">Front Bumper</text>
-    <text x="250" y="160" text-anchor="middle" font-size="12" fill="#333">Hood</text>
-    <text x="130" y="170" text-anchor="middle" font-size="10" fill="#333">L Front Fender</text>
-    <text x="370" y="170" text-anchor="middle" font-size="10" fill="#333">R Front Fender</text>
-    <text x="130" y="300" text-anchor="middle" font-size="10" fill="#333">L Front Door</text>
-    <text x="370" y="300" text-anchor="middle" font-size="10" fill="#333">R Front Door</text>
-    <text x="250" y="350" text-anchor="middle" font-size="12" fill="#333">Roof</text>
-    <text x="130" y="430" text-anchor="middle" font-size="10" fill="#333">L Rear Door</text>
-    <text x="370" y="430" text-anchor="middle" font-size="10" fill="#333">R Rear Door</text>
-    <text x="250" y="540" text-anchor="middle" font-size="12" fill="#333">Trunk</text>
-    <text x="130" y="540" text-anchor="middle" font-size="10" fill="#333">L Rear Fender</text>
-    <text x="370" y="540" text-anchor="middle" font-size="10" fill="#333">R Rear Fender</text>
-    <text x="250" y="610" text-anchor="middle" font-size="12" fill="#333">Rear Bumper</text>
+    <!-- Wheels -->
+    <circle cx="100" cy="150" r="20" fill="#666" stroke="#333" stroke-width="2"/>
+    <circle cx="100" cy="150" r="12" fill="#999" stroke="#333" stroke-width="1"/>
+    
+    <circle cx="300" cy="150" r="20" fill="#666" stroke="#333" stroke-width="2"/>
+    <circle cx="300" cy="150" r="12" fill="#999" stroke="#333" stroke-width="1"/>
+    
+    <circle cx="100" cy="450" r="20" fill="#666" stroke="#333" stroke-width="2"/>
+    <circle cx="100" cy="450" r="12" fill="#999" stroke="#333" stroke-width="1"/>
+    
+    <circle cx="300" cy="450" r="20" fill="#666" stroke="#333" stroke-width="2"/>
+    <circle cx="300" cy="450" r="12" fill="#999" stroke="#333" stroke-width="1"/>
   </svg>
   
   <div class="legend">
     <div class="legend-item">
-      <div class="legend-color" style="background-color: #e9ecef;"></div>
-      <span>{{ _('Original Paint') }}</span>
+      <div class="legend-color" style="background-color: #ffffff; border: 2px solid #333;"></div>
+      <span>Original Paint</span>
     </div>
     <div class="legend-item">
       <div class="legend-color" style="background-color: #dc3545;"></div>
-      <span>{{ _('Repainted') }}</span>
+      <span>Repainted</span>
     </div>
     <div class="legend-item">
       <div class="legend-color" style="background-color: #ffc107;"></div>
-      <span>{{ _('Portion Repainted') }}</span>
+      <span>Portion Repainted</span>
     </div>
     <div class="legend-item">
-      <div class="legend-color" style="background-color: #28a745;"></div>
-      <span>{{ _('Replaced') }}</span>
+      <div class="legend-color" style="background-color: #0066cc;"></div>
+      <span>Foiled</span>
     </div>
     <div class="legend-item">
       <div class="legend-color" style="background-color: #fd7e14;"></div>
-      <span>{{ _('Damaged') }}</span>
+      <span>Damaged</span>
     </div>
     <div class="legend-item">
       <div class="legend-color" style="background-color: #6c757d;"></div>
-      <span>{{ _('Not Available') }}</span>
+      <span>Not Available</span>
     </div>
   </div>
 </div>
@@ -406,7 +411,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <h3 id="modalTitle">Select Status</h3>
     <div class="status-options">
       <div class="status-option" onclick="selectStatus('Original', this)">
-        <div class="status-color" style="background-color: #e9ecef;"></div>
+        <div class="status-color" style="background-color: #ffffff; border: 2px solid #333;"></div>
         <span>{{ _('Original Paint') }}</span>
       </div>
       <div class="status-option" onclick="selectStatus('Painted', this)">
@@ -418,8 +423,8 @@ document.addEventListener('DOMContentLoaded', function() {
         <span>{{ _('Portion Repainted') }}</span>
       </div>
       <div class="status-option" onclick="selectStatus('Replaced', this)">
-        <div class="status-color" style="background-color: #28a745;"></div>
-        <span>{{ _('Replaced') }}</span>
+        <div class="status-color" style="background-color: #0066cc;"></div>
+        <span>Foiled</span>
       </div>
       <div class="status-option" onclick="selectStatus('Damaged', this)">
         <div class="status-color" style="background-color: #fd7e14;"></div>
