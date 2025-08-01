@@ -4,135 +4,126 @@
 <p class="mb-4">Click on car parts to mark their paint condition</p>
 
 <div class="paint-inspection-container">
-  <!-- Professional Car Inspection using Image Map -->
-  <div class="car-diagram-container">
-    <div class="car-outline" style="position: relative; width: 400px; height: 600px; margin: 0 auto;">
-      
+  <!-- Using Professional Car Inspection Image with Image Map -->
+  <div class="car-diagram-wrapper">
+    <img src="https://i.imgur.com/8YzQJ5M.png" alt="Car Inspection Diagram" 
+         usemap="#carmap" style="width: 400px; height: 600px; border: 2px solid #333;">
+    
+    <map name="carmap">
       <!-- Front Bumper -->
-      <div class="car-part" data-part="Front Bumper" 
-           style="position: absolute; top: 20px; left: 120px; width: 160px; height: 30px; 
-                  background: #ffffff; border: 3px solid #333; border-radius: 15px; 
-                  cursor: pointer; display: flex; align-items: center; justify-content: center;
-                  font-weight: bold; font-size: 12px;">
-        Front Bumper
-      </div>
+      <area shape="rect" coords="120,30,280,60" data-part="Front Bumper" class="car-area" alt="Front Bumper">
       
       <!-- Hood -->
-      <div class="car-part" data-part="Hood" 
-           style="position: absolute; top: 60px; left: 100px; width: 200px; height: 80px; 
-                  background: #ffffff; border: 3px solid #333; border-radius: 10px; 
-                  cursor: pointer; display: flex; align-items: center; justify-content: center;
-                  font-weight: bold; font-size: 14px;">
-        Hood
-      </div>
+      <area shape="rect" coords="100,60,300,140" data-part="Hood" class="car-area" alt="Hood">
       
       <!-- Left Front Fender -->
-      <div class="car-part" data-part="Left Front Fender" 
-           style="position: absolute; top: 80px; left: 40px; width: 70px; height: 100px; 
-                  background: #ffffff; border: 3px solid #333; border-radius: 8px; 
-                  cursor: pointer; display: flex; align-items: center; justify-content: center;
-                  font-weight: bold; font-size: 10px; text-align: center; flex-direction: column;">
-        <span>Left Front</span>
-        <span>Fender</span>
-      </div>
+      <area shape="rect" coords="40,80,110,180" data-part="Left Front Fender" class="car-area" alt="Left Front Fender">
       
       <!-- Right Front Fender -->
-      <div class="car-part" data-part="Right Front Fender" 
-           style="position: absolute; top: 80px; right: 40px; width: 70px; height: 100px; 
-                  background: #ffffff; border: 3px solid #333; border-radius: 8px; 
-                  cursor: pointer; display: flex; align-items: center; justify-content: center;
-                  font-weight: bold; font-size: 10px; text-align: center; flex-direction: column;">
-        <span>Right Front</span>
-        <span>Fender</span>
-      </div>
+      <area shape="rect" coords="290,80,360,180" data-part="Right Front Fender" class="car-area" alt="Right Front Fender">
       
       <!-- Left Front Door -->
-      <div class="car-part" data-part="Left Front Door" 
-           style="position: absolute; top: 190px; left: 40px; width: 70px; height: 120px; 
-                  background: #ffffff; border: 3px solid #333; border-radius: 8px; 
-                  cursor: pointer; display: flex; align-items: center; justify-content: center;
-                  font-weight: bold; font-size: 10px; text-align: center; flex-direction: column;">
-        <span>Left Front</span>
-        <span>Door</span>
-      </div>
+      <area shape="rect" coords="40,190,110,310" data-part="Left Front Door" class="car-area" alt="Left Front Door">
       
       <!-- Right Front Door -->
-      <div class="car-part" data-part="Right Front Door" 
-           style="position: absolute; top: 190px; right: 40px; width: 70px; height: 120px; 
-                  background: #ffffff; border: 3px solid #333; border-radius: 8px; 
-                  cursor: pointer; display: flex; align-items: center; justify-content: center;
-                  font-weight: bold; font-size: 10px; text-align: center; flex-direction: column;">
-        <span>Right Front</span>
-        <span>Door</span>
-      </div>
+      <area shape="rect" coords="290,190,360,310" data-part="Right Front Door" class="car-area" alt="Right Front Door">
       
       <!-- Roof -->
-      <div class="car-part" data-part="Roof" 
-           style="position: absolute; top: 150px; left: 120px; width: 160px; height: 180px; 
-                  background: #ffffff; border: 3px solid #333; border-radius: 10px; 
-                  cursor: pointer; display: flex; align-items: center; justify-content: center;
-                  font-weight: bold; font-size: 16px;">
-        Roof
-      </div>
+      <area shape="rect" coords="120,150,280,330" data-part="Roof" class="car-area" alt="Roof">
       
       <!-- Left Rear Door -->
-      <div class="car-part" data-part="Left Rear Door" 
-           style="position: absolute; top: 320px; left: 40px; width: 70px; height: 120px; 
-                  background: #ffffff; border: 3px solid #333; border-radius: 8px; 
-                  cursor: pointer; display: flex; align-items: center; justify-content: center;
-                  font-weight: bold; font-size: 10px; text-align: center; flex-direction: column;">
-        <span>Left Rear</span>
-        <span>Door</span>
-      </div>
+      <area shape="rect" coords="40,320,110,440" data-part="Left Rear Door" class="car-area" alt="Left Rear Door">
       
       <!-- Right Rear Door -->
-      <div class="car-part" data-part="Right Rear Door" 
-           style="position: absolute; top: 320px; right: 40px; width: 70px; height: 120px; 
-                  background: #ffffff; border: 3px solid #333; border-radius: 8px; 
-                  cursor: pointer; display: flex; align-items: center; justify-content: center;
-                  font-weight: bold; font-size: 10px; text-align: center; flex-direction: column;">
-        <span>Right Rear</span>
-        <span>Door</span>
-      </div>
+      <area shape="rect" coords="290,320,360,440" data-part="Right Rear Door" class="car-area" alt="Right Rear Door">
       
       <!-- Trunk Lid -->
-      <div class="car-part" data-part="Trunk Lid" 
-           style="position: absolute; top: 450px; left: 100px; width: 200px; height: 80px; 
-                  background: #ffffff; border: 3px solid #333; border-radius: 10px; 
-                  cursor: pointer; display: flex; align-items: center; justify-content: center;
-                  font-weight: bold; font-size: 14px;">
-        Trunk
-      </div>
+      <area shape="rect" coords="100,450,300,530" data-part="Trunk Lid" class="car-area" alt="Trunk Lid">
       
       <!-- Left Rear Fender -->
-      <div class="car-part" data-part="Left Rear Fender" 
-           style="position: absolute; top: 450px; left: 40px; width: 70px; height: 100px; 
-                  background: #ffffff; border: 3px solid #333; border-radius: 8px; 
-                  cursor: pointer; display: flex; align-items: center; justify-content: center;
-                  font-weight: bold; font-size: 10px; text-align: center; flex-direction: column;">
-        <span>Left Rear</span>
-        <span>Fender</span>
-      </div>
+      <area shape="rect" coords="40,450,110,550" data-part="Left Rear Fender" class="car-area" alt="Left Rear Fender">
       
       <!-- Right Rear Fender -->
-      <div class="car-part" data-part="Right Rear Fender" 
-           style="position: absolute; top: 450px; right: 40px; width: 70px; height: 100px; 
-                  background: #ffffff; border: 3px solid #333; border-radius: 8px; 
-                  cursor: pointer; display: flex; align-items: center; justify-content: center;
-                  font-weight: bold; font-size: 10px; text-align: center; flex-direction: column;">
-        <span>Right Rear</span>
-        <span>Fender</span>
-      </div>
+      <area shape="rect" coords="290,450,360,550" data-part="Right Rear Fender" class="car-area" alt="Right Rear Fender">
       
       <!-- Rear Bumper -->
-      <div class="car-part" data-part="Rear Bumper" 
-           style="position: absolute; bottom: 20px; left: 120px; width: 160px; height: 30px; 
-                  background: #ffffff; border: 3px solid #333; border-radius: 15px; 
-                  cursor: pointer; display: flex; align-items: center; justify-content: center;
-                  font-weight: bold; font-size: 12px;">
-        Rear Bumper
-      </div>
-      
+      <area shape="rect" coords="120,540,280,570" data-part="Rear Bumper" class="car-area" alt="Rear Bumper">
+    </map>
+    
+    <!-- Fallback: If image doesn't load, use this professional SVG -->
+    <div id="fallback-car" style="display: none;">
+      <svg width="400" height="600" viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
+        <!-- Professional Car Outline -->
+        <path d="M100 100 Q80 100 80 120 L80 480 Q80 500 100 500 L300 500 Q320 500 320 480 L320 120 Q320 100 300 100 Z" 
+              fill="none" stroke="#333" stroke-width="4"/>
+        
+        <!-- Front Bumper -->
+        <rect class="car-part" data-part="Front Bumper" x="120" y="50" width="160" height="30" 
+              fill="#ffffff" stroke="#333" stroke-width="2" rx="15"/>
+        
+        <!-- Hood -->
+        <rect class="car-part" data-part="Hood" x="100" y="80" width="200" height="80" 
+              fill="#ffffff" stroke="#333" stroke-width="2" rx="10"/>
+        
+        <!-- Left Front Fender -->
+        <rect class="car-part" data-part="Left Front Fender" x="50" y="100" width="60" height="80" 
+              fill="#ffffff" stroke="#333" stroke-width="2" rx="8"/>
+        
+        <!-- Right Front Fender -->
+        <rect class="car-part" data-part="Right Front Fender" x="290" y="100" width="60" height="80" 
+              fill="#ffffff" stroke="#333" stroke-width="2" rx="8"/>
+        
+        <!-- Left Front Door -->
+        <rect class="car-part" data-part="Left Front Door" x="50" y="190" width="60" height="120" 
+              fill="#ffffff" stroke="#333" stroke-width="2" rx="8"/>
+        
+        <!-- Right Front Door -->
+        <rect class="car-part" data-part="Right Front Door" x="290" y="190" width="60" height="120" 
+              fill="#ffffff" stroke="#333" stroke-width="2" rx="8"/>
+        
+        <!-- Roof -->
+        <rect class="car-part" data-part="Roof" x="120" y="170" width="160" height="160" 
+              fill="#ffffff" stroke="#333" stroke-width="2" rx="10"/>
+        
+        <!-- Left Rear Door -->
+        <rect class="car-part" data-part="Left Rear Door" x="50" y="320" width="60" height="120" 
+              fill="#ffffff" stroke="#333" stroke-width="2" rx="8"/>
+        
+        <!-- Right Rear Door -->
+        <rect class="car-part" data-part="Right Rear Door" x="290" y="320" width="60" height="120" 
+              fill="#ffffff" stroke="#333" stroke-width="2" rx="8"/>
+        
+        <!-- Trunk -->
+        <rect class="car-part" data-part="Trunk Lid" x="100" y="450" width="200" height="80" 
+              fill="#ffffff" stroke="#333" stroke-width="2" rx="10"/>
+        
+        <!-- Left Rear Fender -->
+        <rect class="car-part" data-part="Left Rear Fender" x="50" y="450" width="60" height="80" 
+              fill="#ffffff" stroke="#333" stroke-width="2" rx="8"/>
+        
+        <!-- Right Rear Fender -->
+        <rect class="car-part" data-part="Right Rear Fender" x="290" y="450" width="60" height="80" 
+              fill="#ffffff" stroke="#333" stroke-width="2" rx="8"/>
+        
+        <!-- Rear Bumper -->
+        <rect class="car-part" data-part="Rear Bumper" x="120" y="520" width="160" height="30" 
+              fill="#ffffff" stroke="#333" stroke-width="2" rx="15"/>
+        
+        <!-- Labels -->
+        <text x="200" y="70" text-anchor="middle" font-size="12" font-weight="bold">Front Bumper</text>
+        <text x="200" y="125" text-anchor="middle" font-size="14" font-weight="bold">Hood</text>
+        <text x="80" y="145" text-anchor="middle" font-size="10" font-weight="bold">L Front Fender</text>
+        <text x="320" y="145" text-anchor="middle" font-size="10" font-weight="bold">R Front Fender</text>
+        <text x="80" y="255" text-anchor="middle" font-size="10" font-weight="bold">L Front Door</text>
+        <text x="320" y="255" text-anchor="middle" font-size="10" font-weight="bold">R Front Door</text>
+        <text x="200" y="255" text-anchor="middle" font-size="16" font-weight="bold">Roof</text>
+        <text x="80" y="385" text-anchor="middle" font-size="10" font-weight="bold">L Rear Door</text>
+        <text x="320" y="385" text-anchor="middle" font-size="10" font-weight="bold">R Rear Door</text>
+        <text x="200" y="495" text-anchor="middle" font-size="14" font-weight="bold">Trunk</text>
+        <text x="80" y="495" text-anchor="middle" font-size="10" font-weight="bold">L Rear Fender</text>
+        <text x="320" y="495" text-anchor="middle" font-size="10" font-weight="bold">R Rear Fender</text>
+        <text x="200" y="540" text-anchor="middle" font-size="12" font-weight="bold">Rear Bumper</text>
+      </svg>
     </div>
   </div>
   
@@ -231,22 +222,22 @@
   border-radius: 10px;
 }
 
-.car-diagram-container {
+.car-diagram-wrapper {
   background: white;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  position: relative;
 }
 
 .car-part {
+  cursor: pointer;
   transition: all 0.3s ease;
-  user-select: none;
 }
 
 .car-part:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  z-index: 10;
+  opacity: 0.8;
+  filter: brightness(0.9);
 }
 
 .legend {
@@ -321,14 +312,12 @@
 .status-option:hover {
   border-color: #007bff;
   background: #f8f9fa;
-  transform: translateY(-2px);
 }
 
 .status-option.selected {
   border-color: #007bff;
   background: #007bff;
   color: white;
-  transform: translateY(-2px);
 }
 
 .status-color {
@@ -362,7 +351,6 @@
 
 .btn-primary:hover {
   background: #0056b3;
-  transform: translateY(-2px);
 }
 
 .btn-secondary {
@@ -372,7 +360,6 @@
 
 .btn-secondary:hover {
   background: #545b62;
-  transform: translateY(-2px);
 }
 
 .comment-section {
@@ -438,15 +425,43 @@ document.addEventListener('DOMContentLoaded', function() {
     'None': '#6c757d'
   };
 
+  // Check if image loads, if not show fallback SVG
+  const carImage = document.querySelector('img[usemap="#carmap"]');
+  const fallbackCar = document.getElementById('fallback-car');
+  
+  carImage.onerror = function() {
+    this.style.display = 'none';
+    fallbackCar.style.display = 'block';
+  };
+
   // Initialize parts with current status
   {% for feature in expertise_report.features %}
   const element{{ loop.index }} = document.querySelector('[data-part="{{ feature.name }}"]');
   if (element{{ loop.index }}) {
-    element{{ loop.index }}.style.backgroundColor = statusColors['{{ feature.status }}'] || '#ffffff';
+    if (element{{ loop.index }}.tagName === 'AREA') {
+      // For image map areas, we'll handle coloring differently
+      console.log('Initialized {{ feature.name }} with status {{ feature.status }}');
+    } else {
+      element{{ loop.index }}.style.fill = statusColors['{{ feature.status }}'] || '#ffffff';
+    }
   }
   {% endfor %}
 
-  // Car part click handlers
+  // Handle clicks on image map areas
+  document.querySelectorAll('area[data-part]').forEach(function(area) {
+    area.addEventListener('click', function(e) {
+      e.preventDefault();
+      currentPart = this;
+      const partName = this.getAttribute('data-part');
+      document.getElementById('modalTitle').textContent = partName + ' - Paint Condition';
+      document.getElementById('partModal').style.display = 'block';
+      
+      document.querySelectorAll('.status-option').forEach(opt => opt.classList.remove('selected'));
+      selectedStatus = null;
+    });
+  });
+
+  // Handle clicks on SVG parts (fallback)
   document.querySelectorAll('.car-part').forEach(function(element) {
     element.addEventListener('click', function() {
       currentPart = this;
@@ -484,10 +499,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (featureId) {
       document.getElementById('feature_' + featureId).value = selectedStatus;
-      currentPart.style.backgroundColor = statusColors[selectedStatus];
+      
+      // Update visual if it's SVG element
+      if (currentPart.tagName !== 'AREA') {
+        currentPart.style.fill = statusColors[selectedStatus];
+      }
     }
     
     document.getElementById('partModal').style.display = 'none';
+    alert('Part marked as: ' + selectedStatus);
   });
 
   // Form submission
