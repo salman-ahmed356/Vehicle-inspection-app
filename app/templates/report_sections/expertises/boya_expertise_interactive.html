@@ -18,10 +18,20 @@
   }
   
   .car-svg {
-    width: 500px;
+    width: 450px;
     height: auto;
     cursor: pointer;
     flex-shrink: 0;
+  }
+  
+  .car-part {
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .car-part:hover {
+    opacity: 0.8;
+    stroke-width: 3;
   }
   
   .car-part {
@@ -205,62 +215,88 @@
 
 <div class="car-diagram-container">
   <div class="car-and-legend">
-    <svg class="car-svg" viewBox="0 0 600 800" xmlns="http://www.w3.org/2000/svg">
-      <!-- Car exactly matching the original image -->
+    <svg class="car-svg" viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
+      <!-- Car outline exactly like the original -->
       
-      <!-- Front Bumper (rounded) -->
-      <path class="car-part" data-part="Front Bumper" d="M200 60 Q200 40 220 40 L380 40 Q400 40 400 60 L400 90 L200 90 Z" fill="#e9ecef" stroke="#333" stroke-width="3"/>
+      <!-- Front Bumper -->
+      <path class="car-part" data-part="Front Bumper" 
+            d="M120 40 Q120 20 140 20 L260 20 Q280 20 280 40 L280 60 L120 60 Z" 
+            fill="#e9ecef" stroke="#333" stroke-width="2"/>
       
       <!-- Hood -->
-      <rect class="car-part" data-part="Hood" x="220" y="90" width="160" height="140" fill="#e9ecef" stroke="#333" stroke-width="3"/>
+      <rect class="car-part" data-part="Hood" 
+            x="140" y="60" width="120" height="100" 
+            fill="#e9ecef" stroke="#333" stroke-width="2"/>
       
       <!-- Left Front Fender -->
-      <rect class="car-part" data-part="Left Front Fender" x="140" y="110" width="80" height="110" fill="#e9ecef" stroke="#333" stroke-width="3"/>
+      <rect class="car-part" data-part="Left Front Fender" 
+            x="80" y="80" width="60" height="80" 
+            fill="#e9ecef" stroke="#333" stroke-width="2"/>
       
       <!-- Right Front Fender -->
-      <rect class="car-part" data-part="Right Front Fender" x="380" y="110" width="80" height="110" fill="#e9ecef" stroke="#333" stroke-width="3"/>
+      <rect class="car-part" data-part="Right Front Fender" 
+            x="260" y="80" width="60" height="80" 
+            fill="#e9ecef" stroke="#333" stroke-width="2"/>
       
       <!-- Left Front Door -->
-      <rect class="car-part" data-part="Left Front Door" x="140" y="220" width="80" height="130" fill="#e9ecef" stroke="#333" stroke-width="3"/>
+      <rect class="car-part" data-part="Left Front Door" 
+            x="80" y="160" width="60" height="100" 
+            fill="#e9ecef" stroke="#333" stroke-width="2"/>
       
       <!-- Right Front Door -->
-      <rect class="car-part" data-part="Right Front Door" x="380" y="220" width="80" height="130" fill="#e9ecef" stroke="#333" stroke-width="3"/>
+      <rect class="car-part" data-part="Right Front Door" 
+            x="260" y="160" width="60" height="100" 
+            fill="#e9ecef" stroke="#333" stroke-width="2"/>
       
       <!-- Roof -->
-      <rect class="car-part" data-part="Roof" x="220" y="230" width="160" height="220" fill="#e9ecef" stroke="#333" stroke-width="3"/>
+      <rect class="car-part" data-part="Roof" 
+            x="140" y="160" width="120" height="200" 
+            fill="#e9ecef" stroke="#333" stroke-width="2"/>
       
       <!-- Left Rear Door -->
-      <rect class="car-part" data-part="Left Rear Door" x="140" y="350" width="80" height="130" fill="#e9ecef" stroke="#333" stroke-width="3"/>
+      <rect class="car-part" data-part="Left Rear Door" 
+            x="80" y="260" width="60" height="100" 
+            fill="#e9ecef" stroke="#333" stroke-width="2"/>
       
       <!-- Right Rear Door -->
-      <rect class="car-part" data-part="Right Rear Door" x="380" y="350" width="80" height="130" fill="#e9ecef" stroke="#333" stroke-width="3"/>
+      <rect class="car-part" data-part="Right Rear Door" 
+            x="260" y="260" width="60" height="100" 
+            fill="#e9ecef" stroke="#333" stroke-width="2"/>
       
       <!-- Trunk -->
-      <rect class="car-part" data-part="Trunk Lid" x="220" y="450" width="160" height="140" fill="#e9ecef" stroke="#333" stroke-width="3"/>
+      <rect class="car-part" data-part="Trunk Lid" 
+            x="140" y="360" width="120" height="100" 
+            fill="#e9ecef" stroke="#333" stroke-width="2"/>
       
       <!-- Left Rear Fender -->
-      <rect class="car-part" data-part="Left Rear Fender" x="140" y="480" width="80" height="110" fill="#e9ecef" stroke="#333" stroke-width="3"/>
+      <rect class="car-part" data-part="Left Rear Fender" 
+            x="80" y="380" width="60" height="80" 
+            fill="#e9ecef" stroke="#333" stroke-width="2"/>
       
       <!-- Right Rear Fender -->
-      <rect class="car-part" data-part="Right Rear Fender" x="380" y="480" width="80" height="110" fill="#e9ecef" stroke="#333" stroke-width="3"/>
+      <rect class="car-part" data-part="Right Rear Fender" 
+            x="260" y="380" width="60" height="80" 
+            fill="#e9ecef" stroke="#333" stroke-width="2"/>
       
-      <!-- Rear Bumper (rounded) -->
-      <path class="car-part" data-part="Rear Bumper" d="M200 590 L400 590 Q400 610 380 610 L220 610 Q200 610 200 590 Z" fill="#e9ecef" stroke="#333" stroke-width="3"/>
+      <!-- Rear Bumper -->
+      <path class="car-part" data-part="Rear Bumper" 
+            d="M120 460 L280 460 Q280 480 260 480 L140 480 Q120 480 120 460 Z" 
+            fill="#e9ecef" stroke="#333" stroke-width="2"/>
       
-      <!-- Part labels -->
-      <text x="300" y="75" text-anchor="middle" font-size="14" font-weight="bold" fill="#333">Front Bumper</text>
-      <text x="300" y="165" text-anchor="middle" font-size="14" font-weight="bold" fill="#333">Hood</text>
-      <text x="180" y="170" text-anchor="middle" font-size="12" fill="#333">L Front Fender</text>
-      <text x="420" y="170" text-anchor="middle" font-size="12" fill="#333">R Front Fender</text>
-      <text x="180" y="290" text-anchor="middle" font-size="12" fill="#333">L Front Door</text>
-      <text x="420" y="290" text-anchor="middle" font-size="12" fill="#333">R Front Door</text>
-      <text x="300" y="345" text-anchor="middle" font-size="14" font-weight="bold" fill="#333">Roof</text>
-      <text x="180" y="420" text-anchor="middle" font-size="12" fill="#333">L Rear Door</text>
-      <text x="420" y="420" text-anchor="middle" font-size="12" fill="#333">R Rear Door</text>
-      <text x="300" y="525" text-anchor="middle" font-size="14" font-weight="bold" fill="#333">Trunk</text>
-      <text x="180" y="540" text-anchor="middle" font-size="12" fill="#333">L Rear Fender</text>
-      <text x="420" y="540" text-anchor="middle" font-size="12" fill="#333">R Rear Fender</text>
-      <text x="300" y="605" text-anchor="middle" font-size="14" font-weight="bold" fill="#333">Rear Bumper</text>
+      <!-- Labels -->
+      <text x="200" y="50" text-anchor="middle" font-size="12" fill="#333">Front Bumper</text>
+      <text x="200" y="115" text-anchor="middle" font-size="12" fill="#333">Hood</text>
+      <text x="110" y="125" text-anchor="middle" font-size="10" fill="#333">L Front Fender</text>
+      <text x="290" y="125" text-anchor="middle" font-size="10" fill="#333">R Front Fender</text>
+      <text x="110" y="215" text-anchor="middle" font-size="10" fill="#333">L Front Door</text>
+      <text x="290" y="215" text-anchor="middle" font-size="10" fill="#333">R Front Door</text>
+      <text x="200" y="265" text-anchor="middle" font-size="12" fill="#333">Roof</text>
+      <text x="110" y="315" text-anchor="middle" font-size="10" fill="#333">L Rear Door</text>
+      <text x="290" y="315" text-anchor="middle" font-size="10" fill="#333">R Rear Door</text>
+      <text x="200" y="415" text-anchor="middle" font-size="12" fill="#333">Trunk</text>
+      <text x="110" y="425" text-anchor="middle" font-size="10" fill="#333">L Rear Fender</text>
+      <text x="290" y="425" text-anchor="middle" font-size="10" fill="#333">R Rear Fender</text>
+      <text x="200" y="475" text-anchor="middle" font-size="12" fill="#333">Rear Bumper</text>
     </svg>
     
     <div class="legend">
@@ -365,7 +401,10 @@ let partFeatureMap = {};
 // Map part names to feature IDs
 {% for feature in expertise_report.features %}
 partFeatureMap['{{ feature.name }}'] = {{ feature.id }};
+console.log('Mapped feature: {{ feature.name }} -> {{ feature.id }}');
 {% endfor %}
+
+console.log('All feature mappings:', partFeatureMap);
 
 // Status to CSS class mapping
 const statusClasses = {
@@ -380,49 +419,61 @@ const statusClasses = {
 document.addEventListener('DOMContentLoaded', function() {
   console.log('DOM loaded, initializing car parts...');
   
-  // Initialize car parts with current status
-  {% for feature in expertise_report.features %}
-  const part{{ loop.index }} = document.querySelector('[data-part="{{ feature.name }}"]');
-  if (part{{ loop.index }}) {
-    const currentClass = statusClasses['{{ feature.status }}'] || 'status-original';
-    part{{ loop.index }}.className = 'car-part ' + currentClass;
-    console.log('Initialized part: {{ feature.name }} with status: {{ feature.status }}');
-  }
-  {% endfor %}
-  
-  // Add click listeners to car parts
-  document.querySelectorAll('.car-part').forEach(part => {
-    console.log('Adding click listener to:', part.getAttribute('data-part'));
-    part.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      const partName = this.getAttribute('data-part');
-      console.log('Clicked on part:', partName);
-      openPartSelector(partName, this);
+  // Wait a bit for everything to load
+  setTimeout(function() {
+    // Initialize car parts with current status
+    {% for feature in expertise_report.features %}
+    const part{{ loop.index }} = document.querySelector('[data-part="{{ feature.name }}"]');
+    if (part{{ loop.index }}) {
+      const currentClass = statusClasses['{{ feature.status }}'] || 'status-original';
+      part{{ loop.index }}.className = 'car-part ' + currentClass;
+      console.log('Initialized part: {{ feature.name }} with status: {{ feature.status }}');
+    } else {
+      console.error('Part not found: {{ feature.name }}');
+    }
+    {% endfor %}
+    
+    // Add click listeners to car parts
+    const carParts = document.querySelectorAll('.car-part');
+    console.log('Found', carParts.length, 'car parts');
+    
+    carParts.forEach(function(part, index) {
+      const partName = part.getAttribute('data-part');
+      console.log('Adding click listener to part', index + 1, ':', partName);
+      
+      part.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('CLICKED on part:', partName);
+        openPartSelector(partName, this);
+      });
+      
+      // Test click with a simple alert
+      part.addEventListener('mousedown', function() {
+        console.log('Mouse down on:', partName);
+      });
     });
     
-    // Add hover effect
-    part.addEventListener('mouseenter', function() {
-      this.style.opacity = '0.8';
+    // Add click listeners to status options
+    document.querySelectorAll('.status-option').forEach(function(option) {
+      option.addEventListener('click', function() {
+        document.querySelectorAll('.status-option').forEach(function(opt) {
+          opt.classList.remove('selected');
+        });
+        this.classList.add('selected');
+        selectedStatus = this.getAttribute('data-status');
+        console.log('Selected status:', selectedStatus);
+      });
     });
     
-    part.addEventListener('mouseleave', function() {
-      this.style.opacity = '1';
-    });
-  });
-  
-  // Add click listeners to status options
-  document.querySelectorAll('.status-option').forEach(option => {
-    option.addEventListener('click', function() {
-      document.querySelectorAll('.status-option').forEach(opt => opt.classList.remove('selected'));
-      this.classList.add('selected');
-      selectedStatus = this.getAttribute('data-status');
-      console.log('Selected status:', selectedStatus);
-    });
-  });
-  
-  // Close modal when clicking overlay
-  document.getElementById('overlay').addEventListener('click', closePartSelector);
+    // Close modal when clicking overlay
+    const overlay = document.getElementById('overlay');
+    if (overlay) {
+      overlay.addEventListener('click', closePartSelector);
+    }
+    
+    console.log('All event listeners added successfully');
+  }, 100);
 });
 
 function openPartSelector(partName, partElement) {
