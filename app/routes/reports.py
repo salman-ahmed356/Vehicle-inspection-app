@@ -358,6 +358,7 @@ def add_report():
 
 
 @reports.route('/report/update/<int:report_id>', methods=['GET', 'POST'])
+@login_required
 def update_report(report_id):
     report = Report.query.get_or_404(report_id)
     form = ReportForm(obj=report)
@@ -845,6 +846,7 @@ def cancel_report(report_id):
 
 
 @reports.route('/report/complete/<int:report_id>', methods=['POST', 'GET'])
+@login_required
 def complete_report(report_id):
     # Don't mark the report as completed, just show the complete report page
     return redirect(url_for('reports.show_complete_report', report_id=report_id))
@@ -868,6 +870,7 @@ def mark_complete(report_id):
 
 
 @reports.route('/report/complete_report/<int:report_id>', methods=['GET', 'POST'])
+@login_required
 def show_complete_report(report_id):
     report = Report.query.get_or_404(report_id)
     package_expertises = PackageExpertise\
@@ -898,6 +901,7 @@ from ..models import Report, ExpertiseType, ExpertiseReport, ExpertiseFeature
 from ..database import db
 
 @reports.route('/report/expertise_detail_ajax', methods=['GET'])
+@login_required
 def expertise_detail_ajax():
     # Force fresh data from database
     db.session.expire_all()
@@ -1244,6 +1248,7 @@ def expertise_detail_ajax():
 
 
 @reports.route('/report/expertise/<int:expertise_report_id>', methods=['GET', 'POST'])
+@login_required
 def expertise_detail(expertise_report_id):
     expertise_report = ExpertiseReport.query.get_or_404(expertise_report_id)
     expertise_report2_id = request.form.get('expertise_report2_id')
