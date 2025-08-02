@@ -1330,19 +1330,8 @@ def expertise_detail(expertise_report_id):
                 for feature in rpt.features:
                     print(f"DEBUG: Feature {feature.id}: {feature.name} = {feature.status}")
             
-            # Check if this is an AJAX request
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return jsonify({"success": True}), 200
-            else:
-                # Regular form submission - redirect back to the complete report page
-                flash('Expertise updated successfully!', 'success')
-                # Add debug info
-                print(f"Redirecting to report {expertise_report.report_id} with anchor {current_expertise_type}")
-                
-                # Build URL with anchor
-                url = url_for('reports.show_complete_report', report_id=expertise_report.report_id) + f'#expertise-{current_expertise_type}'
-                
-                return redirect(url)
+            # Always return JSON for AJAX requests
+            return jsonify({"success": True}), 200
 
         except Exception as e:
             db.session.rollback()
