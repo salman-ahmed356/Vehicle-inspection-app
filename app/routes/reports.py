@@ -1075,6 +1075,8 @@ def expertise_detail_ajax():
         
         # Final refresh to ensure all relationships are loaded
         db.session.refresh(er)
+        # Force reload features from database
+        er.features = ExpertiseFeature.query.filter_by(expertise_report_id=er.id).all()
         final_count = len(er.features)
         print(f"DEBUG: After final refresh, ExpertiseReport {er.id} has {final_count} features")
         return er
@@ -1129,6 +1131,8 @@ def expertise_detail_ajax():
         existing_features = ExpertiseFeature.query.filter_by(expertise_report_id=er.id).all()
         if existing_features:
             print(f"DEBUG: Found {len(existing_features)} existing features for {expertise_name}, not recreating")
+            # Force refresh the relationship to load existing features
+            db.session.refresh(er)
             return
         
         # Only create features if none exist
@@ -1205,8 +1209,8 @@ def expertise_detail_ajax():
     # Ensure features are loaded fresh from database
     if er1:
         db.session.refresh(er1)
-        # Force load features
-        _ = er1.features
+        # Force reload features from database
+        er1.features = ExpertiseFeature.query.filter_by(expertise_report_id=er1.id).all()
         print(f"DEBUG: er1 (report_id={er1.report_id}) has {len(er1.features)} features loaded")
         for feature in er1.features:
             print(f"DEBUG: Feature {feature.id}: {feature.name} = '{feature.status}' (type: {type(feature.status)})")
@@ -1214,8 +1218,8 @@ def expertise_detail_ajax():
     
     if er2:
         db.session.refresh(er2)
-        # Force load features
-        _ = er2.features
+        # Force reload features from database
+        er2.features = ExpertiseFeature.query.filter_by(expertise_report_id=er2.id).all()
         print(f"DEBUG: er2 (report_id={er2.report_id}) has {len(er2.features)} features loaded")
         for feature in er2.features:
             print(f"DEBUG: Feature {feature.id}: {feature.name} = '{feature.status}' (type: {type(feature.status)})")
