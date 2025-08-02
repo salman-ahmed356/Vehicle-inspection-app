@@ -202,7 +202,7 @@
     <tbody>
       {% for feature in expertise_report.features %}
         <tr>
-          <td>{{ feature.name }}</td>
+          <td>{{ feature.name }} ({{ feature.status }})</td>
           {% for s in status_choices %}
             <td>
               <input
@@ -212,6 +212,7 @@
                 id="desktop_feature_{{ feature.id }}_{{ s|replace(' ', '_')|replace('/', '_') }}"
                 {% if feature.status == s %}checked{% endif %}
               >
+              <!-- Debug: {{ feature.status }} == {{ s }} = {{ feature.status == s }} -->
             </td>
           {% endfor %}
         </tr>
