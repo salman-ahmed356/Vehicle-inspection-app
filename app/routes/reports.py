@@ -1300,34 +1300,34 @@ def expertise_detail(expertise_report_id):
                 db.session.refresh(rpt)
                 print(f"Processing report: {rpt.id} with {len(rpt.features)} features")
                 
-                # If no features, something is wrong - don't process
-                if len(rpt.features) == 0:
-                    print(f"ERROR: Report {rpt.id} has no features to update!")
-                    continue
+                # Don't rely on the relationship - process features directly from form
                 # Normal processing for all expertise types
                 # No special processing needed for brake expertise anymore
                 
-                # Process regular features
-                for feature in rpt.features:
-                    form_key = f'feature_{feature.id}'
-                    new_status = request.form.get(form_key)
-                    print(f"Feature {feature.id} ({feature.name}): current={feature.status}, new={new_status}")
-                    
-                    if new_status is not None:
-                        if new_status != feature.status:
-                            print(f"UPDATING feature {feature.id} from {feature.status} to {new_status}")
-                            feature.status = new_status
-                            feature.image_path = (
-                                f'assets/car_parts/'
-                                f'{status_dir.get(new_status,"default")}/'
-                                f'{feature.name}.png'
-                            )
-                            # Explicitly mark the feature as modified
-                            db.session.merge(feature)
+                # Process features by their IDs from the form (bypass relationship issues)
+                for form_key in request.form.keys():
+                    if form_key.startswith('feature_'):
+                        feature_id = int(form_key.replace('feature_', ''))
+                        new_status = request.form.get(form_key)
+                        
+                        # Query the feature directly by ID
+                        feature = ExpertiseFeature.query.get(feature_id)
+                        if feature:
+                            print(f"Feature {feature.id} ({feature.name}): current={feature.status}, new={new_status}")
+                            
+                            if new_status != feature.status:
+                                print(f"UPDATING feature {feature.id} from {feature.status} to {new_status}")
+                                feature.status = new_status
+                                feature.image_path = (
+                                    f'assets/car_parts/'
+                                    f'{status_dir.get(new_status,"default")}/'
+                                    f'{feature.name}.png'
+                                )
+                                db.session.add(feature)
+                            else:
+                                print(f"Feature {feature.id} status unchanged: {feature.status}")
                         else:
-                            print(f"Feature {feature.id} status unchanged: {feature.status}")
-                    else:
-                        print(f"WARNING: No form data for feature {feature.id}")
+                            print(f"WARNING: Could not find feature with ID {feature_id}")
 
                 new_comment = request.form.get('technician_comment') or ''
                 if new_comment != rpt.comment:
