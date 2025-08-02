@@ -882,26 +882,22 @@
 
   <!-- Page Header (appears on every page) -->
   <div class="page-header">
-    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-      <!-- Car image on left -->
-      <div>
-        {% if car_image_base64 %}
-        <img src="data:image/jpeg;base64,{{ car_image_base64 }}" alt="Vehicle Image" style="height: 45px; width: 90px; object-fit: cover; border-radius: 4px;">
-        {% endif %}
-      </div>
-      
-      <!-- Company name in center -->
-      <div style="text-align: center;">
-        <div style="font-size: 18pt; font-weight: bold; color: #dc2626; text-transform: uppercase;">{{ company.name }}</div>
-        <div style="font-size: 10pt; color: #666; margin-top: 2px;">Professional Vehicle Testing Services</div>
-      </div>
-      
-      <!-- Text on right -->
-      <div style="text-align: right; font-size: 9pt; color: #666;">
-        Professional Vehicle Testing Services<br>
-        <strong>VEHICLE INSPECTION REPORT</strong>
-      </div>
-    </div>
+    <table style="width: 100%; border-collapse: collapse;">
+      <tr>
+        <td style="width: 25%; vertical-align: middle; text-align: left;">
+          {% if car_image_base64 %}
+          <img src="data:image/jpeg;base64,{{ car_image_base64 }}" alt="Vehicle Image" style="height: 45px; width: 90px; object-fit: cover; border-radius: 4px;">
+          {% endif %}
+        </td>
+        <td style="width: 50%; vertical-align: middle; text-align: center;">
+          <div style="font-size: 18pt; font-weight: bold; color: #dc2626; text-transform: uppercase;">{{ company.name }}</div>
+        </td>
+        <td style="width: 25%; vertical-align: middle; text-align: right; font-size: 9pt; color: #666;">
+          Professional Vehicle Testing Services<br>
+          <strong>VEHICLE INSPECTION REPORT</strong>
+        </td>
+      </tr>
+    </table>
   </div>
   
   <!-- Page Footer (appears on every page) -->
