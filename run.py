@@ -5,12 +5,12 @@ from app.license_check import check_license
 import logging
 import base64
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 app = create_app()
 # configure logging
-app.logger.setLevel(logging.INFO)
-logging.basicConfig(level=logging.INFO)
+app.logger.setLevel(logging.WARNING)
+logging.basicConfig(level=logging.WARNING)
 
 # csrf
 csrf = CSRFProtect(app)
