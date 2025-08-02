@@ -32,8 +32,16 @@ def create_pdf(report_id):
     
     filename = _build_output_filename(customer)
 
-    # Get logo URL for PDF
-    logo_url = url_for('static', filename='assets/pdf_imgs/logo.png', _external=True)
+    # Get logo as base64 for PDF
+    import base64
+    logo_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'static', 'assets', 'pdf_imgs', 'logo.png')
+    logo_base64 = None
+    try:
+        with open(logo_path, 'rb') as logo_file:
+            logo_base64 = base64.b64encode(logo_file.read()).decode('utf-8')
+    except FileNotFoundError:
+        print(f"Logo file not found at: {logo_path}")
+        logo_base64 = None
     
     rendered_html = render_template(
         'pdf/simple_report_bilingual.html',
@@ -44,7 +52,7 @@ def create_pdf(report_id):
         staff=staff,
         vehicle_owner=vehicle_owner,
         package_expertise_reports=package_expertise_reports,
-        logo_url=logo_url,
+        logo_base64=logo_base64,
     )
     HTML(string=rendered_html).write_pdf(filename)
     return filename
