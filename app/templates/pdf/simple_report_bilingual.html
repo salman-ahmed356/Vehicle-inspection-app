@@ -957,116 +957,59 @@
     {% endif %}
   {% endfor %}
   
-  <!-- First page expertise sections -->
-  {% set first_page_count = 0 %}
+  <!-- All Expertise Sections -->
+  {% set section_count = 0 %}
   {% for expertise_name, pckg_report in expertise_types.items() %}
-    {% if first_page_count < 2 %}
-      <div class="expertise-section">
-        <div class="expertise-title">
-          {{ expertise_name|upper }}
-          <div class="arabic">{{ arabic_expertise.get(expertise_name, expertise_name) }}</div>
-        </div>
-        
-        <table class="feature-table">
-          {% for i in range(0, pckg_report.features|length, 2) %}
-            <tr>
-              <td class="feature-name">
-                {{ pckg_report.features[i].name }}
-                <div class="arabic">{{ arabic_features.get(pckg_report.features[i].name, pckg_report.features[i].name) }}</div>
-              </td>
-              <td class="feature-status">
-                {{ pckg_report.features[i].status }}
-                <div class="arabic">{{ arabic_status.get(pckg_report.features[i].status, pckg_report.features[i].status) }}</div>
-              </td>
-              
-              {% if i + 1 < pckg_report.features|length %}
-                <td class="feature-name">
-                  {{ pckg_report.features[i+1].name }}
-                  <div class="arabic">{{ arabic_features.get(pckg_report.features[i+1].name, pckg_report.features[i+1].name) }}</div>
-                </td>
-                <td class="feature-status">
-                  {{ pckg_report.features[i+1].status }}
-                  <div class="arabic">{{ arabic_status.get(pckg_report.features[i+1].status, pckg_report.features[i+1].status) }}</div>
-                </td>
-              {% else %}
-                <td class="feature-name"></td>
-                <td class="feature-status"></td>
-              {% endif %}
-            </tr>
-          {% endfor %}
-        </table>
-        
-        {% if pckg_report.comment %}
-          <div class="comments">
-            <div class="comments-title">
-              Comments:
-              <span class="arabic">التعليقات:</span>
-            </div>
-            <div class="comments-text">{{ pckg_report.comment }}</div>
-          </div>
-        {% endif %}
-      </div>
-      {% set first_page_count = first_page_count + 1 %}
+    {% if section_count > 0 and section_count % 3 == 0 %}
+      <div class="page-break"></div>
     {% endif %}
-  {% endfor %}
-  
-  <!-- Additional Expertise Sections (on new pages) -->
-  {% set remaining_count = 0 %}
-  {% for expertise_name, pckg_report in expertise_types.items() %}
-    {% if remaining_count >= 2 %}
-      {% if remaining_count % 2 == 0 %}
-        <div class="page-break"></div>
-        
-
-      {% endif %}
+    
+    <div class="expertise-section">
+      <div class="expertise-title">
+        {{ expertise_name|upper }}
+        <div class="arabic">{{ arabic_expertise.get(expertise_name, expertise_name) }}</div>
+      </div>
       
-      <div class="expertise-section">
-        <div class="expertise-title">
-          {{ expertise_name|upper }}
-          <div class="arabic">{{ arabic_expertise.get(expertise_name, expertise_name) }}</div>
-        </div>
-        
-        <table class="feature-table">
-          {% for i in range(0, pckg_report.features|length, 2) %}
-            <tr>
+      <table class="feature-table">
+        {% for i in range(0, pckg_report.features|length, 2) %}
+          <tr>
+            <td class="feature-name">
+              {{ pckg_report.features[i].name }}
+              <div class="arabic">{{ arabic_features.get(pckg_report.features[i].name, pckg_report.features[i].name) }}</div>
+            </td>
+            <td class="feature-status">
+              {{ pckg_report.features[i].status }}
+              <div class="arabic">{{ arabic_status.get(pckg_report.features[i].status, pckg_report.features[i].status) }}</div>
+            </td>
+            
+            {% if i + 1 < pckg_report.features|length %}
               <td class="feature-name">
-                {{ pckg_report.features[i].name }}
-                <div class="arabic">{{ arabic_features.get(pckg_report.features[i].name, pckg_report.features[i].name) }}</div>
+                {{ pckg_report.features[i+1].name }}
+                <div class="arabic">{{ arabic_features.get(pckg_report.features[i+1].name, pckg_report.features[i+1].name) }}</div>
               </td>
               <td class="feature-status">
-                {{ pckg_report.features[i].status }}
-                <div class="arabic">{{ arabic_status.get(pckg_report.features[i].status, pckg_report.features[i].status) }}</div>
+                {{ pckg_report.features[i+1].status }}
+                <div class="arabic">{{ arabic_status.get(pckg_report.features[i+1].status, pckg_report.features[i+1].status) }}</div>
               </td>
-              
-              {% if i + 1 < pckg_report.features|length %}
-                <td class="feature-name">
-                  {{ pckg_report.features[i+1].name }}
-                  <div class="arabic">{{ arabic_features.get(pckg_report.features[i+1].name, pckg_report.features[i+1].name) }}</div>
-                </td>
-                <td class="feature-status">
-                  {{ pckg_report.features[i+1].status }}
-                  <div class="arabic">{{ arabic_status.get(pckg_report.features[i+1].status, pckg_report.features[i+1].status) }}</div>
-                </td>
-              {% else %}
-                <td class="feature-name"></td>
-                <td class="feature-status"></td>
-              {% endif %}
-            </tr>
-          {% endfor %}
-        </table>
-        
-        {% if pckg_report.comment %}
-          <div class="comments">
-            <div class="comments-title">
-              Comments:
-              <span class="arabic">التعليقات:</span>
-            </div>
-            <div class="comments-text">{{ pckg_report.comment }}</div>
+            {% else %}
+              <td class="feature-name"></td>
+              <td class="feature-status"></td>
+            {% endif %}
+          </tr>
+        {% endfor %}
+      </table>
+      
+      {% if pckg_report.comment %}
+        <div class="comments">
+          <div class="comments-title">
+            Comments:
+            <span class="arabic">التعليقات:</span>
           </div>
-        {% endif %}
-      </div>
-    {% endif %}
-    {% set remaining_count = remaining_count + 1 %}
+          <div class="comments-text">{{ pckg_report.comment }}</div>
+        </div>
+      {% endif %}
+    </div>
+    {% set section_count = section_count + 1 %}
   {% endfor %}
   
   </div> <!-- End first page content -->
