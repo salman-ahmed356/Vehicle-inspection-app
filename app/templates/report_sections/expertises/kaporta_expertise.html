@@ -155,6 +155,23 @@
 <h2 class="text-lg font-semibold mb-4">{{ _('Bodywork Inspection') }}</h2>
 <p class="mb-4">{{ _('Please specify the condition of each inspected area on the vehicle!') }}</p>
 
+<!-- DEBUG INFO -->
+<div style="background: #f0f0f0; padding: 10px; margin: 10px 0; font-size: 12px;">
+  <strong>DEBUG:</strong> 
+  Expertise Report ID: {{ expertise_report.id if expertise_report else 'None' }} | 
+  Report ID: {{ expertise_report.report_id if expertise_report else 'None' }} | 
+  Features Count: {{ expertise_report.features|length if expertise_report and expertise_report.features else 0 }}
+  <br>
+  {% if expertise_report and expertise_report.features %}
+    Features: 
+    {% for feature in expertise_report.features %}
+      {{ feature.name }}="{{ feature.status }}"{% if not loop.last %}, {% endif %}
+    {% endfor %}
+  {% else %}
+    No features found!
+  {% endif %}
+</div>
+
 
 
 <form id="expertiseForm"  method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
@@ -190,7 +207,7 @@
                 name="feature_{{ feature.id }}"
                 value="{{ s }}"
                 id="desktop_feature_{{ feature.id }}_{{ s|replace(' ', '_')|replace('/', '_') }}"
-                {{ 'checked' if feature.status == s else '' }}
+                {% if feature.status == s %}checked="checked"{% endif %}
               >
 
             </td>
@@ -251,11 +268,14 @@ document.addEventListener('DOMContentLoaded', function() {
   var form = document.getElementById('expertiseForm');
   
   console.log('Body expertise page loaded');
+  console.log('Expertise report ID:', {{ expertise_report.id if expertise_report else 'null' }});
+  console.log('Report ID:', {{ report.id if report else 'null' }});
+  console.log('Features count:', {{ expertise_report.features|length if expertise_report and expertise_report.features else 0 }});
   
   // Debug: Show what data we received from server
   console.log('Features from server:');
   {% for feature in expertise_report.features %}
-  console.log('Feature {{ feature.id }}: {{ feature.name }} = "{{ feature.status }}"');
+  console.log('Feature {{ feature.id }}: {{ feature.name }} = "{{ feature.status }}" (type: {{ feature.status.__class__.__name__ if feature.status else "None" }})');
   {% endfor %}
   
   // Verify which radios are actually checked
