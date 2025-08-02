@@ -9,33 +9,6 @@
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
   />
-  <!-- Mobile CSS only loads on mobile screens -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile-expertise.css') }}" media="(max-width: 768px)">
-  <style>
-    @media (max-width: 1024px) {
-      .grid-cols-1.lg\:grid-cols-4 { grid-template-columns: 1fr !important; }
-      .lg\:col-span-3 { grid-column: span 1 !important; }
-      .container { padding: 0.5rem !important; }
-      .p-4 { padding: 1rem !important; }
-      .text-xl { font-size: 1.125rem !important; }
-    }
-    @media (max-width: 768px) {
-      .expertise-link {
-        padding: 12px !important;
-        font-size: 14px !important;
-        margin-bottom: 8px !important;
-      }
-      .grid-cols-1.lg\:grid-cols-4 {
-        gap: 1rem !important;
-      }
-      .order-1 {
-        order: 1 !important;
-      }
-      .order-2 {
-        order: 2 !important;
-      }
-    }
-  </style>
 </head>
 <body class="bg-gray-100">
   {% include 'navbar_simple.html' %}
@@ -62,9 +35,9 @@
       'Yol Ekspertiz':             'Road Expertise'
     } %}
 
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-4 gap-4">
       <!-- Sidebar for Expertise Types -->
-      <div class="bg-white shadow-md rounded-lg p-4 order-1">
+      <div class="bg-white shadow-md rounded-lg p-4">
         {% if report.has_image and report.image_data %}
         <div class="mb-4 flex justify-center">
           <img src="data:image/jpeg;base64,{{ report.image_data|b64encode }}" alt="Vehicle Image" class="w-full h-40 object-cover rounded-md">
@@ -92,7 +65,7 @@
       <!-- Main Content Area -->
       <div
         id="expertiseDetailContainer"
-        class="lg:col-span-3 bg-white shadow-md rounded-lg p-4 order-2"
+        class="col-span-3 bg-white shadow-md rounded-lg p-4"
       >
         <h2 class="text-lg font-semibold mb-4">{{ _('General Information') }}</h2>
         <p>{{ _('Select an inspection type...') }}</p>
@@ -156,32 +129,13 @@
         link.classList.remove('bg-gray-200');
         link.classList.add('bg-blue-500', 'text-white');
         
-        fetch(link.href + '&_t=' + Date.now(), {
-          cache: 'no-cache',
-          headers: {
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache'
-          }
-        })
+        fetch(link.href)
           .then(res => {
             if (!res.ok) throw new Error(res.statusText);
             return res.text();
           })
           .then(html => {
             document.getElementById('expertiseDetailContainer').innerHTML = html;
-            
-            // Execute any scripts in the loaded content
-            const scripts = document.getElementById('expertiseDetailContainer').querySelectorAll('script');
-            scripts.forEach(script => {
-              const newScript = document.createElement('script');
-              if (script.src) {
-                newScript.src = script.src;
-              } else {
-                newScript.textContent = script.textContent;
-              }
-              document.head.appendChild(newScript);
-              document.head.removeChild(newScript);
-            });
           })
           .catch(err => {
             console.error('AJAX error:', err);
@@ -192,21 +146,18 @@
 
     // Open the previously active tab or default to first tab
     window.addEventListener('DOMContentLoaded', () => {
-      // Add a small delay to ensure DOM is fully loaded
-      setTimeout(() => {
-        const activeTab = getActiveTab();
-        let targetLink;
-        
-        if (activeTab) {
-          targetLink = document.querySelector(`.expertise-link[data-expertise-type="${activeTab}"]`);
-        }
-        
-        if (!targetLink) {
-          targetLink = document.querySelector('.expertise-link');
-        }
-        
-        if (targetLink) targetLink.click();
-      }, 100);
+      const activeTab = getActiveTab();
+      let targetLink;
+      
+      if (activeTab) {
+        targetLink = document.querySelector(`.expertise-link[data-expertise-type="${activeTab}"]`);
+      }
+      
+      if (!targetLink) {
+        targetLink = document.querySelector('.expertise-link');
+      }
+      
+      if (targetLink) targetLink.click();
     });
   </script>
 </body>
