@@ -141,7 +141,7 @@ class ExpertiseReport(db.Model):
     features = db.relationship(
         'ExpertiseFeature',
         back_populates='expertise_report',
-        cascade="all, delete-orphan",
+        cascade="save-update, merge",
         lazy=True
     )
 
