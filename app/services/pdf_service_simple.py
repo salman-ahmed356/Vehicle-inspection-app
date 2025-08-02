@@ -36,29 +36,28 @@ def create_pdf(report_id):
     import base64
     from flask import current_app
     
-    # Try multiple possible paths
-    possible_paths = [
-        os.path.join(current_app.root_path, 'static', 'assets', 'pdf_imgs', 'logo.png'),
-        os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'static', 'assets', 'pdf_imgs', 'logo.png'),
-        'c:\\Users\\Killua\\Desktop\\Vehicle-Inspection-Web-App-main\\app\\static\\assets\\pdf_imgs\\logo.png'
-    ]
+    print(f"=== PDF SIMPLE: Starting logo loading process ===", flush=True)
     
+    # Try direct path first
+    logo_path = 'c:\\Users\\Killua\\Desktop\\Vehicle-Inspection-Web-App-main\\app\\static\\assets\\pdf_imgs\\logo.png'
     logo_base64 = None
-    for logo_path in possible_paths:
-        print(f"=== PDF SIMPLE: Trying logo path: {logo_path} ===")
-        if os.path.exists(logo_path):
-            try:
-                with open(logo_path, 'rb') as logo_file:
-                    logo_base64 = base64.b64encode(logo_file.read()).decode('utf-8')
-                print(f"=== PDF SIMPLE: Logo loaded successfully from: {logo_path} ===")
-                break
-            except Exception as e:
-                print(f"=== PDF SIMPLE: Error reading logo: {e} ===")
-        else:
-            print(f"=== PDF SIMPLE: Logo file not found at: {logo_path} ===")
+    
+    print(f"=== PDF SIMPLE: Trying logo path: {logo_path} ===", flush=True)
+    if os.path.exists(logo_path):
+        try:
+            with open(logo_path, 'rb') as logo_file:
+                logo_data = logo_file.read()
+                logo_base64 = base64.b64encode(logo_data).decode('utf-8')
+            print(f"=== PDF SIMPLE: Logo loaded successfully, size: {len(logo_data)} bytes ===", flush=True)
+        except Exception as e:
+            print(f"=== PDF SIMPLE: Error reading logo: {e} ===", flush=True)
+    else:
+        print(f"=== PDF SIMPLE: Logo file not found at: {logo_path} ===", flush=True)
     
     if not logo_base64:
-        print("=== PDF SIMPLE: No logo found in any path ===")
+        print("=== PDF SIMPLE: No logo loaded ===", flush=True)
+    else:
+        print(f"=== PDF SIMPLE: Logo base64 ready, length: {len(logo_base64)} ===", flush=True)
     
     rendered_html = render_template(
         'pdf/simple_report_bilingual.html',
