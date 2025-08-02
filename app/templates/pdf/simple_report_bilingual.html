@@ -903,13 +903,13 @@
   <div style="margin-top: 20px;">
   
   <!-- Header -->
-  <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 5px; border-bottom: 2px solid #000; padding-bottom: 5px;">
-    <div style="position: absolute; top: 0; left: 0;">
+  <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 5px; border-bottom: 2px solid #000; padding-bottom: 5px; min-height: 80px;">
+    <div style="flex: 0 0 auto;">
       {% if car_image_base64 %}
       <img src="data:image/jpeg;base64,{{ car_image_base64 }}" alt="Vehicle Image" style="height: 80px; width: 200px; object-fit: cover; border-radius: 4px;">
       {% endif %}
     </div>
-    <div style="position: absolute; top: 0; right: 0; text-align: right; font-size: 10pt; color: #666;">
+    <div style="flex: 0 0 auto; text-align: right; font-size: 10pt; color: #666;">
       Professional Vehicle Testing Services<br>
       <strong>VEHICLE INSPECTION REPORT</strong>
     </div>
