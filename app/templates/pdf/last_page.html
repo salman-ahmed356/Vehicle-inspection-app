@@ -109,3 +109,16 @@
     {{ _('This report is an integral part and continuation of the Job Order / Vehicle Acceptance / Delivery / Information Form with the same chassis number.') }}<br>
     {{ _('By signing the Vehicle Acceptance Information Form, you agree to all the terms on this page.') }}
 </div>
+
+<!-- Terms & Conditions Footer (Only on Last Page) -->
+<div style="margin-top: 30px; padding-top: 15px; border-top: 2px solid #000; text-align: center; font-size: 9px;">
+  <div style="background-color: #f5f5f5; padding: 8px; margin-bottom: 10px; border: 1px solid #ddd;">
+    <div style="font-weight: bold; font-size: 10px; margin-bottom: 5px; text-decoration: underline;">Terms & Conditions</div>
+    <p>This certificate shows the test values at time of inspection only. Vehicle Inspection Center is not responsible for any hidden defects and inspection done according to the traffic law. Validity of this certificate is for the same day only.</p>
+  </div>
+  <div style="font-weight: bold; color: #333;">
+    <p><strong>Vehicle Inspection Center</strong></p>
+    <p>Tel: {{ company.phone_1 }} | Email: {{ company.email }}</p>
+    <p>{{ company.address }}</p>
+  </div>
+</div>

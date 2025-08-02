@@ -1,0 +1,160 @@
+<style>
+  .vehicle-info-table {
+    width: 100%;
+    border: 2px solid #000;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-size: 11px;
+  }
+  .vehicle-info-table td {
+    border: 1px solid #000;
+    padding: 8px;
+    vertical-align: top;
+  }
+  .info-label {
+    font-weight: bold;
+    width: 15%;
+  }
+  .info-value {
+    width: 35%;
+  }
+</style>
+
+<!-- Vehicle Information Table (Horizontal Layout) -->
+<table class="vehicle-info-table">
+  <tr>
+    <td class="info-label">Ref #</td>
+    <td class="info-value">{{ report.id }}</td>
+    <td class="info-label">Date</td>
+    <td class="info-value">{{ report.finished_at.strftime('%d-%b-%Y %I:%M %p') if report.finished_at else 'N/A' }}</td>
+  </tr>
+  <tr>
+    <td class="info-label">Customer</td>
+    <td class="info-value">{{ customer.name if customer else 'N/A' }}</td>
+    <td class="info-label">VIN #</td>
+    <td class="info-value">{{ vehicle.chassis_number if vehicle else 'N/A' }}</td>
+  </tr>
+  <tr>
+    <td class="info-label">Vehicle</td>
+    <td class="info-value">{{ vehicle.brand }} {{ vehicle.model if vehicle else 'N/A' }}</td>
+    <td class="info-label">Model</td>
+    <td class="info-value">{{ vehicle.year if vehicle else 'N/A' }}</td>
+  </tr>
+  <tr>
+    <td class="info-label">Color</td>
+    <td class="info-value">{{ vehicle.color if vehicle else 'N/A' }}</td>
+    <td class="info-label">Mileage</td>
+    <td class="info-value">{{ vehicle.mileage if vehicle else 'N/A' }}</td>
+  </tr>
+  <tr>
+    <td class="info-label">Inspector</td>
+    <td class="info-value">{{ staff.name if staff else 'Administrator' }}</td>
+    <td class="info-label">Phone</td>
+    <td class="info-value">{{ customer.phone if customer else 'N/A' }}</td>
+  </tr>
+</table>
+
+<!-- Inspection Results Summary -->
+{% set pckg_report = (package_expertise_reports | selectattr('expertise_type_name','equalto','Paint & Body Expertise') | first) | default({}) %}
+{% set boya_features = pckg_report.paint_features | default([]) %}
+{% set kaporta_features = pckg_report.body_features | default([]) %}
+
+<div class="header-section">
+  {{ _('Vehicle Inspection Summary') }}
+</div>
+
+<div class="table-container" style="display: flex; justify-content: space-between; margin-bottom:5px;">
+  <table class="inspection-table" style="width:100%; border-collapse:collapse;">
+    <tr>
+      <!-- First Column -->
+      <td style="vertical-align: top; width: 33.33%;">
+        <table class="inspection-table-inner" style="width:100%; border-collapse:collapse;">
+          {% for feature in kaporta_features[:kaporta_features|length // 3] %}
+          <tr>
+            <th style="text-align:left; padding:8px; background-color: #dc2626; color: white;">{{ _(feature.name) }}</th>
+            <td>
+              {% if feature.status == 'No Issue' %}
+              <div class="status-container">
+                <span class="status-box status-good filled">{{ _('No Issue') }}</span>
+              </div>
+              {% elif feature.status == 'Scratch' %}
+              <div class="status-container">
+                <span class="status-box status-warning filled">{{ _('Scratch') }}</span>
+              </div>
+              {% elif feature.status == 'Dent/Crack/Deformation' %}
+              <div class="status-container">
+                <span class="status-box status-red filled">{{ _('Dent/Crack/Deformation') }}</span>
+              </div>
+              {% elif feature.status == 'Repaired/Painted' %}
+              <div class="status-container">
+                <span class="status-box status-red filled">{{ _('Repaired/Painted') }}</span>
+              </div>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+      </td>
+
+      <!-- Second Column -->
+      <td style="vertical-align: top; width: 33.33%;">
+        <table class="inspection-table-inner" style="width:100%; border-collapse:collapse;">
+          {% for feature in kaporta_features[kaporta_features|length // 3 : kaporta_features|length // 3 * 2] %}
+          <tr>
+            <th style="text-align:left; padding:8px; background-color: #dc2626; color: white;">{{ _(feature.name) }}</th>
+            <td>
+              {% if feature.status == 'No Issue' %}
+              <div class="status-container">
+                <span class="status-box status-good filled">{{ _('No Issue') }}</span>
+              </div>
+              {% elif feature.status == 'Scratch' %}
+              <div class="status-container">
+                <span class="status-box status-warning filled">{{ _('Scratch') }}</span>
+              </div>
+              {% elif feature.status == 'Dent/Crack/Deformation' %}
+              <div class="status-container">
+                <span class="status-box status-red filled">{{ _('Dent/Crack/Deformation') }}</span>
+              </div>
+              {% elif feature.status == 'Repaired/Painted' %}
+              <div class="status-container">
+                <span class="status-box status-red filled">{{ _('Repaired/Painted') }}</span>
+              </div>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+      </td>
+
+      <!-- Third Column -->
+      <td style="vertical-align: top; width: 33.33%;">
+        <table class="inspection-table-inner" style="width:100%; border-collapse:collapse;">
+          {% for feature in kaporta_features[kaporta_features|length // 3 * 2 :] %}
+          <tr>
+            <th style="text-align:left; padding:8px; background-color: #dc2626; color: white;">{{ _(feature.name) }}</th>
+            <td>
+              {% if feature.status == 'No Issue' %}
+              <div class="status-container">
+                <span class="status-box status-good filled">{{ _('No Issue') }}</span>
+              </div>
+              {% elif feature.status == 'Scratch' %}
+              <div class="status-container">
+                <span class="status-box status-warning filled">{{ _('Scratch') }}</span>
+              </div>
+              {% elif feature.status == 'Dent/Crack/Deformation' %}
+              <div class="status-container">
+                <span class="status-box status-red filled">{{ _('Dent/Crack/Deformation') }}</span>
+              </div>
+              {% elif feature.status == 'Repaired/Painted' %}
+              <div class="status-container">
+                <span class="status-box status-red filled">{{ _('Repaired/Painted') }}</span>
+              </div>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+      </td>
+    </tr>
+  </table>
+</div>

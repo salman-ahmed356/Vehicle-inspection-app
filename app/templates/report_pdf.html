@@ -21,6 +21,23 @@
       font-size: 10px;
       margin: 0;
       padding: 0;
+      position: relative;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      height: 300px;
+      background-image: url('/static/assets/pdf_imgs/logo.png');
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+      opacity: 0.05;
+      z-index: -1;
     }
 
     header {
@@ -40,7 +57,7 @@
       transform: translateY(-50%);
       padding: 0 10px;
       background-color: white;
-      border-left: 3px solid #a82b2e;
+      border-left: 3px solid #dc2626;
       z-index: 2;
     }
 
@@ -75,7 +92,7 @@
       font-size: 12px;
       font-weight: bold;
       margin-bottom: 0;
-      background-color: #a82b2e;
+      background-color: #dc2626;
       color: white;
       padding: 10px;
     }
@@ -118,7 +135,7 @@
     }
     .header-section {
       font-size: 15px;
-      background-color: #a82b2e;
+      background-color: #dc2626;
       color: white;
       font-weight: bold;
       text-align: center;
@@ -193,7 +210,7 @@
     {% include 'pdf/footer.html' %}
   </div>
 
-  {% include 'pdf/first_page.html' %}
+  {% include 'pdf/first_page_new.html' %}
 
   {% for pckg_report in package_expertise_reports %}
     {% if pckg_report.expertise_type_name == "Engine Expertise" %}
@@ -223,8 +240,7 @@
     {% endif %}
   {% endfor %}
 
-  <div class="page-break"></div>
-  {% include 'pdf/last_page.html' %}
+
 
 </body>
 </html>

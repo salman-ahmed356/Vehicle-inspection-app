@@ -1,52 +1,45 @@
 <style>
   .header {
-    height: 100px;
+    height: 80px;
     color: black;
+    border-bottom: 2px solid #000;
   }
 
   .header-content {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     height: 100%;
     padding: 10px;
     box-sizing: border-box;
   }
 
-  .header-content img {
-    height: 73px;
+  .company-logo {
+    height: 60px;
     width: auto;
-    margin-right: 20px;
+    margin-right: 15px;
   }
 
-  .header-text {
-    flex: 1;
-    text-align: right;
-    line-height: 1.2;
+  .company-name {
+    font-size: 24px;
+    font-weight: bold;
+    color: #dc2626;
+    text-transform: uppercase;
+  }
+
+  .company-subtitle {
+    font-size: 12px;
+    color: #666;
+    margin-top: 2px;
   }
 </style>
 
 <header class="header">
   <div class="header-content">
+    <img src="/static/assets/pdf_imgs/logo.png" alt="Company Logo" class="company-logo">
     <div>
-      {% for image in images %}
-        {% if image.type == 'logo' %}
-          <img src="{{ image.url }}" alt="{{ _('Company Logo') }}">
-        {% endif %}
-      {% endfor %}
-    </div>
-    <div class="header-text">
-      <h1>{{ company.name }}</h1>
-      <p>
-        {{ _('REPORT NO') }}:
-        <span class="text-red-600 font-bold">{{ report.id }}</span>
-      </p>
-      <p>
-        {{ _('DATE') }}:
-        <span><strong>{{ report.finished_at }}</strong></span>
-        {{ _('TIME') }}:
-        <span><strong>{{ report.finished_at }}</strong></span>
-      </p>
+      <div class="company-name">VEHICLE INSPECTION CENTER</div>
+      <div class="company-subtitle">Professional Vehicle Testing Services</div>
     </div>
   </div>
 </header>
