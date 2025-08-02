@@ -896,8 +896,11 @@
 
   <!-- Page Header (appears on every page) -->
   <div class="page-header">
-    <div style="display: flex; align-items: center; justify-content: center;">
-      {% if logo_base64 %}<img src="data:image/png;base64,{{ logo_base64 }}" alt="Company Logo" style="height: 45px;">{% endif %}
+    <div style="display: flex; align-items: center;">
+      <div>
+        <div style="font-size: 18pt; font-weight: bold; color: #dc2626; text-transform: uppercase;">{{ company.name }}</div>
+        <div style="font-size: 10pt; color: #666; margin-top: 2px;">Professional Vehicle Testing Services</div>
+      </div>
     </div>
   </div>
   
@@ -914,10 +917,14 @@
   <div style="margin-top: 20px;">
   
   <!-- Header with Logo -->
-  <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px;">
-    {% if logo_base64 %}
-    <img src="data:image/png;base64,{{ logo_base64 }}" alt="Company Logo" style="height: 60px;">
-    {% endif %}
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px;">
+    <div style="display: flex; align-items: center;">
+      <div style="font-size: 24pt; font-weight: bold; color: #000; text-transform: uppercase;">{{ company.name }}</div>
+    </div>
+    <div style="text-align: right; font-size: 10pt; color: #666;">
+      Professional Vehicle Testing Services<br>
+      <strong>VEHICLE INSPECTION REPORT</strong>
+    </div>
   </div>
   
   <!-- Vehicle Information (Horizontal Layout) -->
