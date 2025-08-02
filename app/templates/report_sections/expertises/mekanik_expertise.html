@@ -238,8 +238,13 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(function(response) {
       if (response.ok) {
         alert('Expertise updated successfully!');
-        // Reload the page to refresh radio button states
-        window.location.reload();
+        // Reload the current expertise section instead of entire page
+        const activeLink = parent.document.querySelector('.expertise-link.bg-blue-500');
+        if (activeLink) {
+          activeLink.click();
+        } else {
+          window.location.reload();
+        }
       }
     })
     .catch(function(error) {
