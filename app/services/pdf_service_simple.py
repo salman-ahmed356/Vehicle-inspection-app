@@ -104,11 +104,11 @@ def _process_expertise_reports(report):
         
         default_statuses = {
             'No Issue', 'None', 'Original', 'No Error Logged', 
-            '(Good) Passed Inspection', 'Good', 'OK', 'Pass'
+            '(Good) Passed Inspection', 'Good', 'OK', 'Pass', '0', 0
         }
         
         for f in features:
-            if f.status and f.status.strip() not in default_statuses:
+            if f.status and str(f.status).strip() not in [str(s) for s in default_statuses]:
                 return True
         return False
     
@@ -119,12 +119,12 @@ def _process_expertise_reports(report):
         
         default_statuses = {
             'No Issue', 'None', 'Original', 'No Error Logged', 
-            '(Good) Passed Inspection', 'Good', 'OK', 'Pass'
+            '(Good) Passed Inspection', 'Good', 'OK', 'Pass', '0', 0
         }
         
         marked_features = []
         for f in features:
-            if f.status and f.status.strip() not in default_statuses:
+            if f.status and str(f.status).strip() not in [str(s) for s in default_statuses]:
                 marked_features.append({
                     'name': f.name,
                     'status': f.status,
