@@ -209,7 +209,7 @@
                 type="radio"
                 name="feature_{{ feature.id }}"
                 value="{{ s }}"
-                {% if feature.status == s %}checked{% endif %}
+
                 id="desktop_feature_{{ feature.id }}_{{ s|replace(' ', '_')|replace('/', '_') }}"
               >
             </td>
@@ -232,7 +232,7 @@
             name="feature_{{ feature.id }}"
             value="{{ s }}"
             id="mobile_feature_{{ feature.id }}_{{ s|replace(' ', '_')|replace('/', '_') }}"
-            {% if feature.status == s %}checked{% endif %}
+
           >
           <label for="mobile_feature_{{ feature.id }}_{{ loop.index }}">{{ _(s) }}</label>
         </div>
@@ -271,23 +271,15 @@ document.addEventListener('DOMContentLoaded', function() {
   
   console.log('Body expertise page loaded');
   
-  // Set radio buttons based on server data (same logic as comment)
-  var featureData = {
-    {% for feature in expertise_report.features %}
-    {{ feature.id }}: '{{ feature.status|e }}',
-    {% endfor %}
-  };
-  
-  // Apply the saved statuses to radio buttons
-  Object.keys(featureData).forEach(function(featureId) {
-    var status = featureData[featureId];
-    if (status) {
-      var targetRadio = document.querySelector('input[name="feature_' + featureId + '"][value="' + status + '"]');
-      if (targetRadio) {
-        targetRadio.checked = true;
-      }
-    }
-  });
+  // Set radio buttons using the same pattern as comment field
+  {% for feature in expertise_report.features %}
+  {% if feature.status %}
+  var radio_{{ feature.id }} = document.querySelector('input[name="feature_{{ feature.id }}"][value="{{ feature.status|e }}"]');
+  if (radio_{{ feature.id }}) {
+    radio_{{ feature.id }}.checked = true;
+  }
+  {% endif %}
+  {% endfor %}
   
   form.addEventListener('submit', function(e) {
     e.preventDefault();
