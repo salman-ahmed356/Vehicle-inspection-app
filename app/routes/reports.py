@@ -919,6 +919,9 @@ from ..database import db
 
 @reports.route('/report/expertise_detail_ajax', methods=['GET'])
 def expertise_detail_ajax():
+    # Force fresh data from database
+    db.session.expire_all()
+    
     raw = request.args.get('expertise_type', '').strip()
     report_id = request.args.get('report_id', type=int)
     report    = Report.query.get_or_404(report_id)
