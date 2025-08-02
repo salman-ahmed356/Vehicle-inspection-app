@@ -1075,9 +1075,8 @@ def expertise_detail_ajax():
         
         # Final refresh to ensure all relationships are loaded
         db.session.refresh(er)
-        # Force reload features from database - get latest features only and reverse to proper order
-        latest_features = ExpertiseFeature.query.filter_by(expertise_report_id=er.id).order_by(ExpertiseFeature.id.desc()).limit(20).all()
-        er.features = list(reversed(latest_features))  # Reverse to get proper order for template
+        # Force reload features from database
+        er.features = ExpertiseFeature.query.filter_by(expertise_report_id=er.id).order_by(ExpertiseFeature.id).all()
         final_count = len(er.features)
         print(f"DEBUG: After final refresh, ExpertiseReport {er.id} has {final_count} features")
         return er
@@ -1128,26 +1127,12 @@ def expertise_detail_ajax():
         if not er:
             return
             
-        # Get all features ordered by ID (latest first) to handle duplicates
-        all_features = ExpertiseFeature.query.filter_by(expertise_report_id=er.id).order_by(ExpertiseFeature.id.desc()).all()
+        # Get all features for this expertise report
+        existing_features = ExpertiseFeature.query.filter_by(expertise_report_id=er.id).order_by(ExpertiseFeature.id).all()
         
-        if all_features:
-            print(f"DEBUG: Found {len(all_features)} existing features for {expertise_name}")
-            
-            # If we have more than 20 features, we have duplicates - keep only the latest set
-            if len(all_features) > 20:
-                print(f"DEBUG: Found duplicates, keeping latest 20 features")
-                # Keep the latest 20 features (highest IDs)
-                latest_features = all_features[:20]
-                # Delete the older duplicates
-                older_features = all_features[20:]
-                for old_feature in older_features:
-                    print(f"DEBUG: Deleting duplicate feature {old_feature.id}: {old_feature.name}")
-                    db.session.delete(old_feature)
-                db.session.flush()
-                er.features = latest_features
-            else:
-                er.features = all_features
+        if existing_features:
+            print(f"DEBUG: Found {len(existing_features)} existing features for {expertise_name}, not recreating")
+            er.features = existing_features
             return
         
         # Only create features if none exist
@@ -1223,18 +1208,16 @@ def expertise_detail_ajax():
     
     # Ensure features are loaded fresh from database
     if er1:
-        # Force reload features from database - get latest features only and reverse to proper order
-        latest_features = ExpertiseFeature.query.filter_by(expertise_report_id=er1.id).order_by(ExpertiseFeature.id.desc()).limit(20).all()
-        er1.features = list(reversed(latest_features))  # Reverse to get proper order for template
+        # Force reload features from database
+        er1.features = ExpertiseFeature.query.filter_by(expertise_report_id=er1.id).order_by(ExpertiseFeature.id).all()
         print(f"DEBUG: er1 (report_id={er1.report_id}) has {len(er1.features)} features loaded")
         for feature in er1.features:
             print(f"DEBUG: Feature {feature.id}: {feature.name} = '{feature.status}' (type: {type(feature.status)})")
             print(f"DEBUG: Feature {feature.id} status repr: {repr(feature.status)}")
     
     if er2:
-        # Force reload features from database - get latest features only and reverse to proper order
-        latest_features = ExpertiseFeature.query.filter_by(expertise_report_id=er2.id).order_by(ExpertiseFeature.id.desc()).limit(20).all()
-        er2.features = list(reversed(latest_features))  # Reverse to get proper order for template
+        # Force reload features from database
+        er2.features = ExpertiseFeature.query.filter_by(expertise_report_id=er2.id).order_by(ExpertiseFeature.id).all()
         print(f"DEBUG: er2 (report_id={er2.report_id}) has {len(er2.features)} features loaded")
         for feature in er2.features:
             print(f"DEBUG: Feature {feature.id}: {feature.name} = '{feature.status}' (type: {type(feature.status)})")
@@ -1244,12 +1227,11 @@ def expertise_detail_ajax():
     print(f"DEBUG: About to render template {template}")
     print(f"DEBUG: expertise_report has {len(er1.features) if er1 else 0} features")
     
-    # Double-check by querying database directly - use same query as above
+    # Double-check by querying database directly
     if er1:
-        db_features = ExpertiseFeature.query.filter_by(expertise_report_id=er1.id).order_by(ExpertiseFeature.id.desc()).limit(20).all()
-        db_features_ordered = list(reversed(db_features))  # Same order as template will use
-        print(f"DEBUG: Direct DB query shows {len(db_features_ordered)} features for expertise_report {er1.id}")
-        for db_feature in db_features_ordered:
+        db_features = ExpertiseFeature.query.filter_by(expertise_report_id=er1.id).order_by(ExpertiseFeature.id).all()
+        print(f"DEBUG: Direct DB query shows {len(db_features)} features for expertise_report {er1.id}")
+        for db_feature in db_features:
             print(f"DEBUG: DB Feature {db_feature.id}: {db_feature.name} = '{db_feature.status}'")
     
     if er1 and er1.features:
