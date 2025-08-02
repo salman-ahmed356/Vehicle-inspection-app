@@ -1306,8 +1306,6 @@ def expertise_detail(expertise_report_id):
             print(f"Reports to update: {[r.id for r in reports_to_update]}")
             
             for rpt in reports_to_update:
-                # Force refresh to get latest features
-                db.session.refresh(rpt)
                 print(f"Processing report: {rpt.id} with {len(rpt.features)} features")
                 
                 # Don't rely on the relationship - process features directly from form
