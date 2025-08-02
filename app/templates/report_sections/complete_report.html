@@ -179,8 +179,7 @@
               } else {
                 newScript.textContent = script.textContent;
               }
-              document.head.appendChild(newScript);
-              document.head.removeChild(newScript);
+              document.getElementById('expertiseDetailContainer').appendChild(newScript);
             });
           })
           .catch(err => {
