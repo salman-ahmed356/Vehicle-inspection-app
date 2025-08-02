@@ -153,8 +153,9 @@
                 type="radio"
                 name="feature_{{ feature.id }}"
                 value="{{ s }}"
-                {% if feature.status == s %}checked{% endif %}
+                {% if feature.status.strip() == s.strip() %}checked{% endif %}
               >
+              <!-- Debug: {{ feature.status }} == {{ s }} = {{ feature.status == s }} -->
             </td>
           {% endfor %}
         </tr>
@@ -175,7 +176,7 @@
             name="feature_{{ feature.id }}"
             value="{{ s }}"
             id="mobile_feature_{{ feature.id }}_{{ loop.index }}"
-            {% if feature.status == s %}checked{% endif %}
+            {% if feature.status.strip() == s.strip() %}checked{% endif %}
           >
           <label for="mobile_feature_{{ feature.id }}_{{ loop.index }}">{{ _(s) }}</label>
         </div>
