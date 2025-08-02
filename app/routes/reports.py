@@ -1075,8 +1075,8 @@ def expertise_detail_ajax():
         
         # Final refresh to ensure all relationships are loaded
         db.session.refresh(er)
-        # Force reload features from database with proper ordering
-        er.features = ExpertiseFeature.query.filter_by(expertise_report_id=er.id).order_by(ExpertiseFeature.id).all()
+        # Force reload features from database - get latest features only
+        er.features = ExpertiseFeature.query.filter_by(expertise_report_id=er.id).order_by(ExpertiseFeature.id.desc()).limit(20).all()
         final_count = len(er.features)
         print(f"DEBUG: After final refresh, ExpertiseReport {er.id} has {final_count} features")
         return er
@@ -1127,12 +1127,26 @@ def expertise_detail_ajax():
         if not er:
             return
             
-        # Check if features already exist in database
-        existing_features = ExpertiseFeature.query.filter_by(expertise_report_id=er.id).all()
-        if existing_features:
-            print(f"DEBUG: Found {len(existing_features)} existing features for {expertise_name}, not recreating")
-            # Force assign the existing features to the relationship
-            er.features = existing_features
+        # Get all features ordered by ID (latest first) to handle duplicates
+        all_features = ExpertiseFeature.query.filter_by(expertise_report_id=er.id).order_by(ExpertiseFeature.id.desc()).all()
+        
+        if all_features:
+            print(f"DEBUG: Found {len(all_features)} existing features for {expertise_name}")
+            
+            # If we have more than 20 features, we have duplicates - keep only the latest set
+            if len(all_features) > 20:
+                print(f"DEBUG: Found duplicates, keeping latest 20 features")
+                # Keep the latest 20 features (highest IDs)
+                latest_features = all_features[:20]
+                # Delete the older duplicates
+                older_features = all_features[20:]
+                for old_feature in older_features:
+                    print(f"DEBUG: Deleting duplicate feature {old_feature.id}: {old_feature.name}")
+                    db.session.delete(old_feature)
+                db.session.flush()
+                er.features = latest_features
+            else:
+                er.features = all_features
             return
         
         # Only create features if none exist
@@ -1208,16 +1222,16 @@ def expertise_detail_ajax():
     
     # Ensure features are loaded fresh from database
     if er1:
-        # Force reload features from database - this is critical
-        er1.features = ExpertiseFeature.query.filter_by(expertise_report_id=er1.id).order_by(ExpertiseFeature.id).all()
+        # Force reload features from database - get latest features only
+        er1.features = ExpertiseFeature.query.filter_by(expertise_report_id=er1.id).order_by(ExpertiseFeature.id.desc()).limit(20).all()
         print(f"DEBUG: er1 (report_id={er1.report_id}) has {len(er1.features)} features loaded")
         for feature in er1.features:
             print(f"DEBUG: Feature {feature.id}: {feature.name} = '{feature.status}' (type: {type(feature.status)})")
             print(f"DEBUG: Feature {feature.id} status repr: {repr(feature.status)}")
     
     if er2:
-        # Force reload features from database - this is critical
-        er2.features = ExpertiseFeature.query.filter_by(expertise_report_id=er2.id).order_by(ExpertiseFeature.id).all()
+        # Force reload features from database - get latest features only
+        er2.features = ExpertiseFeature.query.filter_by(expertise_report_id=er2.id).order_by(ExpertiseFeature.id.desc()).limit(20).all()
         print(f"DEBUG: er2 (report_id={er2.report_id}) has {len(er2.features)} features loaded")
         for feature in er2.features:
             print(f"DEBUG: Feature {feature.id}: {feature.name} = '{feature.status}' (type: {type(feature.status)})")
