@@ -146,14 +146,14 @@
     <tbody>
       {% for feature in expertise_report.features %}
         <tr>
-          <td>{{ feature.name }}</td>
+          <td>{{ feature.name }} ({{ feature.status }})</td>
           {% for s in status_choices %}
             <td>
               <input
                 type="radio"
                 name="feature_{{ feature.id }}"
                 value="{{ s }}"
-                {% if feature.status|string == s|string %}checked{% endif %}
+                {% if feature.status == s %}checked{% endif %}
               >
             </td>
           {% endfor %}
@@ -175,7 +175,7 @@
             name="feature_{{ feature.id }}"
             value="{{ s }}"
             id="mobile_feature_{{ feature.id }}_{{ loop.index }}"
-            {% if feature.status|string == s|string %}checked{% endif %}
+            {% if feature.status == s %}checked{% endif %}
           >
           <label for="mobile_feature_{{ feature.id }}_{{ loop.index }}">{{ _(s) }}</label>
         </div>
@@ -211,6 +211,13 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   var form = document.getElementById('expertiseForm');
+  
+  // Debug: Log all radio buttons and their states
+  console.log('=== RADIO BUTTON DEBUG ===');
+  var radios = document.querySelectorAll('input[type="radio"]');
+  radios.forEach(function(radio) {
+    console.log('Radio:', radio.name, '=', radio.value, 'checked:', radio.checked, 'debug:', radio.getAttribute('data-debug'));
+  });
   
   // Add submit event listener
   form.addEventListener('submit', function(e) {

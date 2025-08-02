@@ -1208,7 +1208,9 @@ def expertise_detail_ajax():
     
     # Ensure features are loaded fresh from database
     if er1:
-        # Force reload features from database
+        # Force reload features from database with explicit session refresh
+        db.session.expire_all()  # Clear all cached objects
+        er1 = ExpertiseReport.query.get(er1.id)  # Re-fetch from database
         er1.features = ExpertiseFeature.query.filter_by(expertise_report_id=er1.id).order_by(ExpertiseFeature.id).all()
         print(f"DEBUG: er1 (report_id={er1.report_id}) has {len(er1.features)} features loaded")
         for feature in er1.features:
@@ -1216,7 +1218,8 @@ def expertise_detail_ajax():
             print(f"DEBUG: Feature {feature.id} status repr: {repr(feature.status)}")
     
     if er2:
-        # Force reload features from database
+        # Force reload features from database with explicit session refresh
+        er2 = ExpertiseReport.query.get(er2.id)  # Re-fetch from database
         er2.features = ExpertiseFeature.query.filter_by(expertise_report_id=er2.id).order_by(ExpertiseFeature.id).all()
         print(f"DEBUG: er2 (report_id={er2.report_id}) has {len(er2.features)} features loaded")
         for feature in er2.features:
@@ -1227,12 +1230,15 @@ def expertise_detail_ajax():
     print(f"DEBUG: About to render template {template}")
     print(f"DEBUG: expertise_report has {len(er1.features) if er1 else 0} features")
     
-    # Double-check by querying database directly
+    # Double-check by querying database directly with fresh session
     if er1:
+        db.session.expire_all()  # Clear all cached objects again
         db_features = ExpertiseFeature.query.filter_by(expertise_report_id=er1.id).order_by(ExpertiseFeature.id).all()
         print(f"DEBUG: Direct DB query shows {len(db_features)} features for expertise_report {er1.id}")
         for db_feature in db_features:
             print(f"DEBUG: DB Feature {db_feature.id}: {db_feature.name} = '{db_feature.status}'")
+        # Update er1.features with fresh data
+        er1.features = db_features
     
     if er1 and er1.features:
         print(f"DEBUG: First feature for template: {er1.features[0].name} = '{er1.features[0].status}'")
