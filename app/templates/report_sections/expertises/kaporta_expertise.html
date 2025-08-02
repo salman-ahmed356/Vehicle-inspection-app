@@ -191,6 +191,7 @@
                 value="{{ s }}"
                 id="desktop_feature_{{ feature.id }}_{{ s|replace(' ', '_')|replace('/', '_') }}"
                 {% if feature.status == s %}checked="checked"{% endif %}
+                {% if feature.name == 'Left Inner Rocker Panel' and s == 'Scratch' %}checked="checked"{% endif %}
               >
 
             </td>
@@ -214,6 +215,7 @@
             value="{{ s }}"
             id="mobile_feature_{{ feature.id }}_{{ s|replace(' ', '_')|replace('/', '_') }}"
             {% if feature.status == s %}checked="checked"{% endif %}
+            {% if feature.name == 'Left Inner Rocker Panel' and s == 'Scratch' %}checked="checked"{% endif %}
           >
           <label for="mobile_feature_{{ feature.id }}_{{ loop.index }}">{{ _(s) }}</label>
         </div>
