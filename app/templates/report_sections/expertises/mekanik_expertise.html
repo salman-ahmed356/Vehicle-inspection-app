@@ -212,17 +212,26 @@
 document.addEventListener('DOMContentLoaded', function() {
   var form = document.getElementById('expertiseForm');
   
-  // Debug: Log all radio buttons and their states
-  console.log('=== RADIO BUTTON DEBUG ===');
-  var radios = document.querySelectorAll('input[type="radio"]');
-  radios.forEach(function(radio) {
-    console.log('Radio:', radio.name, '=', radio.value, 'checked:', radio.checked, 'debug:', radio.getAttribute('data-debug'));
-  });
-  
   // Add submit event listener
   form.addEventListener('submit', function(e) {
-    // Don't prevent default - let the form submit normally
-    console.log('Form submitted');
+    e.preventDefault();
+    
+    // Submit form and force page reload
+    fetch(form.action, {
+      method: 'POST',
+      body: new FormData(form)
+    })
+    .then(function(response) {
+      if (response.ok) {
+        // Force complete page reload with cache bust
+        window.location.href = window.location.href + '?t=' + Date.now();
+      }
+    })
+    .catch(function(error) {
+      console.error('Error:', error);
+      // Fallback to normal form submission
+      form.submit();
+    });
   });
 });
 </script>

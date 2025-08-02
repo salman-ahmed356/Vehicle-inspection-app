@@ -919,6 +919,10 @@ from ..database import db
 
 @reports.route('/report/expertise_detail_ajax', methods=['GET'])
 def expertise_detail_ajax():
+    # Clear all database session cache to ensure fresh data
+    db.session.expire_all()
+    db.session.close()
+    db.session.remove()
     raw = request.args.get('expertise_type', '').strip()
     report_id = request.args.get('report_id', type=int)
     report    = Report.query.get_or_404(report_id)
@@ -1243,13 +1247,19 @@ def expertise_detail_ajax():
     if er1 and er1.features:
         print(f"DEBUG: First feature for template: {er1.features[0].name} = '{er1.features[0].status}'")
     
-    return render_template(
+    from flask import make_response
+    response = make_response(render_template(
         template,
         report=report,
         expertise_report=er1,
         expertise_report2=er2,
         current_expertise_type=expertise_type
-    )
+    ))
+    # Prevent browser caching
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 
 
