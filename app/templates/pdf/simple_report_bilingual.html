@@ -894,8 +894,8 @@
 
   <!-- Page Header (appears on every page) -->
   <div class="page-header">
-    {% if logo_base64 %}<img src="data:image/png;base64,{{ logo_base64 }}" alt="Company Logo" style="height: 35px; vertical-align: middle;">{% endif %}
-    <span style="font-size: 18pt; font-weight: bold; color: #dc2626; text-transform: uppercase; margin-left: 10px;">{{ company.name }}</span>
+    {% if logo_base64 %}<img src="data:image/png;base64,{{ logo_base64 }}" alt="Company Logo" style="height: 35px; float: left; margin-right: 10px;">{% endif %}
+    <div style="font-size: 18pt; font-weight: bold; color: #dc2626; text-transform: uppercase;">{{ company.name }}</div>
     <div style="font-size: 10pt; color: #666; margin-top: 2px;">Professional Vehicle Testing Services</div>
   </div>
   
@@ -912,13 +912,12 @@
   <div style="margin-top: 20px;">
   
   <!-- Header with Logo -->
-  <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px;">
-    {% if logo_base64 %}
-    <img src="data:image/png;base64,{{ logo_base64 }}" alt="Company Logo" style="height: 60px; margin-bottom: 10px;">
-    {% endif %}
+  <div style="margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px;">
+    {% if logo_base64 %}<img src="data:image/png;base64,{{ logo_base64 }}" alt="Company Logo" style="height: 40px; float: left; margin-right: 15px;">{% endif %}
     <div style="font-size: 24pt; font-weight: bold; color: #000; text-transform: uppercase;">{{ company.name }}</div>
     <div style="font-size: 12pt; color: #666; margin-top: 5px;">Professional Vehicle Testing Services</div>
     <div style="font-size: 16pt; font-weight: bold; color: #333; margin-top: 10px;">VEHICLE INSPECTION REPORT</div>
+    <div style="clear: both;"></div>
   </div>
   
   <!-- Vehicle Information (Horizontal Layout) -->
