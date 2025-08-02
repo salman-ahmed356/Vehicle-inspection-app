@@ -86,7 +86,7 @@
             type="radio"
             name="feature_{{ feature.id }}"
             value="{{ s }}"
-            {% if feature.status == s %}checked{% endif %}
+            {% if feature.status|string == s|string %}checked{% endif %}
           >
         </td>
         {% endfor %}
@@ -116,7 +116,7 @@
             type="radio"
             name="feature_{{ feature.id }}"
             value="{{ s }}"
-            {% if feature.status == s %}checked{% endif %}
+            {% if feature.status|string == s|string %}checked{% endif %}
           >
         </td>
         {% endfor %}

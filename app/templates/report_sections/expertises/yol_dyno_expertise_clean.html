@@ -151,7 +151,7 @@
                     value="{{ status }}"
                     id="road_feature_{{ feature.id }}_{{ loop.index }}"
                     class="form-radio h-5 w-5 text-blue-600"
-                    {% if feature.status == status %}checked{% endif %}
+                    {% if feature.status|string == status|string %}checked{% endif %}
                   >
                   <label for="road_feature_{{ feature.id }}_{{ loop.index }}" class="radio-label">{{ _(status) }}</label>
                 </div>
@@ -190,7 +190,7 @@
                       value="{{ status }}"
                       id="dyno_feature_{{ feature.id }}_{{ loop.index }}"
                       class="form-radio h-5 w-5 text-blue-600"
-                      {% if feature.status == status %}checked{% endif %}
+                      {% if feature.status|string == status|string %}checked{% endif %}
                     >
                     <label for="dyno_feature_{{ feature.id }}_{{ loop.index }}" class="radio-label">{{ _(status) }}</label>
                   </div>

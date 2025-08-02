@@ -123,7 +123,7 @@
         {% for s in status_choices %}
           <option
             value="{{ s }}"
-            {% if feature.status == s %}selected{% endif %}
+            {% if feature.status|string == s|string %}selected{% endif %}
           >{{ _(s) }}</option>
         {% endfor %}
       </select>

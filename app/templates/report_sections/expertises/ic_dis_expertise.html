@@ -196,7 +196,7 @@
               type="radio"
               name="feature_{{ feature.id }}"
               value="{{ s }}"
-              {% if feature.status == s %}checked{% endif %}
+              {% if feature.status|string == s|string %}checked{% endif %}
             >
           </td>
           {% endfor %}
@@ -218,7 +218,7 @@
             name="feature_{{ feature.id }}"
             value="{{ s }}"
             id="mobile_interior_{{ feature.id }}_{{ loop.index }}"
-            {% if feature.status == s %}checked{% endif %}
+            {% if feature.status|string == s|string %}checked{% endif %}
           >
           <label for="mobile_interior_{{ feature.id }}_{{ loop.index }}">{{ _(s) }}</label>
         </div>
@@ -250,7 +250,7 @@
             type="radio"
             name="feature_{{ feature.id }}"
             value="{{ s }}"
-            {% if feature.status == s %}checked{% endif %}
+            {% if feature.status|string == s|string %}checked{% endif %}
           >
         </td>
         {% endfor %}
@@ -272,7 +272,7 @@
             name="feature_{{ feature.id }}"
             value="{{ s }}"
             id="mobile_exterior_{{ feature.id }}_{{ loop.index }}"
-            {% if feature.status == s %}checked{% endif %}
+            {% if feature.status|string == s|string %}checked{% endif %}
           >
           <label for="mobile_exterior_{{ feature.id }}_{{ loop.index }}">{{ _(s) }}</label>
         </div>
