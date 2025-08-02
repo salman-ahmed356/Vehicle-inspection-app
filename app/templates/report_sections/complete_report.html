@@ -155,20 +155,8 @@
         link.classList.remove('bg-gray-200');
         link.classList.add('bg-blue-500', 'text-white');
         
-        fetch(link.href + '&_t=' + Date.now(), {
-          cache: 'no-cache',
-          headers: {
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache'
-          }
-        })
-          .then(res => {
-            if (!res.ok) throw new Error(res.statusText);
-            return res.text();
-          })
-          .then(html => {
-            document.getElementById('expertiseDetailContainer').innerHTML = html;
-          })
+        // Force a full page reload to preserve form state
+        window.location.href = window.location.pathname + '?expertise=' + encodeURIComponent(expertiseType);
           .catch(err => {
             console.error('AJAX error:', err);
             alert('Failed to load inspection details.');
@@ -176,24 +164,31 @@
       });
     });
 
-    // Open the previously active tab or default to first tab
+    // Check URL parameter to load specific expertise
     window.addEventListener('DOMContentLoaded', () => {
-      // Add a small delay to ensure DOM is fully loaded
-      setTimeout(() => {
-        const activeTab = getActiveTab();
-        let targetLink;
-        
-        if (activeTab) {
-          targetLink = document.querySelector(`.expertise-link[data-expertise-type="${activeTab}"]`);
+      const urlParams = new URLSearchParams(window.location.search);
+      const expertiseParam = urlParams.get('expertise');
+      
+      if (expertiseParam) {
+        const targetLink = document.querySelector(`.expertise-link[data-expertise-type="${expertiseParam}"]`);
+        if (targetLink) {
+          // Highlight the active tab
+          document.querySelectorAll('.expertise-link').forEach(l => {
+            l.classList.remove('bg-blue-500', 'text-white');
+            l.classList.add('bg-gray-200');
+          });
+          targetLink.classList.remove('bg-gray-200');
+          targetLink.classList.add('bg-blue-500', 'text-white');
+          
+          // Load the content
+          fetch(targetLink.href + '&_t=' + Date.now())
+            .then(res => res.text())
+            .then(html => {
+              document.getElementById('expertiseDetailContainer').innerHTML = html;
+            });
         }
-        
-        if (!targetLink) {
-          targetLink = document.querySelector('.expertise-link');
-        }
-        
-        if (targetLink) targetLink.click();
-      }, 100);
-    });
+      }
+    });}
   </script>
 </body>
 </html>
