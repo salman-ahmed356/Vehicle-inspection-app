@@ -49,13 +49,30 @@ def create_pdf(report_id):
                 logo_data = logo_file.read()
                 logo_base64 = base64.b64encode(logo_data).decode('utf-8')
             print(f"=== PDF SIMPLE: Logo loaded successfully, size: {len(logo_data)} bytes ===", flush=True)
+            print(f"=== PDF SIMPLE: Logo base64 preview: {logo_base64[:50]}... ===", flush=True)
         except Exception as e:
             print(f"=== PDF SIMPLE: Error reading logo: {e} ===", flush=True)
     else:
         print(f"=== PDF SIMPLE: Logo file not found at: {logo_path} ===", flush=True)
+        # Try alternative paths
+        alt_paths = [
+            os.path.join(os.getcwd(), 'app', 'static', 'assets', 'pdf_imgs', 'logo.png'),
+            os.path.join(os.path.dirname(__file__), '..', 'static', 'assets', 'pdf_imgs', 'logo.png')
+        ]
+        for alt_path in alt_paths:
+            print(f"=== PDF SIMPLE: Trying alternative path: {alt_path} ===", flush=True)
+            if os.path.exists(alt_path):
+                try:
+                    with open(alt_path, 'rb') as logo_file:
+                        logo_data = logo_file.read()
+                        logo_base64 = base64.b64encode(logo_data).decode('utf-8')
+                    print(f"=== PDF SIMPLE: Logo loaded from alternative path, size: {len(logo_data)} bytes ===", flush=True)
+                    break
+                except Exception as e:
+                    print(f"=== PDF SIMPLE: Error reading logo from alternative path: {e} ===", flush=True)
     
     if not logo_base64:
-        print("=== PDF SIMPLE: No logo loaded ===", flush=True)
+        print("=== PDF SIMPLE: No logo loaded, PDF will be generated without logo ===", flush=True)
     else:
         print(f"=== PDF SIMPLE: Logo base64 ready, length: {len(logo_base64)} ===", flush=True)
     
