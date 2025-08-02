@@ -17,12 +17,12 @@
 
   "Body Expertise": [
     { "part_name": "Left Front Chassis",            "default_status": "No Issue" },
-    { "part_name": "Right Front Chassis",           "default_status": "No Issue" },
     { "part_name": "Left Rear Chassis",             "default_status": "No Issue" },
+    { "part_name": "Right Front Chassis",           "default_status": "No Issue" },
     { "part_name": "Right Rear Chassis",            "default_status": "No Issue" },
     { "part_name": "Left A-Pillar Inner",           "default_status": "No Issue" },
-    { "part_name": "Right A-Pillar Inner",          "default_status": "No Issue" },
     { "part_name": "Left Upper Pillar",             "default_status": "No Issue" },
+    { "part_name": "Right A-Pillar Inner",          "default_status": "No Issue" },
     { "part_name": "Right Upper Pillar",            "default_status": "No Issue" },
     { "part_name": "Left Inner Rocker Panel",       "default_status": "No Issue" },
     { "part_name": "Right Inner Rocker Panel",      "default_status": "No Issue" },
