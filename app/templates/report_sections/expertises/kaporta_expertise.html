@@ -190,7 +190,7 @@
                 name="feature_{{ feature.id }}"
                 value="{{ s }}"
                 id="desktop_feature_{{ feature.id }}_{{ s|replace(' ', '_')|replace('/', '_') }}"
-                {% if feature.status == s %}checked="checked"{% endif %}
+                {{ 'checked' if feature.status == s else '' }}
               >
 
             </td>
