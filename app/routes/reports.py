@@ -200,7 +200,6 @@ def add_report():
                     db.session.add(address)
                     db.session.flush()
                     address_id = address.id
-                    print(f"DEBUG: Created customer address: {address.street_address}")
                 
                 customer = Customer(
                     first_name   = names[0],
@@ -212,7 +211,6 @@ def add_report():
                 )
                 db.session.add(customer)
                 db.session.flush()
-                print(f"DEBUG: Created customer with address_id: {address_id}")
 
             # 3) REPORT
             # Handle image upload if has_image is 'yes'
@@ -252,7 +250,6 @@ def add_report():
                     report_id=new_report.id
                 )
                 db.session.add(agent)
-                print(f"DEBUG: Created agent: {agent.first_name} {agent.last_name}")
             
             if form.owner_name.data.strip():
                 owner_names = form.owner_name.data.strip().split(' ', 1)
@@ -271,7 +268,6 @@ def add_report():
                     db.session.add(address)
                     db.session.flush()
                     address_id = address.id
-                    print(f"DEBUG: Created owner address: {owner_address}")
                 
                 owner = VehicleOwner(
                     first_name=owner_names[0],
@@ -282,8 +278,6 @@ def add_report():
                     report_id=new_report.id
                 )
                 db.session.add(owner)
-                print(f"DEBUG: Created vehicle owner: {owner.first_name} {owner.last_name} with address_id: {address_id}, phone: {owner.phone_number}")
-            print(f"DEBUG: Owner will be searchable with phone pattern: owner-{new_report.id}")
 
             # 5) Delete appointment if this report was created from an appointment
             from flask import session
@@ -314,9 +308,6 @@ def add_report():
                 'agent_name': form.agent_name.data,
                 'customer_address': form.customer_address.data
             }
-            print(f"DEBUG: Saved session data for report {new_report.id}")
-            owner_phone = form.owner_phone.data or f"owner-{new_report.id}"
-            print(f"DEBUG: Owner data in session: name='{form.owner_name.data}', phone='{owner_phone}', tax='{form.owner_tax_no.data}', address='{form.owner_address.data}'")
             
             flash('Report created successfully!', 'success')
             return redirect(url_for('reports.report_list'))
@@ -415,13 +406,6 @@ def edit_report(report_id):
     form.fuel_type.choices = [(f.name, f.value) for f in FuelType]
     form.created_by.choices = [(s.id, s.full_name) for s in Staff.query.all()]
     
-    print(f"DEBUG: Request method: {request.method}")
-    if request.method == 'POST':
-        print(f"DEBUG: Form data received: {dict(request.form)}")
-        print(f"DEBUG: Form validation result: {form.validate()}")
-        if form.errors:
-            print(f"DEBUG: Form errors: {form.errors}")
-    
     if request.method == 'GET':
         # Populate form with existing data
         # Customer information
@@ -455,17 +439,13 @@ def edit_report(report_id):
         form.registration_document_seen.data = report.registration_document_seen
         form.inspection_date.data = report.inspection_date
         form.created_at.data = report.created_at
-        print(f"DEBUG: Set created_at to: {form.created_at.data}")
         
         # Load agent information from the database
         agent = Agent.query.filter_by(report_id=report_id).first()
-        print(f"DEBUG: Looking for agent with report_id={report_id}, found: {agent}")
         if agent:
             form.agent_name.data = f"{agent.first_name} {agent.last_name}"
-            print(f"DEBUG: Agent name set to: {form.agent_name.data}")
         else:
             form.agent_name.data = ""
-            print("DEBUG: No agent found, setting empty")
         
         # Load owner information - query directly by report_id
         print(f"DEBUG: Looking for vehicle owner with report_id={report_id}")
