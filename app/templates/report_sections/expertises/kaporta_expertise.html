@@ -1,11 +1,31 @@
 <!-- BODYWORK-EXPERTISE v2 -->
 
 <style>
-  /* Use default radio button styling */
+  /* Custom radio button styling */
   input[type="radio"] {
-    width: 20px;
-    height: 20px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 24px; height: 24px;
+    border: 2px solid #4A5568;
+    border-radius: 50%;
     cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  input[type="radio"]:checked {
+    border-color: #38B2AC;
+    background-color: #38B2AC;
+  }
+  input[type="radio"]:checked::before {
+    content: '';
+    display: block;
+    width: 12px; height: 12px;
+    margin: 4px;
+    background-color: #38B2AC;
+    border-radius: 50%;
+  }
+  input[type="radio"]:hover {
+    border-color: #68D391;
   }
 
   table {
@@ -124,8 +144,8 @@
     }
     
     .radio-option input[type="radio"] {
-      width: 18px;
-      height: 18px;
+      width: 20px;
+      height: 20px;
     }
     
     .radio-option label {
@@ -200,6 +220,7 @@
                 id="desktop_feature_{{ feature.id }}_{{ s|replace(' ', '_')|replace('/', '_') }}"
                 {% if feature.status == s %}checked{% endif %}
               >
+              <br><small>{{ feature.status }}=={{ s }}? {{ feature.status == s }}</small>
             </td>
           {% endfor %}
         </tr>
