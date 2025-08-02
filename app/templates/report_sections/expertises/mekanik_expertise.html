@@ -234,8 +234,9 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .then(function(response) {
       if (response.ok) {
-        // Force complete page reload with cache bust
-        window.location.href = window.location.href + '?t=' + Date.now();
+        alert('Expertise updated successfully!');
+        // Reload the page to refresh radio button states
+        window.location.reload();
       }
     })
     .catch(function(error) {

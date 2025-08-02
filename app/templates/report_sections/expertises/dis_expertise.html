@@ -249,6 +249,8 @@ document.addEventListener('DOMContentLoaded', function() {
       console.log('Response data:', data);
       if (data.success) {
         alert('Expertise updated successfully!');
+        // Reload the page to refresh radio button states
+        window.location.reload();
       } else {
         alert('Update failed: ' + (data.error || 'Unknown error'));
       }
