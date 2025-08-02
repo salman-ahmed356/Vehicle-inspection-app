@@ -155,7 +155,13 @@
         link.classList.remove('bg-gray-200');
         link.classList.add('bg-blue-500', 'text-white');
         
-        fetch(link.href)
+        fetch(link.href + '&_t=' + Date.now(), {
+          cache: 'no-cache',
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
+        })
           .then(res => {
             if (!res.ok) throw new Error(res.statusText);
             return res.text();
@@ -172,18 +178,21 @@
 
     // Open the previously active tab or default to first tab
     window.addEventListener('DOMContentLoaded', () => {
-      const activeTab = getActiveTab();
-      let targetLink;
-      
-      if (activeTab) {
-        targetLink = document.querySelector(`.expertise-link[data-expertise-type="${activeTab}"]`);
-      }
-      
-      if (!targetLink) {
-        targetLink = document.querySelector('.expertise-link');
-      }
-      
-      if (targetLink) targetLink.click();
+      // Add a small delay to ensure DOM is fully loaded
+      setTimeout(() => {
+        const activeTab = getActiveTab();
+        let targetLink;
+        
+        if (activeTab) {
+          targetLink = document.querySelector(`.expertise-link[data-expertise-type="${activeTab}"]`);
+        }
+        
+        if (!targetLink) {
+          targetLink = document.querySelector('.expertise-link');
+        }
+        
+        if (targetLink) targetLink.click();
+      }, 100);
     });
   </script>
 </body>

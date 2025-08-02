@@ -209,7 +209,8 @@
                 type="radio"
                 name="feature_{{ feature.id }}"
                 value="{{ s }}"
-                {% if feature.status == s %}checked{% endif %}
+                {% if feature.status and feature.status.strip() == s.strip() %}checked{% endif %}
+                id="desktop_feature_{{ feature.id }}_{{ s|replace(' ', '_')|replace('/', '_') }}"
               >
             </td>
           {% endfor %}
@@ -230,8 +231,8 @@
             type="radio"
             name="feature_{{ feature.id }}"
             value="{{ s }}"
-            id="mobile_feature_{{ feature.id }}_{{ loop.index }}"
-            {% if feature.status == s %}checked{% endif %}
+            id="mobile_feature_{{ feature.id }}_{{ s|replace(' ', '_')|replace('/', '_') }}"
+            {% if feature.status and feature.status.strip() == s.strip() %}checked{% endif %}
           >
           <label for="mobile_feature_{{ feature.id }}_{{ loop.index }}">{{ _(s) }}</label>
         </div>
@@ -283,6 +284,33 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Feature {{ feature.id }}: {{ feature.name }} = {{ feature.status }}');
   {% endfor %}
   
+  // Check which radio buttons are actually checked
+  console.log('Checked radio buttons on page load:');
+  Array.from(document.querySelectorAll('input[type="radio"]:checked')).forEach(function(radio) {
+    console.log('Checked: ' + radio.name + ' = ' + radio.value);
+  });
+  
+  // Check all radio buttons for a specific feature to debug
+  {% if expertise_report.features %}
+  {% set first_feature = expertise_report.features[0] %}
+  console.log('Debug first feature ({{ first_feature.id }}): {{ first_feature.name }} should be {{ first_feature.status }}');
+  Array.from(document.querySelectorAll('input[name="feature_{{ first_feature.id }}"]')).forEach(function(radio) {
+    console.log('Radio for feature {{ first_feature.id }}: value=' + radio.value + ', checked=' + radio.checked);
+  });
+  {% endif %}
+  
+  // Force set radio buttons based on server data (fallback)
+  console.log('Manually setting radio buttons based on server data:');
+  {% for feature in expertise_report.features %}
+  var targetRadio = document.querySelector('input[name="feature_{{ feature.id }}"][value="{{ feature.status }}"]');
+  if (targetRadio) {
+    targetRadio.checked = true;
+    console.log('Manually checked feature {{ feature.id }} with value {{ feature.status }}');
+  } else {
+    console.log('Could not find radio button for feature {{ feature.id }} with value {{ feature.status }}');
+  }
+  {% endfor %}
+  
   form.addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -299,6 +327,18 @@ document.addEventListener('DOMContentLoaded', function() {
     Array.from(form.querySelectorAll('input[type="radio"]:checked')).forEach(function(radio) {
       console.log(radio.name + ' = ' + radio.value + ' (checked)');
     });
+    
+    // Check if any radio buttons are missing values
+    var missingValues = [];
+    {% for feature in expertise_report.features %}
+    var feature{{ feature.id }}Checked = Array.from(document.querySelectorAll('input[name="feature_{{ feature.id }}"]:checked'));
+    if (feature{{ feature.id }}Checked.length === 0) {
+      missingValues.push('feature_{{ feature.id }}');
+    }
+    {% endfor %}
+    if (missingValues.length > 0) {
+      console.log('Features with no selected values:', missingValues);
+    }
     
     fetch(form.action, {
       method: 'POST',
@@ -338,5 +378,13 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
   });
+  
+  // Double-check radio button states after manual setting
+  setTimeout(function() {
+    console.log('Final radio button check after 500ms:');
+    Array.from(form.querySelectorAll('input[type="radio"]:checked')).forEach(function(radio) {
+      console.log('Final checked: ' + radio.name + ' = ' + radio.value);
+    });
+  }, 500);
 });
 </script>

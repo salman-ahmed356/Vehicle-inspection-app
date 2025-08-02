@@ -1223,7 +1223,8 @@ def expertise_detail_ajax():
         _ = er1.features
         print(f"DEBUG: er1 (report_id={er1.report_id}) has {len(er1.features)} features loaded")
         for feature in er1.features:
-            print(f"DEBUG: Feature {feature.id}: {feature.name} = {feature.status}")
+            print(f"DEBUG: Feature {feature.id}: {feature.name} = '{feature.status}' (type: {type(feature.status)})")
+            print(f"DEBUG: Feature {feature.id} status repr: {repr(feature.status)}")
     
     if er2:
         db.session.refresh(er2)
@@ -1231,7 +1232,14 @@ def expertise_detail_ajax():
         _ = er2.features
         print(f"DEBUG: er2 (report_id={er2.report_id}) has {len(er2.features)} features loaded")
         for feature in er2.features:
-            print(f"DEBUG: Feature {feature.id}: {feature.name} = {feature.status}")
+            print(f"DEBUG: Feature {feature.id}: {feature.name} = '{feature.status}' (type: {type(feature.status)})")
+            print(f"DEBUG: Feature {feature.id} status repr: {repr(feature.status)}")
+    
+    # Final debug before rendering template
+    print(f"DEBUG: About to render template {template}")
+    print(f"DEBUG: expertise_report has {len(er1.features) if er1 else 0} features")
+    if er1 and er1.features:
+        print(f"DEBUG: First feature for template: {er1.features[0].name} = '{er1.features[0].status}'")
     
     return render_template(
         template,
