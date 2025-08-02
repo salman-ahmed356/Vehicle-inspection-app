@@ -82,7 +82,20 @@
   <input type="hidden" name="current_expertise_type" value="{{ current_expertise_type }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
+  {% set ordered_features = [] %}
+  {% for position in ['Front Left', 'Front Right', 'Rear Left', 'Rear Right'] %}
+    {% for feature in expertise_report.features %}
+      {% if position in feature.name and feature not in ordered_features %}
+        {% set _ = ordered_features.append(feature) %}
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
   {% for feature in expertise_report.features %}
+    {% if feature not in ordered_features %}
+      {% set _ = ordered_features.append(feature) %}
+    {% endif %}
+  {% endfor %}
+  {% for feature in ordered_features %}
     <div class="form-group">
       <label for="feature_{{ feature.id }}">{{ feature.name }}</label>
       <input

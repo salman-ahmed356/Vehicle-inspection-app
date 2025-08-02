@@ -189,7 +189,20 @@
     </div>
     
     <!-- Feature Rows -->
+    {% set ordered_features = [] %}
+    {% for component_type in ['Spring & Shock', 'Brake Disc', 'Brake Pad', 'Wheel & Tire', 'Tie Rods', 'Control Arm', 'Axles', 'Engine', 'Transmission', 'Differential', 'Steering', 'AC', 'Clutch', 'Smoke', 'Catalytic'] %}
+      {% for feature in expertise_report.features %}
+        {% if component_type in feature.name and feature not in ordered_features %}
+          {% set _ = ordered_features.append(feature) %}
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
     {% for feature in expertise_report.features %}
+      {% if feature not in ordered_features %}
+        {% set _ = ordered_features.append(feature) %}
+      {% endif %}
+    {% endfor %}
+    {% for feature in ordered_features %}
     <div class="feature-row">
       <div class="feature-name">{{ feature.name }}</div>
       <div class="feature-options">

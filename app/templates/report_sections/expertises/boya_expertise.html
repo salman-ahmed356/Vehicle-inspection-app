@@ -110,7 +110,20 @@
      ]
   %}
 
+  {% set ordered_features = [] %}
+  {% for component_type in ['Bumper', 'Hood', 'Trunk Lid', 'Fender', 'Door', 'Roof'] %}
+    {% for feature in expertise_report.features %}
+      {% if component_type in feature.name and feature not in ordered_features %}
+        {% set _ = ordered_features.append(feature) %}
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
   {% for feature in expertise_report.features %}
+    {% if feature not in ordered_features %}
+      {% set _ = ordered_features.append(feature) %}
+    {% endif %}
+  {% endfor %}
+  {% for feature in ordered_features %}
     <div class="form-group feature-{{ feature.id }}">
       <label for="feature-status-{{ feature.id }}">
         {{ feature.name }}
