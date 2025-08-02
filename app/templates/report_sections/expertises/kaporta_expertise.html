@@ -277,6 +277,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   
+  // Log expertise report data
+  console.log('Expertise report features:');
+  {% for feature in expertise_report.features %}
+    console.log('Feature {{ feature.id }}: {{ feature.name }} = {{ feature.status }}');
+  {% endfor %}
+  
   form.addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -287,6 +293,12 @@ document.addEventListener('DOMContentLoaded', function() {
     for (var pair of formData.entries()) {
       console.log(pair[0] + ': ' + pair[1]);
     }
+    
+    // Verify radio button states before submission
+    console.log('Radio button states before submission:');
+    Array.from(form.querySelectorAll('input[type="radio"]:checked')).forEach(function(radio) {
+      console.log(radio.name + ' = ' + radio.value + ' (checked)');
+    });
     
     fetch(form.action, {
       method: 'POST',
@@ -305,7 +317,9 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(function(data) {
       console.log('Response data:', data);
       if (data.success) {
-        alert('Expertise updated successfully!');
+        console.log('Update successful - reloading page to show updated data');
+        // Reload the current expertise section to show updated data
+        window.location.reload();
       } else {
         alert('Update failed: ' + (data.error || 'Unknown error'));
       }

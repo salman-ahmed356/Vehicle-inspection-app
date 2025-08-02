@@ -178,6 +178,11 @@ function loadCheckboxStates() {
 
 // Set up event listeners when the page loads
 document.addEventListener('DOMContentLoaded', function() {
+  // Log current brake expertise data
+  console.log('Brake expertise features:');
+  {% for feature in expertise_report.features %}
+    console.log('Feature {{ feature.id }}: {{ feature.name }} = {{ feature.status }}');
+  {% endfor %}
   const frontNa = document.getElementById('front_na');
   const rearNa = document.getElementById('rear_na');
   const parkNa = document.getElementById('park_na');
@@ -198,8 +203,48 @@ document.addEventListener('DOMContentLoaded', function() {
     saveCheckboxStates();
   });
   
-  // Add submit event listener
-  document.getElementById('brakeForm').addEventListener('submit', saveCheckboxStates);
+  // Add submit event listener with AJAX
+  document.getElementById('brakeForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    saveCheckboxStates();
+    
+    const formData = new FormData(this);
+    
+    // Log what we're submitting
+    console.log('Submitting brake form data:');
+    for (var pair of formData.entries()) {
+      console.log(pair[0] + ': ' + pair[1]);
+    }
+    
+    fetch(this.action, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams(formData)
+    })
+    .then(function(response) {
+      console.log('Response status:', response.status);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(function(data) {
+      console.log('Response data:', data);
+      if (data.success) {
+        console.log('Brake expertise updated successfully - reloading page');
+        // Reload the current expertise section to show updated data
+        window.location.reload();
+      } else {
+        alert('Update failed: ' + (data.error || 'Unknown error'));
+      }
+    })
+    .catch(function(error) {
+      console.error('Error:', error);
+      alert('Update failed. Please check your inputs!');
+    });
+  });
   
   // Load checkbox states
   loadCheckboxStates();

@@ -330,7 +330,9 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   // Initialize parts with current status
+  console.log('Initializing paint expertise with current status:');
   {% for feature in expertise_report.features %}
+  console.log('Feature {{ feature.id }}: {{ feature.name }} = {{ feature.status }}');
   const element{{ loop.index }} = document.querySelector('[data-part="{{ feature.name }}"]');
   if (element{{ loop.index }}) {
     element{{ loop.index }}.style.fill = statusColors['{{ feature.status }}'] || '#ffffff';
@@ -394,7 +396,9 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        alert('Paint inspection saved successfully!');
+        console.log('Paint inspection saved successfully - reloading page');
+        // Reload the current expertise section to show updated data
+        window.location.reload();
       } else {
         alert('Save failed: ' + (data.error || 'Unknown error'));
       }

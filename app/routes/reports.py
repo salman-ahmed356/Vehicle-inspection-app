@@ -983,19 +983,33 @@ def expertise_detail_ajax():
             # Create the expertise type if it doesn't exist
             et = ExpertiseType(name=db_label)
             db.session.add(et)
-            db.session.commit()
+            db.session.flush()  # Use flush instead of commit to get the ID
             print(f"Created expertise type: {db_label}")
         
         # Try to find existing expertise report for this report and expertise type
+        print(f"DEBUG: Looking for existing ExpertiseReport with report_id={report.id}, expertise_type_id={et.id}")
         er = ExpertiseReport.query.filter_by(
             report_id=report.id,
             expertise_type_id=et.id
         ).first()
         
+        if er:
+            print(f"DEBUG: Found existing ExpertiseReport {er.id} for {db_label}")
+        else:
+            print(f"DEBUG: No existing ExpertiseReport found for {db_label}, will create new one")
+        
         if not er:
             er = ExpertiseReport(report_id=report.id, expertise_type_id=et.id)
             db.session.add(er)
-            db.session.commit()
+            db.session.flush()  # Use flush instead of commit to get the ID
+            print(f"DEBUG: Created new ExpertiseReport {er.id} for {db_label} with report_id={report.id}")
+        
+        # Double-check that the expertise report has the correct report_id
+        if er.report_id != report.id:
+            print(f"ERROR: ExpertiseReport {er.id} has wrong report_id: {er.report_id} (should be {report.id})")
+            er.report_id = report.id
+            db.session.add(er)
+            db.session.flush()
             
             # Add features based on expertise_map.json
             import json
@@ -1018,7 +1032,7 @@ def expertise_detail_ajax():
                                 expertise_report_id=er.id
                             )
                             db.session.add(feature)
-                        db.session.commit()
+                        db.session.flush()  # Use flush to ensure features are saved
                         print(f"Added {len(parts)} features to {db_label}")
                     else:
                         # Add some default features if none found in map
@@ -1033,7 +1047,7 @@ def expertise_detail_ajax():
                                 status=feature["status"],
                                 expertise_report_id=er.id
                             ))
-                        db.session.commit()
+                        db.session.flush()  # Use flush to ensure features are saved
                         print(f"Added default features to {db_label}")
             except Exception as e:
                 print(f"Error adding features: {e}")
@@ -1049,8 +1063,20 @@ def expertise_detail_ajax():
                         status=feature["status"],
                         expertise_report_id=er.id
                     ))
-                db.session.commit()
+                db.session.flush()  # Use flush to ensure features are saved
                 
+        # Verify the expertise report has features
+        if not er.features:
+            print(f"DEBUG: ExpertiseReport {er.id} has no features, will be populated later")
+        else:
+            print(f"DEBUG: ExpertiseReport {er.id} already has {len(er.features)} features")
+        
+        # Commit all changes at the end
+        db.session.commit()
+        
+        # Refresh the expertise report to ensure all relationships are loaded
+        db.session.refresh(er)
+        print(f"DEBUG: After refresh, ExpertiseReport {er.id} has {len(er.features)} features")
         return er
 
     # single vs combined
@@ -1065,6 +1091,19 @@ def expertise_detail_ajax():
     elif expertise_type == 'Road & Dyno Expertise':
         er1 = _ensure_er('Road Expertise')
         er2 = _ensure_er('Dyno Expertise')
+    
+    # Verify that the expertise reports are properly linked to the report
+    if er1 and er1.report_id != report.id:
+        print(f"ERROR: er1.report_id ({er1.report_id}) != report.id ({report.id})")
+        er1.report_id = report.id
+        db.session.add(er1)
+        db.session.commit()
+    
+    if er2 and er2.report_id != report.id:
+        print(f"ERROR: er2.report_id ({er2.report_id}) != report.id ({report.id})")
+        er2.report_id = report.id
+        db.session.add(er2)
+        db.session.commit()
     
     # PERMANENT FIX: Load features from expertise_map.json
     def load_features_from_map(expertise_name):
@@ -1095,7 +1134,7 @@ def expertise_detail_ajax():
                     expertise_report_id=er1.id
                 )
                 db.session.add(feature)
-            db.session.commit()
+            db.session.flush()  # Use flush to ensure features are saved
         else:
             # Fallback to hardcoded features if map doesn't have this expertise type
             print(f"No features found in map for {er1.expertise_type.name}, using fallback")
@@ -1128,7 +1167,7 @@ def expertise_detail_ajax():
                     expertise_report_id=er1.id
                 )
                 db.session.add(feature)
-            db.session.commit()
+            db.session.flush()  # Use flush to ensure features are saved
     
     # Do the same for er2 if it exists
     if er2 and not er2.features:
@@ -1143,7 +1182,7 @@ def expertise_detail_ajax():
                     expertise_report_id=er2.id
                 )
                 db.session.add(feature)
-            db.session.commit()
+            db.session.flush()  # Use flush to ensure features are saved
         else:
             # Fallback to hardcoded features
             print(f"No features found in map for {er2.expertise_type.name}, using fallback")
@@ -1175,8 +1214,25 @@ def expertise_detail_ajax():
                     expertise_report_id=er2.id
                 )
                 db.session.add(feature)
-            db.session.commit()
+            db.session.flush()  # Use flush to ensure features are saved
 
+    # Ensure features are loaded fresh from database
+    if er1:
+        db.session.refresh(er1)
+        # Force load features
+        _ = er1.features
+        print(f"DEBUG: er1 (report_id={er1.report_id}) has {len(er1.features)} features loaded")
+        for feature in er1.features:
+            print(f"DEBUG: Feature {feature.id}: {feature.name} = {feature.status}")
+    
+    if er2:
+        db.session.refresh(er2)
+        # Force load features
+        _ = er2.features
+        print(f"DEBUG: er2 (report_id={er2.report_id}) has {len(er2.features)} features loaded")
+        for feature in er2.features:
+            print(f"DEBUG: Feature {feature.id}: {feature.name} = {feature.status}")
+    
     return render_template(
         template,
         report=report,
@@ -1243,19 +1299,28 @@ def expertise_detail(expertise_report_id):
                                 f'{status_dir.get(new_status,"default")}/'
                                 f'{feature.name}.png'
                             )
+                            # Explicitly mark the feature as modified
+                            db.session.merge(feature)
                         else:
                             print(f"Feature {feature.id} status unchanged: {feature.status}")
-                        db.session.add(feature)
                     else:
                         print(f"WARNING: No form data for feature {feature.id}")
 
                 new_comment = request.form.get('technician_comment') or ''
                 if new_comment != rpt.comment:
                     rpt.comment = new_comment
+                    db.session.merge(rpt)  # Explicitly mark as modified
                     print(f"Updated comment to: {new_comment}")
 
             db.session.commit()
             print("SUCCESSFULLY SAVED ALL CHANGES")
+            
+            # Refresh the expertise reports to ensure changes are reflected
+            for rpt in reports_to_update:
+                db.session.refresh(rpt)
+                print(f"DEBUG: After save, report {rpt.id} has {len(rpt.features)} features")
+                for feature in rpt.features:
+                    print(f"DEBUG: Feature {feature.id}: {feature.name} = {feature.status}")
             
             # Check if this is an AJAX request
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
