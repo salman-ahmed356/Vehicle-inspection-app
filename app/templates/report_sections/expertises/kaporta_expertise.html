@@ -271,15 +271,23 @@ document.addEventListener('DOMContentLoaded', function() {
   
   console.log('Body expertise page loaded');
   
-  // Force set radio buttons based on server data
-  {% for feature in expertise_report.features %}
-  {% if feature.status %}
-  var targetRadio = document.querySelector('input[name="feature_{{ feature.id }}"][value="{{ feature.status|e }}"]');
-  if (targetRadio) {
-    targetRadio.checked = true;
-  }
-  {% endif %}
-  {% endfor %}
+  // Set radio buttons based on server data (same logic as comment)
+  var featureData = {
+    {% for feature in expertise_report.features %}
+    {{ feature.id }}: '{{ feature.status|e }}',
+    {% endfor %}
+  };
+  
+  // Apply the saved statuses to radio buttons
+  Object.keys(featureData).forEach(function(featureId) {
+    var status = featureData[featureId];
+    if (status) {
+      var targetRadio = document.querySelector('input[name="feature_' + featureId + '"][value="' + status + '"]');
+      if (targetRadio) {
+        targetRadio.checked = true;
+      }
+    }
+  });
   
   form.addEventListener('submit', function(e) {
     e.preventDefault();
@@ -289,7 +297,8 @@ document.addEventListener('DOMContentLoaded', function() {
     fetch(form.action, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-Requested-With': 'XMLHttpRequest'
       },
       body: new URLSearchParams(formData)
     })
@@ -301,7 +310,21 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .then(function(data) {
       if (data.success) {
-        window.location.reload();
+        // Reload the expertise section to get fresh data
+        var expertiseUrl = '/report/expertise_detail_ajax?expertise_type=Body Expertise&report_id=' + {{ report.id }};
+        
+        fetch(expertiseUrl)
+          .then(res => res.text())
+          .then(html => {
+            // Find the parent container and update it
+            var container = document.getElementById('expertiseDetailContainer');
+            if (container) {
+              container.innerHTML = html;
+            } else {
+              window.location.reload();
+            }
+          })
+          .catch(() => window.location.reload());
       } else {
         alert('Update failed: ' + (data.error || 'Unknown error'));
       }
