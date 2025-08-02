@@ -1060,10 +1060,9 @@ def expertise_detail_ajax():
                     ))
                 db.session.flush()  # Use flush to ensure features are saved
                 
-        # Force load features relationship
-        db.session.refresh(er)
+        # Check features count without refresh
         features_count = len(er.features)
-        print(f"DEBUG: ExpertiseReport {er.id} has {features_count} features after refresh")
+        print(f"DEBUG: ExpertiseReport {er.id} has {features_count} features")
         
         if features_count == 0:
             print(f"DEBUG: ExpertiseReport {er.id} has no features, will be populated later")
@@ -1072,11 +1071,6 @@ def expertise_detail_ajax():
         
         # Commit all changes at the end
         db.session.commit()
-        
-        # Final refresh to ensure all relationships are loaded
-        db.session.refresh(er)
-        final_count = len(er.features)
-        print(f"DEBUG: After final refresh, ExpertiseReport {er.id} has {final_count} features")
         return er
 
     # single vs combined
@@ -1226,20 +1220,14 @@ def expertise_detail_ajax():
                     db.session.add(feature)
                 db.session.flush()  # Use flush to ensure features are saved
 
-    # Ensure features are loaded fresh from database
+    # Check features without refresh to avoid cascade delete
     if er1:
-        db.session.refresh(er1)
-        # Force load features
-        _ = er1.features
         print(f"DEBUG: er1 (report_id={er1.report_id}) has {len(er1.features)} features loaded")
         for feature in er1.features:
             print(f"DEBUG: Feature {feature.id}: {feature.name} = '{feature.status}' (type: {type(feature.status)})")
             print(f"DEBUG: Feature {feature.id} status repr: {repr(feature.status)}")
     
     if er2:
-        db.session.refresh(er2)
-        # Force load features
-        _ = er2.features
         print(f"DEBUG: er2 (report_id={er2.report_id}) has {len(er2.features)} features loaded")
         for feature in er2.features:
             print(f"DEBUG: Feature {feature.id}: {feature.name} = '{feature.status}' (type: {type(feature.status)})")
