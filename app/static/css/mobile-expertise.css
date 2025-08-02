@@ -139,3 +139,12 @@
     margin-right: 8px !important;
   }
 }
+
+/* Desktop override to restore native radio button appearance */
+@media (min-width: 769px) {
+  input[type="radio"] {
+    appearance: auto !important;
+    -webkit-appearance: auto !important;
+    -moz-appearance: auto !important;
+  }
+}
