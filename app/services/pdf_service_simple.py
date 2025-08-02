@@ -32,6 +32,9 @@ def create_pdf(report_id):
     
     filename = _build_output_filename(customer)
 
+    # Get logo URL for PDF
+    logo_url = url_for('static', filename='assets/pdf_imgs/logo.png', _external=True)
+    
     rendered_html = render_template(
         'pdf/simple_report_bilingual.html',
         report=report,
@@ -41,6 +44,7 @@ def create_pdf(report_id):
         staff=staff,
         vehicle_owner=vehicle_owner,
         package_expertise_reports=package_expertise_reports,
+        logo_url=logo_url,
     )
     HTML(string=rendered_html).write_pdf(filename)
     return filename
