@@ -1,15 +1,37 @@
-<!-- BODYWORK-EXPERTISE v2 -->
-
 <style>
-  /* Temporarily use default radio buttons to test */
+  /* Custom radio button styling */
   input[type="radio"] {
-    /* Remove all custom styling */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 24px;
+    height: 24px;
+    border: 2px solid #4A5568;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  input[type="radio"]:checked {
+    border-color: #38B2AC;
+    background-color: #38B2AC;
+  }
+  input[type="radio"]:checked::before {
+    content: '';
+    display: block;
+    width: 12px;
+    height: 12px;
+    margin: 4px;
+    background-color: #38B2AC;
+    border-radius: 50%;
+  }
+  input[type="radio"]:hover {
+    border-color: #68D391;
   }
 
   table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
   }
   th, td {
     padding: 12px;
@@ -28,67 +50,8 @@
   
   /* Mobile responsive styles */
   @media (max-width: 768px) {
-    table, thead, tbody, th, td, tr {
-      display: block;
-    }
-    thead tr {
-      position: absolute;
-      top: -9999px;
-      left: -9999px;
-    }
-    tr {
-      border: 1px solid #ccc;
-      margin-bottom: 10px;
-      padding: 10px;
-      border-radius: 8px;
-      background: #f9f9f9;
-    }
-    td {
-      border: none;
-      position: relative;
-      padding: 8px 8px 8px 50%;
-      text-align: left;
-    }
-    td:before {
-      content: attr(data-label);
-      position: absolute;
-      left: 6px;
-      width: 45%;
-      padding-right: 10px;
-      white-space: nowrap;
-      font-weight: bold;
-      color: #333;
-    }
-    .feature-name {
-      font-weight: bold;
-      font-size: 16px;
-      margin-bottom: 10px;
-      text-align: center;
-      background: #e2e8f0;
-      padding: 8px;
-      border-radius: 4px;
-    }
-    .feature-name:before {
-      display: none;
-    }
-    .radio-option {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px;
-      margin: 4px 0;
-    }
-    .radio-option:before {
-      display: none;
-    }
-    .radio-label {
-      font-weight: normal;
-      margin-left: 8px;
-    }
-    
-    .mobile-cards {
-      display: block;
-    }
+    .desktop-table { display: none; }
+    .mobile-cards { display: block; }
     
     .feature-card {
       background: white;
@@ -155,26 +118,7 @@
 <h2 class="text-lg font-semibold mb-4">{{ _('Bodywork Inspection') }}</h2>
 <p class="mb-4">{{ _('Please specify the condition of each inspected area on the vehicle!') }}</p>
 
-<!-- DEBUG INFO -->
-<div style="background: #f0f0f0; padding: 10px; margin: 10px 0; font-size: 12px;">
-  <strong>DEBUG:</strong> 
-  Expertise Report ID: {{ expertise_report.id if expertise_report else 'None' }} | 
-  Report ID: {{ expertise_report.report_id if expertise_report else 'None' }} | 
-  Features Count: {{ expertise_report.features|length if expertise_report and expertise_report.features else 0 }}
-  <br>
-  {% if expertise_report and expertise_report.features %}
-    Features: 
-    {% for feature in expertise_report.features %}
-      {{ feature.name }}="{{ feature.status }}"{% if not loop.last %}, {% endif %}
-    {% endfor %}
-  {% else %}
-    No features found!
-  {% endif %}
-</div>
-
-
-
-<form id="expertiseForm"  method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
+<form id="expertiseForm" method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
   <input type="hidden" name="current_expertise_type" value="{{ current_expertise_type }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
@@ -187,7 +131,7 @@
   %}
 
   <!-- Desktop Table -->
-  <table class="desktop-table min-w-full bg-white shadow-md rounded-lg">
+  <table class="desktop-table min-w-full bg-white shadow-md rounded-lg mb-4">
     <thead>
       <tr>
         <th>{{ _('Checked Feature') }}</th>
@@ -206,10 +150,8 @@
                 type="radio"
                 name="feature_{{ feature.id }}"
                 value="{{ s }}"
-                id="desktop_feature_{{ feature.id }}_{{ s|replace(' ', '_')|replace('/', '_') }}"
-                {% if feature.status and feature.status.strip() == s.strip() %}checked="checked"{% endif %}
+                {% if feature.status == s %}checked{% endif %}
               >
-
             </td>
           {% endfor %}
         </tr>
@@ -229,8 +171,8 @@
             type="radio"
             name="feature_{{ feature.id }}"
             value="{{ s }}"
-            id="mobile_feature_{{ feature.id }}_{{ s|replace(' ', '_')|replace('/', '_') }}"
-            {% if feature.status and feature.status.strip() == s.strip() %}checked="checked"{% endif %}
+            id="mobile_feature_{{ feature.id }}_{{ loop.index }}"
+            {% if feature.status == s %}checked{% endif %}
           >
           <label for="mobile_feature_{{ feature.id }}_{{ loop.index }}">{{ _(s) }}</label>
         </div>
@@ -253,12 +195,12 @@
     >{{ expertise_report.comment }}</textarea>
   </div>
 
-  <div class="text-right">
+  <div class="flex justify-end">
     <button
       type="submit"
       class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
     >
-      {{ _('Update') }}
+      {{ _('Save') }}
     </button>
   </div>
 </form>
@@ -267,69 +209,10 @@
 document.addEventListener('DOMContentLoaded', function() {
   var form = document.getElementById('expertiseForm');
   
-  console.log('Body expertise page loaded');
-  console.log('Expertise report ID:', {{ expertise_report.id if expertise_report else 'null' }});
-  console.log('Report ID:', {{ report.id if report else 'null' }});
-  console.log('Features count:', {{ expertise_report.features|length if expertise_report and expertise_report.features else 0 }});
-  
-  // Debug: Show what data we received from server
-  console.log('Features from server:');
-  {% for feature in expertise_report.features %}
-  console.log('Feature {{ feature.id }}: {{ feature.name }} = "{{ feature.status }}" (type: {{ feature.status.__class__.__name__ if feature.status else "None" }})');
-  {% endfor %}
-  
-  // Verify which radios are actually checked
-  setTimeout(function() {
-    var checkedRadios = document.querySelectorAll('input[type="radio"]:checked');
-    console.log('Actually checked radios:', checkedRadios.length);
-    checkedRadios.forEach(function(radio) {
-      console.log('Checked:', radio.name, '=', radio.value);
-    });
-    
-    // Also check all radios to see their attributes
-    var allRadios = document.querySelectorAll('input[type="radio"]');
-    console.log('Total radios:', allRadios.length);
-    allRadios.forEach(function(radio, index) {
-      if (index < 10) { // Only log first 10 to avoid spam
-        console.log('Radio', index, ':', radio.name, '=', radio.value, 'checked attr:', radio.hasAttribute('checked'), 'checked prop:', radio.checked);
-      }
-    });
-  }, 100);
-  
+  // Add submit event listener
   form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    var formData = new FormData(form);
-    
-    fetch(form.action, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'X-Requested-With': 'XMLHttpRequest'
-      },
-      body: new URLSearchParams(formData)
-    })
-    .then(function(response) {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-    })
-    .then(function(data) {
-      if (data.success) {
-        // Reload the expertise section to get fresh data
-        var expertiseUrl = '/report/expertise_detail_ajax?expertise_type=Body Expertise&report_id=' + {{ report.id }};
-        
-        window.location.reload();
-      } else {
-        alert('Update failed: ' + (data.error || 'Unknown error'));
-      }
-    })
-    .catch(function(error) {
-      console.error('Error:', error);
-      alert('Update failed. Please check your inputs!');
-    });
+    // Don't prevent default - let the form submit normally
+    console.log('Form submitted');
   });
-
 });
 </script>
