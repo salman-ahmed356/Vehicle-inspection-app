@@ -1060,18 +1060,23 @@ def expertise_detail_ajax():
                     ))
                 db.session.flush()  # Use flush to ensure features are saved
                 
-        # Verify the expertise report has features
-        if not er.features:
+        # Force load features relationship
+        db.session.refresh(er)
+        features_count = len(er.features)
+        print(f"DEBUG: ExpertiseReport {er.id} has {features_count} features after refresh")
+        
+        if features_count == 0:
             print(f"DEBUG: ExpertiseReport {er.id} has no features, will be populated later")
         else:
-            print(f"DEBUG: ExpertiseReport {er.id} already has {len(er.features)} features")
+            print(f"DEBUG: ExpertiseReport {er.id} already has {features_count} features")
         
         # Commit all changes at the end
         db.session.commit()
         
-        # Refresh the expertise report to ensure all relationships are loaded
+        # Final refresh to ensure all relationships are loaded
         db.session.refresh(er)
-        print(f"DEBUG: After refresh, ExpertiseReport {er.id} has {len(er.features)} features")
+        final_count = len(er.features)
+        print(f"DEBUG: After final refresh, ExpertiseReport {er.id} has {final_count} features")
         return er
 
     # single vs combined
@@ -1115,8 +1120,8 @@ def expertise_detail_ajax():
             print(f"Error loading expertise map: {e}")
         return []
     
-    # Add features if none exist for er1
-    if er1 and not er1.features:
+    # Ensure features exist for er1 - but don't recreate if they already exist
+    if er1 and len(er1.features) == 0:
         # Try to get features from expertise map
         parts = load_features_from_map(er1.expertise_type.name)
         
@@ -1164,8 +1169,8 @@ def expertise_detail_ajax():
                 db.session.add(feature)
             db.session.flush()  # Use flush to ensure features are saved
     
-    # Do the same for er2 if it exists
-    if er2 and not er2.features:
+    # Ensure features exist for er2 - but don't recreate if they already exist  
+    if er2 and len(er2.features) == 0:
         parts = load_features_from_map(er2.expertise_type.name)
         
         if parts:
