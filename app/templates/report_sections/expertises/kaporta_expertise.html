@@ -177,13 +177,7 @@
 <h2 class="text-lg font-semibold mb-4">{{ _('Bodywork Inspection') }}</h2>
 <p class="mb-4">{{ _('Please specify the condition of each inspected area on the vehicle!') }}</p>
 
-<!-- DEBUG INFO -->
-<div style="background: yellow; padding: 10px; margin: 10px 0;">
-  <strong>DEBUG: Features loaded:</strong><br>
-  {% for feature in expertise_report.features %}
-    Feature {{ feature.id }}: {{ feature.name }} = "{{ feature.status }}"<br>
-  {% endfor %}
-</div>
+
 
 <form id="expertiseForm"  method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
   <input type="hidden" name="current_expertise_type" value="{{ current_expertise_type }}">
@@ -218,9 +212,9 @@
                 name="feature_{{ feature.id }}"
                 value="{{ s }}"
                 id="desktop_feature_{{ feature.id }}_{{ s|replace(' ', '_')|replace('/', '_') }}"
-                {% if feature.status == s %}checked{% endif %}
+                {% if feature.status == s %}checked="checked"{% endif %}
               >
-              <br><small>{{ feature.status }}=={{ s }}? {{ feature.status == s }}</small>
+
             </td>
           {% endfor %}
         </tr>
@@ -241,7 +235,7 @@
             name="feature_{{ feature.id }}"
             value="{{ s }}"
             id="mobile_feature_{{ feature.id }}_{{ s|replace(' ', '_')|replace('/', '_') }}"
-            {% if feature.status == s %}checked{% endif %}
+            {% if feature.status == s %}checked="checked"{% endif %}
           >
           <label for="mobile_feature_{{ feature.id }}_{{ loop.index }}">{{ _(s) }}</label>
         </div>
