@@ -191,7 +191,6 @@
                 value="{{ s }}"
                 id="desktop_feature_{{ feature.id }}_{{ s|replace(' ', '_')|replace('/', '_') }}"
                 {% if feature.status == s %}checked="checked"{% endif %}
-                {% if feature.name == 'Left Inner Rocker Panel' and s == 'Scratch' %}checked="checked"{% endif %}
               >
 
             </td>
@@ -215,7 +214,6 @@
             value="{{ s }}"
             id="mobile_feature_{{ feature.id }}_{{ s|replace(' ', '_')|replace('/', '_') }}"
             {% if feature.status == s %}checked="checked"{% endif %}
-            {% if feature.name == 'Left Inner Rocker Panel' and s == 'Scratch' %}checked="checked"{% endif %}
           >
           <label for="mobile_feature_{{ feature.id }}_{{ loop.index }}">{{ _(s) }}</label>
         </div>
@@ -293,18 +291,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Reload the expertise section to get fresh data
         var expertiseUrl = '/report/expertise_detail_ajax?expertise_type=Body Expertise&report_id=' + {{ report.id }};
         
-        fetch(expertiseUrl)
-          .then(res => res.text())
-          .then(html => {
-            // Find the parent container and update it
-            var container = document.getElementById('expertiseDetailContainer');
-            if (container) {
-              container.innerHTML = html;
-            } else {
-              window.location.reload();
-            }
-          })
-          .catch(() => window.location.reload());
+        window.location.reload();
       } else {
         alert('Update failed: ' + (data.error || 'Unknown error'));
       }
