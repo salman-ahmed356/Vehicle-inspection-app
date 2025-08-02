@@ -902,24 +902,18 @@
   <!-- First Page Content -->
   <div style="margin-top: 20px;">
   
-  <!-- Header with overlapping layout -->
-  <div style="position: relative; margin-bottom: 5px;">
-    <!-- Car image at top left -->
-    <div style="position: absolute; top: 0; left: 0; z-index: 2;">
+  <!-- Layout to utilize empty space -->
+  <div style="display: flex; align-items: flex-start; margin-bottom: 10px;">
+    <!-- Left side: Car image -->
+    <div style="width: 200px; margin-right: 10px;">
       {% if car_image_base64 %}
-      <img src="data:image/jpeg;base64,{{ car_image_base64 }}" alt="Vehicle Image" style="height: 60px; width: 150px; object-fit: cover; border-radius: 4px;">
+      <img src="data:image/jpeg;base64,{{ car_image_base64 }}" alt="Vehicle Image" style="height: 80px; width: 200px; object-fit: cover; border-radius: 4px; margin-bottom: 10px;">
       {% endif %}
     </div>
     
-    <!-- Text at top right -->
-    <div style="position: absolute; top: 0; right: 0; z-index: 2; text-align: right; font-size: 9pt; color: #666;">
-      Professional Vehicle Testing Services<br>
-      <strong>VEHICLE INSPECTION REPORT</strong>
-    </div>
-    
-    <!-- Vehicle Information Table positioned to utilize middle space -->
-    <div style="margin-top: 35px; padding-top: 5px; border-top: 2px solid #000;">
-      <table style="width: 100%; border: 2px solid #000; border-collapse: collapse; margin-bottom: 10px; font-size: 11pt;">
+    <!-- Center: Vehicle Information Table -->
+    <div style="flex: 1;">
+      <table style="width: 100%; border: 2px solid #000; border-collapse: collapse; font-size: 11pt;">
     <tr>
       <td style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 15%;">Ref #</td>
       <td style="border: 1px solid #000; padding: 8px; width: 35%;">{{ report.id }}</td>
@@ -951,6 +945,12 @@
       <td style="border: 1px solid #000; padding: 8px;">{{ customer.phone_number if customer else 'N/A' }}</td>
     </tr>
     </table>
+    </div>
+    
+    <!-- Right side: Text -->
+    <div style="width: 200px; margin-left: 10px; text-align: right; font-size: 10pt; color: #666;">
+      Professional Vehicle Testing Services<br>
+      <strong>VEHICLE INSPECTION REPORT</strong>
     </div>
   </div>
   
