@@ -1,4 +1,5 @@
-/* Mobile responsive styles for expertise templates */
+/* Mobile responsive styles for expertise templates - COMMENTED OUT FOR TESTING */
+/*
 @media (max-width: 768px) {
   /* Table responsive styles */
   .desktop-table { display: none !important; }
@@ -140,7 +141,10 @@
   }
 }
 
-/* Desktop override to restore native radio button appearance */
+*/
+
+/* Desktop override to restore native radio button appearance - COMMENTED OUT FOR TESTING */
+/*
 @media (min-width: 769px) {
   input[type="radio"] {
     appearance: auto !important;
@@ -148,3 +152,4 @@
     -moz-appearance: auto !important;
   }
 }
+*/
