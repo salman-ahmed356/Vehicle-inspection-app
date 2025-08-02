@@ -1,8 +1,29 @@
 <style>
-  /* Native radio button styling like vehicle_image.html */
+  /* Custom radio button styling */
   input[type="radio"] {
-    width: 20px;
-    height: 20px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 24px; height: 24px;
+    border: 2px solid #4A5568;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  input[type="radio"]:checked {
+    border-color: #38B2AC;
+    background-color: #38B2AC;
+  }
+  input[type="radio"]:checked::before {
+    content: '';
+    display: block;
+    width: 12px; height: 12px;
+    margin: 4px;
+    background-color: #38B2AC;
+    border-radius: 50%;
+  }
+  input[type="radio"]:hover {
+    border-color: #68D391;
   }
 
   table {
@@ -213,7 +234,8 @@ document.addEventListener('DOMContentLoaded', function() {
     fetch(form.action, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-Requested-With': 'XMLHttpRequest'
       },
       body: new URLSearchParams(formData)
     })
