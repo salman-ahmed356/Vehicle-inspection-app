@@ -808,12 +808,7 @@ def delete_report(report_id):
     
     report = Report.query.get_or_404(report_id)
     
-    # Only allow deletion of open reports
-    if report.status != ReportStatus.OPENED:
-        flash('Only open reports can be deleted.', 'error')
-        return redirect(url_for('reports.report_list'))
-    
-    # Store the status before deleting
+    # Store the status before deleting for proper redirect
     if report.status == ReportStatus.COMPLETED:
         status = 'completed'
     elif report.status == ReportStatus.CANCELLED:
@@ -854,7 +849,7 @@ def delete_report(report_id):
         flash(f'Error deleting report: {str(e)}', 'error')
         print(f"Error deleting report: {e}")
     
-    # Redirect back to the appropriate list
+    # Redirect back to the appropriate list based on original status
     return redirect(url_for('reports.report_list', status=status))
 
 
