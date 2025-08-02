@@ -20,10 +20,19 @@
       position: running(header);
       height: 60px;
       border-bottom: 2px solid #000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      text-align: center;
       padding: 10px;
+    }
+    
+    .header-content {
+      display: inline-block;
+      vertical-align: middle;
+    }
+    
+    .header-logo {
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 15px;
     }
     
     .page-footer {
@@ -896,13 +905,11 @@
 
   <!-- Page Header (appears on every page) -->
   <div class="page-header">
-    <div style="display: flex; align-items: center;">
-      {% if logo_base64 %}<img src="data:image/png;base64,{{ logo_base64 }}" alt="Company Logo" style="height: 35px; margin-right: 15px;">{% endif %}
-      <div>
-        <div style="font-size: 18pt; font-weight: bold; color: #dc2626; text-transform: uppercase;">{{ company.name }}</div>
-        <div style="font-size: 10pt; color: #666; margin-top: 2px;">Professional Vehicle Testing Services</div>
-      </div>
-    </div>
+    {% if logo_base64 %}<span class="header-logo"><img src="data:image/png;base64,{{ logo_base64 }}" alt="Company Logo" style="height: 35px;"></span>{% endif %}
+    <span class="header-content">
+      <div style="font-size: 18pt; font-weight: bold; color: #dc2626; text-transform: uppercase;">{{ company.name }}</div>
+      <div style="font-size: 10pt; color: #666; margin-top: 2px;">Professional Vehicle Testing Services</div>
+    </span>
   </div>
   
   <!-- Page Footer (appears on every page) -->
@@ -918,17 +925,13 @@
   <div style="margin-top: 20px;">
   
   <!-- Header with Logo -->
-  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px;">
-    <div style="display: flex; align-items: center;">
-      <div style="font-size: 24pt; font-weight: bold; color: #000; text-transform: uppercase;">{{ company.name }}</div>
-      {% if logo_base64 %}
-      <img src="data:image/png;base64,{{ logo_base64 }}" alt="Company Logo" style="height: 40px; margin-left: 20px;">
-      {% endif %}
-    </div>
-    <div style="text-align: right; font-size: 10pt; color: #666;">
-      Professional Vehicle Testing Services<br>
-      <strong>VEHICLE INSPECTION REPORT</strong>
-    </div>
+  <div style="margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; text-align: center;">
+    {% if logo_base64 %}
+    <img src="data:image/png;base64,{{ logo_base64 }}" alt="Company Logo" style="height: 60px; margin-bottom: 10px;">
+    {% endif %}
+    <div style="font-size: 24pt; font-weight: bold; color: #000; text-transform: uppercase;">{{ company.name }}</div>
+    <div style="font-size: 12pt; color: #666; margin-top: 5px;">Professional Vehicle Testing Services</div>
+    <div style="font-size: 16pt; font-weight: bold; color: #333; margin-top: 10px;">VEHICLE INSPECTION REPORT</div>
   </div>
   
   <!-- Vehicle Information (Horizontal Layout) -->
