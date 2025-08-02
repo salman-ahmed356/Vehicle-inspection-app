@@ -46,113 +46,139 @@
     color: #4A5568;
   }
   
-  @media (max-width: 768px) {
-    table, thead, tbody, th, td, tr {
-      display: block;
-    }
-    thead tr {
-      position: absolute;
-      top: -9999px;
-      left: -9999px;
-    }
-    tr {
-      border: 1px solid #ccc;
-      margin-bottom: 10px;
-      padding: 10px;
-      border-radius: 8px;
-      background: white;
-    }
-    td {
-      border: none;
-      position: relative;
-      padding: 8px 8px 8px 50%;
-      text-align: left;
-    }
-    td:before {
-      content: attr(data-label);
-      position: absolute;
-      left: 6px;
-      width: 45%;
-      padding-right: 10px;
-      white-space: nowrap;
-      font-weight: bold;
-    }
-    td:first-child {
-      font-weight: bold;
-      background: #f8f9fa;
-      padding-left: 10px;
-      text-align: center;
-    }
-    td:first-child:before {
-      display: none;
-    }
-    input[type="radio"] {
-      width: 20px !important;
-      height: 20px !important;
-      margin: 0 auto;
+  /* Responsive Features Container */
+  .features-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+  }
+  
+  /* Desktop Table Style */
+  @media (min-width: 769px) {
+    .features-header {
+      display: grid;
+      grid-template-columns: 2fr repeat(4, 1fr);
+      background-color: #F7FAFC;
+      border-bottom: 1px solid #E2E8F0;
+      padding: 12px;
+      font-weight: 600;
+      color: #2D3748;
     }
     
-    .desktop-table { display: none; }
-    .mobile-cards {
-      display: block;
-    }
-    
-    .feature-card {
-      background: white;
-      border: 1px solid #E2E8F0;
-      border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 1rem;
+    .feature-row {
+      display: grid;
+      grid-template-columns: 2fr repeat(4, 1fr);
+      border-bottom: 1px solid #E2E8F0;
+      align-items: center;
     }
     
     .feature-name {
-      font-weight: 600;
-      margin-bottom: 0.75rem;
-      color: #2D3748;
-      text-align: center;
-      font-size: 16px;
+      padding: 12px;
+      color: #4A5568;
+      text-align: left;
     }
     
-    .radio-options {
+    .feature-options {
+      display: contents;
+    }
+    
+    .option-item {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 12px;
+    }
+    
+    .option-label {
+      display: none;
+    }
+  }
+  
+  /* Mobile Card Style - More User Friendly */
+  @media (max-width: 768px) {
+    .features-header {
+      display: none;
+    }
+    
+    .feature-row {
+      background: #f8f9fa;
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    
+    .feature-name {
+      font-weight: 700;
+      font-size: 18px;
+      margin-bottom: 1rem;
+      color: #2c3e50;
+      text-align: center;
+      padding: 0.75rem;
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+    }
+    
+    .feature-options {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.75rem;
     }
     
-    .radio-option {
+    .option-item {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem;
-      border: 1px solid #E2E8F0;
-      border-radius: 4px;
+      gap: 0.75rem;
+      padding: 1rem;
+      background: white;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      cursor: pointer;
     }
     
-    .radio-option input[type="radio"] {
-      width: 20px;
-      height: 20px;
+    .option-item:hover {
+      border-color: #38B2AC;
+      background: #f0fdfa;
     }
     
-    .radio-option label {
+    .option-item:has(input:checked) {
+      border-color: #38B2AC;
+      background: #e6fffa;
+    }
+    
+    .option-label {
       flex: 1;
-      font-size: 0.875rem;
+      font-size: 16px;
+      font-weight: 500;
+      color: #2d3748;
+    }
+    
+    input[type="radio"] {
+      width: 22px;
+      height: 22px;
+      margin: 0;
     }
     
     textarea {
       font-size: 16px !important;
-      min-height: 100px !important;
-      padding: 12px !important;
+      min-height: 120px !important;
+      padding: 16px !important;
+      border-radius: 8px !important;
+      border: 2px solid #e9ecef !important;
     }
+    
     button {
       width: 100% !important;
-      padding: 12px !important;
-      font-size: 16px !important;
-      margin-top: 1rem !important;
+      padding: 16px !important;
+      font-size: 18px !important;
+      font-weight: 600 !important;
+      margin-top: 1.5rem !important;
+      border-radius: 8px !important;
     }
-  }
-  
-  @media (min-width: 769px) {
-    .mobile-cards { display: none; }
   }
 </style>
 
@@ -176,51 +202,29 @@
 
   {# Interior Section #}
   <h3 class="text-md font-semibold mb-2">{{ _('Interior Inspection') }}</h3>
-  <!-- Desktop Table -->
-  <table class="desktop-table">
-    <thead>
-      <tr>
-        <th>{{ _('Checked Feature') }}</th>
-        {% for s in status_choices %}
-          <th>{{ _(s) }}</th>
-        {% endfor %}
-      </tr>
-    </thead>
-    <tbody>
-      {% for feature in expertise_report.features %}
-        <tr>
-          <td>{{ feature.name }}</td>
-          {% for s in status_choices %}
-          <td>
-            <input
-              type="radio"
-              name="feature_{{ feature.id }}"
-              value="{{ s }}"
-              {% if feature.status|string == s|string %}checked{% endif %}
-            >
-          </td>
-          {% endfor %}
-        </tr>
+  <div class="features-container">
+    <div class="features-header">
+      <div class="header-feature">{{ _('Checked Feature') }}</div>
+      {% for s in status_choices %}
+        <div class="header-status">{{ _(s) }}</div>
       {% endfor %}
-    </tbody>
-  </table>
-  
-  <!-- Mobile Cards -->
-  <div class="mobile-cards">
+    </div>
+    
     {% for feature in expertise_report.features %}
-    <div class="feature-card">
+    <div class="feature-row">
       <div class="feature-name">{{ feature.name }}</div>
-      <div class="radio-options">
+      <div class="feature-options">
         {% for s in status_choices %}
-        <div class="radio-option">
+        <div class="option-item">
+          <span class="option-label">{{ _(s) }}</span>
           <input
             type="radio"
             name="feature_{{ feature.id }}"
             value="{{ s }}"
-            id="mobile_interior_{{ feature.id }}_{{ loop.index }}"
+            id="interior_{{ feature.id }}_{{ loop.index }}"
             {% if feature.status|string == s|string %}checked{% endif %}
           >
-          <label for="mobile_interior_{{ feature.id }}_{{ loop.index }}">{{ _(s) }}</label>
+          <label for="interior_{{ feature.id }}_{{ loop.index }}" class="radio-label"></label>
         </div>
         {% endfor %}
       </div>
@@ -230,51 +234,29 @@
 
   {# Exterior Section #}
   <h3 class="text-md font-semibold mb-2">{{ _('Exterior Inspection') }}</h3>
-  <!-- Desktop Table -->
-  <table class="desktop-table">
-    <thead>
-      <tr>
-        <th>{{ _('Checked Feature') }}</th>
-        {% for s in status_choices %}
-          <th>{{ _(s) }}</th>
-        {% endfor %}
-      </tr>
-    </thead>
-    <tbody>
-      {% for feature in expertise_report2.features %}
-      <tr>
-        <td>{{ feature.name }}</td>
-        {% for s in status_choices %}
-        <td>
-          <input
-            type="radio"
-            name="feature_{{ feature.id }}"
-            value="{{ s }}"
-            {% if feature.status|string == s|string %}checked{% endif %}
-          >
-        </td>
-        {% endfor %}
-      </tr>
+  <div class="features-container">
+    <div class="features-header">
+      <div class="header-feature">{{ _('Checked Feature') }}</div>
+      {% for s in status_choices %}
+        <div class="header-status">{{ _(s) }}</div>
       {% endfor %}
-    </tbody>
-  </table>
-  
-  <!-- Mobile Cards -->
-  <div class="mobile-cards">
+    </div>
+    
     {% for feature in expertise_report2.features %}
-    <div class="feature-card">
+    <div class="feature-row">
       <div class="feature-name">{{ feature.name }}</div>
-      <div class="radio-options">
+      <div class="feature-options">
         {% for s in status_choices %}
-        <div class="radio-option">
+        <div class="option-item">
+          <span class="option-label">{{ _(s) }}</span>
           <input
             type="radio"
             name="feature_{{ feature.id }}"
             value="{{ s }}"
-            id="mobile_exterior_{{ feature.id }}_{{ loop.index }}"
+            id="exterior_{{ feature.id }}_{{ loop.index }}"
             {% if feature.status|string == s|string %}checked{% endif %}
           >
-          <label for="mobile_exterior_{{ feature.id }}_{{ loop.index }}">{{ _(s) }}</label>
+          <label for="exterior_{{ feature.id }}_{{ loop.index }}" class="radio-label"></label>
         </div>
         {% endfor %}
       </div>

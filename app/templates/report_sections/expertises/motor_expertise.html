@@ -48,53 +48,139 @@
     color: #4A5568;
   }
   
-  /* Mobile responsive styles */
-  @media (max-width: 768px) {
-    .desktop-table { display: none; }
-    .mobile-cards { display: block; }
-    
-    .feature-card {
-      background: white;
-      border: 1px solid #E2E8F0;
-      border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-    }
-    
-    .feature-name {
+  /* Responsive Features Container */
+  .features-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Desktop Table Style */
+  @media (min-width: 769px) {
+    .features-header {
+      display: grid;
+      grid-template-columns: 2fr repeat(4, 1fr);
+      background-color: #F7FAFC;
+      border-bottom: 1px solid #E2E8F0;
+      padding: 12px;
       font-weight: 600;
-      margin-bottom: 0.75rem;
       color: #2D3748;
     }
     
-    .radio-options {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-    
-    .radio-option {
-      display: flex;
+    .feature-row {
+      display: grid;
+      grid-template-columns: 2fr repeat(4, 1fr);
+      border-bottom: 1px solid #E2E8F0;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem;
-      border: 1px solid #E2E8F0;
-      border-radius: 4px;
     }
     
-    .radio-option input[type="radio"] {
-      width: 20px;
-      height: 20px;
+    .feature-name {
+      padding: 12px;
+      color: #4A5568;
+      text-align: left;
     }
     
-    .radio-option label {
-      flex: 1;
-      font-size: 0.875rem;
+    .feature-options {
+      display: contents;
+    }
+    
+    .option-item {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 12px;
+    }
+    
+    .option-label {
+      display: none;
     }
   }
   
-  @media (min-width: 769px) {
-    .mobile-cards { display: none; }
+  /* Mobile Card Style - More User Friendly */
+  @media (max-width: 768px) {
+    .features-header {
+      display: none;
+    }
+    
+    .feature-row {
+      background: #f8f9fa;
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    
+    .feature-name {
+      font-weight: 700;
+      font-size: 18px;
+      margin-bottom: 1rem;
+      color: #2c3e50;
+      text-align: center;
+      padding: 0.75rem;
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+    }
+    
+    .feature-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    
+    .option-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem;
+      background: white;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    
+    .option-item:hover {
+      border-color: #38B2AC;
+      background: #f0fdfa;
+    }
+    
+    .option-item:has(input:checked) {
+      border-color: #38B2AC;
+      background: #e6fffa;
+    }
+    
+    .option-label {
+      flex: 1;
+      font-size: 16px;
+      font-weight: 500;
+      color: #2d3748;
+    }
+    
+    input[type="radio"] {
+      width: 22px;
+      height: 22px;
+      margin: 0;
+    }
+    
+    textarea {
+      font-size: 16px !important;
+      min-height: 120px !important;
+      padding: 16px !important;
+      border-radius: 8px !important;
+      border: 2px solid #e9ecef !important;
+    }
+    
+    button {
+      width: 100% !important;
+      padding: 16px !important;
+      font-size: 18px !important;
+      font-weight: 600 !important;
+      margin-top: 1.5rem !important;
+      border-radius: 8px !important;
+    }
   }
 </style>
 
@@ -116,51 +202,32 @@
      ]
   %}
 
-  <!-- Desktop Table -->
-  <table class="desktop-table min-w-full bg-white shadow-md rounded-lg mb-4">
-    <thead>
-      <tr>
-        <th class="text-left">{{ _('Checked Feature') }}</th>
-        {% for status in status_choices %}
-          <th>{{ _(status) }}</th>
-        {% endfor %}
-      </tr>
-    </thead>
-    <tbody>
-      {% for feature in expertise_report.features %}
-        <tr>
-          <td class="text-left">{{ feature.name }}</td>
-          {% for status in status_choices %}
-            <td>
-              <input
-                type="radio"
-                name="feature_{{ feature.id }}"
-                value="{{ status }}"
-                {% if feature.status|string == status|string %}checked{% endif %}
-              >
-            </td>
-          {% endfor %}
-        </tr>
+  <!-- Responsive Feature List -->
+  <div class="features-container">
+    <!-- Header Row (Desktop Only) -->
+    <div class="features-header">
+      <div class="header-feature">{{ _('Checked Feature') }}</div>
+      {% for status in status_choices %}
+        <div class="header-status">{{ _(status) }}</div>
       {% endfor %}
-    </tbody>
-  </table>
-  
-  <!-- Mobile Cards -->
-  <div class="mobile-cards">
+    </div>
+    
+    <!-- Feature Rows -->
     {% for feature in expertise_report.features %}
-    <div class="feature-card">
+    <div class="feature-row">
       <div class="feature-name">{{ feature.name }}</div>
-      <div class="radio-options">
+      <div class="feature-options">
         {% for status in status_choices %}
-        <div class="radio-option">
+        <div class="option-item">
+          <span class="option-label">{{ _(status) }}</span>
           <input
             type="radio"
             name="feature_{{ feature.id }}"
             value="{{ status }}"
-            id="mobile_feature_{{ feature.id }}_{{ loop.index }}"
+            id="feature_{{ feature.id }}_{{ loop.index }}"
             {% if feature.status|string == status|string %}checked{% endif %}
           >
-          <label for="mobile_feature_{{ feature.id }}_{{ loop.index }}">{{ _(status) }}</label>
+          <label for="feature_{{ feature.id }}_{{ loop.index }}" class="radio-label"></label>
         </div>
         {% endfor %}
       </div>

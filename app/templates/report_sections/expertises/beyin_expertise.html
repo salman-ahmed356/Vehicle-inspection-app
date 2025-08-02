@@ -45,127 +45,139 @@
     color: #4A5568;
   }
   
-  /* Mobile responsive styles */
-  @media (max-width: 768px) {
-    table, thead, tbody, th, td, tr {
-      display: block;
+  /* Responsive Features Container */
+  .features-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+  }
+  
+  /* Desktop Table Style */
+  @media (min-width: 769px) {
+    .features-header {
+      display: grid;
+      grid-template-columns: 2fr repeat(3, 1fr);
+      background-color: #F7FAFC;
+      border-bottom: 1px solid #E2E8F0;
+      padding: 12px;
+      font-weight: 600;
+      color: #2D3748;
     }
-    thead tr {
-      position: absolute;
-      top: -9999px;
-      left: -9999px;
+    
+    .feature-row {
+      display: grid;
+      grid-template-columns: 2fr repeat(3, 1fr);
+      border-bottom: 1px solid #E2E8F0;
+      align-items: center;
     }
-    tr {
-      border: 1px solid #ccc;
-      margin-bottom: 10px;
-      padding: 10px;
-      border-radius: 8px;
-      background: #f9f9f9;
-    }
-    td {
-      border: none;
-      position: relative;
-      padding: 8px 8px 8px 50%;
+    
+    .feature-name {
+      padding: 12px;
+      color: #4A5568;
       text-align: left;
     }
-    td:before {
-      content: attr(data-label);
-      position: absolute;
-      left: 6px;
-      width: 45%;
-      padding-right: 10px;
-      white-space: nowrap;
-      font-weight: bold;
-      color: #333;
+    
+    .feature-options {
+      display: contents;
     }
-    .feature-name {
-      font-weight: bold;
-      font-size: 16px;
-      margin-bottom: 10px;
-      text-align: center;
-      background: #e2e8f0;
-      padding: 8px;
-      border-radius: 4px;
-    }
-    .feature-name:before {
-      display: none;
-    }
-    .radio-option {
+    
+    .option-item {
       display: flex;
+      justify-content: center;
       align-items: center;
-      justify-content: space-between;
-      padding: 8px;
-      margin: 4px 0;
+      padding: 12px;
     }
-    .radio-option:before {
+    
+    .option-label {
       display: none;
     }
-    .radio-label {
-      font-weight: normal;
-      margin-left: 8px;
+  }
+  
+  /* Mobile Card Style - More User Friendly */
+  @media (max-width: 768px) {
+    .features-header {
+      display: none;
     }
     
-    .mobile-cards {
-      display: block;
-    }
-    
-    .feature-card {
-      background: white;
-      border: 1px solid #E2E8F0;
-      border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 1rem;
+    .feature-row {
+      background: #f8f9fa;
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
     
     .feature-name {
-      font-weight: 600;
-      margin-bottom: 0.75rem;
-      color: #2D3748;
+      font-weight: 700;
+      font-size: 18px;
+      margin-bottom: 1rem;
+      color: #2c3e50;
       text-align: center;
-      font-size: 16px;
+      padding: 0.75rem;
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
     }
     
-    .radio-options {
+    .feature-options {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.75rem;
     }
     
-    .radio-option {
+    .option-item {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem;
-      border: 1px solid #E2E8F0;
-      border-radius: 4px;
+      gap: 0.75rem;
+      padding: 1rem;
+      background: white;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      cursor: pointer;
     }
     
-    .radio-option input[type="radio"] {
-      width: 20px;
-      height: 20px;
+    .option-item:hover {
+      border-color: #38B2AC;
+      background: #f0fdfa;
     }
     
-    .radio-option label {
+    .option-item:has(input:checked) {
+      border-color: #38B2AC;
+      background: #e6fffa;
+    }
+    
+    .option-label {
       flex: 1;
-      font-size: 0.875rem;
+      font-size: 16px;
+      font-weight: 500;
+      color: #2d3748;
+    }
+    
+    input[type="radio"] {
+      width: 22px;
+      height: 22px;
+      margin: 0;
     }
     
     textarea {
       font-size: 16px !important;
-      min-height: 100px !important;
-      padding: 12px !important;
+      min-height: 120px !important;
+      padding: 16px !important;
+      border-radius: 8px !important;
+      border: 2px solid #e9ecef !important;
     }
     
     button {
       width: 100% !important;
-      padding: 12px !important;
-      font-size: 16px !important;
-      margin-top: 1rem !important;
+      padding: 16px !important;
+      font-size: 18px !important;
+      font-weight: 600 !important;
+      margin-top: 1.5rem !important;
+      border-radius: 8px !important;
     }
-  }
-  
-  @media (min-width: 769px) {
-    .mobile-cards { display: none; }
   }
 </style>
 
@@ -187,51 +199,32 @@
      ]
   %}
 
-  <!-- Desktop Table -->
-  <table class="desktop-table min-w-full table-auto bg-white shadow-md rounded-lg mb-4">
-    <thead class="bg-gray-200">
-      <tr>
-        <th class="px-4 py-2 text-left">{{ _('Checked Feature') }}</th>
-        {% for s in status_choices %}
-          <th class="px-4 py-2 text-center">{{ _(s) }}</th>
-        {% endfor %}
-      </tr>
-    </thead>
-    <tbody>
-      {% for feature in expertise_report.features %}
-        <tr class="border-b">
-          <td class="px-4 py-2">{{ feature.name }}</td>
-          {% for s in status_choices %}
-            <td class="px-4 py-2 text-center">
-              <input
-                type="radio"
-                name="feature_{{ feature.id }}"
-                value="{{ s }}"
-                {% if feature.status|string == s|string %}checked{% endif %}
-              >
-            </td>
-          {% endfor %}
-        </tr>
+  <!-- Responsive Feature List -->
+  <div class="features-container">
+    <!-- Header Row (Desktop Only) -->
+    <div class="features-header">
+      <div class="header-feature">{{ _('Checked Feature') }}</div>
+      {% for s in status_choices %}
+        <div class="header-status">{{ _(s) }}</div>
       {% endfor %}
-    </tbody>
-  </table>
-  
-  <!-- Mobile Cards -->
-  <div class="mobile-cards">
+    </div>
+    
+    <!-- Feature Rows -->
     {% for feature in expertise_report.features %}
-    <div class="feature-card">
+    <div class="feature-row">
       <div class="feature-name">{{ feature.name }}</div>
-      <div class="radio-options">
+      <div class="feature-options">
         {% for s in status_choices %}
-        <div class="radio-option">
+        <div class="option-item">
+          <span class="option-label">{{ _(s) }}</span>
           <input
             type="radio"
             name="feature_{{ feature.id }}"
             value="{{ s }}"
-            id="mobile_feature_{{ feature.id }}_{{ loop.index }}"
+            id="feature_{{ feature.id }}_{{ loop.index }}"
             {% if feature.status|string == s|string %}checked{% endif %}
           >
-          <label for="mobile_feature_{{ feature.id }}_{{ loop.index }}">{{ _(s) }}</label>
+          <label for="feature_{{ feature.id }}_{{ loop.index }}" class="radio-label"></label>
         </div>
         {% endfor %}
       </div>
