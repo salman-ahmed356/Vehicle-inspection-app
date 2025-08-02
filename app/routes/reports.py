@@ -1070,8 +1070,8 @@ def expertise_detail_ajax():
         else:
             print(f"DEBUG: ExpertiseReport {er.id} already has {features_count} features")
         
-        # Commit all changes at the end
-        db.session.commit()
+        # Don't commit here - let the caller handle commits
+        db.session.flush()
         
         # Final refresh to ensure all relationships are loaded
         db.session.refresh(er)
@@ -1120,112 +1120,88 @@ def expertise_detail_ajax():
             print(f"Error loading expertise map: {e}")
         return []
     
-    # Only create features if the expertise report is completely new (no ID in database)
-    if er1 and len(er1.features) == 0:
-        # Check if features exist in database but relationship is broken
-        existing_features = ExpertiseFeature.query.filter_by(expertise_report_id=er1.id).count()
-        if existing_features > 0:
-            print(f"DEBUG: Found {existing_features} orphaned features for er1, skipping creation")
-        else:
-            # Try to get features from expertise map
-            parts = load_features_from_map(er1.expertise_type.name)
+    def ensure_features_exist(er, expertise_name):
+        """Ensure features exist for an expertise report, but don't recreate if they already exist"""
+        if not er:
+            return
+            
+        # Check if features already exist in database
+        existing_features = ExpertiseFeature.query.filter_by(expertise_report_id=er.id).all()
+        if existing_features:
+            print(f"DEBUG: Found {len(existing_features)} existing features for {expertise_name}, not recreating")
+            return
         
-            if parts:
-                print(f"Adding {len(parts)} features from map for {er1.expertise_type.name}")
-                for part in parts:
-                    feature = ExpertiseFeature(
-                        name=part['part_name'],
-                        status=part['default_status'],
-                        expertise_report_id=er1.id
-                    )
-                    db.session.add(feature)
-                db.session.flush()  # Use flush to ensure features are saved
+        # Only create features if none exist
+        parts = load_features_from_map(expertise_name)
+        
+        if parts:
+            print(f"Adding {len(parts)} features from map for {expertise_name}")
+            for part in parts:
+                feature = ExpertiseFeature(
+                    name=part['part_name'],
+                    status=part['default_status'],
+                    expertise_report_id=er.id
+                )
+                db.session.add(feature)
+            db.session.flush()  # Use flush to ensure features are saved
+        else:
+            # Fallback to hardcoded features if map doesn't have this expertise type
+            print(f"No features found in map for {expertise_name}, using fallback")
+            if "Paint" in expertise_name:
+                features = [
+                    "Left Front Fender", "Left Front Door", "Left Rear Fender",
+                    "Front Bumper", "Hood", "Roof", "Trunk Lid", "Rear Bumper",
+                    "Right Front Fender", "Right Front Door", "Right Rear Door",
+                    "Right Rear Fender", "Left Rear Door"
+                ]
+                default_status = "Original"
+            elif "Body" in expertise_name:
+                features = [
+                    "Left Front Chassis", "Left Inner Rocker Panel", "Left A-Pillar Inner",
+                    "Left Upper Pillar", "Left Side Skirt", "Left Rear Chassis",
+                    "Front Bumper", "Front Panel", "Front Windshield", "Roof",
+                    "Rear Windshield", "Rear Panel", "Rear Wheel Well", "Rear Bumper",
+                    "Right Front Chassis", "Right Inner Rocker Panel", "Right A-Pillar Inner",
+                    "Right Upper Pillar", "Right Side Skirt", "Right Rear Chassis"
+                ]
+                default_status = "No Issue"
+            elif "Exterior" in expertise_name:
+                features = [
+                    "Horn", "Headlights", "Headlight Wash", "Front/Rear Fog Lights",
+                    "Turn Signals & Hazard Lights", "Wipers", "Mirrors", "Sunroof or Moonroof",
+                    "Windows", "Door Handles", "Tail Lights", "License Plate Light",
+                    "Trunk Interior", "Spare Tire"
+                ]
+                default_status = "No Issue"
+            elif "Interior" in expertise_name:
+                features = [
+                    "Chassis Number Check", "Interior Lighting", "Rearview Mirror",
+                    "Seat Belt Check", "Sun Visor Check", "Glovebox Check",
+                    "Steering Wheel Check", "Seat Check", "Headliner Check",
+                    "Interior Upholstery Check", "Window Control Check",
+                    "AC Control", "Instrument Panel Check", "Radio/Navigation Check"
+                ]
+                default_status = "No Issue"
             else:
-                # Fallback to hardcoded features if map doesn't have this expertise type
-                print(f"No features found in map for {er1.expertise_type.name}, using fallback")
-                if "Paint" in er1.expertise_type.name:
-                    features = [
-                        "Left Front Fender", "Left Front Door", "Left Rear Fender",
-                        "Front Bumper", "Hood", "Roof", "Trunk Lid", "Rear Bumper",
-                        "Right Front Fender", "Right Front Door", "Right Rear Door",
-                        "Right Rear Fender", "Left Rear Door"
-                    ]
-                    default_status = "Original"
-                elif "Body" in er1.expertise_type.name:
-                    features = [
-                        "Left Front Chassis", "Left Inner Rocker Panel", "Left A-Pillar Inner",
-                        "Left Upper Pillar", "Left Side Skirt", "Left Rear Chassis",
-                        "Front Bumper", "Front Panel", "Front Windshield", "Roof",
-                        "Rear Windshield", "Rear Panel", "Rear Wheel Well", "Rear Bumper",
-                        "Right Front Chassis", "Right Inner Rocker Panel", "Right A-Pillar Inner",
-                        "Right Upper Pillar", "Right Side Skirt", "Right Rear Chassis"
-                    ]
-                    default_status = "No Issue"
-                else:
-                    features = ["Part 1", "Part 2", "Part 3"]
-                    default_status = "No Issue"
-                
-                for feature_name in features:
-                    feature = ExpertiseFeature(
-                        name=feature_name,
-                        status=default_status,
-                        expertise_report_id=er1.id
-                    )
-                    db.session.add(feature)
-                db.session.flush()  # Use flush to ensure features are saved
+                features = ["Part 1", "Part 2", "Part 3"]
+                default_status = "No Issue"
+            
+            for feature_name in features:
+                feature = ExpertiseFeature(
+                    name=feature_name,
+                    status=default_status,
+                    expertise_report_id=er.id
+                )
+                db.session.add(feature)
+            db.session.flush()  # Use flush to ensure features are saved
     
-    # Only create features if the expertise report is completely new (no ID in database)
-    if er2 and len(er2.features) == 0:
-        # Check if features exist in database but relationship is broken
-        existing_features = ExpertiseFeature.query.filter_by(expertise_report_id=er2.id).count()
-        if existing_features > 0:
-            print(f"DEBUG: Found {existing_features} orphaned features for er2, skipping creation")
-        else:
-            parts = load_features_from_map(er2.expertise_type.name)
-        
-            if parts:
-                print(f"Adding {len(parts)} features from map for {er2.expertise_type.name}")
-                for part in parts:
-                    feature = ExpertiseFeature(
-                        name=part['part_name'],
-                        status=part['default_status'],
-                        expertise_report_id=er2.id
-                    )
-                    db.session.add(feature)
-                db.session.flush()  # Use flush to ensure features are saved
-            else:
-                # Fallback to hardcoded features
-                print(f"No features found in map for {er2.expertise_type.name}, using fallback")
-                if "Exterior" in er2.expertise_type.name:
-                    features = [
-                        "Horn", "Headlights", "Headlight Wash", "Front/Rear Fog Lights",
-                        "Turn Signals & Hazard Lights", "Wipers", "Mirrors", "Sunroof or Moonroof",
-                        "Windows", "Door Handles", "Tail Lights", "License Plate Light",
-                        "Trunk Interior", "Spare Tire"
-                    ]
-                    default_status = "No Issue"
-                elif "Interior" in er2.expertise_type.name:
-                    features = [
-                        "Chassis Number Check", "Interior Lighting", "Rearview Mirror",
-                        "Seat Belt Check", "Sun Visor Check", "Glovebox Check",
-                        "Steering Wheel Check", "Seat Check", "Headliner Check",
-                        "Interior Upholstery Check", "Window Control Check",
-                        "AC Control", "Instrument Panel Check", "Radio/Navigation Check"
-                    ]
-                    default_status = "No Issue"
-                else:
-                    features = ["Part 1", "Part 2", "Part 3"]
-                    default_status = "No Issue"
-                
-                for feature_name in features:
-                    feature = ExpertiseFeature(
-                        name=feature_name,
-                        status=default_status,
-                        expertise_report_id=er2.id
-                    )
-                    db.session.add(feature)
-                db.session.flush()  # Use flush to ensure features are saved
+    # Ensure features exist for both expertise reports
+    ensure_features_exist(er1, er1.expertise_type.name if er1 else None)
+    ensure_features_exist(er2, er2.expertise_type.name if er2 else None)
 
+    # Commit all changes and refresh to ensure features are loaded
+    db.session.commit()
+    
     # Ensure features are loaded fresh from database
     if er1:
         db.session.refresh(er1)
