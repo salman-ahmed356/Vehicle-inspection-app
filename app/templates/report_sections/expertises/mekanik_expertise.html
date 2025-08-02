@@ -50,18 +50,66 @@
     color: #4A5568;
   }
   
-  /* Mobile responsive styles - COMMENTED OUT FOR TESTING */
-  /*
-  @media (max-width: 768px) {
-    .desktop-table { display: none; }
-    .mobile-cards { display: block; }
+  /* Responsive Features Container */
+  .features-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+  }
+  
+  /* Desktop Table Style */
+  @media (min-width: 769px) {
+    .features-header {
+      display: grid;
+      grid-template-columns: 2fr repeat(4, 1fr);
+      background-color: #F7FAFC;
+      border-bottom: 1px solid #E2E8F0;
+      padding: 12px;
+      font-weight: 600;
+      color: #2D3748;
+    }
     
-    .feature-card {
-      background: white;
+    .feature-row {
+      display: grid;
+      grid-template-columns: 2fr repeat(4, 1fr);
+      border-bottom: 1px solid #E2E8F0;
+      align-items: center;
+    }
+    
+    .feature-name {
+      padding: 12px;
+      color: #4A5568;
+    }
+    
+    .feature-options {
+      display: contents;
+    }
+    
+    .option-item {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 12px;
+    }
+    
+    .option-label {
+      display: none;
+    }
+  }
+  
+  /* Mobile Card Style */
+  @media (max-width: 768px) {
+    .features-header {
+      display: none;
+    }
+    
+    .feature-row {
       border: 1px solid #E2E8F0;
       border-radius: 8px;
       padding: 1rem;
       margin-bottom: 1rem;
+      background: white;
     }
     
     .feature-name {
@@ -72,13 +120,13 @@
       font-size: 16px;
     }
     
-    .radio-options {
+    .feature-options {
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
     }
     
-    .radio-option {
+    .option-item {
       display: flex;
       align-items: center;
       gap: 0.5rem;
@@ -87,14 +135,14 @@
       border-radius: 4px;
     }
     
-    .radio-option input[type="radio"] {
-      width: 20px;
-      height: 20px;
-    }
-    
-    .radio-option label {
+    .option-label {
       flex: 1;
       font-size: 0.875rem;
+    }
+    
+    input[type="radio"] {
+      width: 20px;
+      height: 20px;
     }
     
     textarea {
@@ -110,11 +158,6 @@
       margin-top: 1rem !important;
     }
   }
-  
-  @media (min-width: 769px) {
-    .mobile-cards { display: none; }
-  }
-  */
 </style>
 
 {% include 'report_sections/expertises/vehicle_header.html' %}
@@ -135,51 +178,32 @@
      ]
   %}
 
-  <!-- Desktop Table -->
-  <table class="desktop-table min-w-full bg-white shadow-md rounded-lg mb-4">
-    <thead>
-      <tr>
-        <th>{{ _('Checked Feature') }}</th>
-        {% for s in status_choices %}
-          <th>{{ _(s) }}</th>
-        {% endfor %}
-      </tr>
-    </thead>
-    <tbody>
-      {% for feature in expertise_report.features %}
-        <tr>
-          <td>{{ feature.name }}</td>
-          {% for s in status_choices %}
-            <td>
-              <input
-                type="radio"
-                name="feature_{{ feature.id }}"
-                value="{{ s }}"
-                {% if feature.status == s %}checked{% endif %}
-              >
-            </td>
-          {% endfor %}
-        </tr>
+  <!-- Responsive Feature List -->
+  <div class="features-container">
+    <!-- Header Row (Desktop Only) -->
+    <div class="features-header">
+      <div class="header-feature">{{ _('Checked Feature') }}</div>
+      {% for s in status_choices %}
+        <div class="header-status">{{ _(s) }}</div>
       {% endfor %}
-    </tbody>
-  </table>
-  
-  <!-- Mobile Cards -->
-  <div class="mobile-cards">
+    </div>
+    
+    <!-- Feature Rows -->
     {% for feature in expertise_report.features %}
-    <div class="feature-card">
+    <div class="feature-row">
       <div class="feature-name">{{ feature.name }}</div>
-      <div class="radio-options">
+      <div class="feature-options">
         {% for s in status_choices %}
-        <div class="radio-option">
+        <div class="option-item">
+          <span class="option-label">{{ _(s) }}</span>
           <input
             type="radio"
             name="feature_{{ feature.id }}"
             value="{{ s }}"
-            id="mobile_feature_{{ feature.id }}_{{ loop.index }}"
+            id="feature_{{ feature.id }}_{{ loop.index }}"
             {% if feature.status == s %}checked{% endif %}
           >
-          <label for="mobile_feature_{{ feature.id }}_{{ loop.index }}">{{ _(s) }}</label>
+          <label for="feature_{{ feature.id }}_{{ loop.index }}" class="radio-label"></label>
         </div>
         {% endfor %}
       </div>
