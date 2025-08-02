@@ -17,18 +17,12 @@ def create_pdf(report_id):
     """
     Generate a simple PDF report for the given report_id.
     """
-    import sys
-    print(f"=== PDF SIMPLE: Starting PDF generation for report {report_id} ===", flush=True)
-    sys.stdout.flush()
+
     
     report, company, vehicle, customer, staff, vehicle_owner = _fetch_report_data(report_id)
     package_expertise_reports = _process_expertise_reports(report)
     
-    print(f"=== PDF SIMPLE: Found {len(package_expertise_reports)} expertise reports ===", flush=True)
-    for expertise in package_expertise_reports:
-        print(f"=== PDF SIMPLE: Expertise: {expertise['expertise_type_name']} ===", flush=True)
-        for feature in expertise.get('features', []):
-            print(f"=== PDF SIMPLE: Feature: {feature['name']}, Status: {feature['status']} ===", flush=True)
+
     
     filename = _build_output_filename(customer)
 
@@ -36,45 +30,10 @@ def create_pdf(report_id):
     import base64
     from flask import current_app
     
-    print(f"=== PDF SIMPLE: Starting logo loading process ===", flush=True)
-    
-    # Try Docker container path
-    logo_path = os.path.join(current_app.root_path, 'static', 'assets', 'pdf_imgs', 'logo.png')
-    logo_base64 = None
-    
-    print(f"=== PDF SIMPLE: Trying logo path: {logo_path} ===", flush=True)
-    if os.path.exists(logo_path):
-        try:
-            with open(logo_path, 'rb') as logo_file:
-                logo_data = logo_file.read()
-                logo_base64 = base64.b64encode(logo_data).decode('utf-8')
-            print(f"=== PDF SIMPLE: Logo loaded successfully, size: {len(logo_data)} bytes ===", flush=True)
-            print(f"=== PDF SIMPLE: Logo base64 preview: {logo_base64[:50]}... ===", flush=True)
-        except Exception as e:
-            print(f"=== PDF SIMPLE: Error reading logo: {e} ===", flush=True)
-    else:
-        print(f"=== PDF SIMPLE: Logo file not found at: {logo_path} ===", flush=True)
-        # Try alternative paths
-        alt_paths = [
-            os.path.join(os.getcwd(), 'app', 'static', 'assets', 'pdf_imgs', 'logo.png'),
-            os.path.join(os.path.dirname(__file__), '..', 'static', 'assets', 'pdf_imgs', 'logo.png')
-        ]
-        for alt_path in alt_paths:
-            print(f"=== PDF SIMPLE: Trying alternative path: {alt_path} ===", flush=True)
-            if os.path.exists(alt_path):
-                try:
-                    with open(alt_path, 'rb') as logo_file:
-                        logo_data = logo_file.read()
-                        logo_base64 = base64.b64encode(logo_data).decode('utf-8')
-                    print(f"=== PDF SIMPLE: Logo loaded from alternative path, size: {len(logo_data)} bytes ===", flush=True)
-                    break
-                except Exception as e:
-                    print(f"=== PDF SIMPLE: Error reading logo from alternative path: {e} ===", flush=True)
-    
-    if not logo_base64:
-        print("=== PDF SIMPLE: No logo loaded, PDF will be generated without logo ===", flush=True)
-    else:
-        print(f"=== PDF SIMPLE: Logo base64 ready, length: {len(logo_base64)} ===", flush=True)
+    # Get car image from database
+    car_image_base64 = None
+    if report and report.has_image and report.image_data:
+        car_image_base64 = base64.b64encode(report.image_data).decode('utf-8')
     
     rendered_html = render_template(
         'pdf/simple_report_bilingual.html',
@@ -85,7 +44,7 @@ def create_pdf(report_id):
         staff=staff,
         vehicle_owner=vehicle_owner,
         package_expertise_reports=package_expertise_reports,
-        logo_base64=logo_base64,
+        car_image_base64=car_image_base64,
     )
     HTML(string=rendered_html).write_pdf(filename)
     return filename
