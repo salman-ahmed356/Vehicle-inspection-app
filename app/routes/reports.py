@@ -1296,7 +1296,14 @@ def expertise_detail(expertise_report_id):
             print(f"Reports to update: {[r.id for r in reports_to_update]}")
             
             for rpt in reports_to_update:
+                # Force refresh to get latest features
+                db.session.refresh(rpt)
                 print(f"Processing report: {rpt.id} with {len(rpt.features)} features")
+                
+                # If no features, something is wrong - don't process
+                if len(rpt.features) == 0:
+                    print(f"ERROR: Report {rpt.id} has no features to update!")
+                    continue
                 # Normal processing for all expertise types
                 # No special processing needed for brake expertise anymore
                 
