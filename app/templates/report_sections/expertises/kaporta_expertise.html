@@ -271,15 +271,33 @@ document.addEventListener('DOMContentLoaded', function() {
   
   console.log('Body expertise page loaded');
   
+  // Debug: Show what data we received from server
+  console.log('Features from server:');
+  {% for feature in expertise_report.features %}
+  console.log('Feature {{ feature.id }}: {{ feature.name }} = "{{ feature.status }}"');
+  {% endfor %}
+  
   // Set radio buttons using the same pattern as comment field
   {% for feature in expertise_report.features %}
   {% if feature.status %}
   var radio_{{ feature.id }} = document.querySelector('input[name="feature_{{ feature.id }}"][value="{{ feature.status|e }}"]');
   if (radio_{{ feature.id }}) {
     radio_{{ feature.id }}.checked = true;
+    console.log('Set feature {{ feature.id }} to {{ feature.status }}');
+  } else {
+    console.log('Could not find radio for feature {{ feature.id }} with value "{{ feature.status }}"');
   }
   {% endif %}
   {% endfor %}
+  
+  // Verify which radios are actually checked
+  setTimeout(function() {
+    var checkedRadios = document.querySelectorAll('input[type="radio"]:checked');
+    console.log('Actually checked radios:', checkedRadios.length);
+    checkedRadios.forEach(function(radio) {
+      console.log('Checked:', radio.name, '=', radio.value);
+    });
+  }, 100);
   
   form.addEventListener('submit', function(e) {
     e.preventDefault();

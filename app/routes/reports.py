@@ -1230,9 +1230,17 @@ def expertise_detail_ajax():
             print(f"DEBUG: Feature {feature.id}: {feature.name} = '{feature.status}' (type: {type(feature.status)})")
             print(f"DEBUG: Feature {feature.id} status repr: {repr(feature.status)}")
     
-    # Final debug before rendering template
+    # Final debug before rendering template - verify data from DB
     print(f"DEBUG: About to render template {template}")
     print(f"DEBUG: expertise_report has {len(er1.features) if er1 else 0} features")
+    
+    # Double-check by querying database directly
+    if er1:
+        db_features = ExpertiseFeature.query.filter_by(expertise_report_id=er1.id).all()
+        print(f"DEBUG: Direct DB query shows {len(db_features)} features for expertise_report {er1.id}")
+        for db_feature in db_features:
+            print(f"DEBUG: DB Feature {db_feature.id}: {db_feature.name} = '{db_feature.status}'")
+    
     if er1 and er1.features:
         print(f"DEBUG: First feature for template: {er1.features[0].name} = '{er1.features[0].status}'")
     
