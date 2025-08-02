@@ -79,6 +79,8 @@ def _process_expertise_reports(report):
       - handle standalone expertises
       - combine Paint & Body into one block
       - ensure no duplications
+      - only include expertise sections that have marked features
+      - only include features that have been marked (not default status)
     """
     if not report or not report.package:
         return []
@@ -95,43 +97,65 @@ def _process_expertise_reports(report):
         if er.expertise_type:
             expertise_types[er.expertise_type.name] = er
     
+    def _has_marked_features(features):
+        """Check if any features have been marked (not default status)"""
+        if not features:
+            return False
+        
+        default_statuses = {
+            'No Issue', 'None', 'Original', 'No Error Logged', 
+            '(Good) Passed Inspection', 'Good', 'OK', 'Pass'
+        }
+        
+        for f in features:
+            if f.status and f.status.strip() not in default_statuses:
+                return True
+        return False
+    
+    def _filter_marked_features(features):
+        """Return only features that have been marked (not default status)"""
+        if not features:
+            return []
+        
+        default_statuses = {
+            'No Issue', 'None', 'Original', 'No Error Logged', 
+            '(Good) Passed Inspection', 'Good', 'OK', 'Pass'
+        }
+        
+        marked_features = []
+        for f in features:
+            if f.status and f.status.strip() not in default_statuses:
+                marked_features.append({
+                    'name': f.name,
+                    'status': f.status,
+                })
+        return marked_features
+    
     # Check if we have both Paint and Body expertises
     paint_report = expertise_types.get("Paint Expertise")
     body_report = expertise_types.get("Body Expertise")
     
     if paint_report and body_report:
-        # Create combined Paint & Body block
-        paint_features = []
-        body_features = []
+        # Check if either has marked features
+        paint_has_marked = _has_marked_features(paint_report.features)
+        body_has_marked = _has_marked_features(body_report.features)
         
-        if paint_report.features:
-            paint_features = [
-                {
-                    'name': f.name,
-                    'status': f.status,  # Keep original English status
-                }
-                for f in paint_report.features
-            ]
-        
-        if body_report.features:
-            body_features = [
-                {
-                    'name': f.name,
-                    'status': f.status,  # Keep original English status
-                }
-                for f in body_report.features
-            ]
-        
-        # Combine features for the template
-        combined_features = []
-        combined_features.extend(paint_features)
-        combined_features.extend(body_features)
-        
-        blocks.append({
-            'expertise_type_name': "Paint & Body Expertise",
-            'comment': paint_report.comment or body_report.comment or "",
-            'features': combined_features
-        })
+        if paint_has_marked or body_has_marked:
+            # Get only marked features from both
+            paint_features = _filter_marked_features(paint_report.features)
+            body_features = _filter_marked_features(body_report.features)
+            
+            # Combine features for the template
+            combined_features = []
+            combined_features.extend(paint_features)
+            combined_features.extend(body_features)
+            
+            if combined_features:  # Only add if there are marked features
+                blocks.append({
+                    'expertise_type_name': "Paint & Body Expertise",
+                    'comment': paint_report.comment or body_report.comment or "",
+                    'features': combined_features
+                })
         
         # Mark these as processed
         processed_types.add("Paint Expertise")
@@ -140,21 +164,16 @@ def _process_expertise_reports(report):
     # Process all other expertise reports
     for er in expertise_reports:
         if er.expertise_type and er.expertise_type.name not in processed_types:
-            features = []
-            if er.features:
-                features = [
-                    {
-                        'name': f.name,
-                        'status': f.status,  # Keep original English status
-                    }
-                    for f in er.features
-                ]
-            
-            blocks.append({
-                'expertise_type_name': er.expertise_type.name,
-                'comment': er.comment or "",
-                'features': features
-            })
+            # Only include if it has marked features
+            if _has_marked_features(er.features):
+                marked_features = _filter_marked_features(er.features)
+                
+                if marked_features:  # Only add if there are marked features
+                    blocks.append({
+                        'expertise_type_name': er.expertise_type.name,
+                        'comment': er.comment or "",
+                        'features': marked_features
+                    })
             
             # Mark as processed
             processed_types.add(er.expertise_type.name)
