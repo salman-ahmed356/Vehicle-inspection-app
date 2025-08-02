@@ -155,7 +155,7 @@
                 value="{{ s }}"
                 {% if feature.status.strip() == s.strip() %}checked{% endif %}
               >
-              <!-- Debug: {{ feature.status }} == {{ s }} = {{ feature.status == s }} -->
+              <!-- Debug: '{{ feature.status }}' == '{{ s }}' = {{ feature.status.strip() == s.strip() }} -->
             </td>
           {% endfor %}
         </tr>
@@ -212,6 +212,17 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   var form = document.getElementById('expertiseForm');
+  
+  // Set radio buttons based on feature status
+  {% for feature in expertise_report.features %}
+    var radios = document.querySelectorAll('input[name="feature_{{ feature.id }}"]');
+    radios.forEach(function(radio) {
+      if (radio.value === '{{ feature.status }}') {
+        radio.checked = true;
+        console.log('Checked radio for feature {{ feature.id }}: {{ feature.status }}');
+      }
+    });
+  {% endfor %}
   
   // Add submit event listener
   form.addEventListener('submit', function(e) {
