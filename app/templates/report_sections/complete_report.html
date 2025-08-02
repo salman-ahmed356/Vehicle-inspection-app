@@ -9,7 +9,8 @@
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
   />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile-expertise.css') }}">
+  <!-- Mobile CSS only loads on mobile screens -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile-expertise.css') }}" media="(max-width: 768px)">
   <style>
     @media (max-width: 1024px) {
       .grid-cols-1.lg\:grid-cols-4 { grid-template-columns: 1fr !important; }
@@ -168,6 +169,19 @@
           })
           .then(html => {
             document.getElementById('expertiseDetailContainer').innerHTML = html;
+            
+            // Execute any scripts in the loaded content
+            const scripts = document.getElementById('expertiseDetailContainer').querySelectorAll('script');
+            scripts.forEach(script => {
+              const newScript = document.createElement('script');
+              if (script.src) {
+                newScript.src = script.src;
+              } else {
+                newScript.textContent = script.textContent;
+              }
+              document.head.appendChild(newScript);
+              document.head.removeChild(newScript);
+            });
           })
           .catch(err => {
             console.error('AJAX error:', err);
