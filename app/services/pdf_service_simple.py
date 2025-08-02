@@ -38,8 +38,8 @@ def create_pdf(report_id):
     
     print(f"=== PDF SIMPLE: Starting logo loading process ===", flush=True)
     
-    # Try direct path first
-    logo_path = 'c:\\Users\\Killua\\Desktop\\Vehicle-Inspection-Web-App-main\\app\\static\\assets\\pdf_imgs\\logo.png'
+    # Try Docker container path
+    logo_path = os.path.join(current_app.root_path, 'static', 'assets', 'pdf_imgs', 'logo.png')
     logo_base64 = None
     
     print(f"=== PDF SIMPLE: Trying logo path: {logo_path} ===", flush=True)
