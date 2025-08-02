@@ -882,10 +882,24 @@
 
   <!-- Page Header (appears on every page) -->
   <div class="page-header">
-    <div style="display: flex; align-items: center;">
-      <div>
+    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+      <!-- Car image on left -->
+      <div style="flex: 0 0 auto;">
+        {% if car_image_base64 %}
+        <img src="data:image/jpeg;base64,{{ car_image_base64 }}" alt="Vehicle Image" style="height: 50px; width: 120px; object-fit: cover; border-radius: 4px;">
+        {% endif %}
+      </div>
+      
+      <!-- Company name in center -->
+      <div style="flex: 1; text-align: center;">
         <div style="font-size: 18pt; font-weight: bold; color: #dc2626; text-transform: uppercase;">{{ company.name }}</div>
         <div style="font-size: 10pt; color: #666; margin-top: 2px;">Professional Vehicle Testing Services</div>
+      </div>
+      
+      <!-- Text on right -->
+      <div style="flex: 0 0 auto; text-align: right; font-size: 9pt; color: #666;">
+        Professional Vehicle Testing Services<br>
+        <strong>VEHICLE INSPECTION REPORT</strong>
       </div>
     </div>
   </div>
@@ -902,18 +916,8 @@
   <!-- First Page Content -->
   <div style="margin-top: 20px;">
   
-  <!-- Layout to utilize empty space -->
-  <div style="display: flex; align-items: flex-start; margin-bottom: 10px;">
-    <!-- Left side: Car image -->
-    <div style="width: 200px; margin-right: 10px;">
-      {% if car_image_base64 %}
-      <img src="data:image/jpeg;base64,{{ car_image_base64 }}" alt="Vehicle Image" style="height: 80px; width: 200px; object-fit: cover; border-radius: 4px; margin-bottom: 10px;">
-      {% endif %}
-    </div>
-    
-    <!-- Center: Vehicle Information Table -->
-    <div style="flex: 1;">
-      <table style="width: 100%; border: 2px solid #000; border-collapse: collapse; font-size: 11pt;">
+  <!-- Vehicle Information (Horizontal Layout) -->
+  <table style="width: 100%; border: 2px solid #000; border-collapse: collapse; margin-bottom: 10px; font-size: 11pt;">
     <tr>
       <td style="border: 1px solid #000; padding: 8px; font-weight: bold; width: 15%;">Ref #</td>
       <td style="border: 1px solid #000; padding: 8px; width: 35%;">{{ report.id }}</td>
@@ -944,15 +948,7 @@
       <td style="border: 1px solid #000; padding: 8px; font-weight: bold;">Phone</td>
       <td style="border: 1px solid #000; padding: 8px;">{{ customer.phone_number if customer else 'N/A' }}</td>
     </tr>
-    </table>
-    </div>
-    
-    <!-- Right side: Text -->
-    <div style="width: 200px; margin-left: 10px; text-align: right; font-size: 10pt; color: #666;">
-      Professional Vehicle Testing Services<br>
-      <strong>VEHICLE INSPECTION REPORT</strong>
-    </div>
-  </div>
+  </table>
   
 
   
