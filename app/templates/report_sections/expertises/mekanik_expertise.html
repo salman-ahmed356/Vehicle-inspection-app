@@ -230,6 +230,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Submit form and force page reload
     fetch(form.action, {
       method: 'POST',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      },
       body: new FormData(form)
     })
     .then(function(response) {
