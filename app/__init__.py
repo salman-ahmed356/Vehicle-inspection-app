@@ -65,6 +65,19 @@ def create_app(test_config=None):
     migrate = Migrate(app, db)
     babel.init_app(app)
 
+    # Error handlers
+    @app.errorhandler(413)
+    def request_entity_too_large(error):
+        from flask import flash, redirect, request
+        flash('Image file is too large. Please select a smaller image (max 5MB).', 'error')
+        return redirect(request.referrer or url_for('reports.add_report'))
+    
+    @app.errorhandler(400)
+    def bad_request(error):
+        from flask import flash, redirect, request
+        flash('Invalid file upload. Please try again with a different image.', 'error')
+        return redirect(request.referrer or url_for('reports.add_report'))
+
     # Register blueprints
     app.register_blueprint(auth)
     app.register_blueprint(main)

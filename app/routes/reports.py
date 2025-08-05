@@ -220,12 +220,40 @@ def add_report():
                 image_file = request.files['vehicle_image']
                 if image_file and image_file.filename:
                     try:
+                        # Check file size
+                        image_file.seek(0, 2)  # Seek to end
+                        file_size = image_file.tell()
+                        image_file.seek(0)  # Reset to beginning
+                        
+                        if file_size > 16 * 1024 * 1024:  # 16MB limit
+                            flash('Image file is too large. Please select a smaller image.', 'error')
+                            return render_template(
+                                'reports.html',
+                                form=form,
+                                fuel_types=[(f.name, f.value) for f in FuelType],
+                                transmission_types=[(t.name, t.value) for t in TransmissionType],
+                                colors=[(c.name, c.value) for c in Color],
+                                vehicle_info=None,
+                                packages=get_active_packages(),
+                                current_year=datetime.now().year
+                            )
+                        
                         # Read the image data
                         image_data = image_file.read()
                         has_image = True
                     except Exception as e:
                         print(f"Error reading image file: {e}")
-                        # Continue without image if there's an error
+                        flash('Error processing image file. Please try a different image.', 'error')
+                        return render_template(
+                            'reports.html',
+                            form=form,
+                            fuel_types=[(f.name, f.value) for f in FuelType],
+                            transmission_types=[(t.name, t.value) for t in TransmissionType],
+                            colors=[(c.name, c.value) for c in Color],
+                            vehicle_info=None,
+                            packages=get_active_packages(),
+                            current_year=datetime.now().year
+                        )
             
             new_report = Report(
                 inspection_date            = form.inspection_date.data,
@@ -479,11 +507,33 @@ def edit_report(report_id):
                 image_file = request.files['vehicle_image']
                 if image_file and image_file.filename:
                     try:
+                        # Check file size
+                        image_file.seek(0, 2)  # Seek to end
+                        file_size = image_file.tell()
+                        image_file.seek(0)  # Reset to beginning
+                        
+                        if file_size > 16 * 1024 * 1024:  # 16MB limit
+                            flash('Image file is too large. Please select a smaller image.', 'error')
+                            return render_template(
+                                'reports.html',
+                                form=form,
+                                fuel_types=[(f.name, f.value) for f in FuelType],
+                                transmission_types=[(t.name, t.value) for t in TransmissionType],
+                                colors=[(c.name, c.value) for c in Color],
+                                vehicle_info=vehicle_info,
+                                packages=get_active_packages(),
+                                current_year=datetime.now().year,
+                                edit_mode=True,
+                                report=report,
+                                b64encode=base64.b64encode
+                            )
+                        
                         # Read the image data
                         report.image_data = image_file.read()
                         report.has_image = True
                     except Exception as e:
                         print(f"Error reading image file: {e}")
+                        flash('Error processing image file. Please try a different image.', 'error')
                         # Keep existing image if there's an error
                 # If no new file uploaded, keep existing image data
             

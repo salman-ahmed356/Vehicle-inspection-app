@@ -44,21 +44,68 @@
                     return;
                 }
                 
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImage.src = e.target.result;
-                    imagePreview.style.display = 'block';
-                };
-                reader.onerror = function() {
-                    alert('Error reading the image file. Please try again.');
-                };
-                reader.readAsDataURL(file);
+                // Check file size (5MB limit)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Image is too large. Please select an image smaller than 5MB.');
+                    this.value = '';
+                    return;
+                }
+                
+                // Compress and resize image
+                compressImage(file, (compressedFile) => {
+                    // Replace the original file with compressed version
+                    const dt = new DataTransfer();
+                    dt.items.add(compressedFile);
+                    this.files = dt.files;
+                    
+                    // Show preview
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(compressedFile);
+                });
             } else {
                 // If no file selected, hide preview but keep existing image in edit mode
                 if (!previewImage.src.includes('data:image')) {
                     imagePreview.style.display = 'none';
                 }
             }
+        }
+        
+        // Compress image function
+        function compressImage(file, callback) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            
+            img.onload = function() {
+                // Calculate new dimensions (max 1200px width/height)
+                let { width, height } = img;
+                const maxSize = 1200;
+                
+                if (width > height) {
+                    if (width > maxSize) {
+                        height = (height * maxSize) / width;
+                        width = maxSize;
+                    }
+                } else {
+                    if (height > maxSize) {
+                        width = (width * maxSize) / height;
+                        height = maxSize;
+                    }
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                
+                // Draw and compress
+                ctx.drawImage(img, 0, 0, width, height);
+                canvas.toBlob(callback, 'image/jpeg', 0.8);
+            };
+            
+            img.src = URL.createObjectURL(file);
         }
         
         fileInput.addEventListener('change', handleFileChange);
@@ -98,7 +145,10 @@
             const files = dt.files;
             
             if (files && files[0]) {
-                fileInput.files = files;
+                // Create new DataTransfer to set files
+                const newDt = new DataTransfer();
+                newDt.items.add(files[0]);
+                fileInput.files = newDt.files;
                 const event = new Event('change');
                 fileInput.dispatchEvent(event);
             }
