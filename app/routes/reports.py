@@ -911,7 +911,7 @@ def expertise_detail_ajax():
                     if expertise_name in expertise_map:
                         return expertise_map[expertise_name]
         except Exception as e:
-
+            pass
         return []
     
     def ensure_features_exist(er, expertise_name):
