@@ -83,49 +83,5 @@
         {% endif %}
     </div>
 
-    <!-- Package Price Display -->
-    <div>
-        <label class="block text-sm font-medium text-gray-700">
-            {{ _('Package Price') }}
-        </label>
-        <input
-            type="text"
-            id="package_price_display"
-            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 sm:text-sm"
-            readonly
-            placeholder="Select a package to see price"
-        >
-    </div>
 </div>
-
-<script>
-    // Auto-fetch package price when package is selected
-    document.addEventListener('DOMContentLoaded', function() {
-        const packageSelect = document.getElementById('package_id');
-        const priceDisplay = document.getElementById('package_price_display');
-        
-        // Package prices (this should ideally come from server)
-        const packagePrices = {
-            {% for package in packages %}
-            '{{ package.id }}': '{{ package.price }}',
-            {% endfor %}
-        };
-        
-        if (packageSelect && priceDisplay) {
-            packageSelect.addEventListener('change', function() {
-                const selectedPackageId = this.value;
-                if (selectedPackageId && packagePrices[selectedPackageId]) {
-                    priceDisplay.value = packagePrices[selectedPackageId] + ' TL';
-                } else {
-                    priceDisplay.value = '';
-                }
-            });
-            
-            // Set initial price if package is already selected
-            if (packageSelect.value && packagePrices[packageSelect.value]) {
-                priceDisplay.value = packagePrices[packageSelect.value] + ' TL';
-            }
-        }
-    });
-</script>
 
