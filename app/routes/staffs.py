@@ -214,7 +214,7 @@ def delete_staff(id):
             
     except IntegrityError as e:
         db.session.rollback()
-        flash('Error during deletion. Please try again.', 'error')
+        flash('Error during staff deletion. Please try again.', 'staff_error')
         print(f"IntegrityError: {e}")
 
     # Redirect back to staff list page

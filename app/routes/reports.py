@@ -242,7 +242,6 @@ def add_report():
                         image_data = image_file.read()
                         has_image = True
                     except Exception as e:
-                        print(f"Error reading image file: {e}")
                         flash('Error processing image file. Please try a different image.', 'error')
                         return render_template(
                             'reports.html',
@@ -299,7 +298,6 @@ def add_report():
         except IntegrityError as e:
             db.session.rollback()
             error_message = 'Data conflict—duplicate plate or chassis. Please correct.'
-            print("IntegrityError in add_report:", e, flush=True)
             return render_template(
                 'reports.html',
                 form=form,
@@ -315,7 +313,6 @@ def add_report():
         except Exception as e:
             db.session.rollback()
             error_message = 'Unexpected error—check your data and try again.'
-            print("Exception in add_report:", e, flush=True)
             return render_template(
                 'reports.html',
                 form=form,
@@ -356,11 +353,11 @@ def update_report(report_id):
         except IntegrityError as e:
             db.session.rollback()
             flash('Please ensure all values are correct!', 'error')
-            print(f"IntegrityError: {e}", flush=True)
+
         except Exception as e:
             db.session.rollback()
             flash('An unexpected error occurred!', 'error')
-            print(f"Error: {e}", flush=True)
+
 
     customers = Customer.query.all()
     packages  = get_active_packages()
@@ -431,11 +428,8 @@ def edit_report(report_id):
     
     if form.validate_on_submit():
         try:
-            print(f"DEBUG: Starting edit_report save for report_id={report_id}")
-            
             # Update vehicle data
             vehicle = report.vehicle
-            print(f"DEBUG: Updating vehicle - old plate: {vehicle.plate}, new plate: {form.vehicle_plate.data.strip()}")
             vehicle.plate = form.vehicle_plate.data.strip()
             vehicle.engine_number = form.engine_number.data.strip()
             vehicle.brand = form.brand.data.strip()
@@ -447,19 +441,16 @@ def edit_report(report_id):
             vehicle.fuel_type = map_to_enum(form.fuel_type.data, FuelType)
             vehicle.mileage = form.vehicle_km.data
             db.session.add(vehicle)  # Explicitly mark for update
-            print(f"DEBUG: Vehicle data updated and marked for save")
             
             # Update customer data
             customer = report.customer
             names = form.customer_name.data.strip().split(' ', 1)
-            print(f"DEBUG: Updating customer - old name: {customer.first_name} {customer.last_name}, new name: {names[0]} {names[1] if len(names) > 1 else ''}")
             customer.first_name = names[0]
             customer.last_name = names[1] if len(names) > 1 else ''
             customer.phone_number = form.customer_phone.data.strip()
             customer.email = form.customer_email.data.strip() or None
             customer.tc_tax_number = form.customer_tax_no.data.strip() or None
             db.session.add(customer)  # Explicitly mark for update
-            print(f"DEBUG: Customer data updated and marked for save")
             
             # Update customer address
             customer_address = form.customer_address.data.strip()
@@ -467,10 +458,8 @@ def edit_report(report_id):
                 from ..models.all_models import Address
                 if customer.address:
                     # Update existing address
-                    print(f"DEBUG: Updating existing address from '{customer.address.street_address}' to '{customer_address}'")
                     customer.address.street_address = customer_address
                     db.session.add(customer.address)  # Explicitly mark for update
-                    print(f"DEBUG: Updated customer address: {customer_address}")
                 else:
                     # Create new address
                     address = Address(
@@ -483,17 +472,14 @@ def edit_report(report_id):
                     db.session.flush()
                     customer.address_id = address.id
                     db.session.add(customer)  # Update customer with new address_id
-                    print(f"DEBUG: Created new customer address: {customer_address}")
             
             # Update report data
-            print(f"DEBUG: Updating report - old package_id: {report.package_id}, new package_id: {form.package_id.data}")
             report.package_id = form.package_id.data
             report.operation = form.operation.data or None
             report.created_by = form.created_by.data
             report.registration_document_seen = form.registration_document_seen.data
             report.inspection_date = form.inspection_date.data
             db.session.add(report)  # Explicitly mark for update
-            print(f"DEBUG: Report data updated and marked for save")
             
 
             
@@ -532,27 +518,16 @@ def edit_report(report_id):
                         report.image_data = image_file.read()
                         report.has_image = True
                     except Exception as e:
-                        print(f"Error reading image file: {e}")
                         flash('Error processing image file. Please try a different image.', 'error')
                         # Keep existing image if there's an error
                 # If no new file uploaded, keep existing image data
             
             # Save changes
-            print(f"DEBUG: About to commit all changes to database")
             db.session.commit()
-            print(f"DEBUG: Successfully committed changes to database")
             
             # Verify all data was saved by re-querying
             updated_report = Report.query.get(report_id)
             updated_vehicle = updated_report.vehicle
-            updated_customer = updated_report.customer
-            updated_agent = Agent.query.filter_by(report_id=report_id).first()
-            
-            print(f"DEBUG: Verification - Vehicle plate: {updated_vehicle.plate}")
-            print(f"DEBUG: Verification - Customer name: {updated_customer.first_name} {updated_customer.last_name}")
-            print(f"DEBUG: Verification - Customer address: {updated_customer.address.street_address if updated_customer.address else 'None'}")
-            print(f"DEBUG: Verification - Agent: {updated_agent.first_name + ' ' + updated_agent.last_name if updated_agent else 'None'}")
-            print(f"DEBUG: Verification - Report package_id: {updated_report.package_id}")
             
 
             
@@ -566,22 +541,18 @@ def edit_report(report_id):
         except IntegrityError as e:
             db.session.rollback()
             flash('Data conflict—duplicate plate or chassis. Please correct.', 'report_error')
-            print(f"IntegrityError in edit_report: {e}", flush=True)
+
         except Exception as e:
             db.session.rollback()
             flash('Unexpected error—check your data and try again.', 'report_error')
-            print(f"Exception in edit_report: {e}", flush=True)
+
     else:
         if request.method == 'POST':
-            print(f"DEBUG: Form validation failed on POST request")
-            print(f"DEBUG: Form errors: {form.errors}")
             # Fix missing created_at field
             if 'created_at' in form.errors:
                 form.created_at.data = report.created_at
-                print(f"DEBUG: Fixed created_at field with: {form.created_at.data}")
                 # Try validation again
                 if form.validate():
-                    print(f"DEBUG: Form validation passed after fixing created_at")
                     # Process the form submission
                     return redirect(url_for('reports.edit_report', report_id=report_id))
             flash('Please check the form for errors.', 'report_error')
@@ -636,6 +607,12 @@ def delete_report(report_id):
     
     # Delete the report and all related data
     try:
+        # Delete agent records first (foreign key constraint)
+        from ..models import Agent
+        agents = Agent.query.filter_by(report_id=report_id).all()
+        for agent in agents:
+            db.session.delete(agent)
+        
         # Delete expertise features
         for er in report.expertise_reports:
             for feature in er.features:
@@ -645,7 +622,9 @@ def delete_report(report_id):
         for er in report.expertise_reports:
             db.session.delete(er)
         
-
+        # Delete vehicle owner if exists
+        if report.vehicle_owner:
+            db.session.delete(report.vehicle_owner)
         
         # Delete the report
         log_action('REPORT_DELETED', f'Deleted report ID: {report_id} for vehicle: {report.vehicle.chassis_number if report.vehicle else "Unknown"}')
@@ -654,8 +633,7 @@ def delete_report(report_id):
         flash('Report successfully deleted!', 'success')
     except Exception as e:
         db.session.rollback()
-        flash(f'Error deleting report: {str(e)}', 'error')
-        print(f"Error deleting report: {e}")
+        flash(f'Error deleting report: {str(e)}', 'report_error')
     
     # Redirect back to the appropriate list based on original status
     return redirect(url_for('reports.report_list', status=status))
@@ -690,7 +668,7 @@ def mark_complete(report_id):
         db.session.commit()
         flash('Report marked as completed!', 'success')
     except Exception as e:
-        print(f"Error completing report: {e}")
+
         flash('Error completing report', 'error')
     
     return redirect(url_for('reports.report_list'))
@@ -793,29 +771,29 @@ def expertise_detail_ajax():
             et = ExpertiseType(name=db_label)
             db.session.add(et)
             db.session.flush()  # Use flush instead of commit to get the ID
-            print(f"Created expertise type: {db_label}")
+
         
         # Try to find existing expertise report for this report and expertise type
-        print(f"DEBUG: Looking for existing ExpertiseReport with report_id={report.id}, expertise_type_id={et.id}")
+
         er = ExpertiseReport.query.filter_by(
             report_id=report.id,
             expertise_type_id=et.id
         ).first()
         
         if er:
-            print(f"DEBUG: Found existing ExpertiseReport {er.id} for {db_label}")
+            pass
         else:
-            print(f"DEBUG: No existing ExpertiseReport found for {db_label}, will create new one")
+            pass
         
         if not er:
             er = ExpertiseReport(report_id=report.id, expertise_type_id=et.id)
             db.session.add(er)
             db.session.flush()  # Use flush instead of commit to get the ID
-            print(f"DEBUG: Created new ExpertiseReport {er.id} for {db_label} with report_id={report.id}")
+
         
         # Double-check that the expertise report has the correct report_id
         if er.report_id != report.id:
-            print(f"ERROR: ExpertiseReport {er.id} has wrong report_id: {er.report_id} (should be {report.id})")
+
             er.report_id = report.id
             db.session.add(er)
             db.session.flush()
@@ -842,7 +820,7 @@ def expertise_detail_ajax():
                             )
                             db.session.add(feature)
                         db.session.flush()  # Use flush to ensure features are saved
-                        print(f"Added {len(parts)} features to {db_label}")
+
                     else:
                         # Add some default features if none found in map
                         default_features = [
@@ -857,9 +835,9 @@ def expertise_detail_ajax():
                                 expertise_report_id=er.id
                             ))
                         db.session.flush()  # Use flush to ensure features are saved
-                        print(f"Added default features to {db_label}")
+
             except Exception as e:
-                print(f"Error adding features: {e}")
+
                 # Add some default features as fallback
                 default_features = [
                     {"name": "Left Front Fender", "status": "Original" if db_label == "Paint Expertise" else "No Issue"},
@@ -877,12 +855,12 @@ def expertise_detail_ajax():
         # Force load features relationship
         db.session.refresh(er)
         features_count = len(er.features)
-        print(f"DEBUG: ExpertiseReport {er.id} has {features_count} features after refresh")
+
         
         if features_count == 0:
-            print(f"DEBUG: ExpertiseReport {er.id} has no features, will be populated later")
+            pass
         else:
-            print(f"DEBUG: ExpertiseReport {er.id} already has {features_count} features")
+            pass
         
         # Don't commit here - let the caller handle commits
         db.session.flush()
@@ -892,7 +870,7 @@ def expertise_detail_ajax():
         # Force reload features from database
         er.features = ExpertiseFeature.query.filter_by(expertise_report_id=er.id).order_by(ExpertiseFeature.id).all()
         final_count = len(er.features)
-        print(f"DEBUG: After final refresh, ExpertiseReport {er.id} has {final_count} features")
+
         return er
 
     # single vs combined
@@ -910,13 +888,13 @@ def expertise_detail_ajax():
     
     # Verify that the expertise reports are properly linked to the report
     if er1 and er1.report_id != report.id:
-        print(f"ERROR: er1.report_id ({er1.report_id}) != report.id ({report.id})")
+
         er1.report_id = report.id
         db.session.add(er1)
         db.session.commit()
     
     if er2 and er2.report_id != report.id:
-        print(f"ERROR: er2.report_id ({er2.report_id}) != report.id ({report.id})")
+
         er2.report_id = report.id
         db.session.add(er2)
         db.session.commit()
@@ -933,7 +911,7 @@ def expertise_detail_ajax():
                     if expertise_name in expertise_map:
                         return expertise_map[expertise_name]
         except Exception as e:
-            print(f"Error loading expertise map: {e}")
+
         return []
     
     def ensure_features_exist(er, expertise_name):
@@ -945,7 +923,7 @@ def expertise_detail_ajax():
         existing_features = ExpertiseFeature.query.filter_by(expertise_report_id=er.id).order_by(ExpertiseFeature.id).all()
         
         if existing_features:
-            print(f"DEBUG: Found {len(existing_features)} existing features for {expertise_name}, not recreating")
+
             er.features = existing_features
             return
         
@@ -953,7 +931,7 @@ def expertise_detail_ajax():
         parts = load_features_from_map(expertise_name)
         
         if parts:
-            print(f"Adding {len(parts)} features from map for {expertise_name}")
+
             for part in parts:
                 feature = ExpertiseFeature(
                     name=part['part_name'],
@@ -964,7 +942,7 @@ def expertise_detail_ajax():
             db.session.flush()  # Use flush to ensure features are saved
         else:
             # Fallback to hardcoded features if map doesn't have this expertise type
-            print(f"No features found in map for {expertise_name}, using fallback")
+
             if "Paint" in expertise_name:
                 features = [
                     "Left Front Fender", "Left Front Door", "Left Rear Fender",
@@ -1026,36 +1004,27 @@ def expertise_detail_ajax():
         db.session.expire_all()  # Clear all cached objects
         er1 = ExpertiseReport.query.get(er1.id)  # Re-fetch from database
         er1.features = ExpertiseFeature.query.filter_by(expertise_report_id=er1.id).order_by(ExpertiseFeature.id).all()
-        print(f"DEBUG: er1 (report_id={er1.report_id}) has {len(er1.features)} features loaded")
-        for feature in er1.features:
-            print(f"DEBUG: Feature {feature.id}: {feature.name} = '{feature.status}' (type: {type(feature.status)})")
-            print(f"DEBUG: Feature {feature.id} status repr: {repr(feature.status)}")
+
     
     if er2:
         # Force reload features from database with explicit session refresh
         er2 = ExpertiseReport.query.get(er2.id)  # Re-fetch from database
         er2.features = ExpertiseFeature.query.filter_by(expertise_report_id=er2.id).order_by(ExpertiseFeature.id).all()
-        print(f"DEBUG: er2 (report_id={er2.report_id}) has {len(er2.features)} features loaded")
-        for feature in er2.features:
-            print(f"DEBUG: Feature {feature.id}: {feature.name} = '{feature.status}' (type: {type(feature.status)})")
-            print(f"DEBUG: Feature {feature.id} status repr: {repr(feature.status)}")
+
     
     # Final debug before rendering template - verify data from DB
-    print(f"DEBUG: About to render template {template}")
-    print(f"DEBUG: expertise_report has {len(er1.features) if er1 else 0} features")
+
     
     # Double-check by querying database directly with fresh session
     if er1:
         db.session.expire_all()  # Clear all cached objects again
         db_features = ExpertiseFeature.query.filter_by(expertise_report_id=er1.id).order_by(ExpertiseFeature.id).all()
-        print(f"DEBUG: Direct DB query shows {len(db_features)} features for expertise_report {er1.id}")
-        for db_feature in db_features:
-            print(f"DEBUG: DB Feature {db_feature.id}: {db_feature.name} = '{db_feature.status}'")
+
         # Update er1.features with fresh data
         er1.features = db_features
     
     if er1 and er1.features:
-        print(f"DEBUG: First feature for template: {er1.features[0].name} = '{er1.features[0].status}'")
+
     
     from flask import make_response
     response = make_response(render_template(
@@ -1103,15 +1072,10 @@ def expertise_detail(expertise_report_id):
                 'None':            'yok',
             }
 
-            print(f"FORM SUBMISSION RECEIVED for expertise_report_id={expertise_report_id}")
-            print(f"Form data keys: {list(request.form.keys())}")
-            print(f"Form data values: {list(request.form.values())}")
-            
-            # Debug the reports being updated
-            print(f"Reports to update: {[r.id for r in reports_to_update]}")
+
             
             for rpt in reports_to_update:
-                print(f"Processing report: {rpt.id} with {len(rpt.features)} features")
+
                 
                 # Don't rely on the relationship - process features directly from form
                 # Normal processing for all expertise types
@@ -1126,10 +1090,7 @@ def expertise_detail(expertise_report_id):
                         # Query the feature directly by ID
                         feature = ExpertiseFeature.query.get(feature_id)
                         if feature:
-                            print(f"Feature {feature.id} ({feature.name}): current={feature.status}, new={new_status}")
-                            
                             if new_status != feature.status:
-                                print(f"UPDATING feature {feature.id} from {feature.status} to {new_status}")
                                 feature.status = new_status
                                 feature.image_path = (
                                     f'assets/car_parts/'
@@ -1137,26 +1098,17 @@ def expertise_detail(expertise_report_id):
                                     f'{feature.name}.png'
                                 )
                                 db.session.add(feature)
-                            else:
-                                print(f"Feature {feature.id} status unchanged: {feature.status}")
-                        else:
-                            print(f"WARNING: Could not find feature with ID {feature_id}")
 
                 new_comment = request.form.get('technician_comment') or ''
                 if new_comment != rpt.comment:
                     rpt.comment = new_comment
                     db.session.merge(rpt)  # Explicitly mark as modified
-                    print(f"Updated comment to: {new_comment}")
+
 
             db.session.commit()
-            print("SUCCESSFULLY SAVED ALL CHANGES")
-            
             # Refresh the expertise reports to ensure changes are reflected
             for rpt in reports_to_update:
                 db.session.refresh(rpt)
-                print(f"DEBUG: After save, report {rpt.id} has {len(rpt.features)} features")
-                for feature in rpt.features:
-                    print(f"DEBUG: Feature {feature.id}: {feature.name} = {feature.status}")
             
             # Check if this is an AJAX request
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -1169,7 +1121,7 @@ def expertise_detail(expertise_report_id):
 
         except Exception as e:
             db.session.rollback()
-            print(f"ERROR updating expertise: {e}", flush=True)
+
             return jsonify({"success": False, "error": str(e)}), 500
 
     # GET
