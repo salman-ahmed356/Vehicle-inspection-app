@@ -1024,7 +1024,7 @@ def expertise_detail_ajax():
         er1.features = db_features
     
     if er1 and er1.features:
-
+        pass
     
     from flask import make_response
     response = make_response(render_template(
