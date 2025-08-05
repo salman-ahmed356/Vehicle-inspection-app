@@ -131,10 +131,11 @@
                     <!-- Cancel Report Form -->
                     <form action="{{ url_for('reports.cancel_report', report_id=report.id) }}"
                           method="POST"
-                          class="inline-block">
+                          class="inline-block cancel-form">
                         {{ form.hidden_tag() }}
-                        <button type="submit"
-                                class="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1 rounded">
+                        <button type="button"
+                                class="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1 rounded cancel-btn"
+                                data-report-id="{{ report.id }}">
                             {{ _('Cancel') }}
                         </button>
                     </form>
@@ -182,9 +183,9 @@
                         </button>
                     </form>
                     
-                    <form action="{{ url_for('reports.cancel_report', report_id=report.id) }}" method="POST">
+                    <form action="{{ url_for('reports.cancel_report', report_id=report.id) }}" method="POST" class="cancel-form">
                         {{ form.hidden_tag() }}
-                        <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded">
+                        <button type="button" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded cancel-btn" data-report-id="{{ report.id }}">
                             {{ _('Cancel') }}
                         </button>
                     </form>
@@ -222,6 +223,23 @@
         </div>
     </div>
 </div>
+
+<!-- Cancel Confirmation Modal -->
+<div id="cancelModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3 text-center">
+            <h3 class="text-lg font-medium text-gray-900">{{ _('Cancel Report') }}</h3>
+            <div class="mt-2 px-7 py-3">
+                <p class="text-sm text-gray-500">{{ _('Are you sure you want to cancel this report? This action cannot be undone.') }}</p>
+            </div>
+            <div class="items-center px-4 py-3">
+                <button id="confirmCancel" class="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-24 mr-2 hover:bg-red-600">{{ _('Yes') }}</button>
+                <button id="cancelModalClose" class="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-24 hover:bg-gray-600">{{ _('No') }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="../../static/js/appointment.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -279,6 +297,41 @@
         document.addEventListener('click', function(event) {
             if (!searchInput.contains(event.target) && !searchResults.contains(event.target)) {
                 searchResults.classList.add('hidden');
+            }
+        });
+        
+        // Cancel confirmation modal
+        const cancelModal = document.getElementById('cancelModal');
+        const confirmCancel = document.getElementById('confirmCancel');
+        const cancelModalClose = document.getElementById('cancelModalClose');
+        let currentCancelForm = null;
+        
+        // Show modal when cancel button is clicked
+        document.querySelectorAll('.cancel-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                currentCancelForm = this.closest('.cancel-form');
+                cancelModal.classList.remove('hidden');
+            });
+        });
+        
+        // Confirm cancellation
+        confirmCancel.addEventListener('click', function() {
+            if (currentCancelForm) {
+                currentCancelForm.submit();
+            }
+        });
+        
+        // Close modal
+        cancelModalClose.addEventListener('click', function() {
+            cancelModal.classList.add('hidden');
+            currentCancelForm = null;
+        });
+        
+        // Close modal when clicking outside
+        cancelModal.addEventListener('click', function(event) {
+            if (event.target === cancelModal) {
+                cancelModal.classList.add('hidden');
+                currentCancelForm = null;
             }
         });
     });
