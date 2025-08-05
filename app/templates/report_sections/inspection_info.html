@@ -83,71 +83,48 @@
         {% endif %}
     </div>
 
-    <!-- Package Price -->
+    <!-- Package Price Display -->
     <div>
         <label class="block text-sm font-medium text-gray-700">
             {{ _('Package Price') }}
         </label>
         <input
             type="text"
-            name="package_price"
-            id="package_price"
-            required
-            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            oninvalid="this.setCustomValidity('{{ _('Please enter the package price') }}')"
-            oninput="setCustomValidity(''); calculateVAT();"
-        >
-    </div>
-
-    <!-- Package Price (Including VAT) -->
-    <div>
-        <label class="block text-sm font-medium text-gray-700">
-            {{ _('Package Price (Including VAT)') }}
-        </label>
-        <input
-            type="text"
-            name="package_price_vat"
-            id="package_price_vat"
-            required
-            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            id="package_price_display"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 sm:text-sm"
             readonly
+            placeholder="Select a package to see price"
         >
     </div>
 </div>
 
 <script>
-    function calculateVAT() {
-        const packagePriceInput = document.getElementById('package_price');
-        const packagePriceVatInput = document.getElementById('package_price_vat');
-
-        let packagePrice = parseFloat(packagePriceInput.value);
-
-        if (!isNaN(packagePrice)) {
-            packagePriceVatInput.value = (packagePrice * 118 / 100).toFixed(2);
-        } else {
-            packagePriceVatInput.value = '';
-        }
-    }
-    
-    // Set default package price on page load
+    // Auto-fetch package price when package is selected
     document.addEventListener('DOMContentLoaded', function() {
         const packageSelect = document.getElementById('package_id');
-        const packagePriceInput = document.getElementById('package_price');
+        const priceDisplay = document.getElementById('package_price_display');
         
-        // Set initial price if not already set
-        if (packagePriceInput && packagePriceInput.value === '') {
-            packagePriceInput.value = '500'; // Default price
-            calculateVAT();
-        }
+        // Package prices (this should ideally come from server)
+        const packagePrices = {
+            {% for package in packages %}
+            '{{ package.id }}': '{{ package.price }}',
+            {% endfor %}
+        };
         
-        // Update price when package changes
-        if (packageSelect) {
+        if (packageSelect && priceDisplay) {
             packageSelect.addEventListener('change', function() {
-                // In a real app, you might fetch the price from the server
-                // For now, just set a default price
-                packagePriceInput.value = '500';
-                calculateVAT();
+                const selectedPackageId = this.value;
+                if (selectedPackageId && packagePrices[selectedPackageId]) {
+                    priceDisplay.value = packagePrices[selectedPackageId] + ' TL';
+                } else {
+                    priceDisplay.value = '';
+                }
             });
+            
+            // Set initial price if package is already selected
+            if (packageSelect.value && packagePrices[packageSelect.value]) {
+                priceDisplay.value = packagePrices[packageSelect.value] + ' TL';
+            }
         }
     });
 </script>

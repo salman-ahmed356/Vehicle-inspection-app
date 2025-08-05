@@ -1,24 +1,7 @@
 <div class="mb-4">
-    <h3 class="text-lg font-medium mb-2">{{ _('Vehicle Image') }}</h3>
-    <div class="mb-2">
-        <label class="block text-sm font-medium text-gray-700">{{ _('Add Vehicle Image?') }}</label>
-        <div class="mt-1 flex items-center space-x-4">
-            <div class="flex items-center">
-                <input type="radio" id="has_image_no" name="has_image" value="no" 
-                       {% if (edit_mode and not report.has_image) or form.has_image.data == 'no' %}checked{% endif %}
-                       class="h-4 w-4 text-blue-600 border-gray-300 rounded">
-                <label for="has_image_no" class="ml-2 block text-sm text-gray-700">{{ _('No') }}</label>
-            </div>
-            <div class="flex items-center">
-                <input type="radio" id="has_image_yes" name="has_image" value="yes" 
-                       {% if (edit_mode and report.has_image) or form.has_image.data == 'yes' %}checked{% endif %}
-                       class="h-4 w-4 text-blue-600 border-gray-300 rounded">
-                <label for="has_image_yes" class="ml-2 block text-sm text-gray-700">{{ _('Yes') }}</label>
-            </div>
-        </div>
-    </div>
+    <h3 class="text-lg font-medium mb-2">{{ _('Vehicle Image (Optional)') }}</h3>
     
-    <div id="image_upload_section" style="display: {% if (edit_mode and report.has_image) or form.has_image.data == 'yes' %}block{% else %}none{% endif %};" class="mt-3">
+    <div id="image_upload_section" class="mt-3">
         <label class="block text-sm font-medium text-gray-700">{{ _('Upload Vehicle Image') }}</label>
         <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
             <div class="space-y-1 text-center">
@@ -32,79 +15,49 @@
                     </label>
                     <p class="pl-1">{{ _('or drag and drop') }}</p>
                 </div>
-                <p class="text-xs text-gray-500">{{ _('PNG, JPG, JPEG up to 5MB') }}</p>
+                <p class="text-xs text-gray-500">{{ _('PNG, JPG, JPEG, GIF, BMP, WebP - Any size accepted') }}</p>
             </div>
         </div>
         <div id="image_preview" style="display: {% if edit_mode and report.has_image and report.image_data %}block{% else %}none{% endif %};" class="mt-3">
             <img id="preview_image" src="{% if edit_mode and report.has_image and report.image_data %}data:image/jpeg;base64,{{ report.image_data|b64encode }}{% else %}#{% endif %}" alt="Preview" class="max-h-48 rounded-md">
+            <p class="text-sm text-gray-600 mt-2">{{ _('Current vehicle image') }}</p>
         </div>
     </div>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const hasImageRadios = document.querySelectorAll('input[name="has_image"]');
-        const imageUploadSection = document.getElementById('image_upload_section');
         const fileInput = document.getElementById('vehicle_image');
         const imagePreview = document.getElementById('image_preview');
         const previewImage = document.getElementById('preview_image');
-        const form = document.querySelector('form');
-        
-        // Add form validation
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                const hasImageYes = document.getElementById('has_image_yes');
-                if (hasImageYes && hasImageYes.checked) {
-                    // Check if there's an existing image in edit mode
-                    const hasExistingImage = previewImage && previewImage.src && 
-                                           previewImage.src !== '#' && 
-                                           !previewImage.src.endsWith('#');
-                    
-                    // If no file is selected and there's no existing image
-                    if (!fileInput.files[0] && !hasExistingImage) {
-                        e.preventDefault();
-                        alert('Please upload a vehicle image or select "No" for the image option.');
-                        return false;
-                    }
-                }
-                return true;
-            });
-        }
-        
-        // Handle radio button change
-        hasImageRadios.forEach(radio => {
-            radio.addEventListener('change', function() {
-                if (this.value === 'yes') {
-                    imageUploadSection.style.display = 'block';
-                } else {
-                    imageUploadSection.style.display = 'none';
-                    // Clear file input by replacing it
-                    const newFileInput = document.createElement('input');
-                    newFileInput.type = 'file';
-                    newFileInput.id = 'vehicle_image';
-                    newFileInput.name = 'vehicle_image';
-                    newFileInput.className = 'sr-only';
-                    newFileInput.accept = 'image/*';
-                    fileInput.parentNode.replaceChild(newFileInput, fileInput);
-                    // Update reference
-                    const updatedFileInput = document.getElementById('vehicle_image');
-                    updatedFileInput.addEventListener('change', handleFileChange);
-                    imagePreview.style.display = 'none';
-                }
-            });
-        });
+        const imageUploadSection = document.getElementById('image_upload_section');
         
         // Handle file input change
         function handleFileChange() {
             if (this.files && this.files[0]) {
+                const file = this.files[0];
+                
+                // Check if it's a valid image file
+                if (!file.type.startsWith('image/')) {
+                    alert('Please select a valid image file.');
+                    this.value = '';
+                    return;
+                }
+                
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     previewImage.src = e.target.result;
                     imagePreview.style.display = 'block';
                 };
-                reader.readAsDataURL(this.files[0]);
+                reader.onerror = function() {
+                    alert('Error reading the image file. Please try again.');
+                };
+                reader.readAsDataURL(file);
             } else {
-                imagePreview.style.display = 'none';
+                // If no file selected, hide preview but keep existing image in edit mode
+                if (!previewImage.src.includes('data:image')) {
+                    imagePreview.style.display = 'none';
+                }
             }
         }
         
@@ -151,11 +104,9 @@
             }
         }
         
-        // Force show image in edit mode
+        // Show existing image in edit mode
         if (previewImage && previewImage.src && previewImage.src.includes('data:image')) {
             imagePreview.style.display = 'block';
-            imageUploadSection.style.display = 'block';
-            document.getElementById('has_image_yes').checked = true;
         }
     });
 </script>

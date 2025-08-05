@@ -83,12 +83,7 @@
                     <div class="bg-gray-50 p-4 rounded-lg shadow-md">
                         {% include 'report_sections/customer_info.html' %}
                     </div>
-                    <div class="bg-gray-50 p-4 rounded-lg shadow-md">
-                        {% include 'report_sections/representative_info.html' %}
-                    </div>
-                    <div class="bg-gray-50 p-4 rounded-lg shadow-md">
-                        {% include 'report_sections/owner_info.html' %}
-                    </div>
+
                 </div>
 
                 <!-- Submit and Cancel Buttons -->
@@ -109,7 +104,6 @@
             // Force show the image preview
             const imagePreview = document.getElementById('image_preview');
             const imageUploadSection = document.getElementById('image_upload_section');
-            const hasImageYes = document.getElementById('has_image_yes');
             
             if (imagePreview) {
                 imagePreview.style.display = 'block';
@@ -117,10 +111,6 @@
             
             if (imageUploadSection) {
                 imageUploadSection.style.display = 'block';
-            }
-            
-            if (hasImageYes) {
-                hasImageYes.checked = true;
             }
             
             // Force the image to be visible
