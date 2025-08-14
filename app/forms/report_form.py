@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileField, FileAllowed
+from flask_wtf.file import FileField
 from wtforms import StringField, IntegerField, BooleanField, SelectField, SubmitField, TextAreaField, DateTimeField
 from wtforms.validators import DataRequired, Optional, Length
 from ..enums import ReportStatus
@@ -15,8 +15,8 @@ class ReportForm(FlaskForm):
 
 
     
-    # Vehicle Image
-    vehicle_image = FileField('Vehicle Image', validators=[Optional(), FileAllowed(['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'], 'Images only!')])
+    # Vehicle Image - Accept all file types and sizes
+    vehicle_image = FileField('Vehicle Image', validators=[Optional()])
 
     # Vehicle Information
     vehicle_plate = StringField('Vehicle Plate', validators=[DataRequired()])

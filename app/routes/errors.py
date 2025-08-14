@@ -1,9 +1,24 @@
-from flask import Blueprint, render_template, jsonify, current_app
-from werkzeug.exceptions import HTTPException
+from flask import Blueprint, render_template, jsonify, current_app, request, redirect, url_for, flash
+from werkzeug.exceptions import HTTPException, RequestEntityTooLarge
 
 from ..database import db
 
 errors = Blueprint('errors', __name__)
+
+# 413 Request Entity Too Large - Handle file upload size errors gracefully
+@errors.app_errorhandler(413)
+def error_413(error):
+    # If this is a file upload error, redirect back with a user-friendly message
+    if request.endpoint and 'report' in request.endpoint:
+        flash('File is too large. Please try with a smaller file or contact support.', 'error')
+        if 'edit_report' in request.endpoint:
+            report_id = request.view_args.get('report_id')
+            if report_id:
+                return redirect(url_for('reports.edit_report', report_id=report_id))
+        return redirect(url_for('reports.add_report'))
+    
+    # For other cases, show a generic error page
+    return render_template('errors/400.html'), 413
 
 # 404 Not Found
 @errors.app_errorhandler(404)

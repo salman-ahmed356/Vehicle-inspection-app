@@ -97,11 +97,11 @@
     <script src="../static/js/report.js"></script>
     <script src="../static/js/appointment.js"></script>
     
-    {% if edit_mode and report.has_image and report.image_data %}
     <script>
-        // Ensure image preview is shown in edit mode
+        // Enhanced image handling for both create and edit modes
         document.addEventListener('DOMContentLoaded', function() {
-            // Force show the image preview
+            // Force show the image preview in edit mode
+            {% if edit_mode and report.has_image and report.image_data %}
             const imagePreview = document.getElementById('image_preview');
             const imageUploadSection = document.getElementById('image_upload_section');
             
@@ -116,11 +116,30 @@
             // Force the image to be visible
             const previewImage = document.getElementById('preview_image');
             if (previewImage && previewImage.src && previewImage.src.startsWith('data:image')) {
-                console.log('Image source is set to:', previewImage.src);
+                console.log('Image loaded successfully in edit mode');
+            }
+            {% endif %}
+            
+            // Add form submission handler to show upload progress
+            const form = document.querySelector('form[enctype="multipart/form-data"]');
+            const fileInput = document.getElementById('vehicle_image');
+            
+            if (form && fileInput) {
+                form.addEventListener('submit', function(e) {
+                    if (fileInput.files && fileInput.files[0]) {
+                        // Show loading message
+                        const uploadMessage = document.getElementById('upload_message');
+                        const uploadText = document.getElementById('upload_text');
+                        if (uploadMessage && uploadText) {
+                            uploadText.textContent = 'Uploading image, please wait...';
+                            uploadText.className = 'text-sm font-medium text-blue-600';
+                            uploadMessage.style.display = 'block';
+                        }
+                    }
+                });
             }
         });
     </script>
-    {% endif %}
 </body>
 
 </html>

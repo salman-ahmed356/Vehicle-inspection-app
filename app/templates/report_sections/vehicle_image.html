@@ -11,16 +11,23 @@
                 <div class="flex text-sm text-gray-600">
                     <label for="vehicle_image" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
                         <span>{{ _('Upload a file') }}</span>
-                        <input id="vehicle_image" name="vehicle_image" type="file" class="sr-only" accept="image/*">
+                        <input id="vehicle_image" name="vehicle_image" type="file" class="sr-only">
                     </label>
                     <p class="pl-1">{{ _('or drag and drop') }}</p>
                 </div>
-                <p class="text-xs text-gray-500">{{ _('PNG, JPG, JPEG, GIF, BMP, WebP - Any size accepted') }}</p>
+                <p class="text-xs text-gray-500">{{ _('All image formats and sizes accepted') }}</p>
             </div>
         </div>
+        
+        <!-- Upload Status Message -->
+        <div id="upload_message" class="mt-2" style="display: none;">
+            <p id="upload_text" class="text-sm font-medium"></p>
+        </div>
+        
+        <!-- Image Preview -->
         <div id="image_preview" style="display: {% if edit_mode and report.has_image and report.image_data %}block{% else %}none{% endif %};" class="mt-3">
-            <img id="preview_image" src="{% if edit_mode and report.has_image and report.image_data %}data:image/jpeg;base64,{{ report.image_data|b64encode }}{% else %}#{% endif %}" alt="Preview" class="max-h-48 rounded-md">
-            <p class="text-sm text-gray-600 mt-2">{{ _('Current vehicle image') }}</p>
+            <img id="preview_image" src="{% if edit_mode and report.has_image and report.image_data %}data:image/jpeg;base64,{{ report.image_data|b64encode }}{% else %}#{% endif %}" alt="Preview" class="max-h-48 rounded-md border">
+            <p class="text-sm text-gray-600 mt-2">{{ _('Image preview') }}</p>
         </div>
     </div>
 </div>
@@ -31,81 +38,47 @@
         const imagePreview = document.getElementById('image_preview');
         const previewImage = document.getElementById('preview_image');
         const imageUploadSection = document.getElementById('image_upload_section');
+        const uploadMessage = document.getElementById('upload_message');
+        const uploadText = document.getElementById('upload_text');
+        
+        // Show upload message
+        function showMessage(message, isSuccess = true) {
+            uploadText.textContent = message;
+            uploadText.className = isSuccess ? 'text-sm font-medium text-green-600' : 'text-sm font-medium text-red-600';
+            uploadMessage.style.display = 'block';
+            
+            // Hide message after 3 seconds
+            setTimeout(() => {
+                uploadMessage.style.display = 'none';
+            }, 3000);
+        }
         
         // Handle file input change
         function handleFileChange() {
             if (this.files && this.files[0]) {
                 const file = this.files[0];
                 
-                // Check if it's a valid image file
-                if (!file.type.startsWith('image/')) {
-                    alert('Please select a valid image file.');
-                    this.value = '';
-                    return;
-                }
-                
-                // Check file size (5MB limit)
-                if (file.size > 5 * 1024 * 1024) {
-                    alert('Image is too large. Please select an image smaller than 5MB.');
-                    this.value = '';
-                    return;
-                }
-                
-                // Compress and resize image
-                compressImage(file, (compressedFile) => {
-                    // Replace the original file with compressed version
-                    const dt = new DataTransfer();
-                    dt.items.add(compressedFile);
-                    this.files = dt.files;
-                    
-                    // Show preview
+                try {
+                    // Show preview for any file type that can be displayed as image
                     const reader = new FileReader();
                     reader.onload = function(e) {
                         previewImage.src = e.target.result;
                         imagePreview.style.display = 'block';
+                        showMessage('Image uploaded successfully!', true);
                     };
-                    reader.readAsDataURL(compressedFile);
-                });
+                    reader.onerror = function() {
+                        showMessage('Error reading file. File may be corrupted.', false);
+                    };
+                    reader.readAsDataURL(file);
+                } catch (error) {
+                    showMessage('Error processing file: ' + error.message, false);
+                }
             } else {
                 // If no file selected, hide preview but keep existing image in edit mode
                 if (!previewImage.src.includes('data:image')) {
                     imagePreview.style.display = 'none';
                 }
             }
-        }
-        
-        // Compress image function
-        function compressImage(file, callback) {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            const img = new Image();
-            
-            img.onload = function() {
-                // Calculate new dimensions (max 1200px width/height)
-                let { width, height } = img;
-                const maxSize = 1200;
-                
-                if (width > height) {
-                    if (width > maxSize) {
-                        height = (height * maxSize) / width;
-                        width = maxSize;
-                    }
-                } else {
-                    if (height > maxSize) {
-                        width = (width * maxSize) / height;
-                        height = maxSize;
-                    }
-                }
-                
-                canvas.width = width;
-                canvas.height = height;
-                
-                // Draw and compress
-                ctx.drawImage(img, 0, 0, width, height);
-                canvas.toBlob(callback, 'image/jpeg', 0.8);
-            };
-            
-            img.src = URL.createObjectURL(file);
         }
         
         fileInput.addEventListener('change', handleFileChange);

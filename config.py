@@ -10,8 +10,8 @@ class Config:
     SECRET_KEY = os.getenv('SECRET_KEY')
     DEBUG = True
     
-    # File upload settings
-    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
+    # File upload settings - Remove size restrictions
+    MAX_CONTENT_LENGTH = None  # No file size limit
 
     # Force English only
     BABEL_DEFAULT_LOCALE = 'en'
