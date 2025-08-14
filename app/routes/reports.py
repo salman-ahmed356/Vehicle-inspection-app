@@ -289,7 +289,11 @@ def add_report():
 
         except Exception as e:
             db.session.rollback()
-            error_message = 'Unexpected error—check your data and try again.'
+            print(f"Report creation error: {str(e)}")
+            print(f"Error type: {type(e)}")
+            import traceback
+            traceback.print_exc()
+            error_message = f'Error: {str(e)}'
             return render_template(
                 'reports.html',
                 form=form,
@@ -503,7 +507,11 @@ def edit_report(report_id):
 
         except Exception as e:
             db.session.rollback()
-            flash('Unexpected error—check your data and try again.', 'report_error')
+            print(f"Report edit error: {str(e)}")
+            print(f"Error type: {type(e)}")
+            import traceback
+            traceback.print_exc()
+            flash(f'Error: {str(e)}', 'report_error')
 
     else:
         if request.method == 'POST':
