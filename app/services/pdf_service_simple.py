@@ -107,8 +107,7 @@ def _process_expertise_reports(report):
             return False
         
         default_statuses = {
-            'No Issue', 'None', 'Original', 'No Error Logged', 
-            '(Good) Passed Inspection', 'Good', 'OK', 'Pass', '0', 0
+            'None', 'Original', 'No Error Logged'
         }
         
         for f in features:
@@ -122,8 +121,7 @@ def _process_expertise_reports(report):
             return []
         
         default_statuses = {
-            'No Issue', 'None', 'Original', 'No Error Logged', 
-            '(Good) Passed Inspection', 'Good', 'OK', 'Pass', '0', 0
+            'None', 'Original', 'No Error Logged'
         }
         
         marked_features = []
