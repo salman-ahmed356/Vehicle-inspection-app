@@ -270,14 +270,17 @@
 document.addEventListener('DOMContentLoaded', function() {
   var form = document.getElementById('expertiseForm');
   
-  // Log all form elements on page load
-  console.log('Form elements on page load:');
-  Array.from(form.elements).forEach(function(element) {
-    if (element.name) {
-      console.log(element.name + ' = ' + element.value + 
-                 (element.type === 'radio' ? ', checked: ' + element.checked : ''));
+  // Set default 'None' for features without status
+  {% for feature in expertise_report.features %}
+    var radios = document.querySelectorAll('input[name="feature_{{ feature.id }}"]');
+    var hasChecked = false;
+    radios.forEach(function(radio) {
+      if (radio.checked) hasChecked = true;
+    });
+    if (!hasChecked && radios.length > 0) {
+      radios[0].checked = true; // Select first option (None)
     }
-  });
+  {% endfor %}
   
   form.addEventListener('submit', function(e) {
     e.preventDefault();
