@@ -107,7 +107,7 @@ def _process_expertise_reports(report):
             return False
         
         default_statuses = {
-            'None', 'Original', 'No Error Logged', 'No Issue', 'No ISSUE'
+            'None', 'Original', 'No Error Logged', 'No Issue', 'No ISSUE', '0', 0
         }
         
         for f in features:
@@ -121,7 +121,7 @@ def _process_expertise_reports(report):
             return []
         
         default_statuses = {
-            'None', 'Original', 'No Error Logged', 'No Issue', 'No ISSUE'
+            'None', 'Original', 'No Error Logged', 'No Issue', 'No ISSUE', '0', 0
         }
         
         marked_features = []
@@ -166,16 +166,16 @@ def _process_expertise_reports(report):
     # Process all other expertise reports
     for er in expertise_reports:
         if er.expertise_type and er.expertise_type.name not in processed_types:
-            # Only include if it has marked features
-            if _has_marked_features(er.features):
-                marked_features = _filter_marked_features(er.features)
-                
-                if marked_features:  # Only add if there are marked features
-                    blocks.append({
-                        'expertise_type_name': er.expertise_type.name,
-                        'comment': er.comment or "",
-                        'features': marked_features
-                    })
+            marked_features = _filter_marked_features(er.features)
+            has_comment = er.comment and er.comment.strip()
+            
+            # Include if it has marked features OR has a comment
+            if marked_features or has_comment:
+                blocks.append({
+                    'expertise_type_name': er.expertise_type.name,
+                    'comment': er.comment or "",
+                    'features': marked_features
+                })
             
             # Mark as processed
             processed_types.add(er.expertise_type.name)
