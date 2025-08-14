@@ -233,7 +233,7 @@
             name="feature_{{ feature.id }}"
             value="{{ status }}"
             id="feature_{{ feature.id }}_{{ loop.index }}"
-            {% if feature.status|string == status|string or (status == 'None' and (not feature.status or feature.status|string == '' or feature.status|string == 'None')) %}checked{% endif %}
+            {% if feature.status == status %}checked{% endif %}
           >
           <label for="feature_{{ feature.id }}_{{ loop.index }}" class="radio-label"></label>
         </div>
@@ -270,16 +270,14 @@
 document.addEventListener('DOMContentLoaded', function() {
   var form = document.getElementById('expertiseForm');
   
-  // Set default 'None' for features without status
+  // Set radio buttons based on feature status
   {% for feature in expertise_report.features %}
     var radios = document.querySelectorAll('input[name="feature_{{ feature.id }}"]');
-    var hasChecked = false;
     radios.forEach(function(radio) {
-      if (radio.checked) hasChecked = true;
+      if (radio.value === '{{ feature.status }}') {
+        radio.checked = true;
+      }
     });
-    if (!hasChecked && radios.length > 0) {
-      radios[0].checked = true; // Select first option (None)
-    }
   {% endfor %}
   
   form.addEventListener('submit', function(e) {
