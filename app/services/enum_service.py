@@ -51,17 +51,28 @@ def map_to_enum(input_value, enum_class):
     if isinstance(input_value, enum_class):
         return input_value
     
-    # Try to find the enum by name
+    # If input is None or empty, return the first enum value as default
+    if not input_value:
+        return list(enum_class)[0]
+    
+    # Try to find the enum by name (case insensitive)
     try:
         # First try direct lookup by name
-        return enum_class[input_value]
-    except (KeyError, TypeError):
-        # Then try to find by value
+        return enum_class[input_value.upper()]
+    except (KeyError, TypeError, AttributeError):
+        pass
+    
+    # Try to find by value or name (case insensitive)
+    try:
         for enum_item in enum_class:
-            if enum_item.name == input_value or enum_item.value == input_value:
+            if (enum_item.name.upper() == str(input_value).upper() or 
+                enum_item.value.upper() == str(input_value).upper()):
                 return enum_item
-        
-        # If we get here, try the mappings
+    except (AttributeError, TypeError):
+        pass
+    
+    # Try the mappings as fallback
+    try:
         if enum_class == Color:
             mapping = COLOR_MAPPING
         elif enum_class == TransmissionType:
@@ -69,9 +80,14 @@ def map_to_enum(input_value, enum_class):
         elif enum_class == FuelType:
             mapping = FUEL_TYPE_MAPPING
         else:
-            raise ValueError(f"No mapping available for enum class: {enum_class}")
+            # Return first enum value as default
+            return list(enum_class)[0]
         
-        mapped_value = mapping.get(input_value.upper() if isinstance(input_value, str) else input_value)
-        if not mapped_value:
-            raise ValueError(f"Invalid value: {input_value}. Expected one of {[e.name for e in enum_class]}.")
-        return mapped_value
+        mapped_value = mapping.get(str(input_value).upper())
+        if mapped_value:
+            return mapped_value
+    except (AttributeError, TypeError):
+        pass
+    
+    # Final fallback - return first enum value
+    return list(enum_class)[0]
