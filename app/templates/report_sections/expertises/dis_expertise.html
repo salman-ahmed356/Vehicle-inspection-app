@@ -231,7 +231,7 @@
             name="feature_{{ feature.id }}"
             value="{{ status }}"
             id="feature_{{ feature.id }}_{{ loop.index }}"
-            {% if feature.status|string == status|string or (status == 'None' and (not feature.status or feature.status|string == '')) %}checked{% endif %}
+            {% if feature.status|string == status|string or (status == 'None' and (not feature.status or feature.status|string == '' or feature.status|string == 'None')) %}checked{% endif %}
           >
           <label for="feature_{{ feature.id }}_{{ loop.index }}" class="radio-label"></label>
         </div>
