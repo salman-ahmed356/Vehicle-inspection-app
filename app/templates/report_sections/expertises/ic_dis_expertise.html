@@ -230,7 +230,7 @@
             name="feature_{{ feature.id }}"
             value="{{ s }}"
             id="interior_{{ feature.id }}_{{ loop.index }}"
-            {% if feature.status|string == s|string %}checked{% endif %}
+            {% if feature.status|string == s|string or (s == 'None' and (not feature.status or feature.status|string == '')) %}checked{% endif %}
           >
           <label for="interior_{{ feature.id }}_{{ loop.index }}" class="radio-label"></label>
         </div>
@@ -262,7 +262,7 @@
             name="feature_{{ feature.id }}"
             value="{{ s }}"
             id="exterior_{{ feature.id }}_{{ loop.index }}"
-            {% if feature.status|string == s|string %}checked{% endif %}
+            {% if feature.status|string == s|string or (s == 'None' and (not feature.status or feature.status|string == '')) %}checked{% endif %}
           >
           <label for="exterior_{{ feature.id }}_{{ loop.index }}" class="radio-label"></label>
         </div>
