@@ -120,6 +120,7 @@
       <td style="vertical-align: top; width: 50%;">
         <table class="inspection-table-inner" style="width: 100%; border-collapse: collapse;">
           {% for feature in pckg_report.features[:(pckg_report.features|length // 2)] %}
+          {% if feature.status and feature.status != '' %}
           <tr>
             <th style="text-align: left; padding: 8px;">{{ _(feature.name) }}</th>
             <td>
@@ -136,6 +137,7 @@
               {% endif %}
             </td>
           </tr>
+          {% endif %}
           {% endfor %}
         </table>
       </td>
@@ -144,6 +146,7 @@
       <td style="vertical-align: top; width: 50%;">
         <table class="inspection-table-inner" style="width: 100%; border-collapse: collapse;">
           {% for feature in pckg_report.features[(pckg_report.features|length // 2):] %}
+          {% if feature.status and feature.status != '' %}
           <tr>
             <th style="text-align: left; padding: 8px;">{{ _(feature.name) }}</th>
             <td>
@@ -160,6 +163,7 @@
               {% endif %}
             </td>
           </tr>
+          {% endif %}
           {% endfor %}
         </table>
       </td>

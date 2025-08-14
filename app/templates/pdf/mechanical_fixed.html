@@ -1,17 +1,21 @@
 <style>
-  .yanal-table {
+  .mechanical-table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 10px;
   }
-  .yanal-table th, .yanal-table td {
+  .mechanical-table th, .mechanical-table td {
     border: 1px solid #dcdcdc;
     padding: 8px;
     text-align: left;
   }
-  .yanal-table th {
+  .mechanical-table th {
     background-color: #f8f9fa;
     font-weight: bold;
+    font-size: 10px;
+  }
+  .mechanical-table td {
+    font-size: 9px;
   }
   .status-indicator {
     display: inline-block;
@@ -32,11 +36,12 @@
     padding: 10px;
     border: 1px solid #dcdcdc;
     background-color: #f8f9fa;
+    font-size: 10px;
   }
 </style>
 
 <div class="title-large primary-color primary-bg-color" style="position: relative; padding: 15px;">
-  <span style="color: white;">{{ _('LATERAL DRIFT INSPECTION REPORT') }}</span>
+  <span style="color: white;">{{ _('MECHANICAL INSPECTION REPORT') }}</span>
   <div class="sasi-wrapper">
     <table width="100%">
       <tbody>
@@ -58,19 +63,19 @@
   </div>
 </div>
 
-<table class="yanal-table">
+<table class="mechanical-table">
   <thead>
     <tr>
-      <th>{{ _('Component') }}</th>
-      <th>{{ _('Status') }}</th>
+      <th style="width: 60%;">{{ _('Component') }}</th>
+      <th style="width: 40%;">{{ _('Status') }}</th>
     </tr>
   </thead>
   <tbody>
     {% for feature in pckg_report.features %}
     {% if feature.status and feature.status != '' %}
     <tr>
-      <td>{{ _(feature.name) }}</td>
-      <td>
+      <td style="padding: 6px;">{{ _(feature.name) }}</td>
+      <td style="padding: 6px;">
         <span class="status-indicator status-filled">✓</span>
         {{ _(feature.status) }}
       </td>
@@ -82,7 +87,7 @@
 
 {% if pckg_report.comment %}
 <div class="comment-section">
-  <strong>{{ _('Lateral Drift Inspection Summary:') }}</strong><br>
+  <strong>{{ _('Mechanical Inspection Summary:') }}</strong><br>
   {{ pckg_report.comment }}
 </div>
 {% endif %}

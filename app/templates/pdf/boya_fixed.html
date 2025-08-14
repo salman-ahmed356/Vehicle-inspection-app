@@ -1,0 +1,143 @@
+<style>
+  .paint-body-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .paint-section, .body-section {
+    flex: 1;
+  }
+  .section-header {
+    background-color: #dc2626;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  .feature-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+  }
+  .feature-table th, .feature-table td {
+    border: 1px solid #dcdcdc;
+    padding: 8px;
+    text-align: left;
+  }
+  .feature-table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+  }
+  .status-indicator {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border: 1px solid #333;
+    margin-right: 5px;
+    text-align: center;
+    line-height: 15px;
+    font-size: 10px;
+  }
+  .status-filled {
+    background-color: #333;
+    color: white;
+  }
+  .comment-section {
+    margin-top: 15px;
+    padding: 10px;
+    border: 1px solid #dcdcdc;
+    background-color: #f8f9fa;
+  }
+</style>
+
+<div class="title-large primary-color primary-bg-color" style="position: relative; padding: 15px;">
+  <span style="color: white;">{{ _('PAINT & BODY INSPECTION REPORT') }}</span>
+  <div class="sasi-wrapper">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="font-size: 12px; font-weight: bold;">
+            {{ _('CHASSIS NO') }}<span style="font-size: 14px;">:</span>
+          </td>
+          <td rowspan="2" style="font-size: 20px; font-weight: bold;">
+            {{ vehicle.chassis_number[-6:] }}
+          </td>
+        </tr>
+        <tr>
+          <td style="font-size: 8px; text-align: center;">
+            {{ _('LAST 6 DIGITS') }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="paint-body-container">
+  <!-- Paint Section -->
+  <div class="paint-section">
+    <div class="section-header">{{ _('PAINT INSPECTION') }}</div>
+    <table class="feature-table">
+      <thead>
+        <tr>
+          <th>{{ _('Component') }}</th>
+          <th>{{ _('Status') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for feature in pckg_report.paint_features %}
+        {% if feature.status and feature.status != '' %}
+        <tr>
+          <td>{{ _(feature.name) }}</td>
+          <td>
+            <span class="status-indicator status-filled">✓</span>
+            {{ _(feature.status) }}
+          </td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+    
+    {% if pckg_report.paint_comment %}
+    <div class="comment-section">
+      <strong>{{ _('Paint Comment:') }}</strong><br>
+      {{ pckg_report.paint_comment }}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Body Section -->
+  <div class="body-section">
+    <div class="section-header">{{ _('BODY INSPECTION') }}</div>
+    <table class="feature-table">
+      <thead>
+        <tr>
+          <th style="width: 60%;">{{ _('Component') }}</th>
+          <th style="width: 40%;">{{ _('Status') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for feature in pckg_report.body_features %}
+        {% if feature.status and feature.status != '' %}
+        <tr>
+          <td style="padding: 6px; font-size: 9px;">{{ _(feature.name) }}</td>
+          <td style="padding: 6px; font-size: 9px;">
+            <span class="status-indicator status-filled">✓</span>
+            {{ _(feature.status) }}
+          </td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+    
+    {% if pckg_report.body_comment %}
+    <div class="comment-section">
+      <strong>{{ _('Body Comment:') }}</strong><br>
+      {{ pckg_report.body_comment }}
+    </div>
+    {% endif %}
+  </div>
+</div>
