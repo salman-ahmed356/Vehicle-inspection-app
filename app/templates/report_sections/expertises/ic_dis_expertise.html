@@ -304,21 +304,31 @@ document.addEventListener('DOMContentLoaded', function() {
   // Set radio buttons based on feature status - Interior
   {% for feature in expertise_report.features %}
     var radios = document.querySelectorAll('input[name="feature_{{ feature.id }}"]');
+    var hasChecked = false;
     radios.forEach(function(radio) {
       if (radio.value === '{{ feature.status }}') {
         radio.checked = true;
+        hasChecked = true;
       }
     });
+    if (!hasChecked && radios.length > 0) {
+      radios[0].checked = true; // Default to first option (None)
+    }
   {% endfor %}
   
   // Set radio buttons based on feature status - Exterior
   {% for feature in expertise_report2.features %}
     var radios = document.querySelectorAll('input[name="feature_{{ feature.id }}"]');
+    var hasChecked = false;
     radios.forEach(function(radio) {
       if (radio.value === '{{ feature.status }}') {
         radio.checked = true;
+        hasChecked = true;
       }
     });
+    if (!hasChecked && radios.length > 0) {
+      radios[0].checked = true; // Default to first option (None)
+    }
   {% endfor %}
   
   form.addEventListener('submit', function(e) {
