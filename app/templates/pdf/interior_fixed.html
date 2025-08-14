@@ -1,0 +1,88 @@
+<style>
+  .interior-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+  }
+  .interior-table th, .interior-table td {
+    border: 1px solid #dcdcdc;
+    padding: 8px;
+    text-align: left;
+  }
+  .interior-table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+  }
+  .status-indicator {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border: 1px solid #333;
+    margin-right: 5px;
+    text-align: center;
+    line-height: 15px;
+    font-size: 10px;
+  }
+  .status-filled {
+    background-color: #333;
+    color: white;
+  }
+  .comment-section {
+    margin-top: 15px;
+    padding: 10px;
+    border: 1px solid #dcdcdc;
+    background-color: #f8f9fa;
+  }
+</style>
+
+<div class="title-large primary-color primary-bg-color" style="position: relative; padding: 15px;">
+  <span style="color: white;">{{ _('INTERIOR INSPECTION REPORT') }}</span>
+  <div class="sasi-wrapper">
+    <table width="100%">
+      <tbody>
+        <tr>
+          <td style="font-size: 12px; font-weight: bold;">
+            {{ _('CHASSIS NO') }}<span style="font-size: 14px;">:</span>
+          </td>
+          <td rowspan="2" style="font-size: 20px; font-weight: bold;">
+            {{ vehicle.chassis_number[-6:] }}
+          </td>
+        </tr>
+        <tr>
+          <td style="font-size: 8px; text-align: center;">
+            {{ _('LAST 6 DIGITS') }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<table class="interior-table">
+  <thead>
+    <tr>
+      <th>{{ _('Component') }}</th>
+      <th>{{ _('Status') }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for feature in pckg_report.features %}
+    {% if feature.status and feature.status != '' and feature.status != 'None' %}
+    <tr>
+      <td>{{ _(feature.name) }}</td>
+      <td>
+        <span class="status-indicator status-filled">✓</span>
+        {{ _(feature.status) }}
+      </td>
+    </tr>
+    {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if pckg_report.comment %}
+<div class="comment-section">
+  <strong>{{ _('Interior Inspection Summary:') }}</strong><br>
+  {{ pckg_report.comment }}
+</div>
+{% endif %}

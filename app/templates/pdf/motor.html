@@ -120,21 +120,15 @@
       <td style="vertical-align: top; width: 50%;">
         <table class="inspection-table-inner" style="width: 100%; border-collapse: collapse;">
           {% for feature in pckg_report.features[:(pckg_report.features|length // 2)] %}
-          {% if feature.status and feature.status != '' %}
+          {% if feature.status and feature.status != '' and feature.status != 'None' %}
           <tr>
             <th style="text-align: left; padding: 8px;">{{ _(feature.name) }}</th>
             <td>
-              {% if feature.status == 'YOK' %}
-                <div class="status-container">
-                  <span class="status-box status-black filled">{{ _('NONE') }}</span>
-                </div>
-              {% else %}
-                <div class="status-container">
-                  <span class="status-box status-good {% if feature.status == 'Kontrolden Geçti' %}filled{% endif %}"></span>
-                  <span class="status-box status-warning {% if feature.status == 'Sorun Çıkarabilir' %}filled{% endif %}"></span>
-                  <span class="status-box status-red {% if feature.status == 'Bakım Gerekli' %}filled{% endif %}"></span>
-                </div>
-              {% endif %}
+              <div class="status-container">
+                <span class="status-box status-good {% if '(Good)' in feature.status or 'Passed Inspection' in feature.status %}filled{% endif %}"></span>
+                <span class="status-box status-warning {% if '(Moderate)' in feature.status or 'May Cause Issues' in feature.status %}filled{% endif %}"></span>
+                <span class="status-box status-red {% if '(Bad)' in feature.status or 'Maintenance Required' in feature.status %}filled{% endif %}"></span>
+              </div>
             </td>
           </tr>
           {% endif %}
@@ -146,21 +140,15 @@
       <td style="vertical-align: top; width: 50%;">
         <table class="inspection-table-inner" style="width: 100%; border-collapse: collapse;">
           {% for feature in pckg_report.features[(pckg_report.features|length // 2):] %}
-          {% if feature.status and feature.status != '' %}
+          {% if feature.status and feature.status != '' and feature.status != 'None' %}
           <tr>
             <th style="text-align: left; padding: 8px;">{{ _(feature.name) }}</th>
             <td>
-              {% if feature.status == 'YOK' %}
-                <div class="status-container">
-                  <span class="status-box status-black filled">{{ _('NONE') }}</span>
-                </div>
-              {% else %}
-                <div class="status-container">
-                  <span class="status-box status-good {% if feature.status == 'Kontrolden Geçti' %}filled{% endif %}"></span>
-                  <span class="status-box status-warning {% if feature.status == 'Sorun Çıkarabilir' %}filled{% endif %}"></span>
-                  <span class="status-box status-red {% if feature.status == 'Bakım Gerekli' %}filled{% endif %}"></span>
-                </div>
-              {% endif %}
+              <div class="status-container">
+                <span class="status-box status-good {% if '(Good)' in feature.status or 'Passed Inspection' in feature.status %}filled{% endif %}"></span>
+                <span class="status-box status-warning {% if '(Moderate)' in feature.status or 'May Cause Issues' in feature.status %}filled{% endif %}"></span>
+                <span class="status-box status-red {% if '(Bad)' in feature.status or 'Maintenance Required' in feature.status %}filled{% endif %}"></span>
+              </div>
             </td>
           </tr>
           {% endif %}
@@ -187,15 +175,3 @@
     <div class="footer-warning">{{ _('WARNING: The timing belt and front chain are in sealed casings and have not been inspected.') }}</div>
   </div>
 </div>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const commentText = `{{ pckg_report.comment }}`;
-    const summaryText = document.querySelector('.summary-text');
-    if (commentText.length > 230) {
-      summaryText.style.fontSize = '10px';
-    } else {
-      summaryText.style.fontSize = '12px';
-    }
-  });
-</script>

@@ -237,6 +237,12 @@
     {% elif pckg_report.expertise_type_name == "Mechanical Expertise" %}
       <div class="page-break"></div>
       {% include 'pdf/mechanical_fixed.html' %}
+    {% elif pckg_report.expertise_type_name == "Interior Expertise" %}
+      <div class="page-break"></div>
+      {% include 'pdf/interior_fixed.html' %}
+    {% elif pckg_report.expertise_type_name == "Exterior Expertise" %}
+      <div class="page-break"></div>
+      {% include 'pdf/exterior_fixed.html' %}
     {% endif %}
   {% endfor %}
 
