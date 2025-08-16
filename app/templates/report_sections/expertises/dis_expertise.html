@@ -336,11 +336,20 @@ document.addEventListener('DOMContentLoaded', function() {
   // Add click handlers for mobile touch - click anywhere on option-item to select radio
   document.querySelectorAll('.option-item').forEach(function(item) {
     item.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
       const radio = this.querySelector('input[type="radio"]');
-      if (radio && e.target !== radio) {
+      if (radio) {
         radio.checked = true;
-        radio.dispatchEvent(new Event('change'));
+        radio.dispatchEvent(new Event('change', { bubbles: true }));
       }
+    });
+  });
+  
+  // Prevent radio button clicks from bubbling
+  document.querySelectorAll('input[type="radio"]').forEach(function(radio) {
+    radio.addEventListener('click', function(e) {
+      e.stopPropagation();
     });
   });
 });
