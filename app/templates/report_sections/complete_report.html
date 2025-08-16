@@ -47,6 +47,13 @@
   </style>
 </head>
 <body class="bg-gray-100">
+  <!-- Full Page Loading Overlay -->
+  <div id="pageLoadingOverlay" class="fixed inset-0 bg-white bg-opacity-90 z-50 flex items-center justify-center">
+    <div class="text-center">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
+      <p class="text-gray-700 text-lg">Loading report details...</p>
+    </div>
+  </div>
   {% include 'navbar_simple.html' %}
 
   <div class="container mx-auto p-4">
@@ -647,7 +654,7 @@
         });
     }
 
-    // Auto-load first tab after DOM is ready
+    // Auto-load first tab and hide page overlay when ready
     document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         const activeTab = getActiveTab();
@@ -662,10 +669,77 @@
         }
         
         if (targetLink) {
-          loadExpertise(targetLink);
+          // Load expertise and hide overlay when done
+          loadExpertiseAndHideOverlay(targetLink);
+        } else {
+          // Hide overlay if no expertise to load
+          hidePageOverlay();
         }
       }, 100);
     });
+    
+    function loadExpertiseAndHideOverlay(link) {
+      const expertiseType = link.getAttribute('data-expertise-type');
+      storeActiveTab(expertiseType);
+      
+      document.querySelectorAll('.expertise-link').forEach(l => {
+        l.classList.remove('bg-blue-500', 'text-white');
+        l.classList.add('bg-gray-200');
+      });
+      link.classList.remove('bg-gray-200');
+      link.classList.add('bg-blue-500', 'text-white');
+      
+      fetch(link.href + '&_t=' + Date.now(), {
+        cache: 'no-cache',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      })
+        .then(res => {
+          if (!res.ok) throw new Error(res.statusText);
+          return res.text();
+        })
+        .then(html => {
+          document.getElementById('expertiseDetailContainer').innerHTML = html;
+          
+          const scripts = document.getElementById('expertiseDetailContainer').querySelectorAll('script');
+          scripts.forEach(script => {
+            const newScript = document.createElement('script');
+            newScript.textContent = script.textContent;
+            document.body.appendChild(newScript);
+          });
+          
+          setTimeout(saveCurrentFormData, 100);
+          
+          // Hide page overlay after content loads
+          hidePageOverlay();
+        })
+        .catch(err => {
+          console.error('AJAX error:', err);
+          document.getElementById('expertiseDetailContainer').innerHTML = `
+            <div class="text-center text-red-600 p-8">
+              <p>Failed to load inspection details. Please try again.</p>
+            </div>
+          `;
+          hidePageOverlay();
+        });
+    }
+    
+    function hidePageOverlay() {
+      const overlay = document.getElementById('pageLoadingOverlay');
+      if (overlay) {
+        overlay.style.display = 'none';
+      }
+      
+      // Enable all expertise links
+      document.querySelectorAll('.expertise-link').forEach(l => {
+        l.style.pointerEvents = 'auto';
+        l.style.opacity = '1';
+      });
+      
+      isLoading = false;
+    }
   </script>
 </body>
 </html>
