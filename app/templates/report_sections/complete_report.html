@@ -185,12 +185,17 @@
   <script>
     function confirmRedirect(id) {
       if (checkForUnsavedChanges()) {
-        if (!confirm('You have unsaved changes. Continue without saving?')) {
+        if (confirm('You have unsaved changes. Save them first?')) {
+          saveCurrentForm(() => {
+            if (confirm("{{ _('Are you sure you want to generate the report? This should be done after completing all inspections.') }}")) {
+              const timestamp = new Date().getTime();
+              window.open(`/pdfs/generate/${id}?t=${timestamp}`, '_blank');
+            }
+          });
           return;
         }
       }
       if (confirm("{{ _('Are you sure you want to generate the report? This should be done after completing all inspections.') }}")) {
-        // Add timestamp to prevent mobile caching
         const timestamp = new Date().getTime();
         window.open(`/pdfs/generate/${id}?t=${timestamp}`, '_blank');
       }
@@ -198,12 +203,17 @@
     
     function generateDetailedReport(id) {
       if (checkForUnsavedChanges()) {
-        if (!confirm('You have unsaved changes. Continue without saving?')) {
+        if (confirm('You have unsaved changes. Save them first?')) {
+          saveCurrentForm(() => {
+            if (confirm("{{ _('Generate detailed report with uploaded pictures?') }}")) {
+              const timestamp = new Date().getTime();
+              window.open(`/pdfs/generate_detailed/${id}?t=${timestamp}`, '_blank');
+            }
+          });
           return;
         }
       }
       if (confirm("{{ _('Generate detailed report with uploaded pictures?') }}")) {
-        // Add timestamp to prevent mobile caching
         const timestamp = new Date().getTime();
         window.open(`/pdfs/generate_detailed/${id}?t=${timestamp}`, '_blank');
       }
@@ -211,7 +221,12 @@
     
     function confirmMarkComplete() {
       if (checkForUnsavedChanges()) {
-        if (!confirm('You have unsaved changes. Continue without saving?')) {
+        if (confirm('You have unsaved changes. Save them first?')) {
+          saveCurrentForm(() => {
+            if (confirm("{{ _('Are you sure you want to mark this report as complete?') }}")) {
+              document.getElementById('markCompleteForm').submit();
+            }
+          });
           return;
         }
       }
@@ -424,18 +439,19 @@
         link.addEventListener('click', function(e) {
           if (checkForUnsavedChanges()) {
             e.preventDefault();
-            if (confirm('You have unsaved changes. Continue without saving?')) {
-              window.location.href = this.href;
+            if (confirm('You have unsaved changes. Save them first?')) {
+              saveCurrentForm(() => {
+                window.location.href = this.href;
+              });
             }
           }
         });
       });
       
-      // Also protect browser back/forward buttons
       window.addEventListener('beforeunload', function(e) {
         if (checkForUnsavedChanges()) {
           e.preventDefault();
-          e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+          e.returnValue = 'You have unsaved changes.';
           return e.returnValue;
         }
       });
@@ -478,25 +494,28 @@
       }
     }
     
+    function saveCurrentForm(callback) {
+      const form = document.querySelector('#expertiseDetailContainer form');
+      if (form) {
+        const formData = new FormData(form);
+        fetch(form.action, {
+          method: 'POST',
+          body: new URLSearchParams(formData)
+        }).then(() => {
+          saveCurrentFormData();
+          if (callback) callback();
+        });
+      }
+    }
+    
     document.querySelectorAll('.expertise-link').forEach(link => {
       link.addEventListener('click', e => {
         e.preventDefault();
         
-        // Check for unsaved changes
         if (checkForUnsavedChanges()) {
-          if (confirm('You have unsaved changes. Would you like to save them before leaving?')) {
-            const form = document.querySelector('#expertiseDetailContainer form');
-            if (form) {
-              // Submit form and wait
-              const formData = new FormData(form);
-              fetch(form.action, {
-                method: 'POST',
-                body: new URLSearchParams(formData)
-              }).then(() => {
-                loadExpertise(link);
-              });
-              return;
-            }
+          if (confirm('You have unsaved changes. Save them first?')) {
+            saveCurrentForm(() => loadExpertise(link));
+            return;
           }
         }
         
