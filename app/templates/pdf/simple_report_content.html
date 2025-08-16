@@ -722,8 +722,9 @@
   <!-- All Expertise Sections -->
   {% for expertise_name, pckg_report in expertise_types.items() %}
     {% set loop_index = loop.index0 %}
+    {% set is_small = pckg_report.features|length <= 4 %}
     
-    <div class="expertise-section{% if loop_index >= 3 and loop_index % 2 == 1 %} page-break{% endif %}">
+    <div class="expertise-section{% if is_small %} small{% endif %}{% if loop_index >= 3 and loop_index % 2 == 1 %} page-break{% endif %}">
       <div class="expertise-title">
         {{ expertise_name|upper }}
         <div class="arabic">{{ arabic_expertise.get(expertise_name, expertise_name) }}</div>

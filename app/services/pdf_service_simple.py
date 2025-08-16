@@ -226,8 +226,18 @@ def _process_expertise_reports(report):
             # Mark as processed
             processed_types.add(er.expertise_type.name)
 
-    # Sort blocks by feature count (smallest first) for better space utilization
-    blocks.sort(key=lambda x: len(x['features']))
+    # Sort blocks by feature count and content for better space utilization
+    # Small blocks (<=4 features) first, then larger blocks
+    def sort_key(block):
+        feature_count = len(block['features'])
+        has_comment = bool(block.get('comment', '').strip())
+        # Priority: small blocks without comments, small blocks with comments, large blocks
+        if feature_count <= 4:
+            return (0, feature_count, has_comment)
+        else:
+            return (1, feature_count, has_comment)
+    
+    blocks.sort(key=sort_key)
     
     return blocks
 
