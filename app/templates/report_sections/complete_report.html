@@ -633,7 +633,10 @@
           targetLink = document.querySelector('.expertise-link');
         }
         
-        if (targetLink) targetLink.click();
+        if (targetLink) {
+          // Use loadExpertise directly to show loading indicator
+          loadExpertise(targetLink);
+        }
       }, 100);
     });
   </script>
