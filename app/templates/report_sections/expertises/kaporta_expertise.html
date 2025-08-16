@@ -269,6 +269,24 @@
 document.addEventListener('DOMContentLoaded', function() {
   var form = document.getElementById('expertiseForm');
   
+  // Add click handlers for mobile touch - click anywhere on option-item to select radio
+  document.querySelectorAll('.option-item').forEach(function(item) {
+    item.addEventListener('click', function(e) {
+      const radio = this.querySelector('input[type="radio"]');
+      if (radio && !radio.checked) {
+        radio.checked = true;
+        radio.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    });
+  });
+  
+  // Prevent double-click issues on radio buttons
+  document.querySelectorAll('input[type="radio"]').forEach(function(radio) {
+    radio.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+  });
+  
   // Add submit event listener
   form.addEventListener('submit', function(e) {
     // Don't prevent default - let the form submit normally
