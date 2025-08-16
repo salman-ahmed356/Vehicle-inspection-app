@@ -253,23 +253,23 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   
-  // Intercept expertise link clicks
-  document.addEventListener('click', function(e) {
-    var link = e.target.closest('.expertise-link');
-    if (link && hasUnsavedChanges && !isSubmitting) {
-      e.preventDefault();
-      if (confirm('You have unsaved changes. Would you like to save them before leaving?')) {
-        isSubmitting = true;
-        form.submit();
-        setTimeout(function() {
-          window.location.href = link.href;
-        }, 1000);
-      } else {
-        hasUnsavedChanges = false;
-        window.location.href = link.href;
-      }
+  // Expose unsaved changes status to parent window
+  window.expertiseHasUnsavedChanges = function() {
+    return hasUnsavedChanges && !isSubmitting;
+  };
+  
+  window.expertiseSaveChanges = function() {
+    if (hasUnsavedChanges && !isSubmitting) {
+      isSubmitting = true;
+      form.submit();
+      return true;
     }
-  });
+    return false;
+  };
+  
+  window.expertiseClearUnsavedFlag = function() {
+    hasUnsavedChanges = false;
+  };
   
   // Form submission
   form.addEventListener('submit', function(e) {

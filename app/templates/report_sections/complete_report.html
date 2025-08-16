@@ -413,51 +413,73 @@
       link.addEventListener('click', e => {
         e.preventDefault();
         
-        // Get expertise type and store it
-        const expertiseType = link.getAttribute('data-expertise-type');
-        storeActiveTab(expertiseType);
-        
-        // Highlight the active tab
-        document.querySelectorAll('.expertise-link').forEach(l => {
-          l.classList.remove('bg-blue-500', 'text-white');
-          l.classList.add('bg-gray-200');
-        });
-        link.classList.remove('bg-gray-200');
-        link.classList.add('bg-blue-500', 'text-white');
-        
-        fetch(link.href + '&_t=' + Date.now(), {
-          cache: 'no-cache',
-          headers: {
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache'
+        // Check for unsaved changes in current expertise
+        if (window.expertiseHasUnsavedChanges && window.expertiseHasUnsavedChanges()) {
+          if (confirm('You have unsaved changes. Would you like to save them before leaving?')) {
+            if (window.expertiseSaveChanges && window.expertiseSaveChanges()) {
+              // Wait for save to complete, then navigate
+              setTimeout(function() {
+                loadExpertise(link);
+              }, 1500);
+              return;
+            }
+          } else {
+            // Clear unsaved flag and proceed
+            if (window.expertiseClearUnsavedFlag) {
+              window.expertiseClearUnsavedFlag();
+            }
           }
-        })
-          .then(res => {
-            if (!res.ok) throw new Error(res.statusText);
-            return res.text();
-          })
-          .then(html => {
-            document.getElementById('expertiseDetailContainer').innerHTML = html;
-            
-            // Execute any scripts in the loaded content
-            const scripts = document.getElementById('expertiseDetailContainer').querySelectorAll('script');
-            scripts.forEach(script => {
-              const newScript = document.createElement('script');
-              if (script.src) {
-                newScript.src = script.src;
-              } else {
-                newScript.textContent = script.textContent;
-              }
-              document.head.appendChild(newScript);
-              document.head.removeChild(newScript);
-            });
-          })
-          .catch(err => {
-            console.error('AJAX error:', err);
-            alert('Failed to load inspection details.');
-          });
+        }
+        
+        loadExpertise(link);
       });
     });
+    
+    function loadExpertise(link) {
+      // Get expertise type and store it
+      const expertiseType = link.getAttribute('data-expertise-type');
+      storeActiveTab(expertiseType);
+      
+      // Highlight the active tab
+      document.querySelectorAll('.expertise-link').forEach(l => {
+        l.classList.remove('bg-blue-500', 'text-white');
+        l.classList.add('bg-gray-200');
+      });
+      link.classList.remove('bg-gray-200');
+      link.classList.add('bg-blue-500', 'text-white');
+      
+      fetch(link.href + '&_t=' + Date.now(), {
+        cache: 'no-cache',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      })
+        .then(res => {
+          if (!res.ok) throw new Error(res.statusText);
+          return res.text();
+        })
+        .then(html => {
+          document.getElementById('expertiseDetailContainer').innerHTML = html;
+          
+          // Execute any scripts in the loaded content
+          const scripts = document.getElementById('expertiseDetailContainer').querySelectorAll('script');
+          scripts.forEach(script => {
+            const newScript = document.createElement('script');
+            if (script.src) {
+              newScript.src = script.src;
+            } else {
+              newScript.textContent = script.textContent;
+            }
+            document.head.appendChild(newScript);
+            document.head.removeChild(newScript);
+          });
+        })
+        .catch(err => {
+          console.error('AJAX error:', err);
+          alert('Failed to load inspection details.');
+        });
+    }
 
     // Open the previously active tab or default to first tab
     window.addEventListener('DOMContentLoaded', () => {
