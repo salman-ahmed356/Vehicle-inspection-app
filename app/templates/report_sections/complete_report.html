@@ -472,14 +472,18 @@
           // Execute any scripts in the loaded content
           const scripts = document.getElementById('expertiseDetailContainer').querySelectorAll('script');
           scripts.forEach(script => {
-            const newScript = document.createElement('script');
             if (script.src) {
+              const newScript = document.createElement('script');
               newScript.src = script.src;
+              document.head.appendChild(newScript);
             } else {
-              newScript.textContent = script.textContent;
+              // Execute inline scripts directly
+              try {
+                eval(script.textContent);
+              } catch (e) {
+                console.error('Error executing script:', e);
+              }
             }
-            document.head.appendChild(newScript);
-            document.head.removeChild(newScript);
           });
         })
         .catch(err => {
