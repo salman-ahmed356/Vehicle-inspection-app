@@ -474,6 +474,29 @@
 
   <!-- Inline AJAX loader -->
   <script>
+    // Immediately disable links and show loading
+    document.addEventListener('DOMContentLoaded', function() {
+      // Disable all expertise links immediately
+      const links = document.querySelectorAll('.expertise-link');
+      links.forEach(l => {
+        l.style.pointerEvents = 'none';
+        l.style.opacity = '0.6';
+      });
+      
+      // Show loading immediately
+      const container = document.getElementById('expertiseDetailContainer');
+      if (container) {
+        container.innerHTML = `
+          <div class="flex items-center justify-center h-64">
+            <div class="text-center">
+              <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4"></div>
+              <p class="text-gray-600">Loading expertise details...</p>
+            </div>
+          </div>
+        `;
+      }
+    });
+    
     // Store the active tab in localStorage
     function storeActiveTab(expertiseType) {
       localStorage.setItem('activeExpertiseTab_' + {{ report.id }}, expertiseType);
@@ -523,11 +546,7 @@
       }
     }
     
-    // Initialize page with disabled links
-    document.querySelectorAll('.expertise-link').forEach(l => {
-      l.style.pointerEvents = 'none';
-      l.style.opacity = '0.6';
-    });
+
     
     document.querySelectorAll('.expertise-link').forEach(link => {
       link.addEventListener('click', e => {
@@ -623,18 +642,8 @@
         });
     }
 
-    // Show initial loading and auto-load first tab
-    window.addEventListener('DOMContentLoaded', () => {
-      // Show loading immediately
-      document.getElementById('expertiseDetailContainer').innerHTML = `
-        <div class="flex items-center justify-center h-64">
-          <div class="text-center">
-            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4"></div>
-            <p class="text-gray-600">Loading expertise details...</p>
-          </div>
-        </div>
-      `;
-      
+    // Auto-load first tab after DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         const activeTab = getActiveTab();
         let targetLink;
