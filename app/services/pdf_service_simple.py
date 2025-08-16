@@ -130,6 +130,7 @@ def _process_expertise_reports(report):
       - ensure no duplications
       - only include expertise sections that have marked features
       - only include features that have been marked (not default status)
+      - sort by feature count (smallest first) for better space utilization
     """
     if not report or not report.package:
         return []
@@ -225,6 +226,9 @@ def _process_expertise_reports(report):
             # Mark as processed
             processed_types.add(er.expertise_type.name)
 
+    # Sort blocks by feature count (smallest first) for better space utilization
+    blocks.sort(key=lambda x: len(x['features']))
+    
     return blocks
 
 
