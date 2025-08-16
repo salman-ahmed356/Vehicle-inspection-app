@@ -184,6 +184,11 @@
   <!-- PDF confirmation -->
   <script>
     function confirmRedirect(id) {
+      if (checkForUnsavedChanges()) {
+        if (!confirm('You have unsaved changes. Continue without saving?')) {
+          return;
+        }
+      }
       if (confirm("{{ _('Are you sure you want to generate the report? This should be done after completing all inspections.') }}")) {
         // Add timestamp to prevent mobile caching
         const timestamp = new Date().getTime();
@@ -192,6 +197,11 @@
     }
     
     function generateDetailedReport(id) {
+      if (checkForUnsavedChanges()) {
+        if (!confirm('You have unsaved changes. Continue without saving?')) {
+          return;
+        }
+      }
       if (confirm("{{ _('Generate detailed report with uploaded pictures?') }}")) {
         // Add timestamp to prevent mobile caching
         const timestamp = new Date().getTime();
@@ -200,6 +210,11 @@
     }
     
     function confirmMarkComplete() {
+      if (checkForUnsavedChanges()) {
+        if (!confirm('You have unsaved changes. Continue without saving?')) {
+          return;
+        }
+      }
       if (confirm("{{ _('Are you sure you want to mark this report as complete?') }}")) {
         document.getElementById('markCompleteForm').submit();
       }
@@ -399,6 +414,33 @@
 
   <!-- Navbar JS -->
   <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
+  
+  <!-- Protect navbar navigation -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Override navbar links to check for unsaved changes
+      const navLinks = document.querySelectorAll('nav a, .navbar a');
+      navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+          if (checkForUnsavedChanges()) {
+            e.preventDefault();
+            if (confirm('You have unsaved changes. Continue without saving?')) {
+              window.location.href = this.href;
+            }
+          }
+        });
+      });
+      
+      // Also protect browser back/forward buttons
+      window.addEventListener('beforeunload', function(e) {
+        if (checkForUnsavedChanges()) {
+          e.preventDefault();
+          e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+          return e.returnValue;
+        }
+      });
+    });
+  </script>
 
   <!-- Inline AJAX loader -->
   <script>
