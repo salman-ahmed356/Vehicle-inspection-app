@@ -138,23 +138,10 @@
     .option-item {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      padding: 1rem;
-      background: white;
-      border: 2px solid #e9ecef;
-      border-radius: 8px;
-      transition: all 0.2s ease;
-      cursor: pointer;
-    }
-    
-    .option-item:hover {
-      border-color: #38B2AC;
-      background: #f0fdfa;
-    }
-    
-    .option-item:has(input:checked) {
-      border-color: #38B2AC;
-      background: #e6fffa;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      border: 1px solid #E2E8F0;
+      border-radius: 4px;
     }
     
     .option-label {
@@ -337,24 +324,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   
-  // Add click handlers for mobile touch - click anywhere on option-item to select radio
-  document.querySelectorAll('.option-item').forEach(function(item) {
-    item.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      const radio = this.querySelector('input[type="radio"]');
-      if (radio) {
-        radio.checked = true;
-        radio.dispatchEvent(new Event('change', { bubbles: true }));
-      }
-    });
-  });
-  
-  // Prevent radio button clicks from bubbling
-  document.querySelectorAll('input[type="radio"]').forEach(function(radio) {
-    radio.addEventListener('click', function(e) {
-      e.stopPropagation();
-    });
-  });
+
 });
 </script>
