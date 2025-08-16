@@ -336,5 +336,16 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
   });
+  
+  // Add click handlers for mobile touch - click anywhere on option-item to select radio
+  document.querySelectorAll('.option-item').forEach(function(item) {
+    item.addEventListener('click', function(e) {
+      const radio = this.querySelector('input[type="radio"]');
+      if (radio && e.target !== radio) {
+        radio.checked = true;
+        radio.dispatchEvent(new Event('change'));
+      }
+    });
+  });
 });
 </script>
