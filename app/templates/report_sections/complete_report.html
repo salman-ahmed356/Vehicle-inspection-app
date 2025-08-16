@@ -412,30 +412,50 @@
       return localStorage.getItem('activeExpertiseTab_' + {{ report.id }});
     }
     
+    let currentFormData = null;
+    let hasUnsavedChanges = false;
+    
+    function checkForUnsavedChanges() {
+      const form = document.querySelector('#expertiseDetailContainer form');
+      if (!form) return false;
+      
+      const currentData = new FormData(form);
+      const currentString = new URLSearchParams(currentData).toString();
+      
+      if (currentFormData && currentFormData !== currentString) {
+        return true;
+      }
+      return false;
+    }
+    
+    function saveCurrentFormData() {
+      const form = document.querySelector('#expertiseDetailContainer form');
+      if (form) {
+        const formData = new FormData(form);
+        currentFormData = new URLSearchParams(formData).toString();
+      }
+    }
+    
     document.querySelectorAll('.expertise-link').forEach(link => {
       link.addEventListener('click', e => {
         e.preventDefault();
         
-        // Check for unsaved changes in current expertise
-        console.log('Checking for unsaved changes functions:', typeof window.expertiseHasUnsavedChanges);
-        if (window.expertiseHasUnsavedChanges && window.expertiseHasUnsavedChanges()) {
-          console.log('Found unsaved changes, showing confirmation');
+        // Check for unsaved changes
+        if (checkForUnsavedChanges()) {
           if (confirm('You have unsaved changes. Would you like to save them before leaving?')) {
-            if (window.expertiseSaveChanges && window.expertiseSaveChanges()) {
-              // Wait for save to complete, then navigate
-              setTimeout(function() {
+            const form = document.querySelector('#expertiseDetailContainer form');
+            if (form) {
+              // Submit form and wait
+              const formData = new FormData(form);
+              fetch(form.action, {
+                method: 'POST',
+                body: new URLSearchParams(formData)
+              }).then(() => {
                 loadExpertise(link);
-              }, 1500);
+              });
               return;
             }
-          } else {
-            // Clear unsaved flag and proceed
-            if (window.expertiseClearUnsavedFlag) {
-              window.expertiseClearUnsavedFlag();
-            }
           }
-        } else {
-          console.log('No unsaved changes detected');
         }
         
         loadExpertise(link);
@@ -476,6 +496,9 @@
             newScript.textContent = script.textContent;
             document.body.appendChild(newScript);
           });
+          
+          // Save initial form data for comparison
+          setTimeout(saveCurrentFormData, 100);
         })
         .catch(err => {
           console.error('AJAX error:', err);
