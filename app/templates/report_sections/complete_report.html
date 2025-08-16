@@ -522,9 +522,13 @@
       }
     }
     
+    let isLoading = false;
+    
     document.querySelectorAll('.expertise-link').forEach(link => {
       link.addEventListener('click', e => {
         e.preventDefault();
+        
+        if (isLoading) return; // Prevent clicks during loading
         
         if (checkForUnsavedChanges()) {
           if (confirm('You have unsaved changes. Save them first?')) {
@@ -538,6 +542,25 @@
     });
     
     function loadExpertise(link) {
+      // Set loading state
+      isLoading = true;
+      
+      // Disable all expertise links
+      document.querySelectorAll('.expertise-link').forEach(l => {
+        l.style.pointerEvents = 'none';
+        l.style.opacity = '0.6';
+      });
+      
+      // Show loading indicator
+      document.getElementById('expertiseDetailContainer').innerHTML = `
+        <div class="flex items-center justify-center h-64">
+          <div class="text-center">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4"></div>
+            <p class="text-gray-600">Loading expertise details...</p>
+          </div>
+        </div>
+      `;
+      
       // Get expertise type and store it
       const expertiseType = link.getAttribute('data-expertise-type');
       storeActiveTab(expertiseType);
@@ -577,7 +600,21 @@
         })
         .catch(err => {
           console.error('AJAX error:', err);
-          alert('Failed to load inspection details.');
+          document.getElementById('expertiseDetailContainer').innerHTML = `
+            <div class="text-center text-red-600 p-8">
+              <p>Failed to load inspection details. Please try again.</p>
+            </div>
+          `;
+        })
+        .finally(() => {
+          // Reset loading state
+          isLoading = false;
+          
+          // Re-enable all expertise links
+          document.querySelectorAll('.expertise-link').forEach(l => {
+            l.style.pointerEvents = 'auto';
+            l.style.opacity = '1';
+          });
         });
     }
 
