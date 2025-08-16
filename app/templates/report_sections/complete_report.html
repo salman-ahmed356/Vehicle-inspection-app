@@ -185,14 +185,17 @@
   <script>
     function confirmRedirect(id) {
       if (confirm("{{ _('Are you sure you want to generate the report? This should be done after completing all inspections.') }}")) {
-        // Open in a new tab
-        window.open(`/pdfs/generate/${id}`, '_blank');
+        // Add timestamp to prevent mobile caching
+        const timestamp = new Date().getTime();
+        window.open(`/pdfs/generate/${id}?t=${timestamp}`, '_blank');
       }
     }
     
     function generateDetailedReport(id) {
       if (confirm("{{ _('Generate detailed report with uploaded pictures?') }}")) {
-        window.open(`/pdfs/generate_detailed/${id}`, '_blank');
+        // Add timestamp to prevent mobile caching
+        const timestamp = new Date().getTime();
+        window.open(`/pdfs/generate_detailed/${id}?t=${timestamp}`, '_blank');
       }
     }
     
@@ -414,7 +417,9 @@
         e.preventDefault();
         
         // Check for unsaved changes in current expertise
+        console.log('Checking for unsaved changes functions:', typeof window.expertiseHasUnsavedChanges);
         if (window.expertiseHasUnsavedChanges && window.expertiseHasUnsavedChanges()) {
+          console.log('Found unsaved changes, showing confirmation');
           if (confirm('You have unsaved changes. Would you like to save them before leaving?')) {
             if (window.expertiseSaveChanges && window.expertiseSaveChanges()) {
               // Wait for save to complete, then navigate
@@ -429,6 +434,8 @@
               window.expertiseClearUnsavedFlag();
             }
           }
+        } else {
+          console.log('No unsaved changes detected');
         }
         
         loadExpertise(link);

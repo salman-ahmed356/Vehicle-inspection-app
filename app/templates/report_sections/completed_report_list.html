@@ -111,7 +111,8 @@
                     <!-- View PDF Report -->
                     <a href="{{ url_for('pdfs.generate_report_pdf', report_id=report.id) }}"
                        target="_blank"
-                       class="bg-green-500 hover:bg-green-600 text-white text-sm px-3 py-1 rounded inline-flex items-center mr-2">
+                       class="bg-green-500 hover:bg-green-600 text-white text-sm px-3 py-1 rounded inline-flex items-center mr-2"
+                       onclick="this.href += '?t=' + new Date().getTime()">
                         <i class="fas fa-file-pdf mr-1"></i>
                         {{ _('View PDF') }}
                     </a>
@@ -120,7 +121,8 @@
                     {% if report.detailed_images and report.detailed_images|length > 0 %}
                     <a href="{{ url_for('pdfs.generate_detailed_report_pdf', report_id=report.id) }}"
                        target="_blank"
-                       class="bg-purple-500 hover:bg-purple-600 text-white text-sm px-3 py-1 rounded inline-flex items-center mr-2">
+                       class="bg-purple-500 hover:bg-purple-600 text-white text-sm px-3 py-1 rounded inline-flex items-center mr-2"
+                       onclick="this.href += '?t=' + new Date().getTime()">
                         <i class="fas fa-images mr-1"></i>
                         {{ _('Detailed Pics PDF') }}
                     </a>

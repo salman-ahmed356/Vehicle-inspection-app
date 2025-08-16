@@ -278,6 +278,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Expose unsaved changes status to parent window
   window.expertiseHasUnsavedChanges = function() {
+    console.log('Checking unsaved changes:', hasUnsavedChanges, !isSubmitting);
     return hasUnsavedChanges && !isSubmitting;
   };
   
@@ -293,6 +294,8 @@ document.addEventListener('DOMContentLoaded', function() {
   window.expertiseClearUnsavedFlag = function() {
     hasUnsavedChanges = false;
   };
+  
+  console.log('Expertise unsaved changes functions initialized');
   
   form.addEventListener('submit', function(e) {
     e.preventDefault();
