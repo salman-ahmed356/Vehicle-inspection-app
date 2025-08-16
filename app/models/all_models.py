@@ -304,6 +304,14 @@ class Report(db.Model):
         uselist=False,
         lazy=True
     )
+    
+    # Add detailed_images relationship
+    detailed_images = db.relationship(
+        'ReportImage',
+        back_populates='report',
+        cascade='all, delete-orphan',
+        lazy=True
+    )
 
     def __repr__(self):
         return f'<Report {self.id}>'

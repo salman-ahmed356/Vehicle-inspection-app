@@ -8,12 +8,13 @@ from weasyprint import HTML
 
 from ..models import (
     Report, Company, Vehicle, Customer, Staff,
-    ExpertiseReport, ExpertiseType
+    ExpertiseReport, ExpertiseType, ReportImage
 )
 from .status_translator import StatusTranslator
+from .rating_service import calculate_overall_rating
 
 
-def create_pdf(report_id):
+def create_pdf(report_id, include_detailed_images=False):
     """
     Generate a simple PDF report for the given report_id.
     """
@@ -22,21 +23,47 @@ def create_pdf(report_id):
     report, company, vehicle, customer, staff, vehicle_owner = _fetch_report_data(report_id)
     package_expertise_reports = _process_expertise_reports(report)
     
+    # Get detailed images if requested
+    detailed_images = []
+    if include_detailed_images and report:
+        detailed_images = ReportImage.query.filter_by(report_id=report_id).order_by(ReportImage.upload_order).all()
 
     
-    filename = _build_output_filename(customer)
+    filename = _build_output_filename(customer, include_detailed_images)
 
     # Get logo as base64 for PDF
     import base64
     from flask import current_app
     
-    # Get car image from database
+    # Get car image from database or use default
     car_image_base64 = None
     if report and report.has_image and report.image_data:
         car_image_base64 = base64.b64encode(report.image_data).decode('utf-8')
+    else:
+        # Use default car SVG
+        default_car_path = os.path.join(current_app.static_folder, 'assets', 'pdf_imgs', 'default_car.svg')
+        if os.path.exists(default_car_path):
+            with open(default_car_path, 'rb') as f:
+                car_image_base64 = base64.b64encode(f.read()).decode('utf-8')
+    
+    # Calculate overall rating
+    rating_score, rating_text, rating_color = calculate_overall_rating(package_expertise_reports)
+    
+    # Convert detailed images to base64
+    detailed_images_base64 = []
+    if detailed_images:
+        import base64
+        for img in detailed_images:
+            img_base64 = base64.b64encode(img.image_data).decode('utf-8')
+            detailed_images_base64.append({
+                'data': img_base64,
+                'filename': img.filename or f'Image_{img.upload_order}'
+            })
+    
+    template_name = 'pdf/detailed_report_bilingual.html' if include_detailed_images else 'pdf/simple_report_bilingual.html'
     
     rendered_html = render_template(
-        'pdf/simple_report_bilingual.html',
+        template_name,
         report=report,
         company=company,
         vehicle=vehicle,
@@ -45,9 +72,27 @@ def create_pdf(report_id):
         vehicle_owner=vehicle_owner,
         package_expertise_reports=package_expertise_reports,
         car_image_base64=car_image_base64,
+        rating_score=rating_score,
+        rating_text=rating_text,
+        rating_color=rating_color,
+        detailed_images=detailed_images_base64,
     )
     HTML(string=rendered_html).write_pdf(filename)
     return filename
+
+
+def generate_pdf_simple(report_id, include_detailed_images=False):
+    """
+    Flask route handler for generating PDF reports.
+    """
+    from flask import send_file, abort
+    
+    try:
+        filename = create_pdf(report_id, include_detailed_images)
+        return send_file(filename, as_attachment=False, mimetype='application/pdf')
+    except Exception as e:
+        print(f"PDF generation error: {str(e)}")
+        abort(500)
 
 
 def _fetch_report_data(report_id):
@@ -183,7 +228,7 @@ def _process_expertise_reports(report):
     return blocks
 
 
-def _build_output_filename(customer):
+def _build_output_filename(customer, include_detailed_images=False):
     """
     Generate a unique PDF filename: REPORT_<CustomerName>_<Date>.pdf
     """
@@ -196,6 +241,7 @@ def _build_output_filename(customer):
         safe_name = unidecode(customer.full_name).replace(" ", "_")
 
     date_str = datetime.now().strftime("%Y%m%d_%H%M%S")
-    base_path = os.path.join(out_dir, f"REPORT_{safe_name}_{date_str}.pdf")
+    prefix = "DETAILED_REPORT" if include_detailed_images else "REPORT"
+    base_path = os.path.join(out_dir, f"{prefix}_{safe_name}_{date_str}.pdf")
     
     return base_path

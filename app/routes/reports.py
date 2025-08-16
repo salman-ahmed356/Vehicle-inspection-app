@@ -12,7 +12,7 @@ from ..rbac import can_delete_reports
 from ..services.log_service import log_action
 from ..models import (
     Report, Customer, Package, Staff, Vehicle,
-    PackageExpertise, ExpertiseReport, ExpertiseType, ExpertiseFeature
+    PackageExpertise, ExpertiseReport, ExpertiseType, ExpertiseFeature, ReportImage
 )
 from ..forms.report_form import ReportForm
 from ..services.enum_service import (
@@ -1097,3 +1097,99 @@ def expertise_detail(expertise_report_id):
         expertise_report=expertise_report,
         expertise_report2=expertise_report2
     )
+
+
+@reports.route('/reports/upload_detailed_images', methods=['POST'])
+@login_required
+def upload_detailed_images():
+    try:
+        report_id = request.form.get('report_id', type=int)
+        if not report_id:
+            return jsonify({'success': False, 'error': 'Report ID is required'}), 400
+        
+        report = Report.query.get_or_404(report_id)
+        
+        # Get uploaded files
+        files = request.files.getlist('images')
+        if not files:
+            return jsonify({'success': False, 'error': 'No images provided'}), 400
+        
+        # Check current image count
+        current_count = len(report.detailed_images) if report.detailed_images else 0
+        if current_count + len(files) > 18:
+            return jsonify({'success': False, 'error': f'Maximum 18 images allowed. You can upload {18 - current_count} more images.'}), 400
+        
+        uploaded_count = 0
+        for i, file in enumerate(files):
+            if file and file.filename:
+                try:
+                    image_data = file.read()
+                    if len(image_data) > 0:
+                        report_image = ReportImage(
+                            report_id=report_id,
+                            image_data=image_data,
+                            filename=file.filename,
+                            upload_order=current_count + i + 1
+                        )
+                        db.session.add(report_image)
+                        uploaded_count += 1
+                except Exception as e:
+                    print(f"Error processing image {file.filename}: {str(e)}")
+                    continue
+        
+        db.session.commit()
+        
+        # Get updated total count
+        total_images = len(report.detailed_images)
+        
+        return jsonify({
+            'success': True,
+            'count': uploaded_count,
+            'total_images': total_images
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Upload error: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@reports.route('/reports/delete_detailed_image', methods=['POST'])
+@login_required
+def delete_detailed_image():
+    try:
+        data = request.get_json()
+        image_id = data.get('image_id')
+        report_id = data.get('report_id')
+        
+        if not image_id or not report_id:
+            return jsonify({'success': False, 'error': 'Missing image_id or report_id'}), 400
+        
+        # Verify the image belongs to the report
+        image = ReportImage.query.filter_by(id=image_id, report_id=report_id).first()
+        if not image:
+            return jsonify({'success': False, 'error': 'Image not found'}), 404
+        
+        # Delete the image
+        db.session.delete(image)
+        db.session.commit()
+        
+        # Get remaining count
+        remaining_count = ReportImage.query.filter_by(report_id=report_id).count()
+        
+        return jsonify({
+            'success': True,
+            'remaining_count': remaining_count
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Delete image error: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@reports.route('/pdfs/generate_detailed/<int:report_id>')
+@login_required
+def generate_detailed_pdf(report_id):
+    from ..services.pdf_service_simple import generate_pdf_simple
+    return generate_pdf_simple(report_id, include_detailed_images=True)
