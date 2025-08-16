@@ -486,6 +486,7 @@
     
     let currentFormData = null;
     let hasUnsavedChanges = false;
+    let isLoading = true; // Start with loading state on page load
     
     function checkForUnsavedChanges() {
       const form = document.querySelector('#expertiseDetailContainer form');
@@ -522,7 +523,11 @@
       }
     }
     
-    let isLoading = false;
+    // Initialize page with disabled links
+    document.querySelectorAll('.expertise-link').forEach(l => {
+      l.style.pointerEvents = 'none';
+      l.style.opacity = '0.6';
+    });
     
     document.querySelectorAll('.expertise-link').forEach(link => {
       link.addEventListener('click', e => {
@@ -618,9 +623,18 @@
         });
     }
 
-    // Open the previously active tab or default to first tab
+    // Show initial loading and auto-load first tab
     window.addEventListener('DOMContentLoaded', () => {
-      // Add a small delay to ensure DOM is fully loaded
+      // Show loading immediately
+      document.getElementById('expertiseDetailContainer').innerHTML = `
+        <div class="flex items-center justify-center h-64">
+          <div class="text-center">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4"></div>
+            <p class="text-gray-600">Loading expertise details...</p>
+          </div>
+        </div>
+      `;
+      
       setTimeout(() => {
         const activeTab = getActiveTab();
         let targetLink;
@@ -634,7 +648,6 @@
         }
         
         if (targetLink) {
-          // Use loadExpertise directly to show loading indicator
           loadExpertise(targetLink);
         }
       }, 100);
