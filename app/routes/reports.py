@@ -1192,4 +1192,11 @@ def delete_detailed_image():
 @login_required
 def generate_detailed_pdf(report_id):
     from ..services.pdf_service_simple import generate_pdf_simple
-    return generate_pdf_simple(report_id, include_detailed_images=True)
+    from flask import make_response
+    
+    pdf_response = generate_pdf_simple(report_id, include_detailed_images=True)
+    response = make_response(pdf_response)
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response

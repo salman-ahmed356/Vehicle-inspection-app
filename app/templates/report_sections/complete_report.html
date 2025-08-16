@@ -158,9 +158,9 @@
     </div>
 
     <div class="text-right mt-8">
-      <form action="{{ url_for('reports.mark_complete', report_id=report.id) }}" method="POST" style="display: inline-block; margin-right: 10px;">
+      <form id="markCompleteForm" action="{{ url_for('reports.mark_complete', report_id=report.id) }}" method="POST" style="display: inline-block; margin-right: 10px;">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+        <button type="button" onclick="confirmMarkComplete()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
           {{ _('Mark as Complete') }}
         </button>
       </form>
@@ -193,6 +193,12 @@
     function generateDetailedReport(id) {
       if (confirm("{{ _('Generate detailed report with uploaded pictures?') }}")) {
         window.open(`/pdfs/generate_detailed/${id}`, '_blank');
+      }
+    }
+    
+    function confirmMarkComplete() {
+      if (confirm("{{ _('Are you sure you want to mark this report as complete?') }}")) {
+        document.getElementById('markCompleteForm').submit();
       }
     }
   </script>

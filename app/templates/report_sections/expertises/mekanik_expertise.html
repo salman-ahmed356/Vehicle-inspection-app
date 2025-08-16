@@ -258,6 +258,8 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   var form = document.getElementById('expertiseForm');
+  var hasUnsavedChanges = false;
+  var isSubmitting = false;
   
   // Set radio buttons based on feature status
   {% for feature in expertise_report.features %}
@@ -265,16 +267,50 @@ document.addEventListener('DOMContentLoaded', function() {
     radios.forEach(function(radio) {
       if (radio.value === '{{ feature.status }}') {
         radio.checked = true;
-        console.log('Checked radio for feature {{ feature.id }}: {{ feature.status }}');
       }
     });
   {% endfor %}
   
+  // Track form changes
+  Array.from(form.elements).forEach(function(element) {
+    if (element.name && element.type !== 'hidden' && element.type !== 'submit') {
+      element.addEventListener('change', function() {
+        hasUnsavedChanges = true;
+      });
+    }
+  });
+  
+  // Intercept navigation attempts
+  window.addEventListener('beforeunload', function(e) {
+    if (hasUnsavedChanges && !isSubmitting) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+  
+  // Intercept expertise link clicks
+  document.addEventListener('click', function(e) {
+    var link = e.target.closest('.expertise-link');
+    if (link && hasUnsavedChanges && !isSubmitting) {
+      e.preventDefault();
+      if (confirm('You have unsaved changes. Would you like to save them before leaving?')) {
+        isSubmitting = true;
+        form.submit();
+        setTimeout(function() {
+          window.location.href = link.href;
+        }, 1000);
+      } else {
+        hasUnsavedChanges = false;
+        window.location.href = link.href;
+      }
+    }
+  });
+  
   // Add submit event listener
   form.addEventListener('submit', function(e) {
     e.preventDefault();
+    isSubmitting = true;
     
-    // Submit form and force page reload
     fetch(form.action, {
       method: 'POST',
       headers: {
@@ -284,15 +320,17 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .then(function(response) {
       if (response.ok) {
+        hasUnsavedChanges = false;
         alert('Expertise updated successfully!');
-        // Reload the page to refresh radio button states
         window.location.reload();
       }
     })
     .catch(function(error) {
       console.error('Error:', error);
-      // Fallback to normal form submission
       form.submit();
+    })
+    .finally(function() {
+      isSubmitting = false;
     });
   });
 });

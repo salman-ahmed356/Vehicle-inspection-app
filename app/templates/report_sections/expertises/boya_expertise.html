@@ -227,6 +227,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   form.addEventListener('submit', function(e) {
     e.preventDefault();
+    isSubmitting = true;
     
     var formData = new FormData(form);
     
@@ -251,10 +252,9 @@ document.addEventListener('DOMContentLoaded', function() {
       return response.json();
     })
     .then(function(data) {
-      console.log('Response data:', data);
       if (data.success) {
+        hasUnsavedChanges = false;
         alert('Expertise updated successfully!');
-        // Reload the page to refresh radio button states
         window.location.reload();
       } else {
         alert('Update failed: ' + (data.error || 'Unknown error'));
@@ -263,17 +263,47 @@ document.addEventListener('DOMContentLoaded', function() {
     .catch(function(error) {
       console.error('Error:', error);
       alert('Update failed. Please check your inputs!');
+    })
+    .finally(function() {
+      isSubmitting = false;
     });
   });
   
-  // Add change listeners to form elements
+  // Track form changes
+  var hasUnsavedChanges = false;
+  var isSubmitting = false;
+  
   Array.from(form.elements).forEach(function(element) {
     if (element.name && element.type !== 'hidden' && element.type !== 'submit') {
       element.addEventListener('change', function() {
-        console.log(this.name + ' changed to ' + this.value);
-        
-
+        hasUnsavedChanges = true;
       });
+    }
+  });
+  
+  // Intercept navigation attempts
+  window.addEventListener('beforeunload', function(e) {
+    if (hasUnsavedChanges && !isSubmitting) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+  
+  // Intercept expertise link clicks
+  document.addEventListener('click', function(e) {
+    var link = e.target.closest('.expertise-link');
+    if (link && hasUnsavedChanges && !isSubmitting) {
+      e.preventDefault();
+      if (confirm('You have unsaved changes. Would you like to save them before leaving?')) {
+        isSubmitting = true;
+        form.submit();
+        setTimeout(function() {
+          window.location.href = link.href;
+        }, 1000);
+      } else {
+        hasUnsavedChanges = false;
+        window.location.href = link.href;
+      }
     }
   });
 });

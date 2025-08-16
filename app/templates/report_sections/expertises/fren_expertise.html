@@ -232,10 +232,49 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Form submission
+  // Track form changes
   const form = document.getElementById('brakeTestForm');
+  var hasUnsavedChanges = false;
+  var isSubmitting = false;
+  
+  Array.from(form.elements).forEach(function(element) {
+    if (element.name && element.type !== 'hidden' && element.type !== 'submit') {
+      element.addEventListener('change', function() {
+        hasUnsavedChanges = true;
+      });
+    }
+  });
+  
+  // Intercept navigation attempts
+  window.addEventListener('beforeunload', function(e) {
+    if (hasUnsavedChanges && !isSubmitting) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+  
+  // Intercept expertise link clicks
+  document.addEventListener('click', function(e) {
+    var link = e.target.closest('.expertise-link');
+    if (link && hasUnsavedChanges && !isSubmitting) {
+      e.preventDefault();
+      if (confirm('You have unsaved changes. Would you like to save them before leaving?')) {
+        isSubmitting = true;
+        form.submit();
+        setTimeout(function() {
+          window.location.href = link.href;
+        }, 1000);
+      } else {
+        hasUnsavedChanges = false;
+        window.location.href = link.href;
+      }
+    }
+  });
+  
+  // Form submission
   form.addEventListener('submit', function(e) {
     e.preventDefault();
+    isSubmitting = true;
     
     const formData = new FormData(form);
     const url = "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}";
@@ -252,6 +291,7 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .then(function(data) {
       if (data.success) {
+        hasUnsavedChanges = false;
         alert("{{ _('Brake test status updated successfully!') }}");
       } else {
         alert("{{ _('Update failed: ') }}" + (data.error || "{{ _('Unknown error') }}"));
@@ -260,6 +300,9 @@ document.addEventListener('DOMContentLoaded', function() {
     .catch(function(error) {
       console.error('Error:', error);
       alert("{{ _('Update failed. Please check your inputs.') }}");
+    })
+    .finally(function() {
+      isSubmitting = false;
     });
   });
 });

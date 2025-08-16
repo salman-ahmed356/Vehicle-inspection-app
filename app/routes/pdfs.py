@@ -1,4 +1,4 @@
-from flask import send_file, Blueprint, abort
+from flask import send_file, Blueprint, abort, make_response
 from ..services.pdf_service_simple import create_pdf
 from ..auth import login_required
 
@@ -23,4 +23,8 @@ def generate_report_pdf(report_id):
     except Exception as e:
         abort(500, description="Could not create PDF.")
 
-    return send_file(pdf_path, mimetype='application/pdf')
+    response = make_response(send_file(pdf_path, mimetype='application/pdf'))
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response

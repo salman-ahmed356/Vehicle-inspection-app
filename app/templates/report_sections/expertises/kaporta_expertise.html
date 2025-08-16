@@ -258,10 +258,48 @@ document.addEventListener('DOMContentLoaded', function() {
   
 
   
+  // Track form changes
+  var hasUnsavedChanges = false;
+  var isSubmitting = false;
+  
+  Array.from(form.elements).forEach(function(element) {
+    if (element.name && element.type !== 'hidden' && element.type !== 'submit') {
+      element.addEventListener('change', function() {
+        hasUnsavedChanges = true;
+      });
+    }
+  });
+  
+  // Intercept navigation attempts
+  window.addEventListener('beforeunload', function(e) {
+    if (hasUnsavedChanges && !isSubmitting) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+  
+  // Intercept expertise link clicks
+  document.addEventListener('click', function(e) {
+    var link = e.target.closest('.expertise-link');
+    if (link && hasUnsavedChanges && !isSubmitting) {
+      e.preventDefault();
+      if (confirm('You have unsaved changes. Would you like to save them before leaving?')) {
+        isSubmitting = true;
+        form.submit();
+        setTimeout(function() {
+          window.location.href = link.href;
+        }, 1000);
+      } else {
+        hasUnsavedChanges = false;
+        window.location.href = link.href;
+      }
+    }
+  });
+  
   // Add submit event listener
   form.addEventListener('submit', function(e) {
-    // Don't prevent default - let the form submit normally
-    console.log('Form submitted');
+    isSubmitting = true;
+    hasUnsavedChanges = false;
   });
 });
 </script>

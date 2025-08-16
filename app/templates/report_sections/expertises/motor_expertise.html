@@ -256,6 +256,8 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   var form = document.getElementById('expertiseForm');
+  var hasUnsavedChanges = false;
+  var isSubmitting = false;
   
   // Set radio buttons based on feature status
   {% for feature in expertise_report.features %}
@@ -272,16 +274,49 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   {% endfor %}
   
+  // Track form changes
+  var hasUnsavedChanges = false;
+  var isSubmitting = false;
+  
+  Array.from(form.elements).forEach(function(element) {
+    if (element.name && element.type !== 'hidden' && element.type !== 'submit') {
+      element.addEventListener('change', function() {
+        hasUnsavedChanges = true;
+      });
+    }
+  });
+  
+  // Intercept navigation attempts
+  window.addEventListener('beforeunload', function(e) {
+    if (hasUnsavedChanges && !isSubmitting) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+  
+  // Intercept expertise link clicks
+  document.addEventListener('click', function(e) {
+    var link = e.target.closest('.expertise-link');
+    if (link && hasUnsavedChanges && !isSubmitting) {
+      e.preventDefault();
+      if (confirm('You have unsaved changes. Would you like to save them before leaving?')) {
+        isSubmitting = true;
+        form.submit();
+        setTimeout(function() {
+          window.location.href = link.href;
+        }, 1000);
+      } else {
+        hasUnsavedChanges = false;
+        window.location.href = link.href;
+      }
+    }
+  });
+  
   form.addEventListener('submit', function(e) {
     e.preventDefault();
+    isSubmitting = true;
     
     var formData = new FormData(form);
-    
-    // Log what we're submitting
-    console.log('Submitting form data:');
-    for (var pair of formData.entries()) {
-      console.log(pair[0] + ': ' + pair[1]);
-    }
     
     fetch(form.action, {
       method: 'POST',
@@ -291,17 +326,15 @@ document.addEventListener('DOMContentLoaded', function() {
       body: new URLSearchParams(formData)
     })
     .then(function(response) {
-      console.log('Response status:', response.status);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
       return response.json();
     })
     .then(function(data) {
-      console.log('Response data:', data);
       if (data.success) {
+        hasUnsavedChanges = false;
         alert('Expertise updated successfully!');
-        // Reload the page to refresh radio button states
         window.location.reload();
       } else {
         alert('Update failed: ' + (data.error || 'Unknown error'));
@@ -310,16 +343,10 @@ document.addEventListener('DOMContentLoaded', function() {
     .catch(function(error) {
       console.error('Error:', error);
       alert('Update failed. Please check your inputs!');
+    })
+    .finally(function() {
+      isSubmitting = false;
     });
-  });
-  
-  // Add change listeners to form elements
-  Array.from(form.elements).forEach(function(element) {
-    if (element.name && element.type !== 'hidden' && element.type !== 'submit') {
-      element.addEventListener('change', function() {
-        console.log(this.name + ' changed to ' + this.value);
-      });
-    }
   });
   
 
