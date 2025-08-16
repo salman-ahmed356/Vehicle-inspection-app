@@ -448,8 +448,22 @@
         });
       });
       
+      let isSubmitting = false;
+      
+      // Track form submissions to avoid false positives
+      document.addEventListener('submit', function(e) {
+        isSubmitting = true;
+      });
+      
+      // Track save button clicks
+      document.addEventListener('click', function(e) {
+        if (e.target.type === 'submit' || e.target.textContent.includes('Save') || e.target.textContent.includes('Update')) {
+          isSubmitting = true;
+        }
+      });
+      
       window.addEventListener('beforeunload', function(e) {
-        if (checkForUnsavedChanges()) {
+        if (!isSubmitting && checkForUnsavedChanges()) {
           e.preventDefault();
           e.returnValue = 'You have unsaved changes.';
           return e.returnValue;
