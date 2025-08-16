@@ -116,6 +116,21 @@
                         {{ _('View PDF') }}
                     </a>
                     
+                    <!-- Detailed Pics PDF Button -->
+                    {% if report.detailed_images and report.detailed_images|length > 0 %}
+                    <a href="{{ url_for('pdfs.generate_detailed_report_pdf', report_id=report.id) }}"
+                       target="_blank"
+                       class="bg-purple-500 hover:bg-purple-600 text-white text-sm px-3 py-1 rounded inline-flex items-center mr-2">
+                        <i class="fas fa-images mr-1"></i>
+                        {{ _('Detailed Pics PDF') }}
+                    </a>
+                    {% else %}
+                    <button class="bg-gray-400 text-white text-sm px-3 py-1 rounded inline-flex items-center mr-2 cursor-not-allowed" disabled>
+                        <i class="fas fa-images mr-1"></i>
+                        {{ _('Detailed Pics PDF') }}
+                    </button>
+                    {% endif %}
+                    
                     <!-- Delete Report Button (Admin Only) -->
                     {% if session.user_role and session.user_role.lower() == 'admin' %}
                     <button onclick="confirmDelete({{ report.id }}, '{{ report.vehicle.plate }}')"
@@ -160,6 +175,20 @@
                        class="bg-green-500 hover:bg-green-600 text-white text-center py-2 px-3 rounded">
                         <i class="fas fa-file-pdf mr-1"></i>{{ _('View PDF') }}
                     </a>
+                    
+                    <!-- Detailed Pics PDF Button -->
+                    {% if report.detailed_images and report.detailed_images|length > 0 %}
+                    <a href="{{ url_for('pdfs.generate_detailed_report_pdf', report_id=report.id) }}"
+                       target="_blank"
+                       class="bg-purple-500 hover:bg-purple-600 text-white text-center py-2 px-3 rounded">
+                        <i class="fas fa-images mr-1"></i>{{ _('Detailed Pics PDF') }}
+                    </a>
+                    {% else %}
+                    <button class="bg-gray-400 text-white text-center py-2 px-3 rounded cursor-not-allowed" disabled>
+                        <i class="fas fa-images mr-1"></i>{{ _('Detailed Pics PDF') }}
+                    </button>
+                    {% endif %}
+                    
                     {% if session.user_role and session.user_role.lower() == 'admin' %}
                     <button onclick="confirmDelete({{ report.id }}, '{{ report.vehicle.plate }}')"
                             class="bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded">
