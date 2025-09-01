@@ -1,21 +1,29 @@
 <style>
-  /* Styling for number inputs */
-  input[type="number"] {
+  /* Custom dropdown styling */
+  select {
     width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #CBD5E0;
+    padding: 0.75rem;
+    border: 2px solid #CBD5E0;
     border-radius: 0.375rem;
     font-size: 1rem;
     color: #4A5568;
+    cursor: pointer;
     transition: all 0.3s ease;
+    background-color: white;
   }
-  input[type="number"]:focus {
+  select:hover,
+  select:focus {
     border-color: #38B2AC;
-    box-shadow: 0 0 0 3px rgba(56,178,172,0.5);
+    box-shadow: 0 0 0 3px rgba(56,178,172,0.1);
     outline: none;
   }
+
   .form-group {
     margin-bottom: 1.5rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
   }
   .form-group label {
     display: block;
@@ -39,34 +47,33 @@
   /* Mobile responsive styles */
   @media (max-width: 768px) {
     .form-group {
-      margin-bottom: 1rem;
-      padding: 1rem;
-      background: #f8f9fa;
-      border-radius: 8px;
+      margin-bottom: 1.25rem;
+      padding: 1.25rem;
     }
     
     .form-group label {
       font-size: 16px;
+      font-weight: 600;
       margin-bottom: 0.75rem;
     }
     
-    input[type="number"] {
-      font-size: 16px;
-      padding: 12px;
-      min-height: 44px;
+    select {
+      font-size: 16px !important;
+      padding: 16px !important;
+      min-height: 56px !important;
     }
     
     textarea {
       font-size: 16px;
-      min-height: 100px;
-      padding: 12px;
+      min-height: 120px;
+      padding: 16px;
     }
     
     button[type="submit"] {
       width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      margin-top: 1rem;
+      padding: 16px;
+      font-size: 18px;
+      margin-top: 1.5rem;
     }
   }
 </style>
@@ -74,11 +81,19 @@
 {% include 'report_sections/expertises/vehicle_header.html' %}
 
 <h2 class="text-lg font-semibold mb-4">{{ _('Suspension Inspection') }}</h2>
-<p class="mb-4">{{ _('Please enter the measured values for each suspension point:') }}</p>
+<p class="mb-4">{{ _('Please specify the condition of each suspension component:') }}</p>
 
 <form id="suspensionForm" method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
   <input type="hidden" name="current_expertise_type" value="{{ current_expertise_type }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  {# Suspension status options #}
+  {% set suspension_status_choices = [
+       '🟢 OK – No noise, no leaks, stable.',
+       '🟡 Attention – Minor wear, slight noise, service may be needed soon.',
+       '🔴 Critical – Leaking shock absorber, unstable ride, immediate repair.'
+     ]
+  %}
 
   {% set ordered_features = [] %}
   {% for position in ['Front Left', 'Front Right', 'Rear Left', 'Rear Right'] %}
@@ -96,14 +111,17 @@
   {% for feature in ordered_features %}
     <div class="form-group">
       <label for="feature_{{ feature.id }}">{{ feature.name }}</label>
-      <input
-        type="number"
+      <select
         id="feature_{{ feature.id }}"
         name="feature_{{ feature.id }}"
-        value="{{ feature.status }}"
-        step="any"
-        min="0"
       >
+        {% for status in suspension_status_choices %}
+          <option
+            value="{{ status }}"
+            {% if feature.status|string == status|string %}selected{% endif %}
+          >{{ status }}</option>
+        {% endfor %}
+      </select>
     </div>
   {% endfor %}
 
@@ -186,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(function(data) {
       if (data.success) {
         hasUnsavedChanges = false;
-        alert("{{ _('Suspension measurements saved successfully!') }}");
+        alert("{{ _('Suspension inspection updated successfully!') }}");
       } else {
         alert("{{ _('An error occurred during save.') }}");
       }

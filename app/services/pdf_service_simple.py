@@ -153,7 +153,7 @@ def _process_expertise_reports(report):
             return False
         
         default_statuses = {
-            'None', 'Original', 'No Error Logged', 'No Issue', 'No ISSUE', '0', 0
+            'None', 'Original', 'No Issue', 'No ISSUE', '0', 0
         }
         
         for f in features:
@@ -167,7 +167,7 @@ def _process_expertise_reports(report):
             return []
         
         default_statuses = {
-            'None', 'Original', 'No Error Logged', 'No Issue', 'No ISSUE', '0', 0
+            'None', 'Original', 'No Issue', 'No ISSUE', '0', 0
         }
         
         marked_features = []

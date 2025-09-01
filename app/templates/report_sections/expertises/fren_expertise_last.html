@@ -1,45 +1,49 @@
 {% include 'report_sections/expertises/vehicle_header.html' %}
 
 <h2 class="text-lg font-semibold mb-4">{{ _('Brake Test') }}</h2>
-<p class="mb-4">{{ _('Please specify the status of each brake section!') }}</p>
+<p class="mb-4">{{ _('Please specify the condition of each brake!') }}</p>
 
 <form id="brakeForm" method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
   <input type="hidden" name="current_expertise_type" value="{{ current_expertise_type }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
+  {# Brake status options #}
+  {% set brake_status_choices = [
+       '🟢 OK – No issues, brakes performing well.',
+       '🟡 Attention – Wear visible, service recommended soon.',
+       '🔴 Critical – Unsafe, needs immediate replacement.'
+     ]
+  %}
+
   {# Get all features #}
   {% set feats = expertise_report.features %}
   
-  {# Split features into front, rear, and parking groups #}
+  {# Split features into front and rear groups #}
   {% set front = feats[:2] %}
   {% set rear = feats[2:4] %}
-  {% set park = feats[4:6] %}
 
   <!-- Front Brakes -->
   <div class="bg-white shadow-md rounded-lg p-4 mb-4">
     <h3 class="text-lg font-semibold mb-2">{{ _('Front Brakes') }}</h3>
     
-    <div class="mb-2">
-      <label class="inline-flex items-center">
-        <input type="checkbox" id="front_na" name="front_na" value="1">
-        <span class="ml-2">{{ _('Measurement not possible') }}</span>
-      </label>
-    </div>
-    
-    <div class="grid grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 gap-4">
       {% for feature in front %}
         <div>
           <label for="feature_{{ feature.id }}" class="block text-sm font-medium text-gray-700 mb-1">
             {{ feature.name }}
           </label>
-          <input
-            type="number"
+          <select
             id="feature_{{ feature.id }}"
             name="feature_{{ feature.id }}"
-            value="{{ feature.status }}"
-            min="0"
             class="w-full p-2 border border-gray-300 rounded"
           >
+            {% for status in brake_status_choices %}
+              <option
+                value="{{ status }}"
+                {% if feature.status|string == status|string %}selected{% endif %}
+              >{{ status }}</option>
+            {% endfor %}
+          </select>
         </div>
       {% endfor %}
     </div>
@@ -49,57 +53,24 @@
   <div class="bg-white shadow-md rounded-lg p-4 mb-4">
     <h3 class="text-lg font-semibold mb-2">{{ _('Rear Brakes') }}</h3>
     
-    <div class="mb-2">
-      <label class="inline-flex items-center">
-        <input type="checkbox" id="rear_na" name="rear_na" value="1">
-        <span class="ml-2">{{ _('Measurement not possible') }}</span>
-      </label>
-    </div>
-    
-    <div class="grid grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 gap-4">
       {% for feature in rear %}
         <div>
           <label for="feature_{{ feature.id }}" class="block text-sm font-medium text-gray-700 mb-1">
             {{ feature.name }}
           </label>
-          <input
-            type="number"
+          <select
             id="feature_{{ feature.id }}"
             name="feature_{{ feature.id }}"
-            value="{{ feature.status }}"
-            min="0"
             class="w-full p-2 border border-gray-300 rounded"
           >
-        </div>
-      {% endfor %}
-    </div>
-  </div>
-
-  <!-- Parking Brake -->
-  <div class="bg-white shadow-md rounded-lg p-4 mb-4">
-    <h3 class="text-lg font-semibold mb-2">{{ _('Parking Brake') }}</h3>
-    
-    <div class="mb-2">
-      <label class="inline-flex items-center">
-        <input type="checkbox" id="park_na" name="park_na" value="1">
-        <span class="ml-2">{{ _('Measurement not possible') }}</span>
-      </label>
-    </div>
-    
-    <div class="grid grid-cols-2 gap-4">
-      {% for feature in park %}
-        <div>
-          <label for="feature_{{ feature.id }}" class="block text-sm font-medium text-gray-700 mb-1">
-            {{ feature.name }}
-          </label>
-          <input
-            type="number"
-            id="feature_{{ feature.id }}"
-            name="feature_{{ feature.id }}"
-            value="{{ feature.status }}"
-            min="0"
-            class="w-full p-2 border border-gray-300 rounded"
-          >
+            {% for status in brake_status_choices %}
+              <option
+                value="{{ status }}"
+                {% if feature.status|string == status|string %}selected{% endif %}
+              >{{ status }}</option>
+            {% endfor %}
+          </select>
         </div>
       {% endfor %}
     </div>
@@ -131,92 +102,29 @@
 </form>
 
 <script>
-// Store the report ID for localStorage keys
-const reportId = {{ expertise_report.id }};
-
-// Function to toggle readonly state
-function toggleReadonly(checkboxId, inputSelector) {
-  const checkbox = document.getElementById(checkboxId);
-  const inputs = document.querySelectorAll(inputSelector);
-  const disabled = checkbox.checked;
-  
-  inputs.forEach(input => {
-    input.readOnly = disabled;
-    if (disabled) input.value = 0;
-  });
-}
-
-// Function to save checkbox states
-function saveCheckboxStates() {
-  localStorage.setItem(`brake_front_na_${reportId}`, document.getElementById('front_na').checked);
-  localStorage.setItem(`brake_rear_na_${reportId}`, document.getElementById('rear_na').checked);
-  localStorage.setItem(`brake_park_na_${reportId}`, document.getElementById('park_na').checked);
-}
-
-// Function to load checkbox states
-function loadCheckboxStates() {
-  const frontNa = document.getElementById('front_na');
-  const rearNa = document.getElementById('rear_na');
-  const parkNa = document.getElementById('park_na');
-  
-  // Load states from localStorage
-  if (localStorage.getItem(`brake_front_na_${reportId}`) === 'true') {
-    frontNa.checked = true;
-    toggleReadonly('front_na', '#brakeForm > div:nth-child(4) input[type="number"]');
-  }
-  
-  if (localStorage.getItem(`brake_rear_na_${reportId}`) === 'true') {
-    rearNa.checked = true;
-    toggleReadonly('rear_na', '#brakeForm > div:nth-child(5) input[type="number"]');
-  }
-  
-  if (localStorage.getItem(`brake_park_na_${reportId}`) === 'true') {
-    parkNa.checked = true;
-    toggleReadonly('park_na', '#brakeForm > div:nth-child(6) input[type="number"]');
-  }
-}
-
-// Set up event listeners when the page loads
 document.addEventListener('DOMContentLoaded', function() {
-  // Log current brake expertise data
-  console.log('Brake expertise features:');
-  {% for feature in expertise_report.features %}
-    console.log('Feature {{ feature.id }}: {{ feature.name }} = {{ feature.status }}');
-  {% endfor %}
-  const frontNa = document.getElementById('front_na');
-  const rearNa = document.getElementById('rear_na');
-  const parkNa = document.getElementById('park_na');
+  const form = document.getElementById('brakeForm');
+  var hasUnsavedChanges = false;
+  var isSubmitting = false;
   
-  // Add change event listeners
-  frontNa.addEventListener('change', function() {
-    toggleReadonly('front_na', '#brakeForm > div:nth-child(4) input[type="number"]');
-    saveCheckboxStates();
-  });
-  
-  rearNa.addEventListener('change', function() {
-    toggleReadonly('rear_na', '#brakeForm > div:nth-child(5) input[type="number"]');
-    saveCheckboxStates();
-  });
-  
-  parkNa.addEventListener('change', function() {
-    toggleReadonly('park_na', '#brakeForm > div:nth-child(6) input[type="number"]');
-    saveCheckboxStates();
-  });
-  
-  // Add submit event listener with AJAX
-  document.getElementById('brakeForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    saveCheckboxStates();
-    
-    const formData = new FormData(this);
-    
-    // Log what we're submitting
-    console.log('Submitting brake form data:');
-    for (var pair of formData.entries()) {
-      console.log(pair[0] + ': ' + pair[1]);
+  // Track form changes
+  Array.from(form.elements).forEach(function(element) {
+    if (element.name && element.type !== 'hidden' && element.type !== 'submit') {
+      element.addEventListener('change', function() {
+        hasUnsavedChanges = true;
+      });
     }
+  });
+  
+  // Form submission
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    isSubmitting = true;
     
-    fetch(this.action, {
+    const formData = new FormData(form);
+    const url = "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}";
+    
+    fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
@@ -224,29 +132,24 @@ document.addEventListener('DOMContentLoaded', function() {
       body: new URLSearchParams(formData)
     })
     .then(function(response) {
-      console.log('Response status:', response.status);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
       return response.json();
     })
     .then(function(data) {
-      console.log('Response data:', data);
       if (data.success) {
-        console.log('Brake expertise updated successfully - reloading page');
-        // Reload the current expertise section to show updated data
+        hasUnsavedChanges = false;
+        alert("{{ _('Brake inspection updated successfully!') }}");
         window.location.reload();
       } else {
-        alert('Update failed: ' + (data.error || 'Unknown error'));
+        alert("{{ _('Update failed: ') }}" + (data.error || "{{ _('Unknown error') }}"));
       }
     })
     .catch(function(error) {
       console.error('Error:', error);
-      alert('Update failed. Please check your inputs!');
+      alert("{{ _('Update failed. Please check your inputs.') }}");
+    })
+    .finally(function() {
+      isSubmitting = false;
     });
   });
-  
-  // Load checkbox states
-  loadCheckboxStates();
 });
 </script>

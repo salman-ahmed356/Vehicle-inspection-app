@@ -1,31 +1,35 @@
 <style>
-  /* Styling for number inputs */
-  input[type="number"] {
+  /* Custom dropdown styling */
+  select {
     width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #CBD5E0;
+    padding: 0.75rem;
+    border: 2px solid #CBD5E0;
     border-radius: 0.375rem;
     font-size: 1rem;
     color: #4A5568;
+    cursor: pointer;
     transition: all 0.3s ease;
+    background-color: white;
   }
-  input[type="number"]:focus {
+  select:hover,
+  select:focus {
     border-color: #38B2AC;
-    box-shadow: 0 0 0 3px rgba(56,178,172,0.5);
+    box-shadow: 0 0 0 3px rgba(56,178,172,0.1);
     outline: none;
-  }
-  input[type="number"][readonly] {
-    background-color: #E2E8F0;
-    color: #A0AEC0;
   }
 
   .test-section {
     margin-bottom: 2rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
   }
-  .test-section label {
+  .test-section h3 {
     font-weight: 600;
-    display: block;
-    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #2D3748;
   }
 
   .form-section {
@@ -33,7 +37,9 @@
   }
   .form-section label {
     display: block;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #4A5568;
   }
 
   button[type="submit"] {
@@ -53,43 +59,36 @@
   @media (max-width: 768px) {
     .test-section {
       margin-bottom: 1.5rem;
-      padding: 1rem;
-      background: #f8f9fa;
-      border-radius: 8px;
+      padding: 1.25rem;
     }
     
     .form-section {
-      margin-bottom: 0.75rem;
+      margin-bottom: 1rem;
     }
     
     .form-section label {
-      font-size: 14px;
-      font-weight: 600;
-    }
-    
-    input[type="number"] {
       font-size: 16px;
-      padding: 12px;
-      min-height: 44px;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
     }
     
-    input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      margin-right: 8px;
+    select {
+      font-size: 16px !important;
+      padding: 16px !important;
+      min-height: 56px !important;
     }
     
     button[type="submit"] {
       width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      margin-top: 1rem;
+      padding: 16px;
+      font-size: 18px;
+      margin-top: 1.5rem;
     }
     
     textarea {
       font-size: 16px;
-      min-height: 100px;
-      padding: 12px;
+      min-height: 120px;
+      padding: 16px;
     }
   }
 </style>
@@ -97,77 +96,63 @@
 {% include 'report_sections/expertises/vehicle_header.html' %}
 
 <h2 class="text-lg font-semibold mb-4">{{ _('Brake Test') }}</h2>
-<p class="mb-4">{{ _('Please specify the status of each brake section!') }}</p>
+<p class="mb-4">{{ _('Please specify the condition of each brake!') }}</p>
 
 <form id="brakeTestForm" method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
   <input type="hidden" name="current_expertise_type" value="{{ current_expertise_type }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-  {# Split features into front, rear, and parking groups #}
+  {# Brake status options #}
+  {% set brake_status_choices = [
+       '🟢 OK – No issues, brakes performing well.',
+       '🟡 Attention – Wear visible, service recommended soon.',
+       '🔴 Critical – Unsafe, needs immediate replacement.'
+     ]
+  %}
+
+  {# Split features into front and rear groups #}
   {% set feats  = expertise_report.features %}
   {% set front  = feats[:2] %}
   {% set rear   = feats[2:4] %}
-  {% set park   = feats[4:] %}
 
   <!-- Front Brakes -->
   <div class="test-section">
-    <label>{{ _('Front Brakes') }}</label>
-    <label>
-      <input type="checkbox" id="front_na" />
-      {{ _('Measurement not possible') }}
-    </label>
+    <h3>{{ _('Front Brakes') }}</h3>
     {% for feature in front %}
       <div class="form-section">
         <label for="feature_{{ feature.id }}">{{ feature.name }}</label>
-        <input
-          type="number"
+        <select
           id="feature_{{ feature.id }}"
           name="feature_{{ feature.id }}"
-          value="{{ feature.status }}"
-          min="0"
         >
+          {% for status in brake_status_choices %}
+            <option
+              value="{{ status }}"
+              {% if feature.status|string == status|string %}selected{% endif %}
+            >{{ status }}</option>
+          {% endfor %}
+        </select>
       </div>
     {% endfor %}
   </div>
 
   <!-- Rear Brakes -->
   <div class="test-section">
-    <label>{{ _('Rear Brakes') }}</label>
-    <label>
-      <input type="checkbox" id="rear_na" />
-      {{ _('Measurement not possible') }}
-    </label>
+    <h3>{{ _('Rear Brakes') }}</h3>
     {% for feature in rear %}
       <div class="form-section">
         <label for="feature_{{ feature.id }}">{{ feature.name }}</label>
-        <input
-          type="number"
+        <select
           id="feature_{{ feature.id }}"
           name="feature_{{ feature.id }}"
-          value="{{ feature.status }}"
-          min="0"
         >
-      </div>
-    {% endfor %}
-  </div>
-
-  <!-- Parking Brake -->
-  <div class="test-section">
-    <label>{{ _('Parking Brake') }}</label>
-    <label>
-      <input type="checkbox" id="park_na" />
-      {{ _('Measurement not possible') }}
-    </label>
-    {% for feature in park %}
-      <div class="form-section">
-        <label for="feature_{{ feature.id }}">{{ feature.name }}</label>
-        <input
-          type="number"
-          id="feature_{{ feature.id }}"
-          name="feature_{{ feature.id }}"
-          value="{{ feature.status }}"
-          min="0"
-        >
+          {% for status in brake_status_choices %}
+            <option
+              value="{{ status }}"
+              {% if feature.status|string == status|string %}selected{% endif %}
+            >{{ status }}</option>
+          {% endfor %}
+        </select>
       </div>
     {% endfor %}
   </div>
@@ -192,51 +177,11 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Function to toggle readonly state
-  function toggleReadonly(checkboxId, inputIds) {
-    const checkbox = document.getElementById(checkboxId);
-    const disabled = checkbox.checked;
-    
-    inputIds.forEach(id => {
-      const input = document.getElementById(id);
-      input.readOnly = disabled;
-      if (disabled) input.value = 0;
-    });
-  }
-
-  // Get checkbox and input elements
-  const frontNa = document.getElementById('front_na');
-  const rearNa = document.getElementById('rear_na');
-  const parkNa = document.getElementById('park_na');
-  
-  const frontIds = ['feature_{{ front[0].id }}', 'feature_{{ front[1].id }}'];
-  const rearIds = ['feature_{{ rear[0].id }}', 'feature_{{ rear[1].id }}'];
-  const parkIds = ['feature_{{ park[0].id }}', 'feature_{{ park[1].id }}'];
-
-  // Add event listeners
-  if (frontNa) {
-    frontNa.addEventListener('change', function() {
-      toggleReadonly('front_na', frontIds);
-    });
-  }
-  
-  if (rearNa) {
-    rearNa.addEventListener('change', function() {
-      toggleReadonly('rear_na', rearIds);
-    });
-  }
-  
-  if (parkNa) {
-    parkNa.addEventListener('change', function() {
-      toggleReadonly('park_na', parkIds);
-    });
-  }
-
-  // Track form changes
   const form = document.getElementById('brakeTestForm');
   var hasUnsavedChanges = false;
   var isSubmitting = false;
   
+  // Track form changes
   Array.from(form.elements).forEach(function(element) {
     if (element.name && element.type !== 'hidden' && element.type !== 'submit') {
       element.addEventListener('change', function() {
@@ -292,7 +237,7 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(function(data) {
       if (data.success) {
         hasUnsavedChanges = false;
-        alert("{{ _('Brake test status updated successfully!') }}");
+        alert("{{ _('Brake inspection updated successfully!') }}");
       } else {
         alert("{{ _('Update failed: ') }}" + (data.error || "{{ _('Unknown error') }}"));
       }

@@ -29,7 +29,21 @@ class StatusTranslator:
         "Needs Maintenance": "يحتاج صيانة"
     }
     
-    # Lateral Drift, Suspension, Brake Status Translations (numeric values)
+    # Brake Expertise Status Translations
+    BRAKE_STATUS_AR = {
+        "🟢 OK – No issues, brakes performing well.": "جيد - لا توجد مشاكل، الفرامل تعمل بشكل جيد",
+        "🟡 Attention – Wear visible, service recommended soon.": "انتباه - تآكل ظاهر، يُنصح بالصيانة قريباً",
+        "🔴 Critical – Unsafe, needs immediate replacement.": "حرج - غير آمن، يحتاج استبدال فوري"
+    }
+    
+    # Suspension Expertise Status Translations
+    SUSPENSION_STATUS_AR = {
+        "🟢 OK – No noise, no leaks, stable.": "جيد - لا ضوضاء، لا تسريب، مستقر",
+        "🟡 Attention – Minor wear, slight noise, service may be needed soon.": "انتباه - تآكل طفيف، ضوضاء خفيفة، قد تحتاج صيانة قريباً",
+        "🔴 Critical – Leaking shock absorber, unstable ride, immediate repair.": "حرج - تسريب في ماص الصدمات، قيادة غير مستقرة، يحتاج إصلاح فوري"
+    }
+    
+    # Lateral Drift Status Translations (numeric values)
     NUMERIC_STATUS_AR = {
         "0": "صفر",
         0: "صفر"
@@ -75,6 +89,16 @@ class StatusTranslator:
         return cls.ENGINE_STATUS_AR.get(english_status, english_status)
     
     @classmethod
+    def translate_brake_status(cls, english_status):
+        """Translate brake expertise status to Arabic"""
+        return cls.BRAKE_STATUS_AR.get(english_status, english_status)
+    
+    @classmethod
+    def translate_suspension_status(cls, english_status):
+        """Translate suspension expertise status to Arabic"""
+        return cls.SUSPENSION_STATUS_AR.get(english_status, english_status)
+    
+    @classmethod
     def translate_numeric_status(cls, status):
         """Translate numeric status to Arabic"""
         return cls.NUMERIC_STATUS_AR.get(status, str(status))
@@ -103,7 +127,11 @@ class StatusTranslator:
             return cls.translate_body_status(english_status)
         elif expertise_type == "Engine Expertise":
             return cls.translate_engine_status(english_status)
-        elif expertise_type in ["Lateral Drift Expertise", "Suspension Expertise", "Brake Expertise"]:
+        elif expertise_type == "Brake Expertise":
+            return cls.translate_brake_status(english_status)
+        elif expertise_type == "Suspension Expertise":
+            return cls.translate_suspension_status(english_status)
+        elif expertise_type == "Lateral Drift Expertise":
             return cls.translate_numeric_status(english_status)
         elif expertise_type == "Road Expertise":
             return english_status  # Empty expertise
