@@ -1,8 +1,9 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField
 from wtforms import StringField, IntegerField, BooleanField, SelectField, SubmitField, TextAreaField, DateTimeField
-from wtforms.validators import DataRequired, Optional, Length
+from wtforms.validators import DataRequired, Optional, Length, ValidationError
 from ..enums import ReportStatus
+import re
 
 
 class ReportForm(FlaskForm):
@@ -27,7 +28,25 @@ class ReportForm(FlaskForm):
     model_year = IntegerField('Model Year', validators=[DataRequired()])
     gear_type = SelectField('Gear Type', choices=[], validators=[DataRequired()])
     fuel_type = SelectField('Fuel Type', choices=[], validators=[DataRequired()])
-    vehicle_km = IntegerField('Vehicle KM/Mileage', validators=[DataRequired()])
+    vehicle_km = StringField('Vehicle KM/Mileage', validators=[DataRequired()])
+    
+    def validate_vehicle_km(self, field):
+        """Custom validator for mileage field to handle commas and dots"""
+        if field.data:
+            # Remove commas, dots, and spaces
+            cleaned_value = re.sub(r'[,\s]', '', str(field.data))
+            # Replace dots with empty string (assuming they're thousand separators)
+            cleaned_value = cleaned_value.replace('.', '')
+            
+            try:
+                # Try to convert to integer
+                int_value = int(cleaned_value)
+                if int_value < 0:
+                    raise ValidationError('Mileage must be a positive number.')
+                # Store the cleaned integer value back to the field
+                field.data = str(int_value)
+            except ValueError:
+                raise ValidationError('Please enter a valid mileage number.')
     engine_number = StringField('Engine Number (Optional)', validators=[Optional()])
 
     # Inspection Information

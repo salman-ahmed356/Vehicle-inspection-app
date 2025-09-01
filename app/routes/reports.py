@@ -151,6 +151,12 @@ def add_report():
                 transmission_enum = map_to_enum(form.gear_type.data, TransmissionType)
                 fuel_enum = map_to_enum(form.fuel_type.data, FuelType)
                 
+                # Clean and convert mileage to integer
+                import re
+                mileage_str = str(form.vehicle_km.data).strip()
+                mileage_cleaned = re.sub(r'[,\s]', '', mileage_str).replace('.', '')
+                mileage_int = int(mileage_cleaned) if mileage_cleaned else 0
+                
                 vehicle = Vehicle(
                     plate             = plate_num,
                     engine_number     = engine_num,
@@ -161,7 +167,7 @@ def add_report():
                     model_year        = form.model_year.data,
                     transmission_type = transmission_enum,
                     fuel_type         = fuel_enum,
-                    mileage           = form.vehicle_km.data
+                    mileage           = mileage_int
                 )
                 db.session.add(vehicle)
                 # flush so vehicle.id is set, without full commit
@@ -420,7 +426,11 @@ def edit_report(report_id):
             vehicle.model_year = form.model_year.data
             vehicle.transmission_type = map_to_enum(form.gear_type.data, TransmissionType)
             vehicle.fuel_type = map_to_enum(form.fuel_type.data, FuelType)
-            vehicle.mileage = form.vehicle_km.data
+            # Clean and convert mileage to integer
+            import re
+            mileage_str = str(form.vehicle_km.data).strip()
+            mileage_cleaned = re.sub(r'[,\s]', '', mileage_str).replace('.', '')
+            vehicle.mileage = int(mileage_cleaned) if mileage_cleaned else 0
             db.session.add(vehicle)  # Explicitly mark for update
             
             # Update customer data

@@ -155,7 +155,7 @@ class ExpertiseFeature(db.Model):
     __tablename__ = 'expertise_features'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    status = db.Column(db.String(50), nullable=True)
+    status = db.Column(db.String(255), nullable=True)
     image_path = db.Column(db.String(255), nullable=True)
     expertise_report_id = db.Column(db.Integer, db.ForeignKey('expertise_reports.id'), nullable=False, index=True)
 
