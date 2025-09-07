@@ -303,7 +303,7 @@
 </div> <!-- End mainContent -->
 
 <script>
-// Page loader for cancelled reports
+// Page loader for cancelled reports - faster loading
 (function() {
     let loaded = false;
     function showContent() {
@@ -317,9 +317,10 @@
             setTimeout(() => overlay.style.display = 'none', 300);
         }
     }
-    window.addEventListener('load', () => setTimeout(showContent, 500));
-    setTimeout(showContent, 4000);
-    if (document.readyState === 'complete') setTimeout(showContent, 500);
+    // Show content faster for heavy pages
+    document.addEventListener('DOMContentLoaded', () => setTimeout(showContent, 800));
+    setTimeout(showContent, 2000); // Faster fallback
+    if (document.readyState === 'complete') showContent();
 })();
 </script>
 </body>

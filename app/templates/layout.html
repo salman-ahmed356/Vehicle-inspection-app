@@ -452,17 +452,17 @@
         }
       }
       
-      // Wait for everything to load
-      window.addEventListener('load', function() {
-        setTimeout(showContent, 500); // Minimum 500ms loader
+      // Show content faster for heavy pages
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(showContent, 800);
       });
       
-      // Fallback for slow connections
-      setTimeout(showContent, 4000);
+      // Faster fallback for slow connections
+      setTimeout(showContent, 2000);
       
       // If already loaded
       if (document.readyState === 'complete') {
-        setTimeout(showContent, 500);
+        showContent();
       }
     })();
   </script>
