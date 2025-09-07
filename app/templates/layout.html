@@ -6,12 +6,51 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ _('Expertise') }}</title>
 
-  <!-- Tailwind & Font Awesome -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tailwind & Font Awesome with fallbacks -->
+  <script>
+    // Preload critical resources
+    const link1 = document.createElement('link');
+    link1.rel = 'preload';
+    link1.as = 'style';
+    link1.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css';
+    document.head.appendChild(link1);
+  </script>
+  
+  <!-- Load Tailwind with error handling -->
+  <script>
+    (function() {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.tailwindcss.com';
+      script.crossOrigin = 'anonymous';
+      script.onerror = function() {
+        console.warn('Tailwind CDN failed, using fallback styles');
+        document.getElementById('fallback-styles').innerHTML += `
+          .bg-blue-500 { background-color: #3b82f6 !important; }
+          .text-white { color: white !important; }
+          .p-4 { padding: 1rem !important; }
+          .container { max-width: 1200px; margin: 0 auto; }
+          .mx-auto { margin-left: auto; margin-right: auto; }
+          .flex { display: flex !important; }
+          .hidden { display: none !important; }
+        `;
+      };
+      document.head.appendChild(script);
+    })();
+  </script>
+  
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    crossorigin="anonymous"
+    integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+    onerror="this.onerror=null; document.getElementById('fallback-styles').innerHTML += '.fas:before { content: \"●\"; }'"
   />
+  
+  <!-- Fallback CSS for when CDN fails -->
+  <style id="fallback-styles">
+    .fas, .far, .fab { font-family: Arial, sans-serif; }
+    .fas:before { content: "●"; }
+  </style>
   
   <!-- Comprehensive Mobile CSS -->
   <style>
@@ -339,10 +378,41 @@
   </div>
 
   <!-- File Input Protection -->
-  <script src="{{ url_for('static', filename='js/file-input-fix.js') }}"></script>
+  <script>
+    // Inline critical JavaScript to avoid loading issues
+    document.addEventListener('DOMContentLoaded', function() {
+      // File input protection
+      const fileInputs = document.querySelectorAll('input[type="file"]');
+      fileInputs.forEach(input => {
+        input.addEventListener('change', function() {
+          if (this.files && this.files[0]) {
+            const fileSize = this.files[0].size / 1024 / 1024; // MB
+            if (fileSize > 5) {
+              alert('File size must be less than 5MB');
+              this.value = '';
+            }
+          }
+        });
+      });
+    });
+  </script>
   
-  <!-- NAVBAR SCRIPT -->
-  <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
+  <!-- Load external scripts with error handling -->
+  <script>
+    function loadScript(src, fallback) {
+      const script = document.createElement('script');
+      script.src = src;
+      script.onerror = function() {
+        if (fallback) fallback();
+      };
+      document.head.appendChild(script);
+    }
+    
+    // Load navbar script with fallback
+    loadScript('{{ url_for("static", filename="js/navbar.js") }}', function() {
+      console.warn('Navbar script failed to load');
+    });
+  </script>
   
   <!-- Mobile Menu Script -->
   <script>
@@ -354,17 +424,39 @@
   
   <!-- Global Page Loader Script -->
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Hide loader after page is fully loaded
-      window.addEventListener('load', function() {
-        setTimeout(function() {
-          const overlay = document.getElementById('pageLoadingOverlay');
-          if (overlay) {
+    // Immediate loader management
+    (function() {
+      let loaded = false;
+      
+      function hideLoader() {
+        if (loaded) return;
+        loaded = true;
+        const overlay = document.getElementById('pageLoadingOverlay');
+        if (overlay) {
+          overlay.style.opacity = '0';
+          setTimeout(() => {
             overlay.style.display = 'none';
-          }
-        }, 500); // Small delay to ensure everything is ready
+          }, 300);
+        }
+      }
+      
+      // Multiple triggers to ensure loader is hidden
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(hideLoader, 100);
       });
-    });
+      
+      window.addEventListener('load', function() {
+        setTimeout(hideLoader, 200);
+      });
+      
+      // Fallback timer
+      setTimeout(hideLoader, 3000);
+      
+      // Check if resources are already loaded
+      if (document.readyState === 'complete') {
+        setTimeout(hideLoader, 50);
+      }
+    })();
   </script>
 </body>
 </html>

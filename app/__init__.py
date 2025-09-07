@@ -20,6 +20,22 @@ from .routes.auth import auth
 from .routes.api import api
 from .routes.logs import logs
 
+# Import static file fix
+try:
+    import sys
+    sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+    from static_fix import static_fix
+except ImportError:
+    static_fix = None
+
+# Import Cloudflare compatibility fixes
+try:
+    import sys
+    sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+    from cloudflare_fix import configure_cloudflare_compatibility
+except ImportError:
+    configure_cloudflare_compatibility = None
+
 babel = Babel()
 
 def create_app(test_config=None):
@@ -40,6 +56,9 @@ def create_app(test_config=None):
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         BABEL_DEFAULT_LOCALE='en',
         PERMANENT_SESSION_LIFETIME=timedelta(hours=3),
+        # Cloudflare compatibility settings
+        SEND_FILE_MAX_AGE_DEFAULT=31536000,  # 1 year cache for static files
+        MAX_CONTENT_LENGTH=16 * 1024 * 1024,  # 16MB max file size
     )
     
     # Make sessions permanent by default
@@ -92,9 +111,17 @@ def create_app(test_config=None):
     app.register_blueprint(report_settings)
     app.register_blueprint(api)
     app.register_blueprint(logs)
+    
+    # Register static file fix blueprint
+    if static_fix:
+        app.register_blueprint(static_fix)
 
     # Remove automatic table creation to avoid startup issues
     # Tables will be created manually after database is ready
+
+    # Apply Cloudflare compatibility fixes
+    if configure_cloudflare_compatibility:
+        configure_cloudflare_compatibility(app)
 
     # Make get_locale available to templates
     @app.context_processor
