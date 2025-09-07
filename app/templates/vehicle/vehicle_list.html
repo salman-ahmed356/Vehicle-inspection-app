@@ -24,7 +24,15 @@
 </head>
 
 <body class="bg-gray-100">
-  {% include 'page_loader.html' %}
+  <!-- Full Page Loading Overlay -->
+  <div id="pageLoadingOverlay" class="fixed inset-0 bg-white z-50 flex items-center justify-center" style="display: flex !important;">
+    <div class="text-center">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
+      <p class="text-gray-700 text-lg">Loading...</p>
+    </div>
+  </div>
+  
+  <div id="mainContent" style="display: none;">
   {% include 'navbar_simple.html' %}
 
   <div class="container mx-auto px-4 py-6">
@@ -274,6 +282,29 @@
         });
       }
     });
+  </script>
+  
+  </div> <!-- End mainContent -->
+  
+  <script>
+  // Page loader for vehicle list
+  (function() {
+      let loaded = false;
+      function showContent() {
+          if (loaded) return;
+          loaded = true;
+          const overlay = document.getElementById('pageLoadingOverlay');
+          const content = document.getElementById('mainContent');
+          if (overlay && content) {
+              content.style.display = 'block';
+              overlay.style.opacity = '0';
+              setTimeout(() => overlay.style.display = 'none', 300);
+          }
+      }
+      window.addEventListener('load', () => setTimeout(showContent, 500));
+      setTimeout(showContent, 4000);
+      if (document.readyState === 'complete') setTimeout(showContent, 500);
+  })();
   </script>
 </body>
 

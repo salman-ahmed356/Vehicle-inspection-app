@@ -168,13 +168,16 @@
 </head>
 
 <body class="bg-gray-100 text-gray-800">
-  <!-- Full Page Loading Overlay -->
-  <div id="pageLoadingOverlay" class="fixed inset-0 bg-white bg-opacity-90 z-50 flex items-center justify-center">
+  <!-- Full Page Loading Overlay - Shows immediately -->
+  <div id="pageLoadingOverlay" class="fixed inset-0 bg-white z-50 flex items-center justify-center" style="display: flex !important;">
     <div class="text-center">
       <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
       <p class="text-gray-700 text-lg">Loading...</p>
     </div>
   </div>
+  
+  <!-- Main content - Hidden until loaded -->
+  <div id="mainContent" style="display: none;">
   <!-- Appointment Modal placeholder -->
   <div id="createAppointmentModal"></div>
 
@@ -376,6 +379,8 @@
   <div class="container mx-auto px-4 py-6">
     {% block content %}{% endblock %}
   </div>
+  
+  </div> <!-- End mainContent -->
 
   <!-- File Input Protection -->
   <script>
@@ -428,11 +433,18 @@
     (function() {
       let loaded = false;
       
-      function hideLoader() {
+      function showContent() {
         if (loaded) return;
         loaded = true;
+        
         const overlay = document.getElementById('pageLoadingOverlay');
-        if (overlay) {
+        const content = document.getElementById('mainContent');
+        
+        if (overlay && content) {
+          // Show content first
+          content.style.display = 'block';
+          
+          // Then hide loader with animation
           overlay.style.opacity = '0';
           setTimeout(() => {
             overlay.style.display = 'none';
@@ -440,21 +452,17 @@
         }
       }
       
-      // Multiple triggers to ensure loader is hidden
-      document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(hideLoader, 100);
-      });
-      
+      // Wait for everything to load
       window.addEventListener('load', function() {
-        setTimeout(hideLoader, 200);
+        setTimeout(showContent, 500); // Minimum 500ms loader
       });
       
-      // Fallback timer
-      setTimeout(hideLoader, 3000);
+      // Fallback for slow connections
+      setTimeout(showContent, 4000);
       
-      // Check if resources are already loaded
+      // If already loaded
       if (document.readyState === 'complete') {
-        setTimeout(hideLoader, 50);
+        setTimeout(showContent, 500);
       }
     })();
   </script>
