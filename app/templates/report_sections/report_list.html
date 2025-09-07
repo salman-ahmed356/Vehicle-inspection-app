@@ -349,12 +349,10 @@
 </div> <!-- End mainContent -->
 
 <script>
-// Page loader for report list - faster loading
+// Immediate loader for heavy pages with images
 (function() {
-    let loaded = false;
+    // Show content immediately, don't wait for images
     function showContent() {
-        if (loaded) return;
-        loaded = true;
         const overlay = document.getElementById('pageLoadingOverlay');
         const content = document.getElementById('mainContent');
         if (overlay && content) {
@@ -363,11 +361,25 @@
             setTimeout(() => overlay.style.display = 'none', 300);
         }
     }
-    // Show content faster for heavy pages
-    document.addEventListener('DOMContentLoaded', () => setTimeout(showContent, 800));
-    setTimeout(showContent, 2000); // Faster fallback
-    if (document.readyState === 'complete') showContent();
+    // Show content as soon as DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', showContent);
+    } else {
+        showContent();
+    }
 })();
+
+// Lazy load images after page shows
+document.addEventListener('DOMContentLoaded', function() {
+    const images = document.querySelectorAll('img[src*="base64"]');
+    images.forEach(img => {
+        img.style.opacity = '0';
+        img.onload = () => {
+            img.style.transition = 'opacity 0.3s';
+            img.style.opacity = '1';
+        };
+    });
+});
 </script>
 </body>
 </html>
