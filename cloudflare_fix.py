@@ -12,7 +12,7 @@ def configure_cloudflare_compatibility(app: Flask):
     @app.before_request
     def force_https():
         from flask import request, redirect, url_for
-        if not request.is_secure and app.env != 'development':
+        if not request.is_secure and not app.debug:
             return redirect(request.url.replace('http://', 'https://'))
     
     # Custom static file handler with proper MIME types
