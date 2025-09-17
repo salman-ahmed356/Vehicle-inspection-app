@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vehicle Inspection Certificate - شهادة فحص المركبة</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 15mm 10mm 20mm 10mm;
+      @top-center {
+        content: element(header);
+      }
+      @bottom-center {
+        content: element(footer);
+      }
+    }
+    
+    .page-header {
+      position: running(header);
+      height: 45px;
+      border-bottom: 2px solid #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 5px;
+    }
+    
+    .page-footer {
+      position: running(footer);
+      border-top: 2px solid #000;
+      padding: 5px;
+      font-size: 7pt;
+    }
+    
+    .terms-title {
+      font-weight: bold;
+      font-size: 9pt;
+      text-decoration: underline;
+      margin-bottom: 4px;
+    }
+    
+    .company-contact {
+      text-align: center;
+      font-size: 7pt;
+      margin-top: 6px;
+      font-weight: bold;
+    }
+    
+    body {
+      font-family: 'DejaVu Sans', 'Arial Unicode MS', Arial, sans-serif;
+      font-size: 9pt;
+      line-height: 1.1;
+      margin: 0;
+      padding: 0;
+      color: #333;
+      position: relative;
+    }
+    
+    .arabic {
+      font-family: 'DejaVu Sans', 'Arial Unicode MS', 'Tahoma', Arial, sans-serif;
+      direction: rtl;
+      text-align: right;
+      font-size: 8pt;
+      color: #555;
+      margin-top: 1px;
+      unicode-bidi: bidi-override;
+    }
+    
+    .certificate-content {
+      margin-top: 20px;
+      border: 1px solid #ddd;
+      padding: 15px;
+    }
+    
+    .english-side {
+      width: 50%;
+      padding-right: 15px;
+      float: left;
+    }
+    
+    .arabic-side {
+      width: 50%;
+      padding-left: 15px;
+      direction: rtl;
+      text-align: right;
+      float: right;
+    }
+    
+    .clearfix::after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+    
+    .expertise-item {
+      margin-bottom: 12px;
+      padding: 8px;
+    }
+    
+    .expertise-title {
+      font-weight: bold;
+      font-size: 10pt;
+      margin-bottom: 3px;
+      color: #000;
+    }
+    
+    .expertise-status {
+      font-weight: bold;
+      margin-bottom: 3px;
+      font-size: 9pt;
+      color: #000;
+    }
+    
+    .expertise-comment {
+      font-size: 8pt;
+      color: #000;
+      margin-top: 3px;
+    }
+    
+    .section-header {
+      font-size: 12pt;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 15px;
+      padding: 8px;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+  <!-- Page Header (appears on every page) -->
+  <div class="page-header">
+    <table style="width: 100%; border-collapse: collapse;">
+      <tr>
+        <td style="width: 25%; vertical-align: middle; text-align: left;">
+          {% if car_image_base64 %}
+          <img src="data:image/jpeg;base64,{{ car_image_base64 }}" alt="Vehicle Image" style="height: 35px; width: 70px; object-fit: cover; border-radius: 3px;">
+          {% endif %}
+        </td>
+        <td style="width: 50%; vertical-align: middle; text-align: center;">
+          <div style="font-size: 16pt; font-weight: bold; color: #dc2626; text-transform: uppercase;">{{ company.name }}</div>
+        </td>
+        <td style="width: 25%; vertical-align: middle; text-align: right; font-size: 8pt; color: #666;">
+          Professional Vehicle Testing Services<br>
+          <strong>VEHICLE INSPECTION CERTIFICATE</strong>
+        </td>
+      </tr>
+    </table>
+  </div>
+  
+  <!-- Page Footer (appears on every page) -->
+  <div class="page-footer">
+    <table style="width: 100%; border-collapse: collapse;">
+      <tr>
+        <td style="width: 50%; vertical-align: top; padding-right: 15px;">
+          <div class="terms-title">Terms & Conditions</div>
+          <div>This certificate shows the test values at time of inspection only. {{ company.name }} is not responsible for any hidden defects and inspection done according to the traffic law. Validity of this certificate is for the same day only.</div>
+        </td>
+        <td style="width: 50%; vertical-align: top; padding-left: 15px; direction: rtl; text-align: right; font-size: 8pt;">
+          <div class="terms-title">الشروط والأحكام</div>
+          <div>تُظهر هذه الشهادة قيم الاختبار في وقت الفحص فقط. {{ company.name }} غير مسؤولة عن أي عيوب خفية والفحص تم وفقاً لقانون المرور. صلاحية هذه الشهادة لنفس اليوم فقط.</div>
+        </td>
+      </tr>
+    </table>
+    <div class="company-contact">
+      Tel: {{ company.phone if company.phone else 'N/A' }} | Email: {{ company.email if company.email else 'N/A' }}{% if company.address %} | {{ company.address.street_address if company.address.street_address else '' }}{{ ', ' + company.address.city if company.address.city else '' }}{% endif %}
+    </div>
+  </div>
+  
+  <!-- Vehicle Information Box (same as existing PDFs) -->
+  <div style="display: flex; margin-bottom: 10px; font-size: 10pt; border: 2px solid #000; padding: 10px;">
+    <div style="width: 50%; padding-right: 10px;">
+      <div style="margin-bottom: 5px;"><strong>Ref #:</strong> {{ report.id }}</div>
+      <div style="margin-bottom: 5px;"><strong>Customer:</strong> {{ customer.full_name if customer else 'N/A' }}</div>
+      <div style="margin-bottom: 5px;"><strong>Vehicle:</strong> {{ vehicle.brand }} {{ vehicle.model if vehicle else 'N/A' }}</div>
+      <div style="margin-bottom: 5px;"><strong>Color:</strong> {{ vehicle.color.value if vehicle and vehicle.color else 'N/A' }}</div>
+      <div style="margin-bottom: 5px;"><strong>Inspector:</strong> {{ staff.full_name if staff else 'Administrator' }}</div>
+    </div>
+    <div style="width: 50%; padding-left: 10px;">
+      <div style="margin-bottom: 5px;"><strong>Date:</strong> {{ report.created_at.strftime('%d-%b-%Y %I:%M %p') if report.created_at else 'N/A' }}</div>
+      <div style="margin-bottom: 5px;"><strong>VIN #:</strong> {{ vehicle.chassis_number if vehicle else 'N/A' }}</div>
+      <div style="margin-bottom: 5px;"><strong>Model:</strong> {{ vehicle.model_year if vehicle else 'N/A' }}</div>
+      <div style="margin-bottom: 5px;"><strong>Mileage:</strong> {{ vehicle.mileage if vehicle else 'N/A' }}</div>
+      <div style="margin-bottom: 5px;"><strong>Phone:</strong> {{ customer.phone_number if customer else 'N/A' }}</div>
+    </div>
+  </div>
+
+  <!-- Certificate Content - Bilingual Layout -->
+  <div class="certificate-content">
+    <table style="width: 100%; border-collapse: collapse;">
+      <tr>
+        <td style="width: 50%; vertical-align: top; padding-right: 15px;">
+          <div class="section-header">INSPECTION RESULTS</div>
+          
+          {% for pckg_report in package_expertise_reports %}
+            {% if pckg_report.pass_fail or (pckg_report.comment and pckg_report.comment|string|trim and pckg_report.comment|string|trim|lower not in ['none', 'null', '']) %}
+              {% set expertise_name = pckg_report.expertise_type_name|replace(' Expertise', '') %}
+              <div class="expertise-item">
+                <div class="expertise-title">{{ expertise_name|upper }}</div>
+                {% if pckg_report.pass_fail %}
+                  <div class="expertise-status">{{ pckg_report.pass_fail|upper }}</div>
+                {% endif %}
+                {% if pckg_report.comment and pckg_report.comment|string|trim and pckg_report.comment|string|trim|lower not in ['none', 'null', ''] %}
+                  <div class="expertise-comment"><strong>Comment:</strong> 
+                    {% if pckg_report.comment_english %}
+                      {{ pckg_report.comment_english }}
+                    {% else %}
+                      {{ pckg_report.comment }}
+                    {% endif %}
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </td>
+        
+        <td style="width: 50%; vertical-align: top; padding-left: 15px; direction: rtl; text-align: right; font-size: 9pt;">
+          <div class="section-header">نتائج الفحص</div>
+          
+          {% for pckg_report in package_expertise_reports %}
+            {% if pckg_report.pass_fail or (pckg_report.comment_arabic and pckg_report.comment_arabic|string|trim and pckg_report.comment_arabic|string|trim|lower not in ['none', 'null', '']) %}
+              {% set expertise_name = pckg_report.expertise_type_name|replace(' Expertise', '') %}
+              {% set arabic_expertise_name = {
+                'Paint': 'الطلاء',
+                'Body': 'الهيكل', 
+                'Paint & Body': 'الطلاء والهيكل',
+                'Engine': 'المحرك',
+                'Brake': 'الفرامل',
+                'Suspension': 'نظام التعليق',
+                'Interior': 'الداخلية',
+                'Exterior': 'الخارجية',
+                'Interior & Exterior': 'الداخلية والخارجية',
+                'Mechanical': 'الميكانيكية',
+                'ECU': 'وحدة التحكم الإلكترونية',
+                'Road': 'الطريق'
+              }.get(expertise_name, expertise_name) %}
+              
+              <div class="expertise-item">
+                <div class="expertise-title">{{ arabic_expertise_name }}</div>
+                {% if pckg_report.pass_fail %}
+                  <div class="expertise-status">
+                    {% if pckg_report.pass_fail == 'Pass' %}
+                      نجح
+                    {% elif pckg_report.pass_fail == 'Fail' %}
+                      فشل
+                    {% endif %}
+                  </div>
+                {% endif %}
+                {% if pckg_report.comment_arabic and pckg_report.comment_arabic|string|trim and pckg_report.comment_arabic|string|trim|lower not in ['none', 'null', ''] %}
+                  <div class="expertise-comment"><strong>ملاحظة:</strong> {{ pckg_report.comment_arabic }}</div>
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </td>
+      </tr>
+    </table>
+  </div>
+
+</body>
+</html>

@@ -68,29 +68,272 @@
 
 {% include 'report_sections/expertises/vehicle_header.html' %}
 
-<h2 class="text-lg font-semibold mb-4">
-  {{ expertise_report.expertise_type.name }} {{ _('Inspection') }}
-</h2>
-<p class="mb-4">{{ _('Please provide your comments for the road test:') }}</p>
+<h2 class="text-lg font-semibold mb-4">{{ _('Road Inspection') }}</h2>
 
-<form id="expertiseForm"  method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
+<form id="expertiseForm" method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
   <input type="hidden" name="current_expertise_type" value="{{ current_expertise_type }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-  <div class="form-section">
-    <label for="technician_comment">{{ _('Technician Comment') }}</label>
+  <!-- Technician Comment Section (Moved to Top) -->
+  <div class="bg-white shadow-md rounded-lg p-4 mb-4">
+    <label for="technician_comment" class="block text-gray-700 font-semibold mb-2">
+      {{ _('Technician Comment') }}
+    </label>
     <textarea
       id="technician_comment"
       name="technician_comment"
       rows="4"
+      class="w-full p-2 border border-gray-300 rounded"
       placeholder="{{ _('Enter technician comment here...') }}"
     >{{ expertise_report.comment }}</textarea>
   </div>
 
-  <div class="text-right">
-    <button type="submit">{{ _('Save') }}</button>
+  <!-- Pass/Fail Section -->
+  <div class="bg-white shadow-md rounded-lg p-4 mb-4">
+    <label class="block text-gray-700 font-semibold mb-3">
+      {{ _('Overall Assessment') }}
+    </label>
+    <div class="flex gap-6">
+      <label class="flex items-center cursor-pointer">
+        <input
+          type="radio"
+          name="pass_fail"
+          value="Pass"
+          class="mr-2 w-5 h-5"
+          {% if expertise_report.pass_fail == 'Pass' %}checked{% endif %}
+        >
+        <span class="text-green-600 font-semibold">{{ _('Pass') }}</span>
+      </label>
+      <label class="flex items-center cursor-pointer">
+        <input
+          type="radio"
+          name="pass_fail"
+          value="Fail"
+          class="mr-2 w-5 h-5"
+          {% if expertise_report.pass_fail == 'Fail' %}checked{% endif %}
+        >
+        <span class="text-red-600 font-semibold">{{ _('Fail') }}</span>
+      </label>
+    </div>
+  </div>
+  <!-- Toggle Button for Detailed Features -->
+  <div class="bg-white shadow-md rounded-lg p-4 mb-4">
+    <button
+      type="button"
+      onclick="toggleRoadFeatures()"
+      id="toggleFeatures"
+      class="w-full bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+    >
+      {{ _('Show Detailed Road Features') }}
+    </button>
+  </div>
+
+  <script>
+  function toggleRoadFeatures() {
+    var featuresSection = document.getElementById('featuresSection');
+    var toggleBtn = document.getElementById('toggleFeatures');
+    
+    if (featuresSection.style.display === 'none' || featuresSection.style.display === '') {
+      featuresSection.style.display = 'block';
+      toggleBtn.textContent = 'Hide Detailed Road Features';
+      toggleBtn.className = 'w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded';
+    } else {
+      featuresSection.style.display = 'none';
+      toggleBtn.textContent = 'Show Detailed Road Features';
+      toggleBtn.className = 'w-full bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded';
+    }
+  }
+  </script>
+
+  <!-- Detailed Road Features (Hidden by Default) -->
+  <div id="featuresSection" class="bg-white shadow-md rounded-lg p-4 mb-4" style="display: none;">
+    <h3 class="text-lg font-semibold mb-3">{{ _('Detailed Road Features') }}</h3>
+    <p class="text-sm text-gray-600 mb-3">Found {{ expertise_report.features|length }} features</p>
+    
+    {# Road-specific statuses #}
+    {% set status_choices = [
+       'Good', 'Fair', 'Poor'
+     ]
+    %}
+
+    <!-- Feature List -->
+    <div class="grid grid-cols-1 gap-4">
+      {% for feature in expertise_report.features %}
+      <div class="border rounded p-3">
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          {{ feature.name }}
+        </label>
+        <select
+          name="feature_{{ feature.id }}"
+          class="w-full p-2 border border-gray-300 rounded"
+        >
+          {% for s in status_choices %}
+            <option
+              value="{{ s }}"
+              {% if feature.status|string == s|string %}selected{% endif %}
+            >{{ _(s) }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Submit Button -->
+  <div class="flex justify-end">
+    <button
+      type="submit"
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+    >
+      {{ _('Save') }}
+    </button>
   </div>
 </form>
+
+<style>
+  /* Custom radio button styling */
+  input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #4A5568;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+  
+  input[type="radio"]:checked {
+    border-color: #38B2AC;
+    background-color: #38B2AC;
+  }
+  
+  input[type="radio"]:checked::before {
+    content: '';
+    display: block;
+    width: 8px;
+    height: 8px;
+    background-color: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  input[type="radio"]:hover {
+    border-color: #68D391;
+  }
+
+  /* Mobile responsive styles */
+  @media (max-width: 768px) {
+    textarea {
+      font-size: 16px !important;
+      min-height: 120px !important;
+      padding: 16px !important;
+      border-radius: 8px !important;
+      border: 2px solid #e9ecef !important;
+    }
+    
+    button[type="submit"] {
+      width: 100% !important;
+      padding: 16px !important;
+      font-size: 18px !important;
+      font-weight: 600 !important;
+      margin-top: 1.5rem !important;
+      border-radius: 8px !important;
+    }
+    
+    input[type="radio"] {
+      width: 24px;
+      height: 24px;
+    }
+    
+    .flex.gap-6 {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('expertiseForm');
+  var hasUnsavedChanges = false;
+  var isSubmitting = false;
+  
+  // Track form changes
+  Array.from(form.elements).forEach(function(element) {
+    if (element.name && element.type !== 'hidden' && element.type !== 'submit') {
+      element.addEventListener('change', function() {
+        hasUnsavedChanges = true;
+      });
+    }
+  });
+  
+  // Intercept navigation attempts
+  window.addEventListener('beforeunload', function(e) {
+    if (hasUnsavedChanges && !isSubmitting) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+  
+  // Expose unsaved changes status to parent window
+  window.expertiseHasUnsavedChanges = function() {
+    return hasUnsavedChanges && !isSubmitting;
+  };
+  
+  window.expertiseSaveChanges = function() {
+    if (hasUnsavedChanges && !isSubmitting) {
+      isSubmitting = true;
+      form.submit();
+      return true;
+    }
+    return false;
+  };
+  
+  window.expertiseClearUnsavedFlag = function() {
+    hasUnsavedChanges = false;
+  };
+  
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    isSubmitting = true;
+    
+    const formData = new FormData(form);
+    
+    fetch(form.action, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams(formData)
+    })
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data) {
+      if (data.success) {
+        hasUnsavedChanges = false;
+        alert('Expertise updated successfully!');
+        window.location.reload();
+      } else {
+        alert('Update failed: ' + (data.error || 'Unknown error'));
+      }
+    })
+    .catch(function(error) {
+      console.error('Error:', error);
+      alert('Update failed. Please check your inputs.');
+    })
+    .finally(function() {
+      isSubmitting = false;
+    });
+  });
+});
+</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

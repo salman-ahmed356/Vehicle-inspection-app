@@ -1,8 +1,8 @@
 {% include 'report_sections/expertises/vehicle_header.html' %}
 
-<h2 class="text-lg font-semibold mb-4">{{ _('Brake Test') }}</h2>
+<h2 class="text-lg font-semibold mb-4">{{ expertise_title }}</h2>
 
-<form id="brakeForm" method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
+<form id="expertiseForm" method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
   <input type="hidden" name="current_expertise_type" value="{{ current_expertise_type }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
@@ -53,68 +53,34 @@
   <div class="bg-white shadow-md rounded-lg p-4 mb-4">
     <button
       type="button"
-      onclick="toggleBrakeFeatures()"
       id="toggleFeatures"
       class="w-full bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
     >
-      {{ _('Show Detailed Brake Features') }}
+      {{ _('Show Detailed Features') }}
     </button>
   </div>
 
-  <script>
-  function toggleBrakeFeatures() {
-    var featuresSection = document.getElementById('featuresSection');
-    var toggleBtn = document.getElementById('toggleFeatures');
-    
-    if (featuresSection.style.display === 'none' || featuresSection.style.display === '') {
-      featuresSection.style.display = 'block';
-      toggleBtn.textContent = 'Hide Detailed Brake Features';
-      toggleBtn.className = 'w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded';
-    } else {
-      featuresSection.style.display = 'none';
-      toggleBtn.textContent = 'Show Detailed Brake Features';
-      toggleBtn.className = 'w-full bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded';
-    }
-  }
-  </script>
-
-  <!-- Detailed Brake Features (Hidden by Default) -->
+  <!-- Features Section (Hidden by Default) -->
   <div id="featuresSection" class="bg-white shadow-md rounded-lg p-4 mb-4" style="display: none;">
-    <h3 class="text-lg font-semibold mb-3">{{ _('Detailed Brake Features') }}</h3>
-    <p class="text-sm text-gray-600 mb-3">Found {{ expertise_report.features|length }} features</p>
-    
-    {# Brake status options #}
-    {% set brake_status_choices = [
-       '🟢 OK – No issues, brakes performing well.',
-       '🟡 Attention – Wear visible, service recommended soon.',
-       '🔴 Critical – Unsafe, needs immediate replacement.'
-     ]
-    %}
-
-    {# Get all features #}
-    {% set feats = expertise_report.features %}
-    
-    <!-- Feature List -->
-    <div class="grid grid-cols-1 gap-4">
-      {% for feature in feats %}
-      <div class="border rounded p-3">
-        <label class="block text-sm font-medium text-gray-700 mb-2">
-          {{ feature.name }}
-        </label>
-        <select
-          name="feature_{{ feature.id }}"
-          class="w-full p-2 border border-gray-300 rounded"
-        >
-          {% for status in brake_status_choices %}
-            <option
-              value="{{ status }}"
-              {% if feature.status|string == status|string %}selected{% endif %}
-            >{{ status }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      {% endfor %}
+    <h3 class="text-lg font-semibold mb-3">{{ _('Detailed Features') }}</h3>
+    {% for feature in expertise_report.features %}
+    <div class="mb-3">
+      <label class="block text-sm font-medium text-gray-700 mb-1">
+        {{ feature.name }}
+      </label>
+      <select
+        name="feature_{{ feature.id }}"
+        class="w-full p-2 border border-gray-300 rounded"
+      >
+        {% for status in feature_statuses %}
+          <option
+            value="{{ status }}"
+            {% if feature.status == status %}selected{% endif %}
+          >{{ status }}</option>
+        {% endfor %}
+      </select>
     </div>
+    {% endfor %}
   </div>
 
   <!-- Submit Button -->
@@ -256,68 +222,15 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(function(data) {
       if (data.success) {
         hasUnsavedChanges = false;
-        alert('Expertise updated successfully!');
+        alert('{{ _("Expertise updated successfully!") }}');
         window.location.reload();
       } else {
-        alert('Update failed: ' + (data.error || 'Unknown error'));
+        alert('{{ _("Update failed: ") }}' + (data.error || '{{ _("Unknown error") }}'));
       }
     })
     .catch(function(error) {
       console.error('Error:', error);
-      alert('Update failed. Please check your inputs.');
-    })
-    .finally(function() {
-      isSubmitting = false;
-    });
-  });
-});
-</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const form = document.getElementById('brakeForm');
-  var hasUnsavedChanges = false;
-  var isSubmitting = false;
-  
-  // Track form changes
-  Array.from(form.elements).forEach(function(element) {
-    if (element.name && element.type !== 'hidden' && element.type !== 'submit') {
-      element.addEventListener('change', function() {
-        hasUnsavedChanges = true;
-      });
-    }
-  });
-  
-  // Form submission
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    isSubmitting = true;
-    
-    const formData = new FormData(form);
-    const url = "{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}";
-    
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: new URLSearchParams(formData)
-    })
-    .then(function(response) {
-      return response.json();
-    })
-    .then(function(data) {
-      if (data.success) {
-        hasUnsavedChanges = false;
-        alert("{{ _('Brake inspection updated successfully!') }}");
-        window.location.reload();
-      } else {
-        alert("{{ _('Update failed: ') }}" + (data.error || "{{ _('Unknown error') }}"));
-      }
-    })
-    .catch(function(error) {
-      console.error('Error:', error);
-      alert("{{ _('Update failed. Please check your inputs.') }}");
+      alert('{{ _("Update failed. Please check your inputs.") }}');
     })
     .finally(function() {
       isSubmitting = false;

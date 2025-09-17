@@ -181,55 +181,14 @@
 
 {% include 'report_sections/expertises/vehicle_header.html' %}
 
-<h2 class="text-lg font-semibold mb-4">{{ _('Bodywork Inspection') }}</h2>
-<p class="mb-4">{{ _('Please specify the condition of each inspected area on the vehicle!') }}</p>
+<h2 class="text-lg font-semibold mb-4">{{ _('Body Inspection') }}</h2>
 
 <form id="expertiseForm" method="POST" action="{{ url_for('reports.expertise_detail', expertise_report_id=expertise_report.id) }}">
   <input type="hidden" name="current_expertise_type" value="{{ current_expertise_type }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-  {% set status_choices = [
-       'No Issue',
-       'Scratch',
-       'Dent/Crack/Deformation',
-       'Repaired/Painted'
-     ]
-  %}
-
-  <!-- Responsive Feature List -->
-  <div class="features-container">
-    <!-- Header Row (Desktop Only) -->
-    <div class="features-header">
-      <div class="header-feature">{{ _('Checked Feature') }}</div>
-      {% for s in status_choices %}
-        <div class="header-status">{{ _(s) }}</div>
-      {% endfor %}
-    </div>
-    
-    <!-- Feature Rows -->
-    {% for feature in expertise_report.features %}
-    <div class="feature-row">
-      <div class="feature-name">{{ feature.name }}</div>
-      <div class="feature-options">
-        {% for s in status_choices %}
-        <div class="option-item">
-          <span class="option-label">{{ _(s) }}</span>
-          <input
-            type="radio"
-            name="feature_{{ feature.id }}"
-            value="{{ s }}"
-            id="feature_{{ feature.id }}_{{ loop.index }}"
-            {% if feature.status|string == s|string %}checked{% endif %}
-          >
-          <label for="feature_{{ feature.id }}_{{ loop.index }}" class="radio-label"></label>
-        </div>
-        {% endfor %}
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-
-  <div class="mb-4">
+  <!-- Technician Comment Section (Moved to Top) -->
+  <div class="bg-white shadow-md rounded-lg p-4 mb-4">
     <label for="technician_comment" class="block text-gray-700 font-semibold mb-2">
       {{ _('Technician Comment') }}
     </label>
@@ -242,6 +201,98 @@
     >{{ expertise_report.comment }}</textarea>
   </div>
 
+  <!-- Pass/Fail Section -->
+  <div class="bg-white shadow-md rounded-lg p-4 mb-4">
+    <label class="block text-gray-700 font-semibold mb-3">
+      {{ _('Overall Assessment') }}
+    </label>
+    <div class="flex gap-6">
+      <label class="flex items-center cursor-pointer">
+        <input
+          type="radio"
+          name="pass_fail"
+          value="Pass"
+          class="mr-2 w-5 h-5"
+          {% if expertise_report.pass_fail == 'Pass' %}checked{% endif %}
+        >
+        <span class="text-green-600 font-semibold">{{ _('Pass') }}</span>
+      </label>
+      <label class="flex items-center cursor-pointer">
+        <input
+          type="radio"
+          name="pass_fail"
+          value="Fail"
+          class="mr-2 w-5 h-5"
+          {% if expertise_report.pass_fail == 'Fail' %}checked{% endif %}
+        >
+        <span class="text-red-600 font-semibold">{{ _('Fail') }}</span>
+      </label>
+    </div>
+  </div>
+  <!-- Toggle Button for Detailed Features -->
+  <div class="bg-white shadow-md rounded-lg p-4 mb-4">
+    <button
+      type="button"
+      onclick="toggleBodyFeatures()"
+      id="toggleFeatures"
+      class="w-full bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+    >
+      {{ _('Show Detailed Body Features') }}
+    </button>
+  </div>
+
+  <script>
+  function toggleBodyFeatures() {
+    var featuresSection = document.getElementById('featuresSection');
+    var toggleBtn = document.getElementById('toggleFeatures');
+    
+    if (featuresSection.style.display === 'none' || featuresSection.style.display === '') {
+      featuresSection.style.display = 'block';
+      toggleBtn.textContent = 'Hide Detailed Body Features';
+      toggleBtn.className = 'w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded';
+    } else {
+      featuresSection.style.display = 'none';
+      toggleBtn.textContent = 'Show Detailed Body Features';
+      toggleBtn.className = 'w-full bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded';
+    }
+  }
+  </script>
+
+  <!-- Detailed Body Features (Hidden by Default) -->
+  <div id="featuresSection" class="bg-white shadow-md rounded-lg p-4 mb-4" style="display: none;">
+    <h3 class="text-lg font-semibold mb-3">{{ _('Detailed Body Features') }}</h3>
+    <p class="text-sm text-gray-600 mb-3">Found {{ expertise_report.features|length }} features</p>
+    
+    {# Body-specific statuses #}
+    {% set status_choices = [
+       'No Issue', 'Scratch', 'Dent/Crack/Deformation', 'Repaired/Painted'
+     ]
+    %}
+
+    <!-- Feature List -->
+    <div class="grid grid-cols-1 gap-4">
+      {% for feature in expertise_report.features %}
+      <div class="border rounded p-3">
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          {{ feature.name }}
+        </label>
+        <select
+          name="feature_{{ feature.id }}"
+          class="w-full p-2 border border-gray-300 rounded"
+        >
+          {% for s in status_choices %}
+            <option
+              value="{{ s }}"
+              {% if feature.status|string == s|string %}selected{% endif %}
+            >{{ _(s) }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Submit Button -->
   <div class="flex justify-end">
     <button
       type="submit"

@@ -125,6 +125,8 @@ class ExpertiseReport(db.Model):
     report_id         = db.Column(db.Integer, db.ForeignKey('report.id'), nullable=False, index=True)
     expertise_type_id = db.Column(db.Integer, db.ForeignKey('expertise_types.id'), nullable=False, index=True)
     comment           = db.Column(db.Text, nullable=True)
+    comment_arabic    = db.Column(db.Text, nullable=True)
+    pass_fail         = db.Column(db.String(10), nullable=True)
 
     # ← Matching two-way relationship
     report = db.relationship(

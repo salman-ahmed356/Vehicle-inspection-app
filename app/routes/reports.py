@@ -4,6 +4,12 @@ from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 import datetime as dt
 from sqlalchemy import or_
+try:
+    from deep_translator import GoogleTranslator
+    TRANSLATION_AVAILABLE = True
+except ImportError:
+    TRANSLATION_AVAILABLE = False
+    GoogleTranslator = None
 
 from ..database import db
 from ..enums import FuelType, TransmissionType, Color, ReportStatus
@@ -1079,6 +1085,35 @@ def expertise_detail(expertise_report_id):
                 new_comment = request.form.get('technician_comment') or ''
                 if new_comment != rpt.comment:
                     rpt.comment = new_comment
+                    
+                    # Store original comment and create translation for PDF
+                    rpt.comment = new_comment  # Always store original comment
+                    
+                    # Auto-translate for PDF generation if translation is available
+                    if new_comment.strip() and TRANSLATION_AVAILABLE:
+                        try:
+                            # Try to detect if it's Arabic (contains Arabic characters)
+                            import re
+                            arabic_pattern = re.compile(r'[\u0600-\u06FF]')
+                            has_arabic = bool(arabic_pattern.search(new_comment))
+                            
+                            if has_arabic:  # Arabic comment - translate to English for PDF
+                                translated = GoogleTranslator(source='ar', target='en').translate(new_comment)
+                                rpt.comment_arabic = new_comment  # Store original Arabic
+                                # Don't change the main comment, keep it in Arabic
+                            else:  # English comment - translate to Arabic for PDF
+                                translated = GoogleTranslator(source='en', target='ar').translate(new_comment)
+                                rpt.comment_arabic = translated  # Store translated Arabic
+                        except Exception as e:
+                            print(f"Translation error: {e}")
+                            # If translation fails, just store the original comment
+                    
+                    db.session.merge(rpt)  # Explicitly mark as modified
+                
+                # Handle pass_fail field
+                new_pass_fail = request.form.get('pass_fail') or None
+                if new_pass_fail != rpt.pass_fail:
+                    rpt.pass_fail = new_pass_fail
                     db.session.merge(rpt)  # Explicitly mark as modified
 
 
@@ -1205,6 +1240,20 @@ def generate_detailed_pdf(report_id):
     from flask import make_response
     
     pdf_response = generate_pdf_simple(report_id, include_detailed_images=True)
+    response = make_response(pdf_response)
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
+
+
+@reports.route('/pdfs/generate_certificate/<int:report_id>')
+@login_required
+def generate_certificate_pdf(report_id):
+    from ..services.pdf_service_certificate import generate_certificate_pdf
+    from flask import make_response
+    
+    pdf_response = generate_certificate_pdf(report_id)
     response = make_response(pdf_response)
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     response.headers['Pragma'] = 'no-cache'
