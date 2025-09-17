@@ -151,20 +151,22 @@
   
   <!-- Page Footer (appears on every page) -->
   <div class="page-footer">
-    <table style="width: 100%; border-collapse: collapse;">
-      <tr>
-        <td style="width: 50%; vertical-align: top; padding-right: 15px;">
-          <div class="terms-title">Terms & Conditions</div>
-          <div>This certificate shows the test values at time of inspection only. {{ company.name }} is not responsible for any hidden defects and inspection done according to the traffic law. Validity of this certificate is for the same day only.</div>
-        </td>
-        <td style="width: 50%; vertical-align: top; padding-left: 15px; direction: rtl; text-align: right; font-size: 8pt;">
-          <div class="terms-title">الشروط والأحكام</div>
-          <div>تُظهر هذه الشهادة قيم الاختبار في وقت الفحص فقط. {{ company.name }} غير مسؤولة عن أي عيوب خفية والفحص تم وفقاً لقانون المرور. صلاحية هذه الشهادة لنفس اليوم فقط.</div>
-        </td>
-      </tr>
-    </table>
-    <div class="company-contact">
-      Tel: {{ company.phone if company.phone else 'N/A' }} | Email: {{ company.email if company.email else 'N/A' }}{% if company.address %} | {{ company.address.street_address if company.address.street_address else '' }}{{ ', ' + company.address.city if company.address.city else '' }}{% endif %}
+    <div style="border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+          <td style="width: 50%; vertical-align: top; padding-right: 15px;">
+            <div class="terms-title">Terms & Conditions</div>
+            <div>This certificate shows the test values at time of inspection only. {{ company.name }} is not responsible for any hidden defects and inspection done according to the traffic law. Validity of this certificate is for the same day only.</div>
+          </td>
+          <td style="width: 50%; vertical-align: top; padding-left: 15px; direction: rtl; text-align: right; font-size: 8pt;">
+            <div class="terms-title">الشروط والأحكام</div>
+            <div>تُظهر هذه الشهادة قيم الاختبار في وقت الفحص فقط. {{ company.name }} غير مسؤولة عن أي عيوب خفية والفحص تم وفقاً لقانون المرور. صلاحية هذه الشهادة لنفس اليوم فقط.</div>
+          </td>
+        </tr>
+      </table>
+      <div class="company-contact">
+        Tel: {{ company.phone if company.phone else 'N/A' }} | Email: {{ company.email if company.email else 'N/A' }}{% if company.address %} | {{ company.address.street_address if company.address.street_address else '' }}{{ ', ' + company.address.city if company.address.city else '' }}{% endif %}
+      </div>
     </div>
   </div>
   
