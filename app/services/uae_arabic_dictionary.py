@@ -91,19 +91,28 @@ UAE_ARABIC_TERMS = {
 }
 
 def get_uae_arabic_translation(english_text):
+    print(f"TITLE TRANSLATE DEBUG: Input: '{english_text}'")
     try:
         import translators as ts
-        return ts.translate_text(english_text, translator='bing', from_language='en', to_language='ar')
-    except:
+        result = ts.translate_text(english_text, translator='bing', from_language='en', to_language='ar')
+        print(f"TITLE TRANSLATE DEBUG: Result: '{result}'")
+        return result
+    except Exception as e:
+        print(f"TITLE TRANSLATE DEBUG: Failed: {e}")
         return english_text
 
 def translate_comment_to_arabic(comment_text):
     if not comment_text or not comment_text.strip():
         return ''
     
+    print(f"TRANSLATE DEBUG: Input text: '{comment_text}'")
+    
     try:
         import translators as ts
-        return ts.translate_text(comment_text.strip(), translator='bing', from_language='en', to_language='ar')
+        print("TRANSLATE DEBUG: Translators imported successfully")
+        result = ts.translate_text(comment_text.strip(), translator='bing', from_language='en', to_language='ar')
+        print(f"TRANSLATE DEBUG: Translation result: '{result}'")
+        return result
     except Exception as e:
-        print(f"Translation failed: {e}")
+        print(f"TRANSLATE DEBUG: Translation failed with error: {e}")
         return comment_text
