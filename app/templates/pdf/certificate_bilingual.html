@@ -275,7 +275,7 @@
                   {% endif %}
                 </div>
               {% endif %}
-              {% if pckg_report.comment_arabic and pckg_report.comment_arabic != pckg_report.comment %}
+              {% if has_comment or has_arabic_comment %}
                 <div class="arabic-comment">{{ pckg_report.comment_arabic|replace('\n', '<br>')|safe }}</div>
               {% endif %}
             </td>

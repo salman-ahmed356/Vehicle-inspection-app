@@ -56,13 +56,13 @@ UAE_ARABIC_TERMS = {
     'Terms & Conditions': 'الشروط والأحكام',
     'Inspection Results': 'نتائج الفحص',
     
-    # Common automotive phrases from PDF - Missing translations added
+    # Common automotive phrases from PDF - UAE dialect
     'damaged': 'متضرر',
-    'needs to be serviced': 'يحتاج للصيانة',
-    'needs to be replaced': 'يحتاج للاستبدال',
-    'needs replacement': 'يحتاج للاستبدال',
-    'needs service': 'يحتاج للصيانة',
-    'has been repainted': 'تم إعادة طلائه',
+    'needs to be serviced': 'يحتاج صيانة',
+    'needs to be replaced': 'يحتاج تبديل',
+    'needs replacement': 'يحتاج تبديل',
+    'needs service': 'يحتاج صيانة',
+    'has been repainted': 'مصبوغ',
     'are damaged': 'متضررة',
     'is damaged': 'متضرر',
     'scratches': 'خدوش',
@@ -76,7 +76,7 @@ UAE_ARABIC_TERMS = {
     'door': 'باب',
     'light': 'ضوء',
     'mounting': 'تركيب',
-    'not working': 'لا يعمل',
+    'not working': 'ما يشتغل',
     'scratch': 'خدش',
     'dent': 'انبعاج',
     'loose': 'مفكوك',
@@ -85,9 +85,15 @@ UAE_ARABIC_TERMS = {
     'electrical issues': 'مشاكل كهربائية',
     'electrical issues in door': 'مشاكل كهربائية في الباب',
     'passenger door scratch': 'خدش باب الراكب',
-    'Front left headlight not working': 'الضوء الأمامي الأيسر لا يعمل',
-    'blinker not working': 'الغماز لا يعمل',
+    'front left headlight not working': 'الضوء الأمامي الأيسر ما يشتغل',
+    'blinker not working': 'الغماز ما يشتغل',
     'dent on front fender': 'انبعاج في الجناح الأمامي',
+    'front chassis damaged': 'الشاسيه الأمامي متضرر',
+    'rear chassis scratch': 'خدش الشاسيه الخلفي',
+    'passenger door repainted': 'باب الراكب مصبوغ',
+    'bootlid repainted': 'غطاء الصندوق مصبوغ',
+    'engine hood repainted': 'غطاء المحرك مصبوغ',
+    'belts are loose': 'الأحزمة مفكوكة',
 }
 
 def get_uae_arabic_translation(english_text):
@@ -119,21 +125,39 @@ def translate_comment_to_arabic(comment_text):
     if not comment_text or not comment_text.strip():
         return ''
     
+    # First check local UAE dictionary for common phrases
+    comment_lower = comment_text.lower().strip()
+    for eng_phrase, ar_phrase in UAE_ARABIC_TERMS.items():
+        if eng_phrase.lower() in comment_lower:
+            comment_lower = comment_lower.replace(eng_phrase.lower(), ar_phrase)
+    
+    # If we found local translations, return the mixed result
+    if comment_lower != comment_text.lower().strip():
+        return comment_lower
+    
     try:
         import requests
         import urllib.parse
         
-        # Direct HTTP request to Google Translate with UAE region
+        # Force UAE Arabic dialect with multiple parameters
         text = urllib.parse.quote(comment_text.strip())
-        url = f'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&hl=ar-AE&dt=t&q={text}'
+        # Use UAE-specific parameters: tl=ar (Arabic), hl=ar-AE (UAE region), gl=AE (country)
+        url = f'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&hl=ar-AE&gl=AE&dt=t&dt=bd&ie=UTF-8&oe=UTF-8&q={text}'
         
-        response = requests.get(url, timeout=5)
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Accept-Language': 'ar-AE,ar;q=0.9,en;q=0.8'
+        }
+        
+        response = requests.get(url, headers=headers, timeout=10)
         if response.status_code == 200:
             result = response.json()
             if result and result[0] and result[0][0]:
-                return result[0][0][0]
-    except:
-        pass
+                translated_text = result[0][0][0]
+                if translated_text and translated_text.strip():
+                    return translated_text.strip()
+    except Exception as e:
+        print(f"Translation error for '{comment_text}': {e}")
     
-    # Fallback to original text if translation fails
+    # Fallback to original text
     return comment_text
