@@ -74,7 +74,7 @@
       <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg">
         Save Main Inspection
       </button>
-      <a href="{{ url_for('reports.generate_certificate_pdf', report_id=report.id) }}" 
+      <a href="{{ url_for('pdfs.generate_report_pdf', report_id=report.id) }}" 
          target="_blank" 
          class="bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg inline-block">
         Generate Report
