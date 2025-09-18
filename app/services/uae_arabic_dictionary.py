@@ -102,7 +102,11 @@ def get_uae_arabic_translation(english_text):
     # For unknown terms, use Microsoft Translator with UAE Arabic
     try:
         import translators as ts
-        return ts.translate_text(english_text, translator='bing', from_language='en', to_language='ar', region='AE')
+        # Try with region first, fallback without region
+        try:
+            return ts.translate_text(english_text, translator='bing', from_language='en', to_language='ar', region='AE')
+        except:
+            return ts.translate_text(english_text, translator='bing', from_language='en', to_language='ar')
     except:
         return english_text  # Return original if translation fails
 
@@ -121,6 +125,10 @@ def translate_comment_to_arabic(comment_text):
     # For longer text, use full translator with UAE Arabic
     try:
         import translators as ts
-        return ts.translate_text(comment_text, translator='bing', from_language='en', to_language='ar', region='AE')
+        # Try with region first, fallback without region
+        try:
+            return ts.translate_text(comment_text, translator='bing', from_language='en', to_language='ar', region='AE')
+        except:
+            return ts.translate_text(comment_text, translator='bing', from_language='en', to_language='ar')
     except:
         return comment_text
