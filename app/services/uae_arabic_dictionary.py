@@ -123,9 +123,9 @@ def translate_comment_to_arabic(comment_text):
         import requests
         import urllib.parse
         
-        # Direct HTTP request to Google Translate
+        # Direct HTTP request to Google Translate with UAE region
         text = urllib.parse.quote(comment_text.strip())
-        url = f'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q={text}'
+        url = f'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&hl=ar-AE&dt=t&q={text}'
         
         response = requests.get(url, timeout=5)
         if response.status_code == 200:
