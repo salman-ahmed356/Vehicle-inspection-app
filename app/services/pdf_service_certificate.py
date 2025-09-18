@@ -80,12 +80,7 @@ def generate_certificate_pdf(report_id):
                     processed_comment_arabic = '\n'.join(lines)
                 else:
                     # Auto-translate English comment if no Arabic comment provided
-                    if processed_comment:
-                        print(f"Translating comment: {processed_comment}")
-                        processed_comment_arabic = translate_comment_to_arabic(processed_comment)
-                        print(f"Translated to: {processed_comment_arabic}")
-                    else:
-                        processed_comment_arabic = ''
+                    processed_comment_arabic = translate_comment_to_arabic(processed_comment) if processed_comment else ''
                 
                 combined_report = type('CombinedReport', (), {
                     'expertise_type_name': item_name,

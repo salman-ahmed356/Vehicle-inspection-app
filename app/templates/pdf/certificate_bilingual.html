@@ -150,15 +150,6 @@
       font-weight: normal !important;
     }
     
-    /* Force normal weight for all Arabic content except titles */
-    td[style*="direction: rtl"] {
-      font-weight: normal !important;
-    }
-    
-    td[style*="direction: rtl"] * {
-      font-weight: normal !important;
-    }
-    
     /* Only titles should be bold */
     .arabic-title {
       font-weight: bold !important;
@@ -168,8 +159,12 @@
       font-weight: bold !important;
     }
     
-    /* Override any inherited bold styling */
+    /* Status and comments should be normal weight */
     .arabic-status {
+      font-weight: normal !important;
+    }
+    
+    .arabic-comment {
       font-weight: normal !important;
     }
     
@@ -280,9 +275,9 @@
                   {% endif %}
                 </div>
               {% endif %}
-              {% if has_arabic_comment %}
+              {% if pckg_report.comment_arabic and pckg_report.comment_arabic != pckg_report.comment %}
                 <div class="arabic-comment">{{ pckg_report.comment_arabic|replace('\n', '<br>')|safe }}</div>
-              {% elif has_comment and not has_arabic_comment %}
+              {% elif has_comment %}
                 <div class="arabic-comment">{{ pckg_report.comment|replace('\n', '<br>')|safe }}</div>
               {% endif %}
             </td>

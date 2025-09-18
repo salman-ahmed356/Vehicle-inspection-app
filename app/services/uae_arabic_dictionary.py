@@ -111,34 +111,28 @@ def get_uae_arabic_translation(english_text):
         return english_text  # Return original if translation fails
 
 def translate_comment_to_arabic(comment_text):
-    """
-    Translate comment text to Arabic, using dictionary for known terms
-    and translator for the rest.
-    """
     if not comment_text or not comment_text.strip():
         return ''
     
-    print(f"DEBUG: Translating comment: '{comment_text}'")
+    text = comment_text.strip()
     
-    # First check if the entire comment is a known term
-    if comment_text.strip() in UAE_ARABIC_TERMS:
-        result = UAE_ARABIC_TERMS[comment_text.strip()]
-        print(f"DEBUG: Found in dictionary: '{result}'")
+    # Check exact match first
+    if text in UAE_ARABIC_TERMS:
+        return UAE_ARABIC_TERMS[text]
+    
+    # Replace dictionary words in the text
+    result = text
+    for english_word, arabic_word in UAE_ARABIC_TERMS.items():
+        if english_word.lower() in result.lower():
+            result = result.replace(english_word, arabic_word)
+    
+    # If we made replacements, return the result
+    if result != text:
         return result
     
-    # For longer text, use full translator with UAE Arabic
+    # Use Microsoft Translator for unknown text
     try:
         import translators as ts
-        # Try with region first, fallback without region
-        try:
-            result = ts.translate_text(comment_text, translator='bing', from_language='en', to_language='ar', region='AE')
-            print(f"DEBUG: Translated with region: '{result}'")
-            return result
-        except Exception as e1:
-            print(f"DEBUG: Region translation failed: {e1}")
-            result = ts.translate_text(comment_text, translator='bing', from_language='en', to_language='ar')
-            print(f"DEBUG: Translated without region: '{result}'")
-            return result
-    except Exception as e2:
-        print(f"DEBUG: All translation failed: {e2}")
-        return comment_text
+        return ts.translate_text(text, translator='bing', from_language='en', to_language='ar')
+    except:
+        return text
