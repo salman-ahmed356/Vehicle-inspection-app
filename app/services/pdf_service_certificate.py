@@ -5,7 +5,7 @@ import base64
 import io
 from ..models import Report, Company, PackageExpertise, ExpertiseReport
 from ..database import db
-from .uae_arabic_dictionary import get_uae_arabic_translation
+from .uae_arabic_dictionary import get_uae_arabic_translation, translate_comment_to_arabic
 
 
 def generate_certificate_pdf(report_id):
@@ -62,8 +62,11 @@ def generate_certificate_pdf(report_id):
             comment = getattr(main_inspection, f'{item_key}_comment', None)
             comment_arabic = getattr(main_inspection, f'{item_key}_comment_arabic', None)
             
-            # Only include items with Pass/Fail status (exclude None)
-            if status and status in ['Pass', 'Fail']:
+            # Include items with Pass/Fail status OR items with None status but have comments
+            has_comment = comment and comment.strip() and comment.strip().lower() not in ['none', 'null', '']
+            has_arabic_comment = comment_arabic and comment_arabic.strip() and comment_arabic.strip().lower() not in ['none', 'null', '']
+            
+            if (status and status in ['Pass', 'Fail']) or (status == 'None' and (has_comment or has_arabic_comment)):
                 # Get Arabic translation for the item name
                 arabic_name = get_uae_arabic_translation(item_name)
                 
@@ -76,12 +79,13 @@ def generate_certificate_pdf(report_id):
                     lines = processed_comment_arabic.split('\n')
                     processed_comment_arabic = '\n'.join(lines)
                 else:
-                    processed_comment_arabic = ''
+                    # Auto-translate English comment if no Arabic comment provided
+                    processed_comment_arabic = translate_comment_to_arabic(processed_comment) if processed_comment else ''
                 
                 combined_report = type('CombinedReport', (), {
                     'expertise_type_name': item_name,
                     'arabic_name': arabic_name,
-                    'pass_fail': status,
+                    'pass_fail': status if status in ['Pass', 'Fail'] else None,  # Don't show None status
                     'comment': processed_comment,
                     'comment_english': processed_comment,
                     'comment_arabic': processed_comment_arabic or processed_comment

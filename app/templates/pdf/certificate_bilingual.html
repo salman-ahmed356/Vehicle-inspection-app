@@ -132,6 +132,7 @@
       color: #000;
       margin-top: 3px;
       white-space: pre-line;
+      font-weight: normal;
     }
     
     .arabic-comment {
@@ -146,6 +147,7 @@
       unicode-bidi: embed;
       line-height: 1.4;
       word-break: break-word;
+      font-weight: normal;
     }
     
     .section-header {
@@ -230,7 +232,9 @@
         </td>
       </tr>
       {% for pckg_report in package_expertise_reports %}
-        {% if pckg_report.pass_fail or (pckg_report.comment and pckg_report.comment|string|trim and pckg_report.comment|string|trim|lower not in ['none', 'null', '']) %}
+        {% set has_comment = pckg_report.comment and pckg_report.comment|string|trim and pckg_report.comment|string|trim|lower not in ['none', 'null', ''] %}
+        {% set has_arabic_comment = pckg_report.comment_arabic and pckg_report.comment_arabic|string|trim and pckg_report.comment_arabic|string|trim|lower not in ['none', 'null', ''] %}
+        {% if pckg_report.pass_fail or has_comment or has_arabic_comment %}
           {% set expertise_name = pckg_report.expertise_type_name|replace(' Expertise', '') %}
           <tr>
             <td style="width: 50%; vertical-align: top; padding-right: 15px; padding-bottom: 8px;">
@@ -238,7 +242,7 @@
               {% if pckg_report.pass_fail %}
                 <div class="expertise-status">{{ pckg_report.pass_fail|upper }}</div>
               {% endif %}
-              {% if pckg_report.comment and pckg_report.comment|string|trim and pckg_report.comment|string|trim|lower not in ['none', 'null', ''] %}
+              {% if has_comment %}
                 <div class="expertise-comment">{% if pckg_report.comment_english %}{{ pckg_report.comment_english }}{% else %}{{ pckg_report.comment }}{% endif %}</div>
               {% endif %}
             </td>
@@ -253,8 +257,10 @@
                   {% endif %}
                 </div>
               {% endif %}
-              {% if pckg_report.comment_arabic and pckg_report.comment_arabic|string|trim and pckg_report.comment_arabic|string|trim|lower not in ['none', 'null', ''] %}
+              {% if has_arabic_comment %}
                 <div class="arabic-comment">{{ pckg_report.comment_arabic|replace('\n', '<br>')|safe }}</div>
+              {% elif has_comment and not has_arabic_comment %}
+                <div class="arabic-comment">{{ pckg_report.comment|replace('\n', '<br>')|safe }}</div>
               {% endif %}
             </td>
           </tr>

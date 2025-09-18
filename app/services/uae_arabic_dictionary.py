@@ -56,10 +56,12 @@ UAE_ARABIC_TERMS = {
     'Terms & Conditions': 'الشروط والأحكام',
     'Inspection Results': 'نتائج الفحص',
     
-    # Common automotive phrases from PDF
+    # Common automotive phrases from PDF - Missing translations added
     'damaged': 'متضرر',
     'needs to be serviced': 'يحتاج للصيانة',
     'needs to be replaced': 'يحتاج للاستبدال',
+    'needs replacement': 'يحتاج للاستبدال',
+    'needs service': 'يحتاج للصيانة',
     'has been repainted': 'تم إعادة طلائه',
     'are damaged': 'متضررة',
     'is damaged': 'متضرر',
@@ -74,6 +76,18 @@ UAE_ARABIC_TERMS = {
     'door': 'باب',
     'light': 'ضوء',
     'mounting': 'تركيب',
+    'not working': 'لا يعمل',
+    'scratch': 'خدش',
+    'dent': 'انبعاج',
+    'loose': 'مفكوك',
+    'are loose': 'مفكوكة',
+    'belts are loose': 'الأحزمة مفكوكة',
+    'electrical issues': 'مشاكل كهربائية',
+    'electrical issues in door': 'مشاكل كهربائية في الباب',
+    'passenger door scratch': 'خدش باب الراكب',
+    'Front left headlight not working': 'الضوء الأمامي الأيسر لا يعمل',
+    'blinker not working': 'الغماز لا يعمل',
+    'dent on front fender': 'انبعاج في الجناح الأمامي',
 }
 
 def get_uae_arabic_translation(english_text):
@@ -85,9 +99,28 @@ def get_uae_arabic_translation(english_text):
     if english_text in UAE_ARABIC_TERMS:
         return UAE_ARABIC_TERMS[english_text]
     
-    # For unknown terms, use Microsoft Translator
+    # For unknown terms, use Microsoft Translator with UAE Arabic
     try:
         import translators as ts
-        return ts.translate_text(english_text, translator='bing', from_language='en', to_language='ar')
+        return ts.translate_text(english_text, translator='bing', from_language='en', to_language='ar', region='AE')
     except:
         return english_text  # Return original if translation fails
+
+def translate_comment_to_arabic(comment_text):
+    """
+    Translate comment text to Arabic, using dictionary for known terms
+    and translator for the rest.
+    """
+    if not comment_text or not comment_text.strip():
+        return ''
+    
+    # First check if the entire comment is a known term
+    if comment_text.strip() in UAE_ARABIC_TERMS:
+        return UAE_ARABIC_TERMS[comment_text.strip()]
+    
+    # For longer text, use full translator with UAE Arabic
+    try:
+        import translators as ts
+        return ts.translate_text(comment_text, translator='bing', from_language='en', to_language='ar', region='AE')
+    except:
+        return comment_text
