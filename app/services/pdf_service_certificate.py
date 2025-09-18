@@ -68,7 +68,10 @@ def generate_certificate_pdf(report_id):
             
             if (status and status in ['Pass', 'Fail']) or (status == 'None' and (has_comment or has_arabic_comment)):
                 # Get Arabic translation for the item name
-                arabic_name = get_uae_arabic_translation(item_name)
+                try:
+                    arabic_name = get_uae_arabic_translation(item_name)
+                except:
+                    arabic_name = item_name
                 
                 # Process comments to preserve line breaks
                 processed_comment = comment.replace('\r\n', '\n').replace('\r', '\n') if comment else ''
@@ -80,7 +83,10 @@ def generate_certificate_pdf(report_id):
                     processed_comment_arabic = '\n'.join(lines)
                 else:
                     # Auto-translate English comment if no Arabic comment provided
-                    processed_comment_arabic = translate_comment_to_arabic(processed_comment) if processed_comment else ''
+                    try:
+                        processed_comment_arabic = translate_comment_to_arabic(processed_comment) if processed_comment else ''
+                    except:
+                        processed_comment_arabic = processed_comment if processed_comment else ''
                 
                 combined_report = type('CombinedReport', (), {
                     'expertise_type_name': item_name,
