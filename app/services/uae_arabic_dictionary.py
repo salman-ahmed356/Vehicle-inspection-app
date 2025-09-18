@@ -94,6 +94,20 @@ UAE_ARABIC_TERMS = {
     'bootlid repainted': 'غطاء الصندوق مصبوغ',
     'engine hood repainted': 'غطاء المحرك مصبوغ',
     'belts are loose': 'الأحزمة مفكوكة',
+    
+    # Individual words for better translation
+    'headlight': 'ضوء أمامي',
+    'blinker': 'غماز',
+    'passenger': 'راكب',
+    'chassis': 'شاسيه',
+    'repainted': 'مصبوغ',
+    'bootlid': 'غطاء الصندوق',
+    'hood': 'غطاء',
+    'fender': 'جناح',
+    'electrical': 'كهربائي',
+    'issues': 'مشاكل',
+    'belts': 'أحزمة',
+    'working': 'يشتغل',
 }
 
 def get_uae_arabic_translation(english_text):
@@ -125,39 +139,107 @@ def translate_comment_to_arabic(comment_text):
     if not comment_text or not comment_text.strip():
         return ''
     
-    # First check local UAE dictionary for common phrases
-    comment_lower = comment_text.lower().strip()
-    for eng_phrase, ar_phrase in UAE_ARABIC_TERMS.items():
-        if eng_phrase.lower() in comment_lower:
-            comment_lower = comment_lower.replace(eng_phrase.lower(), ar_phrase)
+    original_text = comment_text.strip()
     
-    # If we found local translations, return the mixed result
-    if comment_lower != comment_text.lower().strip():
-        return comment_lower
+    # Check for exact matches first
+    if original_text.lower() in UAE_ARABIC_TERMS:
+        return UAE_ARABIC_TERMS[original_text.lower()]
     
+    # Try multiple translation services
+    translated = try_translation_services(original_text)
+    if translated and translated != original_text:
+        return translated
+    
+    # Fallback to word-by-word translation using local dictionary
+    words = original_text.split()
+    translated_words = []
+    translation_found = False
+    
+    for word in words:
+        word_clean = word.lower().strip('.,!?')
+        if word_clean in UAE_ARABIC_TERMS:
+            translated_words.append(UAE_ARABIC_TERMS[word_clean])
+            translation_found = True
+        else:
+            translated_words.append(word)
+    
+    # If some translation occurred, return mixed result
+    if translation_found:
+        return ' '.join(translated_words)
+    
+    # Final fallback - return with Arabic prefix
+    return f"ملاحظة: {original_text}"
+
+def try_translation_services(text):
+    """Try multiple translation services in order of reliability"""
+    
+    # Service 1: MyMemory (Free, no API key needed)
+    try:
+        import requests
+        url = f'https://api.mymemory.translated.net/get?q={text}&langpair=en|ar'
+        response = requests.get(url, timeout=5)
+        if response.status_code == 200:
+            data = response.json()
+            if data.get('responseStatus') == 200:
+                translated = data['responseData']['translatedText']
+                if translated and translated != text:
+                    return translated
+    except Exception as e:
+        print(f"MyMemory translation failed: {e}")
+    
+    # Service 2: LibreTranslate (Free, open source)
+    try:
+        import requests
+        url = 'https://libretranslate.de/translate'
+        data = {
+            'q': text,
+            'source': 'en',
+            'target': 'ar',
+            'format': 'text'
+        }
+        response = requests.post(url, data=data, timeout=5)
+        if response.status_code == 200:
+            result = response.json()
+            translated = result.get('translatedText', '')
+            if translated and translated != text:
+                return translated
+    except Exception as e:
+        print(f"LibreTranslate failed: {e}")
+    
+    # Service 3: Google Translate (Unofficial API)
     try:
         import requests
         import urllib.parse
         
-        # Force UAE Arabic dialect with multiple parameters
-        text = urllib.parse.quote(comment_text.strip())
-        # Use UAE-specific parameters: tl=ar (Arabic), hl=ar-AE (UAE region), gl=AE (country)
-        url = f'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&hl=ar-AE&gl=AE&dt=t&dt=bd&ie=UTF-8&oe=UTF-8&q={text}'
+        encoded_text = urllib.parse.quote(text)
+        url = f'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q={encoded_text}'
         
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-            'Accept-Language': 'ar-AE,ar;q=0.9,en;q=0.8'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         }
         
-        response = requests.get(url, headers=headers, timeout=10)
+        response = requests.get(url, headers=headers, timeout=5)
         if response.status_code == 200:
             result = response.json()
             if result and result[0] and result[0][0]:
-                translated_text = result[0][0][0]
-                if translated_text and translated_text.strip():
-                    return translated_text.strip()
+                translated = result[0][0][0]
+                if translated and translated != text:
+                    return translated
     except Exception as e:
-        print(f"Translation error for '{comment_text}': {e}")
+        print(f"Google Translate failed: {e}")
     
-    # Fallback to original text
-    return comment_text
+    # Service 4: Lingva Translate (Alternative Google frontend)
+    try:
+        import requests
+        import urllib.parse
+        url = f'https://lingva.ml/api/v1/en/ar/{urllib.parse.quote(text)}'
+        response = requests.get(url, timeout=5)
+        if response.status_code == 200:
+            data = response.json()
+            translated = data.get('translation', '')
+            if translated and translated != text:
+                return translated
+    except Exception as e:
+        print(f"Lingva Translate failed: {e}")
+    
+    return None
