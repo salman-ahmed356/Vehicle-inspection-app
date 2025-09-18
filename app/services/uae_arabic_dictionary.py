@@ -108,6 +108,25 @@ UAE_ARABIC_TERMS = {
     'issues': 'مشاكل',
     'belts': 'أحزمة',
     'working': 'يشتغل',
+    
+    # UAE-specific automotive terms
+    'needs': 'يحتاج',
+    'repair': 'إصلاح', 
+    'fix': 'إصلاح',
+    'replace': 'تبديل',
+    'service': 'صيانة',
+    'check': 'فحص',
+    'problem': 'مشكلة',
+    'issue': 'مشكلة',
+    'broken': 'مكسور',
+    'cracked': 'مشقوق',
+    'worn': 'مستهلك',
+    'old': 'قديم',
+    'new': 'جديد',
+    'good': 'زين',
+    'bad': 'مو زين',
+    'ok': 'تمام',
+    'fine': 'تمام',
 }
 
 def get_uae_arabic_translation(english_text):
@@ -171,42 +190,27 @@ def translate_comment_to_arabic(comment_text):
     return f"ملاحظة: {original_text}"
 
 def try_translation_services(text):
-    """Try multiple translation services in order of reliability"""
+    """Try working translation services in order of reliability"""
     
-    # Service 1: MyMemory (Free, no API key needed)
+    # Service 1: MyMemory with UAE context
     try:
         import requests
-        url = f'https://api.mymemory.translated.net/get?q={text}&langpair=en|ar'
-        response = requests.get(url, timeout=5)
+        # Add UAE context to get local dialect
+        url = f'https://api.mymemory.translated.net/get?q={text}&langpair=en|ar&mt=1&onlyprivate=0&de=salman.ahmed@uae.com'
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (compatible; UAE-Vehicle-Inspection/1.0)'
+        }
+        response = requests.get(url, headers=headers, timeout=5)
         if response.status_code == 200:
             data = response.json()
             if data.get('responseStatus') == 200:
                 translated = data['responseData']['translatedText']
                 if translated and translated != text:
                     return translated
-    except Exception as e:
-        print(f"MyMemory translation failed: {e}")
+    except:
+        pass
     
-    # Service 2: LibreTranslate (Free, open source)
-    try:
-        import requests
-        url = 'https://libretranslate.de/translate'
-        data = {
-            'q': text,
-            'source': 'en',
-            'target': 'ar',
-            'format': 'text'
-        }
-        response = requests.post(url, data=data, timeout=5)
-        if response.status_code == 200:
-            result = response.json()
-            translated = result.get('translatedText', '')
-            if translated and translated != text:
-                return translated
-    except Exception as e:
-        print(f"LibreTranslate failed: {e}")
-    
-    # Service 3: Google Translate (Unofficial API)
+    # Service 2: Google Translate (Backup)
     try:
         import requests
         import urllib.parse
@@ -225,10 +229,10 @@ def try_translation_services(text):
                 translated = result[0][0][0]
                 if translated and translated != text:
                     return translated
-    except Exception as e:
-        print(f"Google Translate failed: {e}")
+    except:
+        pass
     
-    # Service 4: Lingva Translate (Alternative Google frontend)
+    # Service 3: Lingva Translate (Final backup)
     try:
         import requests
         import urllib.parse
@@ -239,7 +243,7 @@ def try_translation_services(text):
             translated = data.get('translation', '')
             if translated and translated != text:
                 return translated
-    except Exception as e:
-        print(f"Lingva Translate failed: {e}")
+    except:
+        pass
     
     return None
