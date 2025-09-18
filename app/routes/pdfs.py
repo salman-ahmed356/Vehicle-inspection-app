@@ -12,3 +12,12 @@ def generate_report_pdf(report_id):
     """
     from ..services.pdf_service_certificate import generate_certificate_pdf
     return generate_certificate_pdf(report_id)
+
+@pdfs.route('generate_detailed/<int:report_id>')
+@login_required
+def generate_detailed_pdf(report_id):
+    """
+    Generate detailed PDF report with images for the given report_id.
+    """
+    from ..services.pdf_service_simple import generate_pdf_simple
+    return generate_pdf_simple(report_id, include_detailed_images=True)

@@ -80,10 +80,7 @@ def generate_certificate_pdf(report_id):
                     processed_comment_arabic = '\n'.join(lines)
                 else:
                     # Auto-translate English comment if no Arabic comment provided
-                    if processed_comment and processed_comment.strip():
-                        processed_comment_arabic = translate_comment_to_arabic(processed_comment.strip())
-                    else:
-                        processed_comment_arabic = ''
+                    processed_comment_arabic = translate_comment_to_arabic(processed_comment) if processed_comment else ''
                 
                 combined_report = type('CombinedReport', (), {
                     'expertise_type_name': item_name,
@@ -91,7 +88,7 @@ def generate_certificate_pdf(report_id):
                     'pass_fail': status if status in ['Pass', 'Fail'] else None,  # Don't show None status
                     'comment': processed_comment,
                     'comment_english': processed_comment,
-                    'comment_arabic': processed_comment_arabic or processed_comment
+                    'comment_arabic': processed_comment_arabic
                 })()
                 package_expertise_reports.append(combined_report)
     

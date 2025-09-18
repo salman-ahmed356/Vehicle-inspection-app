@@ -1235,32 +1235,7 @@ def delete_detailed_image():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
-@reports.route('/pdfs/generate_detailed/<int:report_id>')
-@login_required
-def generate_detailed_pdf(report_id):
-    from ..services.pdf_service_simple import generate_pdf_simple
-    from flask import make_response
-    
-    pdf_response = generate_pdf_simple(report_id, include_detailed_images=True)
-    response = make_response(pdf_response)
-    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '0'
-    return response
-
-
-@reports.route('/pdfs/generate_certificate/<int:report_id>')
-@login_required
-def generate_certificate_pdf(report_id):
-    from ..services.pdf_service_certificate import generate_certificate_pdf
-    from flask import make_response
-    
-    pdf_response = generate_certificate_pdf(report_id)
-    response = make_response(pdf_response)
-    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '0'
-    return response
+# PDF routes moved to pdfs.py blueprint
 
 
 @reports.route('/report/main_inspection_ajax', methods=['GET'])
