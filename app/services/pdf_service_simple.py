@@ -12,6 +12,7 @@ from ..models import (
 )
 from .status_translator import StatusTranslator
 from .rating_service import calculate_overall_rating
+from .uae_arabic_dictionary import translate_comment_to_arabic
 
 
 def create_pdf(report_id, include_detailed_images=False):
@@ -217,9 +218,12 @@ def _process_expertise_reports(report):
             
             # Include if it has marked features OR has a comment
             if marked_features or has_comment:
+                # Translate comment to Arabic if available
+                comment_arabic = translate_comment_to_arabic(er.comment) if er.comment else ""
                 blocks.append({
                     'expertise_type_name': er.expertise_type.name,
                     'comment': er.comment or "",
+                    'comment_arabic': comment_arabic,
                     'features': marked_features
                 })
             

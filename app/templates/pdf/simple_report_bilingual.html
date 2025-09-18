@@ -69,6 +69,7 @@
       color: #555;
       margin-top: 1px;
       unicode-bidi: bidi-override;
+      font-weight: normal !important;
     }
     
     .header {
@@ -1114,11 +1115,16 @@
       
       {% if pckg_report.comment and pckg_report.comment|string|trim and pckg_report.comment|string|trim|lower not in ['none', 'null', ''] %}
         <div class="comments" style="margin-top: 5px; margin-bottom: 5px;">
-          <div class="comments-title">
+          <div class="comments-title" style="font-weight: bold;">
             Comments:
-            <span class="arabic">التعليقات:</span>
+            <span class="arabic" style="font-weight: bold;">التعليقات:</span>
           </div>
-          <div class="comments-text">{{ pckg_report.comment }}</div>
+          <div class="comments-text" style="font-weight: normal;">
+            {{ pckg_report.comment }}
+            {% if pckg_report.comment_arabic %}
+              <div class="arabic" style="margin-top: 5px; font-weight: normal;">{{ pckg_report.comment_arabic }}</div>
+            {% endif %}
+          </div>
         </div>
       {% endif %}
     </div>
