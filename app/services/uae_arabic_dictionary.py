@@ -118,17 +118,27 @@ def translate_comment_to_arabic(comment_text):
     if not comment_text or not comment_text.strip():
         return ''
     
+    print(f"DEBUG: Translating comment: '{comment_text}'")
+    
     # First check if the entire comment is a known term
     if comment_text.strip() in UAE_ARABIC_TERMS:
-        return UAE_ARABIC_TERMS[comment_text.strip()]
+        result = UAE_ARABIC_TERMS[comment_text.strip()]
+        print(f"DEBUG: Found in dictionary: '{result}'")
+        return result
     
     # For longer text, use full translator with UAE Arabic
     try:
         import translators as ts
         # Try with region first, fallback without region
         try:
-            return ts.translate_text(comment_text, translator='bing', from_language='en', to_language='ar', region='AE')
-        except:
-            return ts.translate_text(comment_text, translator='bing', from_language='en', to_language='ar')
-    except:
+            result = ts.translate_text(comment_text, translator='bing', from_language='en', to_language='ar', region='AE')
+            print(f"DEBUG: Translated with region: '{result}'")
+            return result
+        except Exception as e1:
+            print(f"DEBUG: Region translation failed: {e1}")
+            result = ts.translate_text(comment_text, translator='bing', from_language='en', to_language='ar')
+            print(f"DEBUG: Translated without region: '{result}'")
+            return result
+    except Exception as e2:
+        print(f"DEBUG: All translation failed: {e2}")
         return comment_text

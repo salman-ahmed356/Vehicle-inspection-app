@@ -150,16 +150,27 @@
       font-weight: normal !important;
     }
     
-    .arabic-side {
+    /* Force normal weight for all Arabic content except titles */
+    td[style*="direction: rtl"] {
       font-weight: normal !important;
     }
     
-    .arabic-side * {
+    td[style*="direction: rtl"] * {
       font-weight: normal !important;
     }
     
+    /* Only titles should be bold */
     .arabic-title {
       font-weight: bold !important;
+    }
+    
+    .expertise-title {
+      font-weight: bold !important;
+    }
+    
+    /* Override any inherited bold styling */
+    .arabic-status {
+      font-weight: normal !important;
     }
     
     .section-header {
