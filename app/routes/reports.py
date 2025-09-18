@@ -5,11 +5,11 @@ from datetime import datetime
 import datetime as dt
 from sqlalchemy import or_
 try:
-    from deep_translator import GoogleTranslator
+    import translators as ts
     TRANSLATION_AVAILABLE = True
 except ImportError:
     TRANSLATION_AVAILABLE = False
-    GoogleTranslator = None
+    ts = None
 
 from ..database import db
 from ..enums import FuelType, TransmissionType, Color, ReportStatus
@@ -20,6 +20,7 @@ from ..models import (
     Report, Customer, Package, Staff, Vehicle,
     PackageExpertise, ExpertiseReport, ExpertiseType, ExpertiseFeature, ReportImage
 )
+from ..models.main_inspection import MainInspection
 from ..forms.report_form import ReportForm
 from ..services.enum_service import (
     COLOR_MAPPING, TRANSMISSION_TYPE_MAPPING, FUEL_TYPE_MAPPING, map_to_enum
@@ -1098,11 +1099,12 @@ def expertise_detail(expertise_report_id):
                             has_arabic = bool(arabic_pattern.search(new_comment))
                             
                             if has_arabic:  # Arabic comment - translate to English for PDF
-                                translated = GoogleTranslator(source='ar', target='en').translate(new_comment)
+                                translated = ts.translate_text(new_comment, translator='bing', from_language='ar', to_language='en')
                                 rpt.comment_arabic = new_comment  # Store original Arabic
                                 # Don't change the main comment, keep it in Arabic
                             else:  # English comment - translate to Arabic for PDF
-                                translated = GoogleTranslator(source='en', target='ar').translate(new_comment)
+                                from ..services.uae_arabic_dictionary import get_uae_arabic_translation
+                                translated = get_uae_arabic_translation(new_comment)
                                 rpt.comment_arabic = translated  # Store translated Arabic
                         except Exception as e:
                             print(f"Translation error: {e}")
@@ -1259,3 +1261,103 @@ def generate_certificate_pdf(report_id):
     response.headers['Pragma'] = 'no-cache'
     response.headers['Expires'] = '0'
     return response
+
+
+@reports.route('/report/main_inspection_ajax', methods=['GET'])
+@login_required
+def main_inspection_ajax():
+    report_id = request.args.get('report_id', type=int)
+    report = Report.query.get_or_404(report_id)
+    
+    # Get or create main inspection
+    main_inspection = MainInspection.query.filter_by(report_id=report_id).first()
+    if not main_inspection:
+        main_inspection = MainInspection(report_id=report_id)
+        db.session.add(main_inspection)
+        db.session.commit()
+    
+    # Convert to dict for template
+    main_inspection_data = {}
+    if main_inspection:
+        for attr in dir(main_inspection):
+            if not attr.startswith('_') and attr not in ['id', 'report_id', 'report']:
+                main_inspection_data[attr] = getattr(main_inspection, attr)
+    
+    return render_template(
+        'report_sections/main_inspection.html',
+        report=report,
+        main_inspection=main_inspection_data
+    )
+
+
+@reports.route('/report/save_main_inspection/<int:report_id>', methods=['POST'])
+@login_required
+def save_main_inspection(report_id):
+    try:
+        report = Report.query.get_or_404(report_id)
+        
+        # Get or create main inspection
+        main_inspection = MainInspection.query.filter_by(report_id=report_id).first()
+        if not main_inspection:
+            main_inspection = MainInspection(report_id=report_id)
+            db.session.add(main_inspection)
+        
+        # Update all fields
+        inspection_items = [
+            'lights', 'body', 'chassis', 'paint', 'roof', 'bonnet_trunk',
+            'fender', 'doors', 'bumper_kit', 'rims', 'engine', 'gear_box',
+            'differential', 'four_w_drive', 'transmission_shaft', 'alignment',
+            'tyres', 'brakes', 'exhaust'
+        ]
+        
+        for item in inspection_items:
+            # Update status
+            status_field = f'{item}_status'
+            status_value = request.form.get(status_field)
+            setattr(main_inspection, status_field, status_value)
+            
+            # Update comment
+            comment_field = f'{item}_comment'
+            comment_value = request.form.get(comment_field, '').strip()
+            old_comment = getattr(main_inspection, comment_field, '')
+            
+            # Only translate if comment actually changed
+            if comment_value != old_comment:
+                setattr(main_inspection, comment_field, comment_value)
+                
+                # Auto-translate only changed comments
+                if comment_value and TRANSLATION_AVAILABLE:
+                    try:
+                        from ..services.uae_arabic_dictionary import get_uae_arabic_translation
+                        import re
+                        arabic_pattern = re.compile(r'[\u0600-\u06FF]')
+                        has_arabic = bool(arabic_pattern.search(comment_value))
+                        
+                        if has_arabic:  # Arabic to English
+                            translated = ts.translate_text(comment_value, translator='bing', from_language='ar', to_language='en')
+                            setattr(main_inspection, comment_field, translated)
+                            setattr(main_inspection, f'{comment_field}_arabic', comment_value)
+                        else:  # English to Arabic - preserve line breaks
+                            lines = comment_value.split('\n')
+                            translated_lines = []
+                            for line in lines:
+                                if line.strip():
+                                    translated_line = get_uae_arabic_translation(line.strip())
+                                    translated_lines.append(translated_line)
+                                else:
+                                    translated_lines.append('')
+                            translated = '\n'.join(translated_lines)
+                            setattr(main_inspection, f'{comment_field}_arabic', translated)
+                    except Exception as e:
+                        print(f"Translation error: {e}")
+                elif not comment_value:
+                    # Clear Arabic translation if comment is empty
+                    setattr(main_inspection, f'{comment_field}_arabic', '')
+        
+        db.session.commit()
+        return jsonify({'success': True})
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error saving main inspection: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500

@@ -89,23 +89,38 @@
         </div>
         {% endif %}
         <h2 class="text-lg font-semibold mb-4">{{ _('Inspection Types') }}</h2>
-        <ul class="list-none p-0">
-          {% for pe in package_expertises %}
-            {% set label = type_labels.get(pe.expertise_type.name, pe.expertise_type.name) %}
-            <li class="mb-2" id="expertise-{{ label }}">
-              <a
-                href="{{ url_for('reports.expertise_detail_ajax',
-                                 expertise_type=label,
-                                 report_id=report.id) }}"
-                class="block p-2 bg-gray-200 rounded hover:bg-gray-300 expertise-link"
-                data-expertise-type="{{ label }}"
-                style="pointer-events: none; opacity: 0.6;"
-              >
-                {{ label }}
-              </a>
-            </li>
-          {% endfor %}
-        </ul>
+        
+        <!-- Main Inspection (Default) -->
+        <div class="mb-4">
+          <a href="#" class="block p-3 bg-blue-500 text-white rounded hover:bg-blue-600 main-inspection-link" data-inspection-type="main">
+            Main Inspection
+          </a>
+        </div>
+        
+        <!-- Detailed Expertises Dropdown -->
+        <div class="mb-4">
+          <button class="w-full p-3 bg-gray-200 rounded hover:bg-gray-300 text-left" onclick="toggleDetailedDropdown()">
+            <span>Detailed Report Inspection</span>
+            <span class="float-right" id="dropdownArrow">▼</span>
+          </button>
+          <div id="detailedDropdown" class="hidden mt-2 ml-4">
+            {% for pe in package_expertises %}
+              {% set label = type_labels.get(pe.expertise_type.name, pe.expertise_type.name) %}
+              <div class="mb-2" id="expertise-{{ label }}">
+                <a
+                  href="{{ url_for('reports.expertise_detail_ajax',
+                                   expertise_type=label,
+                                   report_id=report.id) }}"
+                  class="block p-2 bg-gray-100 rounded hover:bg-gray-200 expertise-link text-sm"
+                  data-expertise-type="{{ label }}"
+                  style="pointer-events: none; opacity: 0.6;"
+                >
+                  {{ label }}
+                </a>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
         
         <!-- Upload Detailed Car Pics Section -->
         <div class="mt-6 border-t pt-4">
@@ -247,6 +262,84 @@
       if (confirm("{{ _('Are you sure you want to mark this report as complete?') }}")) {
         document.getElementById('markCompleteForm').submit();
       }
+    }
+    
+    function toggleDetailedDropdown() {
+      const dropdown = document.getElementById('detailedDropdown');
+      const arrow = document.getElementById('dropdownArrow');
+      
+      if (dropdown.classList.contains('hidden')) {
+        dropdown.classList.remove('hidden');
+        arrow.textContent = '▲';
+      } else {
+        dropdown.classList.add('hidden');
+        arrow.textContent = '▼';
+      }
+    }
+    
+    function setupMainInspectionForm() {
+      const form = document.getElementById('mainInspectionForm');
+      if (!form) return;
+      
+      let hasUnsavedChanges = false;
+      let isSubmitting = false;
+      
+      // Track form changes
+      Array.from(form.elements).forEach(function(element) {
+        if (element.name && element.type !== 'hidden' && element.type !== 'submit') {
+          element.addEventListener('change', function() {
+            hasUnsavedChanges = true;
+          });
+        }
+      });
+      
+      // Form submission
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (isSubmitting) return;
+        
+        isSubmitting = true;
+        const formData = new FormData(form);
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        
+        submitBtn.textContent = 'Saving...';
+        submitBtn.disabled = true;
+        
+        fetch(form.action, {
+          method: 'POST',
+          body: new URLSearchParams(formData)
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            hasUnsavedChanges = false;
+            alert('Main inspection saved successfully!');
+          } else {
+            alert('Save failed: ' + (data.error || 'Unknown error'));
+          }
+        })
+        .catch(err => {
+          console.error('Error:', err);
+          alert('Save failed!');
+        })
+        .finally(() => {
+          isSubmitting = false;
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
+        });
+      });
+      
+      // Expose functions for unsaved changes
+      window.expertiseHasUnsavedChanges = () => hasUnsavedChanges && !isSubmitting;
+      window.expertiseSaveChanges = () => {
+        if (hasUnsavedChanges && !isSubmitting) {
+          form.dispatchEvent(new Event('submit'));
+          return true;
+        }
+        return false;
+      };
+      window.expertiseClearUnsavedFlag = () => { hasUnsavedChanges = false; };
     }
   </script>
   
@@ -562,11 +655,12 @@
     
 
     
+    // Handle expertise links
     document.querySelectorAll('.expertise-link').forEach(link => {
       link.addEventListener('click', e => {
         e.preventDefault();
         
-        if (isLoading) return; // Prevent clicks during loading
+        if (isLoading) return;
         
         if (checkForUnsavedChanges()) {
           if (confirm('You have unsaved changes. Save them first?')) {
@@ -577,6 +671,22 @@
         
         loadExpertise(link);
       });
+    });
+    
+    // Handle main inspection link
+    document.querySelector('.main-inspection-link').addEventListener('click', e => {
+      e.preventDefault();
+      
+      if (isLoading) return;
+      
+      if (checkForUnsavedChanges()) {
+        if (confirm('You have unsaved changes. Save them first?')) {
+          saveCurrentForm(() => loadMainInspection());
+          return;
+        }
+      }
+      
+      loadMainInspection();
     });
     
     function loadExpertise(link) {
@@ -625,6 +735,10 @@
         .then(html => {
           document.getElementById('expertiseDetailContainer').innerHTML = html;
           
+          // Show parent Generate Report button for expertises
+          const parentGenerateBtn = document.querySelector('button[onclick*="confirmRedirect"]');
+          if (parentGenerateBtn) parentGenerateBtn.style.display = 'inline-block';
+          
           // Execute any scripts in the loaded content
           const scripts = document.getElementById('expertiseDetailContainer').querySelectorAll('script');
           scripts.forEach(script => {
@@ -656,27 +770,57 @@
         });
     }
 
-    // Auto-load first tab and hide page overlay when ready
+    function loadMainInspection() {
+      isLoading = true;
+      
+      // Highlight main inspection link
+      document.querySelectorAll('.expertise-link, .main-inspection-link').forEach(l => {
+        l.classList.remove('bg-blue-500', 'text-white');
+        l.classList.add('bg-gray-200');
+      });
+      document.querySelector('.main-inspection-link').classList.remove('bg-gray-200');
+      document.querySelector('.main-inspection-link').classList.add('bg-blue-500', 'text-white');
+      
+      // Show loading
+      document.getElementById('expertiseDetailContainer').innerHTML = `
+        <div class="flex items-center justify-center h-64">
+          <div class="text-center">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4"></div>
+            <p class="text-gray-600">Loading main inspection...</p>
+          </div>
+        </div>
+      `;
+      
+      fetch(`/report/main_inspection_ajax?report_id={{ report.id }}&_t=${Date.now()}`, {
+        cache: 'no-cache'
+      })
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById('expertiseDetailContainer').innerHTML = html;
+        setupMainInspectionForm();
+        // Hide parent Generate Report button
+        const parentGenerateBtn = document.querySelector('button[onclick*="confirmRedirect"]');
+        if (parentGenerateBtn) parentGenerateBtn.style.display = 'none';
+        setTimeout(saveCurrentFormData, 100);
+      })
+      .catch(err => {
+        console.error('Error loading main inspection:', err);
+        document.getElementById('expertiseDetailContainer').innerHTML = `
+          <div class="text-center text-red-600 p-8">
+            <p>Failed to load main inspection. Please try again.</p>
+          </div>
+        `;
+      })
+      .finally(() => {
+        isLoading = false;
+      });
+    }
+    
+    // Auto-load main inspection by default
     document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
-        const activeTab = getActiveTab();
-        let targetLink;
-        
-        if (activeTab) {
-          targetLink = document.querySelector(`.expertise-link[data-expertise-type="${activeTab}"]`);
-        }
-        
-        if (!targetLink) {
-          targetLink = document.querySelector('.expertise-link');
-        }
-        
-        if (targetLink) {
-          // Load expertise and hide overlay when done
-          loadExpertiseAndHideOverlay(targetLink);
-        } else {
-          // Hide overlay if no expertise to load
-          hidePageOverlay();
-        }
+        loadMainInspection();
+        hidePageOverlay();
       }, 100);
     });
     

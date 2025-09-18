@@ -1,0 +1,87 @@
+<!-- Main Inspection Form -->
+<div class="bg-white shadow-md rounded-lg p-6">
+  <h2 class="text-xl font-semibold mb-6 text-center">Main Vehicle Inspection</h2>
+  
+  <form id="mainInspectionForm" method="POST" action="{{ url_for('reports.save_main_inspection', report_id=report.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    
+    {% set inspection_items = [
+      ('lights', 'Lights', 'أضواء'),
+      ('body', 'Body', 'هيكل'),
+      ('chassis', 'Chassis', 'شاسيه'),
+      ('paint', 'Paint', 'صبغ'),
+      ('roof', 'Roof', 'سقف'),
+      ('bonnet_trunk', 'Bonnet and Trunk', 'غطاء المحرك والصندوق'),
+      ('fender', 'Fender', 'جناح'),
+      ('doors', 'Doors', 'أبواب'),
+      ('bumper_kit', 'Bumper and Kit', 'صدام وطقم'),
+      ('rims', 'Rims', 'جنوط'),
+      ('engine', 'Engine', 'محرك'),
+      ('gear_box', 'Gear Box', 'جير'),
+      ('differential', 'Differential', 'ديفرنشل'),
+      ('four_w_drive', '4W Drive (4x4)', 'دفع رباعي'),
+      ('transmission_shaft', 'Transmission Shaft', 'عمود النقل'),
+      ('alignment', 'Alignment', 'محاذاة'),
+      ('tyres', 'Tyres', 'إطارات'),
+      ('brakes', 'Brakes', 'فرامل'),
+      ('exhaust', 'Exhaust', 'عادم')
+    ] %}
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {% for item_key, item_name, arabic_name in inspection_items %}
+        <div class="border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-lg mb-3">
+            {{ item_name }}
+            <span class="text-sm text-gray-600 mr-2">{{ arabic_name }}</span>
+          </h3>
+          
+          <!-- Status Radio Buttons -->
+          <div class="mb-3">
+            <div class="flex space-x-4">
+              <label class="flex items-center">
+                <input type="radio" name="{{ item_key }}_status" value="Pass" 
+                       {% if main_inspection and main_inspection[item_key + '_status'] == 'Pass' %}checked{% endif %}
+                       class="mr-2 text-green-600">
+                <span class="text-green-600 font-medium">Pass</span>
+              </label>
+              <label class="flex items-center">
+                <input type="radio" name="{{ item_key }}_status" value="Fail"
+                       {% if main_inspection and main_inspection[item_key + '_status'] == 'Fail' %}checked{% endif %}
+                       class="mr-2 text-red-600">
+                <span class="text-red-600 font-medium">Fail</span>
+              </label>
+              <label class="flex items-center">
+                <input type="radio" name="{{ item_key }}_status" value="None"
+                       {% if not main_inspection or not main_inspection[item_key + '_status'] or main_inspection[item_key + '_status'] == 'None' %}checked{% endif %}
+                       class="mr-2 text-gray-600">
+                <span class="text-gray-600 font-medium">None</span>
+              </label>
+            </div>
+          </div>
+          
+          <!-- Comment Box -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Comment:</label>
+            <textarea name="{{ item_key }}_comment" rows="3" 
+                      class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter comments...">{% if main_inspection %}{{ main_inspection[item_key + '_comment'] or '' }}{% endif %}</textarea>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    
+    <div class="mt-8 text-center space-x-4">
+      <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg">
+        Save Main Inspection
+      </button>
+      <a href="{{ url_for('reports.generate_certificate_pdf', report_id=report.id) }}" 
+         target="_blank" 
+         class="bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg inline-block">
+        Generate Report
+      </a>
+    </div>
+  </form>
+</div>
+
+
+

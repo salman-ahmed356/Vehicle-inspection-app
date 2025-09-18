@@ -5,6 +5,7 @@ import base64
 import io
 from ..models import Report, Company, PackageExpertise, ExpertiseReport
 from ..database import db
+from .uae_arabic_dictionary import get_uae_arabic_translation
 
 
 def generate_certificate_pdf(report_id):
@@ -26,49 +27,66 @@ def generate_certificate_pdf(report_id):
             'address': None
         })()
     
-    # Get package expertises for this report
-    package_expertises = PackageExpertise.query.filter_by(package_id=report.package_id).all()
+    # Get main inspection data
+    from ..models.main_inspection import MainInspection
+    main_inspection = MainInspection.query.filter_by(report_id=report.id).first()
     
-    # Get expertise reports with pass/fail data
+    # Create inspection reports from main inspection data
     package_expertise_reports = []
-    for pe in package_expertises:
-        expertise_report = ExpertiseReport.query.filter_by(
-            report_id=report.id,
-            expertise_type_id=pe.expertise_type_id
-        ).first()
+    
+    if main_inspection:
+        inspection_items = [
+            ('lights', 'Lights'),
+            ('body', 'Body'),
+            ('chassis', 'Chassis'),
+            ('paint', 'Paint'),
+            ('roof', 'Roof'),
+            ('bonnet_trunk', 'Bonnet and Trunk'),
+            ('fender', 'Fender'),
+            ('doors', 'Doors'),
+            ('bumper_kit', 'Bumper and Kit'),
+            ('rims', 'Rims'),
+            ('engine', 'Engine'),
+            ('gear_box', 'Gear Box'),
+            ('differential', 'Differential'),
+            ('four_w_drive', '4W Drive (4x4)'),
+            ('transmission_shaft', 'Transmission Shaft'),
+            ('alignment', 'Alignment'),
+            ('tyres', 'Tyres'),
+            ('brakes', 'Brakes'),
+            ('exhaust', 'Exhaust')
+        ]
         
-        if expertise_report:
-            # Handle translation for PDF
-            comment_arabic = getattr(expertise_report, 'comment_arabic', None)
-            comment_english = None
+        for item_key, item_name in inspection_items:
+            status = getattr(main_inspection, f'{item_key}_status', None)
+            comment = getattr(main_inspection, f'{item_key}_comment', None)
+            comment_arabic = getattr(main_inspection, f'{item_key}_comment_arabic', None)
             
-            if expertise_report.comment:
-                try:
-                    from deep_translator import GoogleTranslator
-                    import re
-                    arabic_pattern = re.compile(r'[\u0600-\u06FF]')
-                    has_arabic = bool(arabic_pattern.search(expertise_report.comment))
-                    
-                    if has_arabic:  # Comment is in Arabic
-                        comment_arabic = expertise_report.comment
-                        comment_english = GoogleTranslator(source='ar', target='en').translate(expertise_report.comment)
-                    else:  # Comment is in English
-                        comment_english = expertise_report.comment
-                        if not comment_arabic:
-                            comment_arabic = GoogleTranslator(source='en', target='ar').translate(expertise_report.comment)
-                except:
-                    comment_english = expertise_report.comment
-                    comment_arabic = expertise_report.comment
-            
-            # Create a combined object with expertise type name
-            combined_report = type('CombinedReport', (), {
-                'expertise_type_name': pe.expertise_type.name,
-                'pass_fail': expertise_report.pass_fail,
-                'comment': expertise_report.comment,
-                'comment_english': comment_english,
-                'comment_arabic': comment_arabic
-            })()
-            package_expertise_reports.append(combined_report)
+            # Only include items with Pass/Fail status (exclude None)
+            if status and status in ['Pass', 'Fail']:
+                # Get Arabic translation for the item name
+                arabic_name = get_uae_arabic_translation(item_name)
+                
+                # Process comments to preserve line breaks
+                processed_comment = comment.replace('\r\n', '\n').replace('\r', '\n') if comment else ''
+                # For Arabic, ensure line breaks are properly handled
+                if comment_arabic:
+                    processed_comment_arabic = comment_arabic.replace('\r\n', '\n').replace('\r', '\n')
+                    # Split and rejoin to ensure proper line break handling in RTL
+                    lines = processed_comment_arabic.split('\n')
+                    processed_comment_arabic = '\n'.join(lines)
+                else:
+                    processed_comment_arabic = ''
+                
+                combined_report = type('CombinedReport', (), {
+                    'expertise_type_name': item_name,
+                    'arabic_name': arabic_name,
+                    'pass_fail': status,
+                    'comment': processed_comment,
+                    'comment_english': processed_comment,
+                    'comment_arabic': processed_comment_arabic or processed_comment
+                })()
+                package_expertise_reports.append(combined_report)
     
     # Handle vehicle image
     car_image_base64 = None

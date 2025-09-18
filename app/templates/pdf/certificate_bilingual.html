@@ -7,7 +7,7 @@
   <style>
     @page {
       size: A4;
-      margin: 15mm 10mm 35mm 10mm;
+      margin: 70px 15mm 150px 15mm;
       @top-center {
         content: element(header);
       }
@@ -18,19 +18,18 @@
     
     .page-header {
       position: running(header);
-      height: 45px;
       border-bottom: 2px solid #000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 5px;
+      padding: 8px 0;
+      margin-bottom: 10px;
     }
     
     .page-footer {
       position: running(footer);
       border-top: 2px solid #000;
-      padding: 5px;
+      padding: 8px 0;
       font-size: 7pt;
+      margin-top: 10px;
+      margin-bottom: 15px;
     }
     
     .terms-title {
@@ -50,27 +49,26 @@
     body {
       font-family: 'DejaVu Sans', 'Arial Unicode MS', Arial, sans-serif;
       font-size: 9pt;
-      line-height: 1.1;
+      line-height: 1.2;
       margin: 0;
       padding: 0;
       color: #333;
-      position: relative;
     }
     
     .arabic {
       font-family: 'DejaVu Sans', 'Arial Unicode MS', 'Tahoma', Arial, sans-serif;
       direction: rtl;
       text-align: right;
-      font-size: 8pt;
+      font-size: 12pt;
       color: #555;
       margin-top: 1px;
       unicode-bidi: bidi-override;
     }
     
     .certificate-content {
-      margin-top: 20px;
+      margin-top: 10px;
       border: 1px solid #ddd;
-      padding: 15px;
+      padding: 10px;
     }
     
     .english-side {
@@ -94,13 +92,23 @@
     }
     
     .expertise-item {
-      margin-bottom: 12px;
-      padding: 8px;
+      margin-bottom: 6px;
+      padding: 4px;
+      min-height: 40px;
+      display: table-cell;
+      vertical-align: top;
     }
     
     .expertise-title {
       font-weight: bold;
       font-size: 10pt;
+      margin-bottom: 3px;
+      color: #000;
+    }
+    
+    .arabic-title {
+      font-weight: bold;
+      font-size: 12pt;
       margin-bottom: 3px;
       color: #000;
     }
@@ -112,10 +120,32 @@
       color: #000;
     }
     
+    .arabic-status {
+      font-weight: bold;
+      margin-bottom: 3px;
+      font-size: 11pt;
+      color: #000;
+    }
+    
     .expertise-comment {
       font-size: 8pt;
       color: #000;
       margin-top: 3px;
+      white-space: pre-line;
+    }
+    
+    .arabic-comment {
+      font-size: 10pt;
+      color: #000;
+      margin-top: 3px;
+      white-space: pre-line;
+      direction: rtl;
+      text-align: right;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      unicode-bidi: embed;
+      line-height: 1.4;
+      word-break: break-word;
     }
     
     .section-header {
@@ -151,14 +181,14 @@
   
   <!-- Page Footer (appears on every page) -->
   <div class="page-footer">
-    <div style="border: 1px solid #ddd; padding: 8px; margin-top: 10px;">
+    <div style="border: 1px solid #ddd; padding: 8px; margin-top: 10px; margin-bottom: 10px;">
       <table style="width: 100%; border-collapse: collapse;">
         <tr>
           <td style="width: 50%; vertical-align: top; padding-right: 15px;">
             <div class="terms-title">Terms & Conditions</div>
             <div>This certificate shows the test values at time of inspection only. {{ company.name }} is not responsible for any hidden defects and inspection done according to the traffic law. Validity of this certificate is for the same day only.</div>
           </td>
-          <td style="width: 50%; vertical-align: top; padding-left: 15px; direction: rtl; text-align: right; font-size: 8pt;">
+          <td style="width: 50%; vertical-align: top; padding-left: 15px; direction: rtl; text-align: right; font-size: 9pt;">
             <div class="terms-title">الشروط والأحكام</div>
             <div>تُظهر هذه الشهادة قيم الاختبار في وقت الفحص فقط. {{ company.name }} غير مسؤولة عن أي عيوب خفية والفحص تم وفقاً لقانون المرور. صلاحية هذه الشهادة لنفس اليوم فقط.</div>
           </td>
@@ -193,70 +223,43 @@
     <table style="width: 100%; border-collapse: collapse;">
       <tr>
         <td style="width: 50%; vertical-align: top; padding-right: 15px;">
-          <div class="section-header">INSPECTION RESULTS</div>
-          
-          {% for pckg_report in package_expertise_reports %}
-            {% if pckg_report.pass_fail or (pckg_report.comment and pckg_report.comment|string|trim and pckg_report.comment|string|trim|lower not in ['none', 'null', '']) %}
-              {% set expertise_name = pckg_report.expertise_type_name|replace(' Expertise', '') %}
-              <div class="expertise-item">
-                <div class="expertise-title">{{ expertise_name|upper }}</div>
-                {% if pckg_report.pass_fail %}
-                  <div class="expertise-status">{{ pckg_report.pass_fail|upper }}</div>
-                {% endif %}
-                {% if pckg_report.comment and pckg_report.comment|string|trim and pckg_report.comment|string|trim|lower not in ['none', 'null', ''] %}
-                  <div class="expertise-comment"><strong>Comment:</strong> 
-                    {% if pckg_report.comment_english %}
-                      {{ pckg_report.comment_english }}
-                    {% else %}
-                      {{ pckg_report.comment }}
-                    {% endif %}
-                  </div>
-                {% endif %}
-              </div>
-            {% endif %}
-          {% endfor %}
+          <div class="section-header">Additional to Body</div>
         </td>
-        
-        <td style="width: 50%; vertical-align: top; padding-left: 15px; direction: rtl; text-align: right; font-size: 9pt;">
-          <div class="section-header">نتائج الفحص</div>
-          
-          {% for pckg_report in package_expertise_reports %}
-            {% if pckg_report.pass_fail or (pckg_report.comment_arabic and pckg_report.comment_arabic|string|trim and pckg_report.comment_arabic|string|trim|lower not in ['none', 'null', '']) %}
-              {% set expertise_name = pckg_report.expertise_type_name|replace(' Expertise', '') %}
-              {% set arabic_expertise_name = {
-                'Paint': 'الطلاء',
-                'Body': 'الهيكل', 
-                'Paint & Body': 'الطلاء والهيكل',
-                'Engine': 'المحرك',
-                'Brake': 'الفرامل',
-                'Suspension': 'نظام التعليق',
-                'Interior': 'الداخلية',
-                'Exterior': 'الخارجية',
-                'Interior & Exterior': 'الداخلية والخارجية',
-                'Mechanical': 'الميكانيكية',
-                'ECU': 'وحدة التحكم الإلكترونية',
-                'Road': 'الطريق'
-              }.get(expertise_name, expertise_name) %}
-              
-              <div class="expertise-item">
-                <div class="expertise-title">{{ arabic_expertise_name }}</div>
-                {% if pckg_report.pass_fail %}
-                  <div class="expertise-status">
-                    {% if pckg_report.pass_fail == 'Pass' %}
-                      نجح
-                    {% elif pckg_report.pass_fail == 'Fail' %}
-                      فشل
-                    {% endif %}
-                  </div>
-                {% endif %}
-                {% if pckg_report.comment_arabic and pckg_report.comment_arabic|string|trim and pckg_report.comment_arabic|string|trim|lower not in ['none', 'null', ''] %}
-                  <div class="expertise-comment"><strong>ملاحظة:</strong> {{ pckg_report.comment_arabic }}</div>
-                {% endif %}
-              </div>
-            {% endif %}
-          {% endfor %}
+        <td style="width: 50%; vertical-align: top; padding-left: 15px; direction: rtl; text-align: right; font-size: 15pt;">
+          <div class="section-header">إضافات الهيكل</div>
         </td>
       </tr>
+      {% for pckg_report in package_expertise_reports %}
+        {% if pckg_report.pass_fail or (pckg_report.comment and pckg_report.comment|string|trim and pckg_report.comment|string|trim|lower not in ['none', 'null', '']) %}
+          {% set expertise_name = pckg_report.expertise_type_name|replace(' Expertise', '') %}
+          <tr>
+            <td style="width: 50%; vertical-align: top; padding-right: 15px; padding-bottom: 8px;">
+              <div class="expertise-title">{{ expertise_name|upper }}</div>
+              {% if pckg_report.pass_fail %}
+                <div class="expertise-status">{{ pckg_report.pass_fail|upper }}</div>
+              {% endif %}
+              {% if pckg_report.comment and pckg_report.comment|string|trim and pckg_report.comment|string|trim|lower not in ['none', 'null', ''] %}
+                <div class="expertise-comment">{% if pckg_report.comment_english %}{{ pckg_report.comment_english }}{% else %}{{ pckg_report.comment }}{% endif %}</div>
+              {% endif %}
+            </td>
+            <td style="width: 50%; vertical-align: top; padding-left: 15px; padding-bottom: 8px; direction: rtl; text-align: right; font-size: 13pt;">
+              <div class="arabic-title">{{ pckg_report.arabic_name or expertise_name }}</div>
+              {% if pckg_report.pass_fail %}
+                <div class="arabic-status">
+                  {% if pckg_report.pass_fail == 'Pass' %}
+                    نجح
+                  {% elif pckg_report.pass_fail == 'Fail' %}
+                    فشل
+                  {% endif %}
+                </div>
+              {% endif %}
+              {% if pckg_report.comment_arabic and pckg_report.comment_arabic|string|trim and pckg_report.comment_arabic|string|trim|lower not in ['none', 'null', ''] %}
+                <div class="arabic-comment">{{ pckg_report.comment_arabic|replace('\n', '<br>')|safe }}</div>
+              {% endif %}
+            </td>
+          </tr>
+        {% endif %}
+      {% endfor %}
     </table>
   </div>
 

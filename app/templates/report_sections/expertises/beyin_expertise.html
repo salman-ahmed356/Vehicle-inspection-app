@@ -224,6 +224,16 @@
         >
         <span class="text-red-600 font-semibold">{{ _('Fail') }}</span>
       </label>
+      <label class="flex items-center cursor-pointer">
+        <input
+          type="radio"
+          name="pass_fail"
+          value="None"
+          class="mr-2 w-5 h-5"
+          {% if not expertise_report.pass_fail or expertise_report.pass_fail == 'None' %}checked{% endif %}
+        >
+        <span class="text-gray-600 font-semibold">{{ _('None') }}</span>
+      </label>
     </div>
   </div>
   <!-- Toggle Button for Detailed Features -->
