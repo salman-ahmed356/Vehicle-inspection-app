@@ -91,46 +91,49 @@ UAE_ARABIC_TERMS = {
 }
 
 def get_uae_arabic_translation(english_text):
-    try:
-        import translators as ts
-        # Try different translators with UAE region preference
-        for translator in ['google', 'yandex', 'baidu']:
-            try:
-                if translator == 'google':
-                    # For Google, try to specify UAE region
-                    result = ts.translate_text(english_text, translator='google', from_language='en', to_language='ar', region='AE')
-                else:
-                    result = ts.translate_text(english_text, translator=translator, from_language='en', to_language='ar')
-                
-                if result and result != english_text:
-                    return result
-            except:
-                continue
-    except:
-        pass
+    translations = {
+        'Lights': 'أضواء',
+        'Body': 'هيكل',
+        'Chassis': 'شاسيه', 
+        'Paint': 'صبغ',
+        'Roof': 'سقف',
+        'Bonnet and Trunk': 'كبوت وصندوق',
+        'Fender': 'جناح',
+        'Doors': 'أبواب',
+        'Bumper and Kit': 'صدام وكت',
+        'Rims': 'جنوط',
+        'Engine': 'محرك',
+        'Gear Box': 'جير',
+        'Differential': 'ديفرنشل',
+        '4W Drive (4x4)': 'دفع رباعي',
+        'Transmission Shaft': 'عمود النقل',
+        'Alignment': 'ضبط الاتجاه',
+        'Tyres': 'إطارات',
+        'Brakes': 'فرامل',
+        'Exhaust': 'عادم'
+    }
     
-    return english_text
+    return translations.get(english_text, english_text)
 
 def translate_comment_to_arabic(comment_text):
     if not comment_text or not comment_text.strip():
         return ''
     
     try:
-        import translators as ts
-        # Try different translators with UAE region preference
-        for translator in ['google', 'yandex', 'baidu']:
-            try:
-                if translator == 'google':
-                    # For Google, try to specify UAE region
-                    result = ts.translate_text(comment_text.strip(), translator='google', from_language='en', to_language='ar', region='AE')
-                else:
-                    result = ts.translate_text(comment_text.strip(), translator=translator, from_language='en', to_language='ar')
-                
-                if result and result != comment_text:
-                    return result
-            except:
-                continue
+        import requests
+        import urllib.parse
+        
+        # Direct HTTP request to Google Translate
+        text = urllib.parse.quote(comment_text.strip())
+        url = f'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q={text}'
+        
+        response = requests.get(url, timeout=5)
+        if response.status_code == 200:
+            result = response.json()
+            if result and result[0] and result[0][0]:
+                return result[0][0][0]
     except:
         pass
     
+    # Fallback to original text if translation fails
     return comment_text
