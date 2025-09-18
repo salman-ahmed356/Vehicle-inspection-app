@@ -91,48 +91,19 @@ UAE_ARABIC_TERMS = {
 }
 
 def get_uae_arabic_translation(english_text):
-    """
-    Get UAE Arabic translation for automotive terms.
-    Falls back to Microsoft Translator for unknown terms.
-    """
-    # Check if it's a known UAE term
-    if english_text in UAE_ARABIC_TERMS:
-        return UAE_ARABIC_TERMS[english_text]
-    
-    # For unknown terms, use Microsoft Translator with UAE Arabic
     try:
         import translators as ts
-        # Try with region first, fallback without region
-        try:
-            return ts.translate_text(english_text, translator='bing', from_language='en', to_language='ar', region='AE')
-        except:
-            return ts.translate_text(english_text, translator='bing', from_language='en', to_language='ar')
+        return ts.translate_text(english_text, translator='bing', from_language='en', to_language='ar')
     except:
-        return english_text  # Return original if translation fails
+        return english_text
 
 def translate_comment_to_arabic(comment_text):
     if not comment_text or not comment_text.strip():
         return ''
     
-    text = comment_text.strip()
-    
-    # Check exact match first
-    if text in UAE_ARABIC_TERMS:
-        return UAE_ARABIC_TERMS[text]
-    
-    # Replace dictionary words in the text
-    result = text
-    for english_word, arabic_word in UAE_ARABIC_TERMS.items():
-        if english_word.lower() in result.lower():
-            result = result.replace(english_word, arabic_word)
-    
-    # If we made replacements, return the result
-    if result != text:
-        return result
-    
-    # Use Microsoft Translator for unknown text
     try:
         import translators as ts
-        return ts.translate_text(text, translator='bing', from_language='en', to_language='ar')
-    except:
-        return text
+        return ts.translate_text(comment_text.strip(), translator='bing', from_language='en', to_language='ar')
+    except Exception as e:
+        print(f"Translation failed: {e}")
+        return comment_text
