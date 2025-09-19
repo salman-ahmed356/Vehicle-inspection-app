@@ -15,3 +15,4 @@ pymysql
 cryptography
 translators
 Flask-Migrate
+requests>=2.25.1

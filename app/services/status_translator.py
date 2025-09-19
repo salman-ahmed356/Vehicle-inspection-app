@@ -24,7 +24,7 @@ class StatusTranslator:
     # Engine Expertise Status Translations
     ENGINE_STATUS_AR = {
         "No Issue": "لا توجد مشكلة", 
-        "Passed": "نجح",
+        "Passed": "ناجح",
         "May Cause Issues": "قد يسبب مشاكل",
         "Needs Maintenance": "يحتاج صيانة"
     }
@@ -68,7 +68,7 @@ class StatusTranslator:
     GENERAL_STATUS_AR = {
         "No Issue": "لا توجد مشكلة",
         "No ISSUE": "لا توجد مشكلة",
-        "Passed": "نجح",
+        "Passed": "ناجح",
         "May Cause Issues": "قد يسبب مشاكل",
         "Needs Maintenance": "يحتاج صيانة"
     }

@@ -12,7 +12,7 @@ from ..models import (
 )
 from .status_translator import StatusTranslator
 from .rating_service import calculate_overall_rating
-from .uae_arabic_dictionary import translate_comment_to_arabic
+from .uae_translation_service import UaeTranslationService
 
 
 def create_pdf(report_id, include_detailed_images=False):
@@ -61,7 +61,10 @@ def create_pdf(report_id, include_detailed_images=False):
                 'filename': img.filename or f'Image_{img.upload_order}'
             })
     
-    template_name = 'pdf/detailed_report_bilingual.html' if include_detailed_images else 'pdf/simple_report_bilingual.html'
+    # Get all translations needed for PDF template
+    translations = UaeTranslationService.get_all_translations_for_template(package_expertise_reports)
+    
+    template_name = 'pdf/detailed_report_bilingual.html' if include_detailed_images else 'pdf/simple_report_unified.html'
     
     rendered_html = render_template(
         template_name,
@@ -77,6 +80,8 @@ def create_pdf(report_id, include_detailed_images=False):
         rating_text=rating_text,
         rating_color=rating_color,
         detailed_images=detailed_images_base64,
+        translations=translations,
+        UaeTranslationService=UaeTranslationService,
     )
     HTML(string=rendered_html).write_pdf(filename)
     return filename
@@ -218,8 +223,8 @@ def _process_expertise_reports(report):
             
             # Include if it has marked features OR has a comment
             if marked_features or has_comment:
-                # Translate comment to Arabic if available
-                comment_arabic = translate_comment_to_arabic(er.comment) if er.comment else ""
+                # Translate comment using unified service
+                comment_arabic = UaeTranslationService.translate_comment(er.comment) if er.comment else ""
                 blocks.append({
                     'expertise_type_name': er.expertise_type.name,
                     'comment': er.comment or "",

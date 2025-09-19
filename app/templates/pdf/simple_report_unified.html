@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vehicle Inspection Report - تقرير فحص المركبة</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 15mm 10mm 20mm 10mm;
+      @top-center {
+        content: element(header);
+      }
+      @bottom-center {
+        content: element(footer);
+      }
+    }
+    
+    .page-header {
+      position: running(header);
+      height: 45px;
+      border-bottom: 2px solid #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 5px;
+    }
+    
+    .page-footer {
+      position: running(footer);
+      border-top: 2px solid #000;
+      padding: 5px;
+      font-size: 7pt;
+    }
+    
+    .terms-title {
+      font-weight: bold;
+      font-size: 9pt;
+      text-decoration: underline;
+      margin-bottom: 4px;
+    }
+    
+    .company-contact {
+      text-align: center;
+      font-size: 7pt;
+      margin-top: 6px;
+      font-weight: bold;
+    }
+    
+    body {
+      font-family: 'DejaVu Sans', 'Arial Unicode MS', Arial, sans-serif;
+      font-size: 9pt;
+      line-height: 1.1;
+      margin: 0;
+      padding: 0;
+      color: #333;
+      position: relative;
+    }
+    
+    .arabic {
+      font-family: 'DejaVu Sans', 'Arial Unicode MS', 'Tahoma', Arial, sans-serif;
+      direction: rtl;
+      text-align: right;
+      font-size: 8pt;
+      color: #555;
+      margin-top: 1px;
+      unicode-bidi: bidi-override;
+      font-weight: normal !important;
+    }
+    
+    .expertise-section {
+      margin-bottom: 8px;
+      page-break-inside: auto;
+      break-inside: auto;
+      orphans: 2;
+      widows: 2;
+    }
+    
+    .expertise-title {
+      font-size: 11pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      background-color: #dc2626;
+      color: white;
+      padding: 4px;
+      border: 1px solid #ddd;
+      border-bottom: none;
+    }
+    
+    .feature-table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid #ddd;
+    }
+    
+    .feature-table td {
+      padding: 3px 4px;
+      border-bottom: 1px dotted #ddd;
+      vertical-align: top;
+    }
+    
+    .feature-name {
+      font-weight: bold;
+      width: 25%;
+      text-align: left;
+    }
+    
+    .feature-status {
+      width: 25%;
+      text-align: right;
+    }
+    
+    .comments {
+      margin-top: 5px;
+      margin-bottom: 5px;
+      border: 1px solid #ddd;
+      padding: 4px;
+    }
+    
+    .comments-title {
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    
+    .comments-text {
+      padding: 6px;
+      background-color: #f9f9f9;
+      min-height: 30px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Page Header -->
+  <div class="page-header">
+    <table style="width: 100%; border-collapse: collapse;">
+      <tr>
+        <td style="width: 25%; vertical-align: middle; text-align: left;">
+          {% if car_image_base64 %}
+          <img src="data:image/jpeg;base64,{{ car_image_base64 }}" alt="Vehicle Image" style="height: 35px; width: 70px; object-fit: cover; border-radius: 3px;">
+          {% endif %}
+        </td>
+        <td style="width: 50%; vertical-align: middle; text-align: center;">
+          <div style="font-size: 16pt; font-weight: bold; color: #dc2626; text-transform: uppercase;">{{ company.name }}</div>
+        </td>
+        <td style="width: 25%; vertical-align: middle; text-align: right; font-size: 8pt; color: #666;">
+          Professional Vehicle Testing Services<br>
+          <strong>VEHICLE INSPECTION REPORT</strong>
+        </td>
+      </tr>
+    </table>
+  </div>
+  
+  <!-- Page Footer -->
+  <div class="page-footer">
+    <div class="terms-title">Terms & Conditions</div>
+    <div>This certificate shows the test values at time of inspection only. {{ company.name }} is not responsible for any hidden defects and inspection done according to the traffic law. Validity of this certificate is for the same day only.</div>
+    <div class="company-contact">
+      Tel: {{ company.phone if company.phone else 'N/A' }} | Email: {{ company.email if company.email else 'N/A' }}{% if company.address %} | {{ company.address.street_address if company.address.street_address else '' }}{{ ', ' + company.address.city if company.address.city else '' }}{% endif %}
+    </div>
+  </div>
+  
+  <!-- Vehicle Information -->
+  <div style="display: flex; margin-bottom: 10px; font-size: 10pt; border: 2px solid #000; padding: 10px;">
+    <div style="width: 50%; padding-right: 10px;">
+      <div style="margin-bottom: 5px;"><strong>Ref #:</strong> {{ report.id }}</div>
+      <div style="margin-bottom: 5px;"><strong>Customer:</strong> {{ customer.full_name if customer else 'N/A' }}</div>
+      <div style="margin-bottom: 5px;"><strong>Vehicle:</strong> {{ vehicle.brand }} {{ vehicle.model if vehicle else 'N/A' }}</div>
+      <div style="margin-bottom: 5px;"><strong>Color:</strong> {{ vehicle.color.value if vehicle and vehicle.color else 'N/A' }}</div>
+      <div style="margin-bottom: 5px;"><strong>Inspector:</strong> {{ staff.full_name if staff else 'Administrator' }}</div>
+    </div>
+    <div style="width: 50%; padding-left: 10px;">
+      <div style="margin-bottom: 5px;"><strong>Date:</strong> {{ report.created_at.strftime('%d-%b-%Y %I:%M %p') if report.created_at else 'N/A' }}</div>
+      <div style="margin-bottom: 5px;"><strong>VIN #:</strong> {{ vehicle.chassis_number if vehicle else 'N/A' }}</div>
+      <div style="margin-bottom: 5px;"><strong>Model:</strong> {{ vehicle.model_year if vehicle else 'N/A' }}</div>
+      <div style="margin-bottom: 5px;"><strong>Mileage:</strong> {{ vehicle.mileage if vehicle else 'N/A' }}</div>
+      <div style="margin-bottom: 5px;"><strong>Phone:</strong> {{ customer.phone_number if customer else 'N/A' }}</div>
+    </div>
+  </div>
+  
+  <!-- Car Image and Rating -->
+  <table style="width: 100%; margin-bottom: 20px; margin-top: 10px; border-collapse: collapse;">
+    <tr>
+      <td style="width: 45%; text-align: center; vertical-align: middle; padding: 10px;">
+        {% if car_image_base64 %}
+          {% if car_image_base64.startswith('PHN2Zy') %}
+            <img src="data:image/svg+xml;base64,{{ car_image_base64 }}" alt="Vehicle Image" style="width: 324px; height: 162px; object-fit: contain; border: 1px solid #ddd; border-radius: 3px;">
+          {% else %}
+            <img src="data:image/jpeg;base64,{{ car_image_base64 }}" alt="Vehicle Image" style="width: 324px; height: 162px; object-fit: cover; border: 1px solid #ddd; border-radius: 3px;">
+          {% endif %}
+        {% endif %}
+      </td>
+      <td style="width: 55%; text-align: center; vertical-align: middle; padding: 10px;">
+        <div style="font-size: 16pt; font-weight: bold; color: {% if rating_color == 'green' %}#22c55e{% elif rating_color == 'orange' %}#f59e0b{% else %}#dc2626{% endif %}; margin-bottom: 5px;">{{ "%.1f" | format(rating_score) }}/100</div>
+        <div style="font-size: 10pt; font-weight: bold; color: {% if rating_color == 'green' %}#22c55e{% elif rating_color == 'orange' %}#f59e0b{% else %}#dc2626{% endif %}; margin-bottom: 2px;">{{ rating_text }}</div>
+        <div style="font-size: 9pt; font-weight: bold; color: #333;">Overall Rating - التقييم العام</div>
+      </td>
+    </tr>
+  </table>
+  
+  <!-- Expertise Sections -->
+  {% for pckg_report in package_expertise_reports %}
+    {% set expertise_name = pckg_report.expertise_type_name|replace(' Expertise', '') %}
+    
+    <div class="expertise-section">
+      <div class="expertise-title">
+        {{ expertise_name|upper }}
+        <div class="arabic">{{ UaeTranslationService.translate_static(expertise_name) }}</div>
+      </div>
+      
+      <table class="feature-table">
+        {% for i in range(0, pckg_report.features|length, 2) %}
+          <tr>
+            <td class="feature-name">
+              {{ pckg_report.features[i].name }}
+              <div class="arabic">{{ UaeTranslationService.translate_static(pckg_report.features[i].name) }}</div>
+            </td>
+            <td class="feature-status">
+              {% set status_lower = pckg_report.features[i].status|lower %}
+              {% if 'good' in status_lower or 'ok' in status_lower or 'pass' in status_lower or 'original' in status_lower or 'no error' in status_lower or 'stable' in status_lower or 'no issue' in status_lower %}
+                {% set color = '#22c55e' %}
+              {% elif 'moderate' in status_lower or 'attention' in status_lower or 'minor' in status_lower or 'wear' in status_lower or 'service' in status_lower or 'painted' in status_lower or 'locally painted' in status_lower or 'plastic' in status_lower or 'coated' in status_lower or 'scratch' in status_lower %}
+                {% set color = '#eab308' %}
+              {% elif 'bad' in status_lower or 'critical' in status_lower or 'unsafe' in status_lower or 'error logged' in status_lower or 'connection failed' in status_lower or 'fail' in status_lower or 'dent' in status_lower or 'crack' in status_lower or 'damage' in status_lower or 'broken' in status_lower or 'replaced' in status_lower %}
+                {% set color = '#dc2626' %}
+              {% else %}
+                {% set color = '#333' %}
+              {% endif %}
+              <span style="color: {{ color }}; font-weight: bold;">{{ pckg_report.features[i].status }}</span>
+              <div class="arabic">
+                <span style="color: {{ color }};">{{ UaeTranslationService.translate_static(pckg_report.features[i].status) }}</span>
+              </div>
+            </td>
+            
+            {% if i + 1 < pckg_report.features|length %}
+              <td class="feature-name">
+                {{ pckg_report.features[i+1].name }}
+                <div class="arabic">{{ UaeTranslationService.translate_static(pckg_report.features[i+1].name) }}</div>
+              </td>
+              <td class="feature-status">
+                {% set status_lower = pckg_report.features[i+1].status|lower %}
+                {% if 'good' in status_lower or 'ok' in status_lower or 'pass' in status_lower or 'original' in status_lower or 'no error' in status_lower or 'stable' in status_lower or 'no issue' in status_lower %}
+                  {% set color = '#22c55e' %}
+                {% elif 'moderate' in status_lower or 'attention' in status_lower or 'minor' in status_lower or 'wear' in status_lower or 'service' in status_lower or 'painted' in status_lower or 'locally painted' in status_lower or 'plastic' in status_lower or 'coated' in status_lower or 'scratch' in status_lower %}
+                  {% set color = '#eab308' %}
+                {% elif 'bad' in status_lower or 'critical' in status_lower or 'unsafe' in status_lower or 'error logged' in status_lower or 'connection failed' in status_lower or 'fail' in status_lower or 'dent' in status_lower or 'crack' in status_lower or 'damage' in status_lower or 'broken' in status_lower or 'replaced' in status_lower %}
+                  {% set color = '#dc2626' %}
+                {% else %}
+                  {% set color = '#333' %}
+                {% endif %}
+                <span style="color: {{ color }}; font-weight: bold;">{{ pckg_report.features[i+1].status }}</span>
+                <div class="arabic">
+                  <span style="color: {{ color }};">{{ UaeTranslationService.translate_static(pckg_report.features[i+1].status) }}</span>
+                </div>
+              </td>
+            {% else %}
+              <td class="feature-name"></td>
+              <td class="feature-status"></td>
+            {% endif %}
+          </tr>
+        {% endfor %}
+      </table>
+      
+      {% if pckg_report.comment and pckg_report.comment|string|trim and pckg_report.comment|string|trim|lower not in ['none', 'null', ''] %}
+        <div class="comments">
+          <div class="comments-title">
+            Comments:
+            <span class="arabic" style="font-weight: bold;">التعليقات:</span>
+          </div>
+          <div class="comments-text">
+            {{ pckg_report.comment }}
+            {% if pckg_report.comment_arabic %}
+              <div class="arabic" style="margin-top: 5px;">{{ pckg_report.comment_arabic }}</div>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  {% endfor %}
+  
+</body>
+</html>
