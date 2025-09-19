@@ -25,6 +25,8 @@ class UaeTranslationService:
         'BUMPER AND KIT': 'الصدامات والكيت',
         'ENGINE': 'المحرك',
         'GEAR BOX': 'الجير بوكس',
+        'PAINT': 'الصبغ',
+        'RIMS': 'الرنجات',
         
         # Status translations - fixed "Pass" issue
         'Pass': 'ناجح',
@@ -79,9 +81,23 @@ class UaeTranslationService:
         'Rear left door repainted': 'الباب الخلفي الأيسر تم إعادة طلائه',
         'Rear right door repainted': 'الباب الخلفي الأيمن تم إعادة طلائه',
         'Front bumper repainted': 'الصدام الأمامي تم إعادة طلائه',
+        'Front bumper has a slight dent': 'غطاء المحرك الأمامي به انبعاج طفيف',
         'Slight oil leak from the engine from below (car needs to be checked)': 'يوجد تهريب زيت بسيط من المحرك من الأسفل (يجب فحص السيارة)',
+        'Slight oil leak from the engine from below (car needs to be washed to check oil leak)': 'يوجد تهريب زيت بسيط من المحرك من الأسفل (يجب فحص السيارة)',
+        'Engine/gearbox mounts need to be changed': 'يجب تبديل قواعد المحرك بسبب تلف أو كسر فيها',
         'Engine oil needs to be changed': 'زيت المحرك يحتاج إلى تغيير',
         '(no notes provided)': '(لم تُذكر ملاحظات)',
+        
+        # Common automotive patterns
+        'oil leak': 'تهريب زيت',
+        'needs to be changed': 'يحتاج إلى تغيير',
+        'needs to be checked': 'يجب فحصه',
+        'repainted': 'تم إعادة طلائه',
+        'slight dent': 'انبعاج طفيف',
+        'from below': 'من الأسفل',
+        'car needs': 'السيارة تحتاج',
+        'engine mount': 'قواعد المحرك',
+        'gearbox mount': 'قواعد الجير',
     }
     
     @classmethod
@@ -138,6 +154,11 @@ class UaeTranslationService:
         for phrase, translation in cls.AUTOMOTIVE_PHRASES.items():
             if phrase.lower() == comment_lower:
                 return translation
+        
+        # Try pattern-based translation for common structures
+        translated = cls._pattern_based_translation(comment)
+        if translated != comment:
+            return translated
                 
         # Try Google Translate with UAE automotive context
         try:
@@ -181,6 +202,53 @@ class UaeTranslationService:
         return text
     
     @classmethod
+    def _pattern_based_translation(cls, text: str) -> str:
+        """Translate using common automotive patterns"""
+        import re
+        
+        # Pattern: "X needs to be Y"
+        pattern1 = re.compile(r'(.+?)\s+needs?\s+to\s+be\s+(.+)', re.IGNORECASE)
+        match1 = pattern1.match(text)
+        if match1:
+            part = match1.group(1).strip()
+            action = match1.group(2).strip()
+            part_ar = cls.translate_static(part)
+            if 'changed' in action.lower():
+                return f'{part_ar} يحتاج إلى تغيير'
+            elif 'checked' in action.lower():
+                return f'{part_ar} يجب فحصه'
+            elif 'repaired' in action.lower():
+                return f'{part_ar} يحتاج إلى إصلاح'
+        
+        # Pattern: "X has Y"
+        pattern2 = re.compile(r'(.+?)\s+has?\s+(.+)', re.IGNORECASE)
+        match2 = pattern2.match(text)
+        if match2:
+            part = match2.group(1).strip()
+            issue = match2.group(2).strip()
+            part_ar = cls.translate_static(part)
+            if 'dent' in issue.lower():
+                return f'{part_ar} به انبعاج'
+            elif 'leak' in issue.lower():
+                return f'{part_ar} به تهريب'
+        
+        # Pattern: "X is Y"
+        pattern3 = re.compile(r'(.+?)\s+is\s+(.+)', re.IGNORECASE)
+        match3 = pattern3.match(text)
+        if match3:
+            part = match3.group(1).strip()
+            condition = match3.group(2).strip()
+            part_ar = cls.translate_static(part)
+            if 'rusty' in condition.lower():
+                return f'{part_ar} به صدأ'
+            elif 'damaged' in condition.lower():
+                return f'{part_ar} متضرر'
+            elif 'not good' in condition.lower():
+                return f'{part_ar} غير جيد'
+        
+        return text
+    
+    @classmethod
     def _fix_common_translation_issues(cls, arabic_text: str) -> str:
         """Fix common Google Translate issues for automotive terms"""
         fixes = {
@@ -188,12 +256,15 @@ class UaeTranslationService:
             'محرك السيارة': 'المحرك',  # Simplify engine
             'فرامل السيارة': 'الفرامل',  # Simplify brakes
             'إطارات السيارة': 'الإطارات',  # Simplify tires
+            'يحتاج إلى أن يتم غسله': 'يجب فحصه',  # Fix washing to checking
+            'للتحقق من': 'لفحص',  # Simplify checking
+            'فحص المركبة الإماراتية': '',  # Remove UAE context prefix
         }
         
         for wrong, correct in fixes.items():
             arabic_text = arabic_text.replace(wrong, correct)
             
-        return arabic_text
+        return arabic_text.strip()
     
     @classmethod
     def get_all_translations_for_template(cls, expertise_reports: list) -> Dict[str, Any]:
