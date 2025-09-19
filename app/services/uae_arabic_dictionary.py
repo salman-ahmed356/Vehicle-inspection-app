@@ -41,9 +41,9 @@ UAE_ARABIC_TERMS = {
     'INSPECTION RESULTS': 'نتائج الفحص',
     
     # Status terms
-    'Pass': 'نجح',
+    'Pass': 'ناجح',
     'Fail': 'فشل',
-    'Passed': 'نجح',
+    'Passed': 'ناجح',
     'Failed': 'فشل',
     'Good': 'جيد',
     'Bad': 'سيء',
@@ -171,8 +171,8 @@ def get_uae_arabic_translation(english_text):
         '4W Drive (4x4)': 'الفور ويل (الرباعي)',
         'Transmission Shaft': 'عامود ناقل الحركة',
         'Alignment': 'الميزانيه',
-        'Tyres': 'الإطارات والفرامل',
-        'Brakes': 'الإطارات والفرامل',
+        'Tyres': 'الإطارات',
+        'Brakes': 'الفرامل',
         'Exhaust': 'الأكزوز'
     }
     
