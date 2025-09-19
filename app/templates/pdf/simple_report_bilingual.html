@@ -933,8 +933,9 @@
   
   <!-- Page Footer (appears on every page) -->
   <div class="page-footer">
-    <div class="terms-title">Terms & Conditions</div>
+    <div class="terms-title">Terms & Conditions - الشروط والأحكام</div>
     <div>This certificate shows the test values at time of inspection only. {{ company.name }} is not responsible for any hidden defects and inspection done according to the traffic law. Validity of this certificate is for the same day only.</div>
+    <div class="arabic" style="margin-top: 3px; font-size: 7pt;">هذه الشهادة تُظهر نتائج الفحص وقت التفتيش فقط. {{ company.name }} غير مسؤولة عن أي عيوب خفية، والفحص تم وفقاً لقانون المرور. صلاحية هذه الشهادة لنفس اليوم فقط.</div>
     <div class="company-contact">
       Tel: {{ company.phone if company.phone else 'N/A' }} | Email: {{ company.email if company.email else 'N/A' }}{% if company.address %} | {{ company.address.street_address if company.address.street_address else '' }}{{ ', ' + company.address.city if company.address.city else '' }}{% endif %}
     </div>
