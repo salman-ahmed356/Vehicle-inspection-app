@@ -64,6 +64,21 @@ def create_pdf(report_id, include_detailed_images=False):
     # Get all translations needed for PDF template
     translations = UaeTranslationService.get_all_translations_for_template(package_expertise_reports)
     
+    # Process comments for bidirectional display - PRESERVE ORIGINAL ARABIC
+    for report in package_expertise_reports:
+        comment = report.get('comment', '')
+        if comment:
+            if UaeTranslationService.is_arabic(comment):
+                # Arabic comment: KEEP ORIGINAL ARABIC UNCHANGED, translate to English only
+                report['comment_arabic'] = comment  # ORIGINAL ARABIC - NO CHANGES
+                report['comment_english'] = UaeTranslationService._translate_arabic_to_english(comment)
+                report['comment'] = comment  # Keep original for template
+            else:
+                # English comment: show English as-is, translate to Arabic
+                report['comment_english'] = comment
+                report['comment_arabic'] = UaeTranslationService._translate_english_to_arabic(comment)
+                report['comment'] = comment  # Keep original for template
+    
     template_name = 'pdf/detailed_report_bilingual.html' if include_detailed_images else 'pdf/simple_report_unified.html'
     
     rendered_html = render_template(
@@ -223,12 +238,9 @@ def _process_expertise_reports(report):
             
             # Include if it has marked features OR has a comment
             if marked_features or has_comment:
-                # Translate comment using unified service
-                comment_arabic = UaeTranslationService.translate_comment(er.comment) if er.comment else ""
                 blocks.append({
                     'expertise_type_name': er.expertise_type.name,
                     'comment': er.comment or "",
-                    'comment_arabic': comment_arabic,
                     'features': marked_features
                 })
             

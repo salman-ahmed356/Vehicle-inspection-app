@@ -268,7 +268,11 @@
             <span class="arabic" style="font-weight: bold;">التعليقات:</span>
           </div>
           <div class="comments-text">
-            {{ pckg_report.comment }}
+            {% if pckg_report.comment_english %}
+              {{ pckg_report.comment_english }}
+            {% else %}
+              {{ pckg_report.comment }}
+            {% endif %}
             {% if pckg_report.comment_arabic %}
               <div class="arabic" style="margin-top: 5px;">{{ pckg_report.comment_arabic }}</div>
             {% endif %}

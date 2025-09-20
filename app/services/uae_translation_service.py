@@ -76,7 +76,63 @@ class UaeTranslationService:
         'ECU Expertise': 'خبرة وحدة التحكم الإلكترونية',
     }
     
-    # Common automotive phrases - your corrected translations
+    # Arabic to English translations - your common terms
+    ARABIC_TO_ENGLISH = {
+        # Vehicle info
+        'مارسيدس E 2017': 'Mercedes E 2017',
+        'ممشاه 163': 'Mileage 163',
+        
+        # Paint and body work
+        'بمبر امامي صبغ': 'Front bumper painted',
+        'رفراف امامي يسار صبغ مع معجون': 'Left front fender painted with body filler',
+        'باب امامي يسار صبغ مع معجون': 'Left front door painted with body filler',
+        'باب خلفي يسار صبغ مع معجون': 'Left rear door painted with body filler',
+        'صبغ من الهيكل داخل مع معجون': 'Interior body painted with body filler',
+        'دبة خلفية صبغ مع معجون': 'Rear trunk painted with body filler',
+        'بونيت صبغ مع معجون ويوجد دعمات خفيفة': 'Hood painted with body filler and has light supports',
+        'باقي القطع صبغ تجميلي': 'Remaining parts cosmetic paint',
+        'صبغ باب امامي يمين': 'Right front door painted',
+        'صبغ باب خلفي يمين': 'Right rear door painted',
+        'رفراف خلفي يسار صبغ': 'Left rear fender painted',
+        'نصف رفرفت امامي يسار': 'Half left front fender',
+        'يوجد دعمة خفيفة في رفراف امامي يمين مع اللونيت الدعامية امامية': 'Light support in right front fender with front bumper',
+        'دبة خلفية مدعومة': 'Rear trunk supported',
+        
+        # Mechanical issues
+        'لايتات تجارية': 'Commercial lights',
+        'ماكينة مبطلة': 'Engine disabled',
+        'جير مبطل': 'Gearbox disabled',
+        'كراسي ماكينة': 'Engine mounts',
+        'كراسي جير': 'Gearbox mounts',
+        'درامات امامية': 'Front brake drums',
+        'جانبينات امامية': 'Front shock absorbers',
+        'تواير تحتاج تبديل': 'Tires need replacement',
+        'رنجات يوجد بها شحفات': 'Rims have scratches',
+        'مقعد السائق الفرش يحتاج تعديل': 'Driver seat upholstery needs adjustment',
+        'جانبينات البونيت امامية يجب تغيرهم': 'Front hood shock absorbers need replacement',
+        'يوجد ليك بين القير والماكينة': 'There is a leak between gearbox and engine',
+        'خدوش في المركبة': 'Scratches on vehicle',
+        'خدوش في الرنجات': 'Scratches on rims',
+        'صوت خفيف في السوبر يوجد ليك زيت في قطعة واجهة الأمامية': 'Light sound in suspension, oil leak in front part',
+        'ليتات امامية تحتاج صيانة': 'Front lights need maintenance',
+        'الزجاج الأمامي مكسور': 'Front windshield broken',
+        'يوجد نفضه ف المكينه': 'Engine vibration',
+        'صدر الأمامي مال المكينه فيها ليك': 'Front engine cover has leak',
+        'درمات امامي خلفي': 'Front and rear brake drums',
+        'سفايف': 'Brake pads',
+        'ليكات مياه': 'Water leaks',
+        'ليكات زيت': 'Oil leaks',
+        'بوشات امامي وخلفي كامل': 'Complete front and rear bushings',
+        'صوت في البيزنغ': 'Sound in bearing',
+        'لايت امامي يمين مكسور': 'Right front light broken',
+        'ليك في البوكس ستيرنغ مع صوت': 'Leak in steering box with sound',
+        'بيرنغات امامي': 'Front bearings',
+        
+        # Closing message
+        'مع تحيات الفاحص ربيع شركة بلاك بويت نشكركم لحسن تعاونكم معنا نتمنى لكم خدمة افضل': 'With regards from inspector Rabie, Black Point Company. We thank you for your cooperation and wish you better service',
+    }
+    
+    # English to Arabic translations (existing)
     AUTOMOTIVE_PHRASES = {
         'Headlights need polish': 'المصابيح الأمامية تحتاج إلى تلميع',
         'Windshield water pump motor not working': 'مضخة مياه الزجاج الأمامي لا تعمل',
@@ -110,14 +166,15 @@ class UaeTranslationService:
     
     @classmethod
     def is_arabic(cls, text: str) -> bool:
-        """Detect if text is already in Arabic"""
+        """Detect if text is already in Arabic - improved sensitivity"""
         if not text or not text.strip():
             return False
         
         arabic_chars = sum(1 for c in text if '\u0600' <= c <= '\u06FF')
         total_chars = len([c for c in text if c.isalpha()])
         
-        return arabic_chars > total_chars * 0.3 if total_chars > 0 else False
+        # Lower threshold for better Arabic detection
+        return arabic_chars > total_chars * 0.2 if total_chars > 0 else False
     
     @classmethod
     def translate_static(cls, text: str) -> str:
@@ -143,41 +200,61 @@ class UaeTranslationService:
     
     @classmethod
     def translate_comment(cls, comment: str) -> str:
-        """Translate free-form comments using hybrid approach"""
+        """Translate comments - Arabic to English or English to Arabic"""
         if not comment or not comment.strip():
             return comment
             
         comment = comment.strip()
         
-        # If already Arabic, return as-is
+        # If Arabic, translate to English
         if cls.is_arabic(comment):
-            return comment
-            
+            return cls._translate_arabic_to_english(comment)
+        else:
+            # If English, translate to Arabic
+            return cls._translate_english_to_arabic(comment)
+    
+    @classmethod
+    def _translate_arabic_to_english(cls, arabic_text: str) -> str:
+        """Translate Arabic text to English"""
         # Try exact phrase match first
-        if comment in cls.AUTOMOTIVE_PHRASES:
-            return cls.AUTOMOTIVE_PHRASES[comment]
+        if arabic_text in cls.ARABIC_TO_ENGLISH:
+            return cls.ARABIC_TO_ENGLISH[arabic_text]
+            
+        # Try Google Translate Arabic to English
+        try:
+            return cls._google_translate_ar_to_en(arabic_text)
+        except Exception:
+            # Fallback: return with English prefix
+            return f"Note: {arabic_text}"
+    
+    @classmethod
+    def _translate_english_to_arabic(cls, english_text: str) -> str:
+        """Translate English text to Arabic"""
+        # Try exact phrase match first
+        if english_text in cls.AUTOMOTIVE_PHRASES:
+            return cls.AUTOMOTIVE_PHRASES[english_text]
             
         # Try case-insensitive phrase match
-        comment_lower = comment.lower()
+        english_lower = english_text.lower()
         for phrase, translation in cls.AUTOMOTIVE_PHRASES.items():
-            if phrase.lower() == comment_lower:
+            if phrase.lower() == english_lower:
                 return translation
         
         # Try pattern-based translation for common structures
-        translated = cls._pattern_based_translation(comment)
-        if translated != comment:
+        translated = cls._pattern_based_translation(english_text)
+        if translated != english_text:
             return translated
                 
         # Try Google Translate with UAE automotive context
         try:
-            return cls._google_translate_with_context(comment)
+            return cls._google_translate_with_context(english_text)
         except Exception:
             # Fallback: return with Arabic prefix
-            return f"ملاحظة: {comment}"
+            return f"ملاحظة: {english_text}"
     
     @classmethod
     def _google_translate_with_context(cls, text: str) -> str:
-        """Use free Google Translate with UAE automotive context"""
+        """Use free Google Translate English to Arabic with UAE automotive context"""
         try:
             # Add UAE automotive context
             enhanced_text = f"UAE vehicle inspection: {text}"
@@ -208,6 +285,35 @@ class UaeTranslationService:
             pass
             
         return text
+    
+    @classmethod
+    def _google_translate_ar_to_en(cls, arabic_text: str) -> str:
+        """Use free Google Translate Arabic to English with UAE automotive context"""
+        try:
+            encoded_text = urllib.parse.quote(arabic_text)
+            
+            url = f'https://translate.googleapis.com/translate_a/single?client=gtx&sl=ar&tl=en&dt=t&q={encoded_text}'
+            
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            }
+            
+            response = requests.get(url, headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                result = response.json()
+                if result and result[0] and result[0][0]:
+                    translated = result[0][0][0]
+                    
+                    # Apply common fixes for Arabic to English
+                    translated = cls._fix_ar_to_en_translation_issues(translated)
+                    
+                    return translated
+                    
+        except Exception:
+            pass
+            
+        return arabic_text
     
     @classmethod
     def _pattern_based_translation(cls, text: str) -> str:
@@ -275,13 +381,37 @@ class UaeTranslationService:
         return arabic_text.strip()
     
     @classmethod
+    def _fix_ar_to_en_translation_issues(cls, english_text: str) -> str:
+        """Fix common Arabic to English translation issues"""
+        fixes = {
+            'machine': 'engine',  # ماكينة -> engine not machine
+            'gear': 'gearbox',  # جير -> gearbox
+            'chairs': 'mounts',  # كراسي -> mounts not chairs
+            'drums': 'brake drums',  # درامات -> brake drums
+            'sides': 'shock absorbers',  # جانبينات -> shock absorbers
+            'tires': 'tires',  # تواير -> tires
+            'rims': 'rims',  # رنجات -> rims
+            'scratches': 'scratches',  # شحفات -> scratches
+            'lights': 'lights',  # لايتات -> lights
+            'leak': 'leak',  # ليك -> leak
+            'sound': 'noise',  # صوت -> noise
+            'bearing': 'bearing',  # بيزنغ -> bearing
+        }
+        
+        for wrong, correct in fixes.items():
+            english_text = english_text.replace(wrong, correct)
+            
+        return english_text.strip()
+    
+    @classmethod
     def get_all_translations_for_template(cls, expertise_reports: list) -> Dict[str, Any]:
         """Get all translations needed for PDF template"""
         translations = {
             'sections': {},
             'features': {},
             'statuses': {},
-            'comments': {}
+            'comments': {},
+            'comments_english': {}  # New: English translations of Arabic comments
         }
         
         for report in expertise_reports:
@@ -300,9 +430,16 @@ class UaeTranslationService:
                 if feature_status:
                     translations['statuses'][feature_status] = cls.translate_static(feature_status)
             
-            # Translate comments
+            # Handle comments bidirectionally
             comment = report.get('comment', '')
             if comment:
-                translations['comments'][comment] = cls.translate_comment(comment)
+                if cls.is_arabic(comment):
+                    # Arabic comment -> translate to English
+                    translations['comments'][comment] = comment  # Keep original Arabic
+                    translations['comments_english'][comment] = cls._translate_arabic_to_english(comment)
+                else:
+                    # English comment -> translate to Arabic
+                    translations['comments'][comment] = cls._translate_english_to_arabic(comment)
+                    translations['comments_english'][comment] = comment  # Keep original English
                 
         return translations
