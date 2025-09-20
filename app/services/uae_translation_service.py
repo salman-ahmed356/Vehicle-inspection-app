@@ -360,7 +360,27 @@ class UaeTranslationService:
             result = cls.ARABIC_TO_ENGLISH[trimmed]
             return result
             
-        # 6. Fallback: return with English prefix (skip Google Translate for VPS)
+        # 6. Try deep-translator library (works better on VPS)
+        try:
+            from deep_translator import GoogleTranslator
+            translator = GoogleTranslator(source='ar', target='en')
+            result = translator.translate(arabic_text)
+            if result and result != arabic_text:
+                return cls._fix_ar_to_en_translation_issues(result)
+        except Exception:
+            pass
+            
+        # 7. Try googletrans library as backup
+        try:
+            from googletrans import Translator
+            translator = Translator()
+            result = translator.translate(arabic_text, src='ar', dest='en')
+            if result and result.text and result.text != arabic_text:
+                return cls._fix_ar_to_en_translation_issues(result.text)
+        except Exception:
+            pass
+            
+        # 8. Fallback: return with English prefix
         return f"Note: {arabic_text}"
     
     @classmethod
@@ -391,7 +411,16 @@ class UaeTranslationService:
         if translated != english_text:
             return translated
                 
-        # 5. Fallback: return with Arabic prefix (skip Google Translate for VPS)
+        # 5. Use enhanced UAE dictionary function (PRIORITY)
+        from .uae_arabic_dictionary import translate_comment_to_arabic
+        try:
+            result = translate_comment_to_arabic(english_text)
+            if result and not result.startswith('ملاحظة:'):
+                return result
+        except Exception:
+            pass
+            
+        # 6. Fallback: return with Arabic prefix
         return f"ملاحظة: {english_text}"
     
     @classmethod

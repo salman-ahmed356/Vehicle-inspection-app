@@ -16,3 +16,5 @@ cryptography
 translators
 Flask-Migrate
 requests>=2.25.1
+deep-translator==1.11.4
+googletrans==4.0.0rc1

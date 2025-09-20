@@ -152,6 +152,19 @@ UAE_ARABIC_TERMS = {
     'ok': 'تمام',
     'fine': 'تمام',
     
+    # More UAE automotive terms
+    'half of the engine from down side is replaced': 'نصف المحرك من الجهة السفلى مستبدل',
+    'rear differential repainted': 'الدفريشن الخلفي مصبوغ',
+    'front differential have leak': 'الدفريشن الأمامي فيه تهريب',
+    'sound with brake booster': 'صوت مع بوستر الفرامل',
+    'chassis rusty': 'الشاسيه صدي',
+    'car is full painted': 'السيارة مصبوغة بالكامل',
+    'there is an sound in the vehicles body from underneath': 'يوجد صوت في جسم السيارة من الأسفل',
+    'half of the engine from down side is replaced': 'نصف المحرك من الجهة السفلى مستبدل',
+    'rear differential repainted': 'الدفريشن الخلفي مصبوغ',
+    'front differential have leak': 'الدفريشن الأمامي فيه تهريب',
+    'sound with brake booster': 'صوت مع بوستر الفرامل',
+    
     # New Arabic terms from user
     'يوجد صبغ في المركبة كاملة': 'Whole vehicle has been painted',
     'دفريشن خلفي مبطل': 'Rear differential disabled',
@@ -213,57 +226,134 @@ def translate_comment_to_arabic(comment_text):
     
     original_text = comment_text.strip()
     
-    # Check for exact matches first
+    # 1. Check for exact matches first (case insensitive)
     if original_text.lower() in UAE_ARABIC_TERMS:
         return UAE_ARABIC_TERMS[original_text.lower()]
     
-    # Try multiple translation services
+    # 2. Check for partial matches in longer phrases
+    for english_phrase, arabic_translation in UAE_ARABIC_TERMS.items():
+        if len(english_phrase) > 10 and english_phrase.lower() in original_text.lower():
+            return arabic_translation
+    
+    # 3. Try UAE-specific translation patterns
+    translated = translate_uae_patterns(original_text)
+    if translated != original_text:
+        return translated
+    
+    # 4. Try multiple translation services with UAE context
     translated = try_translation_services(original_text)
     if translated and translated != original_text:
         return translated
     
-    # Fallback to word-by-word translation using local dictionary
+    # 5. Word-by-word translation using comprehensive dictionary
     words = original_text.split()
     translated_words = []
-    translation_found = False
+    all_translated = True
     
     for word in words:
         word_clean = word.lower().strip('.,!?')
         if word_clean in UAE_ARABIC_TERMS:
             translated_words.append(UAE_ARABIC_TERMS[word_clean])
-            translation_found = True
         else:
-            translated_words.append(word)
+            all_translated = False
+            break
     
-    # If some translation occurred, return mixed result
-    if translation_found:
+    # Only return word-by-word if ALL words translated
+    if all_translated and translated_words:
         return ' '.join(translated_words)
     
     # Final fallback - return with Arabic prefix
     return f"ملاحظة: {original_text}"
 
-def try_translation_services(text):
-    """Try working translation services in order of reliability"""
+def translate_uae_patterns(text):
+    """Translate using UAE automotive patterns"""
+    import re
     
-    # Service 1: MyMemory with UAE context
+    text_lower = text.lower()
+    
+    # Pattern: "X is Y"
+    if ' is ' in text_lower:
+        if 'rusty' in text_lower:
+            return text.replace('is rusty', 'صدي').replace('rusty', 'صدي')
+        if 'painted' in text_lower:
+            return text.replace('is painted', 'مصبوغ').replace('painted', 'مصبوغ')
+        if 'replaced' in text_lower:
+            return text.replace('is replaced', 'مستبدل').replace('replaced', 'مستبدل')
+    
+    # Pattern: "X have/has Y"
+    if ' have ' in text_lower or ' has ' in text_lower:
+        if 'leak' in text_lower:
+            return text.replace('have leak', 'فيه تهريب').replace('has leak', 'فيه تهريب')
+        if 'sound' in text_lower:
+            return text.replace('have sound', 'فيه صوت').replace('has sound', 'فيه صوت')
+    
+    # Pattern: "sound with X"
+    if 'sound with' in text_lower:
+        return text.replace('sound with', 'صوت مع')
+    
+    # Pattern: "there is X"
+    if text_lower.startswith('there is'):
+        if 'sound' in text_lower:
+            return text.replace('there is an sound', 'يوجد صوت').replace('there is a sound', 'يوجد صوت')
+        if 'rust' in text_lower:
+            return text.replace('there is rust', 'يوجد صدأ')
+    
+    return text
+
+def try_translation_services(text):
+    """Try working translation services with UAE automotive context"""
+    
+    # Service 1: MyMemory with UAE automotive context
     try:
         import requests
-        # Add UAE context to get local dialect
-        url = f'https://api.mymemory.translated.net/get?q={text}&langpair=en|ar&mt=1&onlyprivate=0&de=salman.ahmed@uae.com'
+        import urllib.parse
+        
+        # Add UAE automotive context
+        context_text = f"UAE vehicle inspection: {text}"
+        encoded_text = urllib.parse.quote(context_text)
+        
+        url = f'https://api.mymemory.translated.net/get?q={encoded_text}&langpair=en|ar&mt=1'
         headers = {
             'User-Agent': 'Mozilla/5.0 (compatible; UAE-Vehicle-Inspection/1.0)'
         }
-        response = requests.get(url, headers=headers, timeout=5)
+        
+        response = requests.get(url, headers=headers, timeout=8)
         if response.status_code == 200:
             data = response.json()
             if data.get('responseStatus') == 200:
                 translated = data['responseData']['translatedText']
+                # Clean up context
+                translated = translated.replace('فحص المركبة الإماراتية:', '').strip()
+                translated = translated.replace('UAE vehicle inspection:', '').strip()
                 if translated and translated != text:
-                    return translated
+                    return fix_uae_translation(translated)
     except:
         pass
     
-    # Service 2: Google Translate (Backup)
+    # Service 2: Libre Translate (if available)
+    try:
+        import requests
+        import json
+        
+        url = 'https://libretranslate.de/translate'
+        data = {
+            'q': f"UAE automotive: {text}",
+            'source': 'en',
+            'target': 'ar',
+            'format': 'text'
+        }
+        
+        response = requests.post(url, data=data, timeout=8)
+        if response.status_code == 200:
+            result = response.json()
+            translated = result.get('translatedText', '')
+            translated = translated.replace('الإمارات العربية المتحدة للسيارات:', '').strip()
+            if translated and translated != text:
+                return fix_uae_translation(translated)
+    except:
+        pass
+    
+    # Service 3: Google Translate (Final backup)
     try:
         import requests
         import urllib.parse
@@ -275,28 +365,37 @@ def try_translation_services(text):
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         }
         
-        response = requests.get(url, headers=headers, timeout=5)
+        response = requests.get(url, headers=headers, timeout=8)
         if response.status_code == 200:
             result = response.json()
             if result and result[0] and result[0][0]:
                 translated = result[0][0][0]
                 if translated and translated != text:
-                    return translated
-    except:
-        pass
-    
-    # Service 3: Lingva Translate (Final backup)
-    try:
-        import requests
-        import urllib.parse
-        url = f'https://lingva.ml/api/v1/en/ar/{urllib.parse.quote(text)}'
-        response = requests.get(url, timeout=5)
-        if response.status_code == 200:
-            data = response.json()
-            translated = data.get('translation', '')
-            if translated and translated != text:
-                return translated
+                    return fix_uae_translation(translated)
     except:
         pass
     
     return None
+
+def fix_uae_translation(arabic_text):
+    """Fix common translation issues for UAE automotive terms"""
+    fixes = {
+        'آلة': 'محرك',  # machine -> engine
+        'مقاعد': 'قواعد',  # seats -> mounts
+        'طبول': 'درامات',  # drums -> brake drums
+        'جوانب': 'جانبينات',  # sides -> shock absorbers
+        'إطارات مطاطية': 'إطارات',  # rubber tires -> tires
+        'حافات': 'رنجات',  # rims
+        'خدوش': 'شحفات',  # scratches (UAE term)
+        'أضواء': 'لايتات',  # lights (UAE term)
+        'تسرب': 'تهريب',  # leak (UAE term)
+        'ضوضاء': 'صوت',  # noise -> sound (UAE term)
+        'محمل': 'بيرنغ',  # bearing (UAE term)
+        'مكسور': 'خربان',  # broken (UAE term)
+        'صندوق التوجيه': 'بوكس ستيرنغ',  # steering box (UAE term)
+    }
+    
+    for standard, uae in fixes.items():
+        arabic_text = arabic_text.replace(standard, uae)
+    
+    return arabic_text.strip()
