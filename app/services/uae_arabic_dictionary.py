@@ -264,35 +264,11 @@ def translate_comment_to_arabic(comment_text):
     if translated and translated != original_text and not contains_english(translated):
         return translated
     
-    # 5. Try word-by-word translation using comprehensive dictionary
-    words = original_text.split()
-    translated_words = []
-    partial_translation = False
+    # 5. Skip word-by-word translation (causes gibberish)
     
-    for word in words:
-        word_clean = word.lower().strip('.,!?')
-        if word_clean in UAE_ARABIC_TERMS:
-            translated_words.append(UAE_ARABIC_TERMS[word_clean])
-            partial_translation = True
-        else:
-            # Try to translate individual word online
-            word_translated = try_translation_services(word_clean)
-            if word_translated and word_translated != word_clean and not contains_english(word_translated):
-                translated_words.append(word_translated)
-                partial_translation = True
-            else:
-                translated_words.append(word_clean)  # Keep original if can't translate
-    
-    # Return partial translation if any words were translated
-    if partial_translation:
-        result = ' '.join(translated_words)
-        # Clean up any remaining English
-        if not contains_english(result):
-            return result
-    
-    # FINAL FORCE: Try Google Translate directly with no fallback
+    # 5. FINAL FORCE: Try Google Translate directly with no fallback
     final_translation = force_google_translate(original_text)
-    if final_translation and final_translation != original_text:
+    if final_translation and final_translation != original_text and not contains_english(final_translation):
         return final_translation
     
     # Absolute last resort - return with Arabic prefix
