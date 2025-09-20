@@ -268,13 +268,22 @@
             <span class="arabic" style="font-weight: bold;">التعليقات:</span>
           </div>
           <div class="comments-text">
-            {% if pckg_report.comment_english %}
-              {{ pckg_report.comment_english }}
+            {% if UaeTranslationService.is_arabic(pckg_report.comment) %}
+              <!-- Original is Arabic: show English translation in English section -->
+              {% if pckg_report.comment_english %}
+                {{ pckg_report.comment_english }}
+              {% else %}
+                Note: {{ pckg_report.comment }}
+              {% endif %}
+              <!-- Show original Arabic in Arabic section -->
+              <div class="arabic" style="margin-top: 5px;">{{ pckg_report.comment }}</div>
             {% else %}
+              <!-- Original is English: show original English in English section -->
               {{ pckg_report.comment }}
-            {% endif %}
-            {% if pckg_report.comment_arabic %}
-              <div class="arabic" style="margin-top: 5px;">{{ pckg_report.comment_arabic }}</div>
+              <!-- Show Arabic translation in Arabic section -->
+              {% if pckg_report.comment_arabic %}
+                <div class="arabic" style="margin-top: 5px;">{{ pckg_report.comment_arabic }}</div>
+              {% endif %}
             {% endif %}
           </div>
         </div>
