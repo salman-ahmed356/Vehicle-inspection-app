@@ -256,30 +256,51 @@ def translate_comment_to_arabic(comment_text):
     
     original_text = comment_text.strip()
     
-    # 1. Dictionary exact match (PRIORITY)
-    if original_text.lower() in UAE_ARABIC_TERMS:
-        return UAE_ARABIC_TERMS[original_text.lower()]
+    # Handle multi-line text - translate each line separately
+    if '\n' in original_text:
+        lines = original_text.split('\n')
+        translated_lines = []
+        for line in lines:
+            line = line.strip()
+            if line:
+                translated_line = translate_single_line_to_arabic(line)
+                translated_lines.append(translated_line)
+            else:
+                translated_lines.append('')
+        return '\n'.join(translated_lines)
+    else:
+        return translate_single_line_to_arabic(original_text)
+
+def translate_single_line_to_arabic(text):
+    if not text or not text.strip():
+        return ''
     
-    if original_text in UAE_ARABIC_TERMS:
-        return UAE_ARABIC_TERMS[original_text]
+    text = text.strip()
+    
+    # 1. Dictionary exact match (PRIORITY)
+    if text.lower() in UAE_ARABIC_TERMS:
+        return UAE_ARABIC_TERMS[text.lower()]
+    
+    if text in UAE_ARABIC_TERMS:
+        return UAE_ARABIC_TERMS[text]
     
     # 2. Dictionary partial match for longer phrases
     for english_phrase, arabic_translation in UAE_ARABIC_TERMS.items():
-        if len(english_phrase) > 10 and english_phrase.lower() in original_text.lower():
+        if len(english_phrase) > 10 and english_phrase.lower() in text.lower():
             return arabic_translation
     
     # 3. UAE patterns
-    translated = translate_uae_patterns(original_text)
-    if translated != original_text:
+    translated = translate_uae_patterns(text)
+    if translated != text:
         return translated
     
     # 4. Online translation services
-    translated = force_google_translate(original_text)
-    if translated and translated != original_text:
+    translated = force_google_translate(text)
+    if translated and translated != text:
         return translated
     
     # 5. Fallback with Arabic prefix
-    return f"ملاحظة: {original_text}"
+    return f"ملاحظة: {text}"
 
 def translate_uae_patterns(text):
     """Translate using UAE automotive patterns"""
