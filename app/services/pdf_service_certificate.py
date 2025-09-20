@@ -113,7 +113,7 @@ def generate_certificate_pdf(report_id):
     
     # Render HTML template
     html_content = render_template(
-        'pdf/simple_report_bilingual.html',
+        'pdf/certificate_bilingual.html',
         report=report,
         customer=customer,
         vehicle=vehicle,
