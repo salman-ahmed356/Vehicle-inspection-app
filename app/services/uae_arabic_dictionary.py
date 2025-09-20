@@ -197,9 +197,11 @@ UAE_ARABIC_TERMS = {
     'entire': 'كاملة',
     'whole': 'كاملة',
     
-    # Additional differential terms
+    # Additional differential terms - exact case matching
+    'Rear differential repainted': 'الدفريشن الخلفي مصبوغ',
     'rear differential repainted': 'الدفريشن الخلفي مصبوغ',
     'front differential have leak': 'الدفريشن الأمامي فيه تهريب',
+    'Front differential have leak': 'الدفريشن الأمامي فيه تهريب',
     'differential repainted': 'الدفريشن مصبوغ',
     'differential have leak': 'الدفريشن فيه تهريب',
     'differential leak': 'تهريب الدفريشن',
@@ -237,8 +239,13 @@ def translate_comment_to_arabic(comment_text):
     original_text = comment_text.strip()
     
     # 1. Check for exact matches first (case insensitive)
-    if original_text.lower() in UAE_ARABIC_TERMS:
-        return UAE_ARABIC_TERMS[original_text.lower()]
+    text_lower = original_text.lower()
+    if text_lower in UAE_ARABIC_TERMS:
+        return UAE_ARABIC_TERMS[text_lower]
+    
+    # Also check original case
+    if original_text in UAE_ARABIC_TERMS:
+        return UAE_ARABIC_TERMS[original_text]
     
     # 2. Check for partial matches in longer phrases
     for english_phrase, arabic_translation in UAE_ARABIC_TERMS.items():
