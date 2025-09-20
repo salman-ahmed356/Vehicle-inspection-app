@@ -261,7 +261,7 @@
                 <div class="expertise-status">{{ pckg_report.pass_fail|upper }}</div>
               {% endif %}
               {% if has_comment %}
-                <div class="expertise-comment">
+                <div class="expertise-comment" style="{% if not pckg_report.pass_fail %}margin-top: 0px;{% endif %}">
                   {% if pckg_report.comment_english and pckg_report.comment_english != pckg_report.comment %}
                     <!-- Arabic input: show English translation -->
                     {{ pckg_report.comment_english }}
@@ -284,7 +284,7 @@
                 </div>
               {% endif %}
               {% if has_comment or has_arabic_comment %}
-                <div class="arabic-comment">
+                <div class="arabic-comment" style="{% if not pckg_report.pass_fail %}margin-top: 0px;{% endif %}">
                   {% if pckg_report.comment_english and pckg_report.comment_english != pckg_report.comment %}
                     <!-- Arabic input: show original Arabic -->
                     {{ pckg_report.comment|replace('\n', '<br>')|safe }}
