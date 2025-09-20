@@ -108,6 +108,10 @@ UAE_ARABIC_TERMS = {
     'replace tires': 'تبديل الإطارات',
     'replace brake pads': 'تبديل سفايف الفرامل',
     
+    # EXACT PHRASES FROM YOUR PDF
+    'Rear differential repainted': 'الدفريشن الخلفي مصبوغ',
+    'front differential have leak': 'الدفريشن الأمامي فيه تهريب',
+    
     # Individual terms
     'oil': 'زيت',
     'leak': 'تهريب',
@@ -200,16 +204,11 @@ UAE_ARABIC_TERMS = {
     'Painted': 'مصبوغ',
     'PAINTED': 'مصبوغ',
     
-    # Exact differential phrases from PDF
+    # EXACT differential phrases from PDF - PRIORITY
     'Rear differential repainted': 'الدفريشن الخلفي مصبوغ',
     'rear differential repainted': 'الدفريشن الخلفي مصبوغ',
     'front differential have leak': 'الدفريشن الأمامي فيه تهريب',
     'Front differential have leak': 'الدفريشن الأمامي فيه تهريب',
-    'REAR DIFFERENTIAL REPAINTED': 'الدفريشن الخلفي مصبوغ',
-    'FRONT DIFFERENTIAL HAVE LEAK': 'الدفريشن الأمامي فيه تهريب',
-    'differential repainted': 'الدفريشن مصبوغ',
-    'differential have leak': 'الدفريشن فيه تهريب',
-    'differential leak': 'تهريب الدفريشن',
 }
 
 def get_uae_arabic_translation(english_text):
