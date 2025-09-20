@@ -257,29 +257,43 @@ def translate_comment_to_arabic(comment_text):
     if translated != original_text:
         return translated
     
-    # 4. Try multiple translation services with UAE context
+    # 4. FORCE translation using online services - NO English allowed in Arabic side
     translated = try_translation_services(original_text)
-    if translated and translated != original_text:
+    if translated and translated != original_text and not contains_english(translated):
         return translated
     
-    # 5. Word-by-word translation using comprehensive dictionary
+    # 5. Try word-by-word translation using comprehensive dictionary
     words = original_text.split()
     translated_words = []
-    all_translated = True
+    partial_translation = False
     
     for word in words:
         word_clean = word.lower().strip('.,!?')
         if word_clean in UAE_ARABIC_TERMS:
             translated_words.append(UAE_ARABIC_TERMS[word_clean])
+            partial_translation = True
         else:
-            all_translated = False
-            break
+            # Try to translate individual word online
+            word_translated = try_translation_services(word_clean)
+            if word_translated and word_translated != word_clean and not contains_english(word_translated):
+                translated_words.append(word_translated)
+                partial_translation = True
+            else:
+                translated_words.append(word_clean)  # Keep original if can't translate
     
-    # Only return word-by-word if ALL words translated
-    if all_translated and translated_words:
-        return ' '.join(translated_words)
+    # Return partial translation if any words were translated
+    if partial_translation:
+        result = ' '.join(translated_words)
+        # Clean up any remaining English
+        if not contains_english(result):
+            return result
     
-    # Final fallback - return with Arabic prefix
+    # FINAL FORCE: Try Google Translate directly with no fallback
+    final_translation = force_google_translate(original_text)
+    if final_translation and final_translation != original_text:
+        return final_translation
+    
+    # Absolute last resort - return with Arabic prefix
     return f"ملاحظة: {original_text}"
 
 def translate_uae_patterns(text):
@@ -381,6 +395,57 @@ def try_translation_services(text):
             result = response.json()
             if result and result[0] and result[0][0]:
                 translated = result[0][0][0]
+                if translated and translated != text:
+                    return fix_uae_translation(translated)
+    except:
+        pass
+    
+    return None
+
+def contains_english(text):
+    """Check if text contains English characters"""
+    if not text:
+        return False
+    english_chars = sum(1 for c in text if c.isalpha() and ord(c) < 128)
+    total_chars = sum(1 for c in text if c.isalpha())
+    return english_chars > total_chars * 0.3 if total_chars > 0 else False
+
+def force_google_translate(text):
+    """Force Google Translate with multiple attempts"""
+    try:
+        import requests
+        import urllib.parse
+        
+        encoded_text = urllib.parse.quote(text)
+        url = f'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q={encoded_text}'
+        
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
+        
+        response = requests.get(url, headers=headers, timeout=10)
+        if response.status_code == 200:
+            result = response.json()
+            if result and result[0] and result[0][0]:
+                translated = result[0][0][0]
+                if translated and translated != text:
+                    return fix_uae_translation(translated)
+    except:
+        pass
+    
+    # Try alternative service
+    try:
+        import requests
+        import urllib.parse
+        
+        encoded_text = urllib.parse.quote(text)
+        url = f'https://api.mymemory.translated.net/get?q={encoded_text}&langpair=en|ar&mt=1'
+        
+        response = requests.get(url, timeout=10)
+        if response.status_code == 200:
+            data = response.json()
+            if data.get('responseStatus') == 200:
+                translated = data['responseData']['translatedText']
                 if translated and translated != text:
                     return fix_uae_translation(translated)
     except:
