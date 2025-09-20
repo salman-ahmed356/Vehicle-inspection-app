@@ -252,6 +252,8 @@ class UaeTranslationService:
         'car needs': 'السيارة تحتاج',
         'engine mount': 'قواعد المحرك',
         'gearbox mount': 'قواعد الجير',
+        'chassis is rusty': 'الهيكل صدي',
+        'Chassis is rusty': 'الهيكل صدي',
     }
     
     @classmethod
@@ -643,6 +645,10 @@ class UaeTranslationService:
             'shock absorbers': 'shock absorbers',  # Keep as is
             'wash from below': 'wash from below',  # Keep as is
             'identify leak': 'identify leak',  # Keep as is
+            'Front jambins': 'front shock absorbers',  # Fix jambins transliteration
+            'front jambins': 'front shock absorbers',
+            'jambins': 'shock absorbers',
+            'Jambins': 'shock absorbers'
         }
         
         for wrong, correct in fixes.items():

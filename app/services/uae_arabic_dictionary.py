@@ -123,6 +123,8 @@ UAE_ARABIC_TERMS = {
     'There is rust under the vehicle': 'يوجد صدأ تحت المركبة',
     'chassis rusty': 'الهيكل صدي',
     'Chassis rusty': 'الهيكل صدي',
+    'chassis is rusty': 'الهيكل صدي',
+    'Chassis is rusty': 'الهيكل صدي',
     'Rear differential repainted': 'الدفريشن الخلفي مطلي',
     'front differential have leak': 'الدفريشن الأمامي فيه تهريب',
     
