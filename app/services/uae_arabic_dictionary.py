@@ -196,6 +196,9 @@ UAE_ARABIC_TERMS = {
     'lower': 'من تحت',
     'entire': 'كاملة',
     'whole': 'كاملة',
+    'painted': 'مصبوغ',
+    'Painted': 'مصبوغ',
+    'PAINTED': 'مصبوغ',
     
     # Exact differential phrases from PDF
     'Rear differential repainted': 'الدفريشن الخلفي مصبوغ',
@@ -240,38 +243,29 @@ def translate_comment_to_arabic(comment_text):
     
     original_text = comment_text.strip()
     
-    # 1. Check for exact matches first (case insensitive)
-    text_lower = original_text.lower()
-    if text_lower in UAE_ARABIC_TERMS:
-        return UAE_ARABIC_TERMS[text_lower]
+    # 1. Dictionary exact match (PRIORITY)
+    if original_text.lower() in UAE_ARABIC_TERMS:
+        return UAE_ARABIC_TERMS[original_text.lower()]
     
-    # Also check original case
     if original_text in UAE_ARABIC_TERMS:
         return UAE_ARABIC_TERMS[original_text]
     
-    # 2. Check for partial matches in longer phrases
+    # 2. Dictionary partial match for longer phrases
     for english_phrase, arabic_translation in UAE_ARABIC_TERMS.items():
         if len(english_phrase) > 10 and english_phrase.lower() in original_text.lower():
             return arabic_translation
     
-    # 3. Try UAE-specific translation patterns
+    # 3. UAE patterns
     translated = translate_uae_patterns(original_text)
     if translated != original_text:
         return translated
     
-    # 4. FORCE translation using online services - NO English allowed in Arabic side
-    translated = try_translation_services(original_text)
-    if translated and translated != original_text and not contains_english(translated):
+    # 4. Online translation services
+    translated = force_google_translate(original_text)
+    if translated and translated != original_text:
         return translated
     
-    # 5. Skip word-by-word translation (causes gibberish)
-    
-    # 5. FINAL FORCE: Try Google Translate directly with no fallback
-    final_translation = force_google_translate(original_text)
-    if final_translation and final_translation != original_text and not contains_english(final_translation):
-        return final_translation
-    
-    # Absolute last resort - return with Arabic prefix
+    # 5. Fallback with Arabic prefix
     return f"ملاحظة: {original_text}"
 
 def translate_uae_patterns(text):
