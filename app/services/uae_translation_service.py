@@ -86,6 +86,8 @@ class UaeTranslationService:
         'بمبر امامي صبغ': 'Front bumper painted',
         'رفراف امامي يسار صبغ مع معجون': 'Left front fender painted with body filler',
         'باب امامي يسار صبغ مع معجون': 'Left front door painted with body filler',
+        'باب مخامي يسار': 'Left front door',
+        'باب مخامي يسار صبغ مع معجون': 'Left front door painted with body filler',
         'باب خلفي يسار صبغ مع معجون': 'Left rear door painted with body filler',
         'صبغ من الهيكل داخل مع معجون': 'Interior body painted with body filler',
         'دبة خلفية صبغ مع معجون': 'Rear trunk painted with body filler',
@@ -215,16 +217,23 @@ class UaeTranslationService:
     
     @classmethod
     def _translate_arabic_to_english(cls, arabic_text: str) -> str:
-        """Translate Arabic text to English"""
+        """Translate Arabic text to English - NEVER modify original Arabic"""
+        # CRITICAL: Never modify the original Arabic text
+        # Only translate to English for English section
+        
         # Try exact phrase match first
         if arabic_text in cls.ARABIC_TO_ENGLISH:
+            print(f"Found in dictionary: '{arabic_text}' -> '{cls.ARABIC_TO_ENGLISH[arabic_text]}'")
             return cls.ARABIC_TO_ENGLISH[arabic_text]
             
         # Try Google Translate Arabic to English
         try:
-            return cls._google_translate_ar_to_en(arabic_text)
-        except Exception:
-            # Fallback: return with English prefix
+            result = cls._google_translate_ar_to_en(arabic_text)
+            print(f"Google translate: '{arabic_text}' -> '{result}'")
+            return result
+        except Exception as e:
+            print(f"Translation failed: {e}")
+            # Fallback: return with English prefix but keep Arabic readable
             return f"Note: {arabic_text}"
     
     @classmethod
@@ -288,10 +297,53 @@ class UaeTranslationService:
     
     @classmethod
     def _google_translate_ar_to_en(cls, arabic_text: str) -> str:
-        """Use free Google Translate Arabic to English with UAE automotive context"""
+        """Use multiple translation services for better Arabic to English translation"""
+        # Try DeepL first (better quality)
         try:
             encoded_text = urllib.parse.quote(arabic_text)
+            url = f'https://api-free.deepl.com/v2/translate?auth_key=free&text={encoded_text}&source_lang=AR&target_lang=EN'
             
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            }
+            
+            response = requests.get(url, headers=headers, timeout=10)
+            if response.status_code == 200:
+                result = response.json()
+                if result.get('translations') and len(result['translations']) > 0:
+                    translated = result['translations'][0]['text']
+                    translated = cls._fix_ar_to_en_translation_issues(translated)
+                    print(f"DeepL translate: '{arabic_text}' -> '{translated}'")
+                    return translated
+        except Exception as e:
+            print(f"DeepL failed: {e}")
+        
+        # Try Microsoft Translator (backup)
+        try:
+            encoded_text = urllib.parse.quote(arabic_text)
+            url = f'https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&from=ar&to=en'
+            
+            headers = {
+                'Content-Type': 'application/json',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            }
+            
+            data = [{'text': arabic_text}]
+            response = requests.post(url, json=data, headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                result = response.json()
+                if result and len(result) > 0 and 'translations' in result[0]:
+                    translated = result[0]['translations'][0]['text']
+                    translated = cls._fix_ar_to_en_translation_issues(translated)
+                    print(f"Microsoft translate: '{arabic_text}' -> '{translated}'")
+                    return translated
+        except Exception as e:
+            print(f"Microsoft failed: {e}")
+        
+        # Fallback to Google Translate
+        try:
+            encoded_text = urllib.parse.quote(arabic_text)
             url = f'https://translate.googleapis.com/translate_a/single?client=gtx&sl=ar&tl=en&dt=t&q={encoded_text}'
             
             headers = {
@@ -299,19 +351,15 @@ class UaeTranslationService:
             }
             
             response = requests.get(url, headers=headers, timeout=10)
-            
             if response.status_code == 200:
                 result = response.json()
                 if result and result[0] and result[0][0]:
                     translated = result[0][0][0]
-                    
-                    # Apply common fixes for Arabic to English
                     translated = cls._fix_ar_to_en_translation_issues(translated)
-                    
+                    print(f"Google translate: '{arabic_text}' -> '{translated}'")
                     return translated
-                    
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"Google failed: {e}")
             
         return arabic_text
     
