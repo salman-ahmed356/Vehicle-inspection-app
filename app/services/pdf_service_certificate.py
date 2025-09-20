@@ -5,7 +5,7 @@ import base64
 import io
 from ..models import Report, Company, PackageExpertise, ExpertiseReport
 from ..database import db
-from .uae_arabic_dictionary import get_uae_arabic_translation
+from .uae_arabic_dictionary import get_uae_arabic_translation, translate_comment_to_arabic
 from .uae_translation_service import UaeTranslationService
 
 
@@ -83,13 +83,27 @@ def generate_certificate_pdf(report_id):
                 if UaeTranslationService.is_arabic(processed_comment):
                     # Arabic was written: Arabic on Arabic side, English translation on English side
                     processed_comment_arabic = processed_comment
-                    processed_comment_english = comment_arabic or ''  # English translation stored in _arabic field
+                    processed_comment_english = comment_arabic or UaeTranslationService.translate_comment(processed_comment, 'arabic')
                 else:
                     # English was written: English on English side, Arabic translation on Arabic side
                     processed_comment_english = processed_comment
-                    processed_comment_arabic = comment_arabic or ''  # Arabic translation stored in _arabic field
+                    processed_comment_arabic = comment_arabic or UaeTranslationService.translate_comment(processed_comment, 'english')
                 
-                print(f"PDF Debug - {item_name}: comment='{processed_comment}', english='{processed_comment_english}', arabic='{processed_comment_arabic}', lang={comment_language}")
+                # Force translation if Arabic side is empty or same as English
+                if not processed_comment_arabic or processed_comment_arabic == processed_comment_english:
+                    if processed_comment_english and not UaeTranslationService.is_arabic(processed_comment_english):
+                        # Try main translation service first
+                        processed_comment_arabic = UaeTranslationService.translate_comment(processed_comment_english, 'english')
+                        
+                        # If still not translated properly, try dictionary function directly
+                        if not processed_comment_arabic or processed_comment_arabic.startswith('ملاحظة:') or processed_comment_arabic == processed_comment_english:
+                            processed_comment_arabic = translate_comment_to_arabic(processed_comment_english)
+                            
+                        # Final fallback - at least show with Arabic prefix
+                        if not processed_comment_arabic or processed_comment_arabic == processed_comment_english:
+                            processed_comment_arabic = f"ملاحظة: {processed_comment_english}"
+                
+                print(f"PDF Debug - {item_name}: original='{processed_comment}', english='{processed_comment_english}', arabic='{processed_comment_arabic}'")
                 
                 combined_report = type('CombinedReport', (), {
                     'expertise_type_name': item_name,
@@ -99,6 +113,8 @@ def generate_certificate_pdf(report_id):
                     'comment_english': processed_comment_english,
                     'comment_arabic': processed_comment_arabic
                 })()
+                
+                print(f"Final PDF data - {item_name}: EN='{processed_comment_english}' | AR='{processed_comment_arabic}'")
                 package_expertise_reports.append(combined_report)
     
     # Handle vehicle image
