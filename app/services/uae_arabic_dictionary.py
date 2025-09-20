@@ -217,6 +217,23 @@ UAE_ARABIC_TERMS = {
     'must remove the wheels from below to check the engine from underneath': 'يجب فك الكفرات من تحت للتأكد من الماكينة من تحت',
     'mounts gear box only': 'كراسي جير فقط',
     'qir kharban': 'قير خربان',
+    
+    # NEW: English to Arabic - December 2024 user terms
+    'rear fender painted': 'صبغ رفراف خلفي',
+    'left rear door': 'باب خلفي يسار',
+    'left front fender': 'رفراف امامي يسار',
+    'right front fender': 'رفراف امامي يمين',
+    'right rear fender': 'رفراف خلفي يمين',
+    'right rear stop light broken': 'سطوب خلفي يمين مكسور',
+    'right front door window not working': 'زجاج باب امامي يمين لا يعمل',
+    'right front light needs maintenance': 'ضوء امامي يمسن يحتاج صيانة',
+    'there is light oil leak from engine must wash from below to identify leak': 'يوجد تسريب زيت خفيف من المحرك يجب غسلها من تحت لمعرفة التسريب',
+    'front bushings': 'بوشات امامية',
+    'front brake drums': 'درمات امامية',
+    'engine mounts': 'كراسي ماكينة',
+    'there is rust under the vehicle': 'يوجد صدى اسفل المركبة',
+    'rear shock absorbers': 'جامبينات خلفية',
+    'front shock absorbers': 'جامبينات امامية',
     'brake booster': 'البوستر بريك',
     'differential pipe': 'بايب الدفريشن',
     'disabled': 'مبطل',
@@ -245,6 +262,18 @@ UAE_ARABIC_TERMS = {
     'mounts': 'كراسي',
     'only': 'فقط',
     'damaged': 'خربان',
+    
+    # Individual terms from new user list
+    'stop': 'سطوب',
+    'broken': 'مكسور',
+    'window': 'زجاج',
+    'not working': 'لا يعمل',
+    'light oil leak': 'تسريب زيت خفيف',
+    'wash': 'غسل',
+    'identify': 'معرفة',
+    'bushings': 'بوشات',
+    'shock absorbers': 'جامبينات',
+    'under the vehicle': 'اسفل المركبة',
     
     # EXACT differential phrases from PDF - PRIORITY
     'Rear differential repainted': 'الدفريشن الخلفي مطلي',

@@ -201,6 +201,25 @@ class UaeTranslationService:
         'قير خربان': 'gearbox damaged',
         'شفط يوجد به تهريب زيت من الربلات': 'intake has oil leak from the bearings',
         'يجب فك الكفرات من تحت للتأكد من الماكينة من تحت': 'must remove the wheels from below to check the engine from underneath',
+        
+        # NEW: User provided Arabic terms - December 2024
+        'صبغ رفراف خلفي': 'rear fender painted',
+        'باب خلفي يسار': 'left rear door',
+        'رفراف امامي يسار': 'left front fender',
+        'رفراف امامي يمين': 'right front fender',
+        'رفراف خلفي يمين': 'right rear fender',
+        'سطوب خلفي يمين مكسور': 'right rear stop light broken',
+        'زجاج باب امامي يمين لا يعمل': 'right front door window not working',
+        'ضوء امامي يمسن يحتاج صيانة': 'right front light needs maintenance',
+        'يوجد تسريب زيت خفيف من المحرك يجب غسلها من تحت لمعرفة التسريب': 'there is light oil leak from engine must wash from below to identify leak',
+        'بوشات امامية': 'front bushings',
+        'تواير': 'tires',
+        'درمات امامية': 'front brake drums',
+        'كراسي ماكينة': 'engine mounts',
+        'كراسي جير': 'gearbox mounts',
+        'يوجد صدى اسفل المركبة': 'there is rust under the vehicle',
+        'جامبينات خلفية': 'rear shock absorbers',
+        'جامبينات امامية': 'front shock absorbers',
     }
     
     # English to Arabic translations (existing)
@@ -617,6 +636,13 @@ class UaeTranslationService:
             'Qir Kharban': 'gearbox damaged',  # Fix transliteration
             'Liposuction has an oil smuggling of rails': 'intake has oil leak from the bearings',  # Fix bad translation
             'mounts Gear box only': 'gearbox mounts only',  # Fix capitalization
+            'stop light': 'stop light',  # Keep as is
+            'window': 'window',  # Keep as is
+            'bushings': 'bushings',  # Keep as is
+            'brake drums': 'brake drums',  # Keep as is
+            'shock absorbers': 'shock absorbers',  # Keep as is
+            'wash from below': 'wash from below',  # Keep as is
+            'identify leak': 'identify leak',  # Keep as is
         }
         
         for wrong, correct in fixes.items():
