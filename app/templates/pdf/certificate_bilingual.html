@@ -92,9 +92,9 @@
     }
     
     .expertise-item {
-      margin-bottom: 2px;
-      padding: 2px;
-      min-height: 20px;
+      margin-bottom: 0px;
+      padding: 1px;
+      min-height: 15px;
       display: table-cell;
       vertical-align: top;
     }
@@ -102,27 +102,27 @@
     .expertise-title {
       font-weight: bold;
       font-size: 10pt;
-      margin-bottom: 1px;
+      margin-bottom: 0px;
       color: #000;
     }
     
     .arabic-title {
       font-weight: bold;
       font-size: 12pt;
-      margin-bottom: 1px;
+      margin-bottom: 0px;
       color: #000;
     }
     
     .expertise-status {
       font-weight: normal !important;
-      margin-bottom: 1px;
+      margin-bottom: 0px;
       font-size: 9pt;
       color: #000;
     }
     
     .arabic-status {
       font-weight: normal !important;
-      margin-bottom: 1px;
+      margin-bottom: 0px;
       font-size: 11pt;
       color: #000;
     }
@@ -130,7 +130,7 @@
     .expertise-comment {
       font-size: 8pt;
       color: #000;
-      margin-top: 1px;
+      margin-top: 0px;
       white-space: pre-line;
       font-weight: normal !important;
     }
@@ -138,14 +138,14 @@
     .arabic-comment {
       font-size: 10pt;
       color: #000;
-      margin-top: 1px;
+      margin-top: 0px;
       white-space: pre-line;
       direction: rtl;
       text-align: right;
       word-wrap: break-word;
       overflow-wrap: break-word;
       unicode-bidi: embed;
-      line-height: 1.2;
+      line-height: 1.1;
       word-break: break-word;
       font-weight: normal !important;
     }
@@ -255,7 +255,7 @@
         {% if pckg_report.pass_fail or has_comment or has_arabic_comment %}
           {% set expertise_name = pckg_report.expertise_type_name|replace(' Expertise', '') %}
           <tr>
-            <td style="width: 50%; vertical-align: top; padding-right: 15px; padding-bottom: 4px;">
+            <td style="width: 50%; vertical-align: top; padding-right: 15px; padding-bottom: 2px;">
               <div class="expertise-title">{{ expertise_name|upper }}</div>
               {% if pckg_report.pass_fail %}
                 <div class="expertise-status">{{ pckg_report.pass_fail|upper }}</div>
@@ -272,7 +272,7 @@
                 </div>
               {% endif %}
             </td>
-            <td style="width: 50%; vertical-align: top; padding-left: 15px; padding-bottom: 4px; direction: rtl; text-align: right; font-size: 13pt;">
+            <td style="width: 50%; vertical-align: top; padding-left: 15px; padding-bottom: 2px; direction: rtl; text-align: right; font-size: 13pt;">
               <div class="arabic-title">{{ pckg_report.arabic_name }}</div>
               {% if pckg_report.pass_fail %}
                 <div class="arabic-status">
