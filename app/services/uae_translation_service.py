@@ -86,6 +86,8 @@ class UaeTranslationService:
         'بمبر امامي صبغ': 'Front bumper painted',
         'رفراف امامي يسار صبغ مع معجون': 'Left front fender painted with body filler',
         'باب امامي يسار صبغ مع معجون': 'Left front door painted with body filler',
+        'باب أمامي يسار صبغ مع معجون': 'Front left door painted with putty',
+        'باب خلفي يسار صبغ مع معجون': 'Rear left door painted with putty',
         'باب مخامي يسار': 'Left front door',
         'باب مخامي يسار صبغ مع معجون': 'Left front door painted with body filler',
         'باب خلفي يسار صبغ مع معجون': 'Left rear door painted with body filler',
@@ -221,15 +223,28 @@ class UaeTranslationService:
         # CRITICAL: Never modify the original Arabic text
         # Only translate to English for English section
         
+        print(f"DEBUG: Translating Arabic text: '{arabic_text}'")
+        print(f"DEBUG: Text length: {len(arabic_text)}")
+        print(f"DEBUG: Is Arabic detected: {cls.is_arabic(arabic_text)}")
+        
         # Try exact phrase match first
         if arabic_text in cls.ARABIC_TO_ENGLISH:
-            print(f"Found in dictionary: '{arabic_text}' -> '{cls.ARABIC_TO_ENGLISH[arabic_text]}'")
-            return cls.ARABIC_TO_ENGLISH[arabic_text]
+            result = cls.ARABIC_TO_ENGLISH[arabic_text]
+            print(f"Found in dictionary: '{arabic_text}' -> '{result}'")
+            return result
+        
+        # Try trimmed version
+        trimmed = arabic_text.strip()
+        if trimmed in cls.ARABIC_TO_ENGLISH:
+            result = cls.ARABIC_TO_ENGLISH[trimmed]
+            print(f"Found trimmed in dictionary: '{trimmed}' -> '{result}'")
+            return result
             
+        print(f"DEBUG: Not found in dictionary, trying online translation")
         # Try Google Translate Arabic to English
         try:
             result = cls._google_translate_ar_to_en(arabic_text)
-            print(f"Google translate: '{arabic_text}' -> '{result}'")
+            print(f"Online translate result: '{arabic_text}' -> '{result}'")
             return result
         except Exception as e:
             print(f"Translation failed: {e}")
