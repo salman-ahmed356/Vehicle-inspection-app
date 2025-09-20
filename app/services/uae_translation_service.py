@@ -360,13 +360,8 @@ class UaeTranslationService:
             result = cls.ARABIC_TO_ENGLISH[trimmed]
             return result
             
-        # 6. Try Google Translate Arabic to English (LAST RESORT)
-        try:
-            result = cls._google_translate_ar_to_en(arabic_text)
-            return result
-        except Exception as e:
-            # Fallback: return with English prefix but keep Arabic readable
-            return f"Note: {arabic_text}"
+        # 6. Fallback: return with English prefix (skip Google Translate for VPS)
+        return f"Note: {arabic_text}"
     
     @classmethod
     def _translate_english_to_arabic(cls, english_text: str) -> str:
@@ -396,12 +391,8 @@ class UaeTranslationService:
         if translated != english_text:
             return translated
                 
-        # 5. Try Google Translate with UAE automotive context (LAST RESORT)
-        try:
-            return cls._google_translate_with_context(english_text)
-        except Exception:
-            # Fallback: return with Arabic prefix
-            return f"ملاحظة: {english_text}"
+        # 5. Fallback: return with Arabic prefix (skip Google Translate for VPS)
+        return f"ملاحظة: {english_text}"
     
     @classmethod
     def _google_translate_with_context(cls, text: str) -> str:
