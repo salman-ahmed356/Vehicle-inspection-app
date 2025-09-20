@@ -261,7 +261,15 @@
                 <div class="expertise-status">{{ pckg_report.pass_fail|upper }}</div>
               {% endif %}
               {% if has_comment %}
-                <div class="expertise-comment">{% if pckg_report.comment_english %}{{ pckg_report.comment_english }}{% else %}{{ pckg_report.comment }}{% endif %}</div>
+                <div class="expertise-comment">
+                  {% if pckg_report.comment_english and pckg_report.comment_english != pckg_report.comment %}
+                    <!-- Arabic input: show English translation -->
+                    {{ pckg_report.comment_english }}
+                  {% else %}
+                    <!-- English input: show original English -->
+                    {{ pckg_report.comment }}
+                  {% endif %}
+                </div>
               {% endif %}
             </td>
             <td style="width: 50%; vertical-align: top; padding-left: 15px; padding-bottom: 8px; direction: rtl; text-align: right; font-size: 13pt;">
@@ -276,7 +284,15 @@
                 </div>
               {% endif %}
               {% if has_comment or has_arabic_comment %}
-                <div class="arabic-comment">{{ pckg_report.comment_arabic|replace('\n', '<br>')|safe }}</div>
+                <div class="arabic-comment">
+                  {% if pckg_report.comment_english and pckg_report.comment_english != pckg_report.comment %}
+                    <!-- Arabic input: show original Arabic -->
+                    {{ pckg_report.comment|replace('\n', '<br>')|safe }}
+                  {% else %}
+                    <!-- English input: show Arabic translation -->
+                    {{ pckg_report.comment_arabic|replace('\n', '<br>')|safe }}
+                  {% endif %}
+                </div>
               {% endif %}
             </td>
           </tr>

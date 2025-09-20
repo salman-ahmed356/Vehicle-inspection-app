@@ -5,7 +5,8 @@ import base64
 import io
 from ..models import Report, Company, PackageExpertise, ExpertiseReport
 from ..database import db
-from .uae_arabic_dictionary import get_uae_arabic_translation, translate_comment_to_arabic
+from .uae_arabic_dictionary import get_uae_arabic_translation
+from .uae_translation_service import UaeTranslationService
 
 
 def generate_certificate_pdf(report_id):
@@ -75,12 +76,20 @@ def generate_certificate_pdf(report_id):
                 
                 # Process comments to preserve line breaks
                 processed_comment = comment.replace('\r\n', '\n').replace('\r', '\n') if comment else ''
-                # Always translate English comments to Arabic
+                # Handle bidirectional translation
                 if processed_comment:
-                    # Force translation for all comments
-                    processed_comment_arabic = translate_comment_to_arabic(processed_comment)
-                    print(f"Translating: '{processed_comment}' -> '{processed_comment_arabic}'")
+                    if UaeTranslationService.is_arabic(processed_comment):
+                        # Arabic input: keep original Arabic, translate to English
+                        processed_comment_arabic = processed_comment  # ORIGINAL ARABIC
+                        processed_comment_english = UaeTranslationService._translate_arabic_to_english(processed_comment)
+                        print(f"Arabic input: '{processed_comment}' -> English: '{processed_comment_english}'")
+                    else:
+                        # English input: keep original English, translate to Arabic
+                        processed_comment_english = processed_comment  # ORIGINAL ENGLISH
+                        processed_comment_arabic = UaeTranslationService._translate_english_to_arabic(processed_comment)
+                        print(f"English input: '{processed_comment}' -> Arabic: '{processed_comment_arabic}'")
                 else:
+                    processed_comment_english = ''
                     processed_comment_arabic = ''
                 
                 combined_report = type('CombinedReport', (), {
@@ -88,7 +97,7 @@ def generate_certificate_pdf(report_id):
                     'arabic_name': arabic_name,
                     'pass_fail': status if status in ['Pass', 'Fail'] else None,  # Don't show None status
                     'comment': processed_comment,
-                    'comment_english': processed_comment,
+                    'comment_english': processed_comment_english,
                     'comment_arabic': processed_comment_arabic
                 })()
                 package_expertise_reports.append(combined_report)
