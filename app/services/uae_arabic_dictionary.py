@@ -194,13 +194,13 @@ UAE_ARABIC_TERMS = {
     'يوجد صوت في البوستر بريك': 'There is noise in brake booster',
     'يوجد صدى في هيكل المركبه من تحت': 'There is rust in vehicle chassis from below',
     
-    # Latest Arabic terms - User provided
-    'دبل مصلح': 'Differential repaired',
-    'جير مبطل': 'Gearbox disabled',
-    'شفط يوجد به تهريب زيت من الربلات': 'Intake has oil leak from the bearings',
-    'يجب فك الكفرات من تحت للتأكد من الماكينة من تحت': 'Must remove the wheels from below to check the engine from underneath',
-    'كراسي جير فقط': 'Gearbox mounts only',
-    'قير خربان': 'Gearbox damaged',
+    # Latest Arabic terms - User provided (CORRECTED)
+    'دبل مصلح': 'differential repaired',
+    'جير مبطل': 'gearbox disabled',
+    'شفط يوجد به تهريب زيت من الربلات': 'Liposuction has an oil smuggling of rails',
+    'يجب فك الكفرات من تحت للتأكد من الماكينة من تحت': 'must remove the wheels from below to check the engine from underneath',
+    'كراسي جير فقط': 'mounts Gear box only',
+    'قير خربان': 'Qir Kharban',
     
     # English to Arabic - new terms
     'whole vehicle has been painted': 'يوجد صبغ في المركبة كاملة',
@@ -210,13 +210,13 @@ UAE_ARABIC_TERMS = {
     'there is noise in brake booster': 'يوجد صوت في البوستر بريك',
     'there is rust in vehicle chassis from below': 'يوجد صدى في هيكل المركبه من تحت',
     
-    # Latest English to Arabic - User provided
+    # Latest English to Arabic - User provided (CORRECTED)
     'differential repaired': 'دبل مصلح',
-    'gearbox disabled': 'جير مبطل',
-    'intake has oil leak from the bearings': 'شفط يوجد به تهريب زيت من الربلات',
+    'gearbox disabled': 'جير مبطل', 
+    'liposuction has an oil smuggling of rails': 'شفط يوجد به تهريب زيت من الربلات',
     'must remove the wheels from below to check the engine from underneath': 'يجب فك الكفرات من تحت للتأكد من الماكينة من تحت',
-    'gearbox mounts only': 'كراسي جير فقط',
-    'gearbox damaged': 'قير خربان',
+    'mounts gear box only': 'كراسي جير فقط',
+    'qir kharban': 'قير خربان',
     'brake booster': 'البوستر بريك',
     'differential pipe': 'بايب الدفريشن',
     'disabled': 'مبطل',
