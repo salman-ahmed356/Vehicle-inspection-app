@@ -194,13 +194,13 @@ UAE_ARABIC_TERMS = {
     'يوجد صوت في البوستر بريك': 'There is noise in brake booster',
     'يوجد صدى في هيكل المركبه من تحت': 'There is rust in vehicle chassis from below',
     
-    # Latest Arabic terms - User provided (CORRECTED)
+    # Latest Arabic terms - User provided (PROPERLY CORRECTED)
     'دبل مصلح': 'differential repaired',
     'جير مبطل': 'gearbox disabled',
-    'شفط يوجد به تهريب زيت من الربلات': 'Liposuction has an oil smuggling of rails',
+    'كراسي جير فقط': 'gearbox mounts only',
+    'قير خربان': 'gearbox damaged',
+    'شفط يوجد به تهريب زيت من الربلات': 'intake has oil leak from the bearings',
     'يجب فك الكفرات من تحت للتأكد من الماكينة من تحت': 'must remove the wheels from below to check the engine from underneath',
-    'كراسي جير فقط': 'mounts Gear box only',
-    'قير خربان': 'Qir Kharban',
     
     # English to Arabic - new terms
     'whole vehicle has been painted': 'يوجد صبغ في المركبة كاملة',
