@@ -160,10 +160,13 @@ UAE_ARABIC_TERMS = {
     'chassis rusty': 'الشاسيه صدي',
     'car is full painted': 'السيارة مصبوغة بالكامل',
     'there is an sound in the vehicles body from underneath': 'يوجد صوت في جسم السيارة من الأسفل',
-    'half of the engine from down side is replaced': 'نصف المحرك من الجهة السفلى مستبدل',
+    
+    # Fix differential translations
     'rear differential repainted': 'الدفريشن الخلفي مصبوغ',
     'front differential have leak': 'الدفريشن الأمامي فيه تهريب',
-    'sound with brake booster': 'صوت مع بوستر الفرامل',
+    'differential': 'دفريشن',
+    'have leak': 'فيه تهريب',
+    'repainted': 'مصبوغ',
     
     # New Arabic terms from user
     'يوجد صبغ في المركبة كاملة': 'Whole vehicle has been painted',
@@ -193,6 +196,13 @@ UAE_ARABIC_TERMS = {
     'lower': 'من تحت',
     'entire': 'كاملة',
     'whole': 'كاملة',
+    
+    # Additional differential terms
+    'rear differential repainted': 'الدفريشن الخلفي مصبوغ',
+    'front differential have leak': 'الدفريشن الأمامي فيه تهريب',
+    'differential repainted': 'الدفريشن مصبوغ',
+    'differential have leak': 'الدفريشن فيه تهريب',
+    'differential leak': 'تهريب الدفريشن',
 }
 
 def get_uae_arabic_translation(english_text):
