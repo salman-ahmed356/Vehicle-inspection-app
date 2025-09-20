@@ -308,9 +308,7 @@ def try_translation_services(text):
         import requests
         import urllib.parse
         
-        # Add UAE automotive context
-        context_text = f"UAE vehicle inspection: {text}"
-        encoded_text = urllib.parse.quote(context_text)
+        encoded_text = urllib.parse.quote(text)
         
         url = f'https://api.mymemory.translated.net/get?q={encoded_text}&langpair=en|ar&mt=1'
         headers = {
@@ -322,9 +320,6 @@ def try_translation_services(text):
             data = response.json()
             if data.get('responseStatus') == 200:
                 translated = data['responseData']['translatedText']
-                # Clean up context
-                translated = translated.replace('فحص المركبة الإماراتية:', '').strip()
-                translated = translated.replace('UAE vehicle inspection:', '').strip()
                 if translated and translated != text:
                     return fix_uae_translation(translated)
     except:
@@ -337,7 +332,7 @@ def try_translation_services(text):
         
         url = 'https://libretranslate.de/translate'
         data = {
-            'q': f"UAE automotive: {text}",
+            'q': text,
             'source': 'en',
             'target': 'ar',
             'format': 'text'
@@ -347,7 +342,6 @@ def try_translation_services(text):
         if response.status_code == 200:
             result = response.json()
             translated = result.get('translatedText', '')
-            translated = translated.replace('الإمارات العربية المتحدة للسيارات:', '').strip()
             if translated and translated != text:
                 return fix_uae_translation(translated)
     except:
@@ -398,4 +392,19 @@ def fix_uae_translation(arabic_text):
     for standard, uae in fixes.items():
         arabic_text = arabic_text.replace(standard, uae)
     
-    return arabic_text.strip()
+    # Remove any remaining context prefixes
+    arabic_text = arabic_text.strip()
+    
+    # Remove common prefixes that might remain
+    prefixes_to_remove = [
+        'فحص المركبة الإماراتية:',
+        'فحص المركبة:',
+        'الإمارات العربية المتحدة:',
+        'الإمارات:'
+    ]
+    
+    for prefix in prefixes_to_remove:
+        if arabic_text.startswith(prefix):
+            arabic_text = arabic_text[len(prefix):].strip()
+    
+    return arabic_text
