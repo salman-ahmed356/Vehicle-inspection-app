@@ -197,11 +197,13 @@ UAE_ARABIC_TERMS = {
     'entire': 'كاملة',
     'whole': 'كاملة',
     
-    # Additional differential terms - exact case matching
+    # Exact differential phrases from PDF
     'Rear differential repainted': 'الدفريشن الخلفي مصبوغ',
     'rear differential repainted': 'الدفريشن الخلفي مصبوغ',
     'front differential have leak': 'الدفريشن الأمامي فيه تهريب',
     'Front differential have leak': 'الدفريشن الأمامي فيه تهريب',
+    'REAR DIFFERENTIAL REPAINTED': 'الدفريشن الخلفي مصبوغ',
+    'FRONT DIFFERENTIAL HAVE LEAK': 'الدفريشن الأمامي فيه تهريب',
     'differential repainted': 'الدفريشن مصبوغ',
     'differential have leak': 'الدفريشن فيه تهريب',
     'differential leak': 'تهريب الدفريشن',
