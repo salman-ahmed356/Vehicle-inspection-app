@@ -194,6 +194,14 @@ UAE_ARABIC_TERMS = {
     'يوجد صوت في البوستر بريك': 'There is noise in brake booster',
     'يوجد صدى في هيكل المركبه من تحت': 'There is rust in vehicle chassis from below',
     
+    # Latest Arabic terms - User provided
+    'دبل مصلح': 'Differential repaired',
+    'جير مبطل': 'Gearbox disabled',
+    'شفط يوجد به تهريب زيت من الربلات': 'Intake has oil leak from the bearings',
+    'يجب فك الكفرات من تحت للتأكد من الماكينة من تحت': 'Must remove the wheels from below to check the engine from underneath',
+    'كراسي جير فقط': 'Gearbox mounts only',
+    'قير خربان': 'Gearbox damaged',
+    
     # English to Arabic - new terms
     'whole vehicle has been painted': 'يوجد صبغ في المركبة كاملة',
     'rear differential disabled': 'دفريشن خلفي مبطل',
@@ -201,6 +209,14 @@ UAE_ARABIC_TERMS = {
     'oil leak from under front differential pipe': 'تهريب زيت من تحت بايب الدفريشن الامامي',
     'there is noise in brake booster': 'يوجد صوت في البوستر بريك',
     'there is rust in vehicle chassis from below': 'يوجد صدى في هيكل المركبه من تحت',
+    
+    # Latest English to Arabic - User provided
+    'differential repaired': 'دبل مصلح',
+    'gearbox disabled': 'جير مبطل',
+    'intake has oil leak from the bearings': 'شفط يوجد به تهريب زيت من الربلات',
+    'must remove the wheels from below to check the engine from underneath': 'يجب فك الكفرات من تحت للتأكد من الماكينة من تحت',
+    'gearbox mounts only': 'كراسي جير فقط',
+    'gearbox damaged': 'قير خربان',
     'brake booster': 'البوستر بريك',
     'differential pipe': 'بايب الدفريشن',
     'disabled': 'مبطل',
@@ -217,6 +233,18 @@ UAE_ARABIC_TERMS = {
     'painted': 'مطلي',
     'Painted': 'مطلي',
     'PAINTED': 'مطلي',
+    
+    # Additional terms from latest translations
+    'repaired': 'مصلح',
+    'intake': 'شفط',
+    'bearings': 'الربلات',
+    'wheels': 'الكفرات',
+    'remove': 'فك',
+    'check': 'التأكد',
+    'underneath': 'من تحت',
+    'mounts': 'كراسي',
+    'only': 'فقط',
+    'damaged': 'خربان',
     
     # EXACT differential phrases from PDF - PRIORITY
     'Rear differential repainted': 'الدفريشن الخلفي مطلي',
