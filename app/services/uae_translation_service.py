@@ -193,6 +193,14 @@ class UaeTranslationService:
         'صدر الأمامي مال المكينه فيها ليك': 'Engine front cover has a leak',
         'يحترقات أمامي': 'Front bearings',
         'بيرنغات امامي': 'Front bearings',
+        
+        # PRIORITY: Latest Arabic terms with CORRECT translations
+        'دبل مصلح': 'differential repaired',
+        'جير مبطل': 'gearbox disabled',
+        'كراسي جير فقط': 'gearbox mounts only',
+        'قير خربان': 'gearbox damaged',
+        'شفط يوجد به تهريب زيت من الربلات': 'intake has oil leak from the bearings',
+        'يجب فك الكفرات من تحت للتأكد من الماكينة من تحت': 'must remove the wheels from below to check the engine from underneath',
     }
     
     # English to Arabic translations (existing)
@@ -606,6 +614,9 @@ class UaeTranslationService:
             'money': 'part',  # مال -> part not money
             'front chest': 'front cover',
             'the money of the engine': 'the engine part',
+            'Qir Kharban': 'gearbox damaged',  # Fix transliteration
+            'Liposuction has an oil smuggling of rails': 'intake has oil leak from the bearings',  # Fix bad translation
+            'mounts Gear box only': 'gearbox mounts only',  # Fix capitalization
         }
         
         for wrong, correct in fixes.items():
