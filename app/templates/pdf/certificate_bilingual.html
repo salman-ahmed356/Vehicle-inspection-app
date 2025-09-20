@@ -110,10 +110,10 @@
     
     .arabic-title {
       font-weight: bold;
-      font-size: 12pt;
+      font-size: 10pt;
       margin: 0;
       padding: 0;
-      line-height: 1;
+      line-height: 1.1;
       color: #000;
     }
     
@@ -130,18 +130,19 @@
       font-weight: normal !important;
       margin: 0;
       padding: 0;
-      line-height: 1;
-      font-size: 11pt;
+      line-height: 1.1;
+      font-size: 9pt;
       color: #000;
     }
     
     .expertise-comment {
-      font-size: 8pt;
+      font-size: 10pt;
       color: #000;
-      margin: 0px;
-      padding: 0px;
+      margin: 0;
+      padding: 0;
       white-space: pre-line;
       font-weight: normal !important;
+      line-height: 1.1;
     }
     
     .arabic-comment {
@@ -149,12 +150,11 @@
       color: #000;
       margin: 0px;
       padding: 0px;
-      white-space: pre-line;
+      white-space: pre-wrap;
       direction: rtl;
       text-align: right;
       word-wrap: break-word;
       overflow-wrap: break-word;
-      unicode-bidi: embed;
       line-height: 1.1;
       word-break: break-word;
       font-weight: normal !important;
@@ -266,10 +266,10 @@
           {% set expertise_name = pckg_report.expertise_type_name|replace(' Expertise', '') %}
           <tr style="margin-bottom: 8px;">
             <td style="width: 50%; vertical-align: top; padding: 0 0 8px 0; line-height: 1;">
-              <div class="expertise-title">{{ expertise_name|upper }}</div>{% if pckg_report.pass_fail %}<div class="expertise-status">{{ pckg_report.pass_fail|upper }}</div>{% endif %}{% if has_comment %}<div class="expertise-comment">{% if pckg_report.comment_english and pckg_report.comment_english != pckg_report.comment %}{{ pckg_report.comment_english }}{% else %}{{ pckg_report.comment }}{% endif %}</div>{% endif %}
+              <div class="expertise-title">{{ expertise_name|upper }}</div>{% if pckg_report.pass_fail %}<div class="expertise-status">{{ pckg_report.pass_fail|upper }}</div>{% endif %}{% if has_comment %}<div class="expertise-comment">{{ pckg_report.comment_english }}</div>{% endif %}
             </td>
             <td style="width: 50%; vertical-align: top; padding: 0 0 8px 0; direction: rtl; text-align: right; line-height: 1;">
-              <div class="arabic-title">{{ pckg_report.arabic_name }}</div>{% if pckg_report.pass_fail %}<div class="arabic-status">{% if pckg_report.pass_fail == 'Pass' %}ناجح{% elif pckg_report.pass_fail == 'Fail' %}فشل{% endif %}</div>{% endif %}{% if has_comment or has_arabic_comment %}<div class="arabic-comment">{% if pckg_report.comment_english and pckg_report.comment_english != pckg_report.comment %}{{ pckg_report.comment|replace('\n', '<br>')|safe }}{% else %}{{ pckg_report.comment_arabic|replace('\n', '<br>')|safe }}{% endif %}</div>{% endif %}
+              <div class="arabic-title">{{ pckg_report.arabic_name }}</div>{% if pckg_report.pass_fail %}<div class="arabic-status">{% if pckg_report.pass_fail == 'Pass' %}ناجح{% elif pckg_report.pass_fail == 'Fail' %}فشل{% endif %}</div>{% endif %}{% if has_comment or has_arabic_comment %}<div class="arabic-comment">{{ pckg_report.comment_arabic|replace('\n', '<br>')|safe }}</div>{% endif %}
             </td>
           </tr>
         {% endif %}

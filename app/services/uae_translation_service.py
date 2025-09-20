@@ -84,16 +84,66 @@ class UaeTranslationService:
         
         # Paint and body work
         'بمبر امامي صبغ': 'Front bumper painted',
-        'رفراف امامي يسار صبغ مع معجون': 'Left front fender painted with body filler',
-        'باب امامي يسار صبغ مع معجون': 'Left front door painted with body filler',
+        'رفراف امامي يسار صبغ مع معجون': 'Left front fender painted with putty',
+        'بمبر أمامي صبغ': 'Front bumper painted',
+        'بونيت صبغ مع معجون ويوجد دعمات خفيفة': 'Hood painted with putty and has light supports',
+        'باقي القطع صبغ تجميلي': 'Remaining parts cosmetic paint',
+        'لايتات تجارية': 'Commercial lights',
+        'ماكينة مبطلة': 'Engine disabled',
+        'جير مبطل': 'Gearbox disabled',
+        'كراسي ماكينة': 'Engine mounts',
+        'كراسي جير': 'Gearbox mounts',
+        'درامات امامية': 'Front brake drums',
+        'جانبينات امامية': 'Front shock absorbers',
+        'تواير تحتاج تبديل': 'Tires need replacement',
+        'رنجات يوجد بها شحفات': 'Rims have scratches',
+        'مقعد السائق الفرش يحتاج تعديل': 'Driver seat upholstery needs adjustment',
+        'دبة خلفية مدعومة': 'Rear trunk supported',
+        'جانبينات البونيت امامية يجب تغيرهم': 'Front hood shock absorbers need replacement',
+        'يوجد ليك بين القير والماكينة': 'There is a leak between gearbox and engine',
+        'خدوش في المركبة': 'Scratches on vehicle',
+        'خدوش في الرنجات': 'Scratches on rims',
+        'صوت خفيف في السوبر يوجد ليك زيت في قطعة واجهة الأمامية': 'Light sound in suspension, oil leak in front part',
+        'ليتات امامية تحتاج صيانة': 'Front lights need maintenance',
+        'الزجاج الأمامي مكسور': 'Front windshield broken',
+        'يوجد نفضه ف المكينه': 'Engine vibration',
+        'صدر الأمامي مال المكينه فيها ليك': 'The front chest of the engine has a leak',
+        'جانبينات البونيت امامية يجب تغيرهم': 'Front hood shock absorbers need replacement',
+        'يوجد ليك بين القير والماكينة': 'There is a leak between gearbox and engine',
+        'خدوش في المركبة': 'Scratches on vehicle',
+        'خدوش في الرنجات': 'Scratches on rims',
+        'صوت خفيف في السوبر يوجد ليك زيت في قطعة واجهة الأمامية': 'Light sound in suspension, oil leak in front part',
+        'ليتات امامية تحتاج صيانة': 'Front lights need maintenance',
+        'الزجاج الأمامي مكسور': 'Front windshield broken',
+        'يوجد نفضه ف المكينه': 'Engine vibration',
+        'صدر الأمامي مال المكينه فيها ليك': 'The front chest of the engine has a leak',
+        'صبغ باب امامي يمين': 'Right front door painted',
+        'صبغ باب خلفي يمين': 'Right rear door painted',
+        'رفراف خلفي يسار صبغ': 'Left rear fender painted',
+        'نصف رفرفت امامي يسار': 'Half left front fender',
+        'يوجد دعمة خفيفة في رفراف امامي يمين مع اللونيت الدعامية امامية': 'Light support in right front fender with front bumper',
+        'درامات امامي خلفي': 'Front and rear brake drums',
+        'سفايف': 'Brake pads',
+        'ليكات مياه': 'Water leaks',
+        'ليكات زيت': 'Oil leaks',
+        'بوشات امامي وخلفي كامل': 'Complete front and rear bushings',
+        'صوت في البيزنغ': 'Sound in bearing',
+        'لايت امامي يمين مكسور': 'Right front light broken',
+        'ليك في البوكس ستيرنغ مع صوت': 'Leak in steering box with sound',
+        'بيرنغات امامي': 'Front bearings',
+        'باب امامي يسار صبغ مع معجون': 'Left front door painted with putty',
         'باب أمامي يسار صبغ مع معجون': 'Front left door painted with putty',
+        'رفراف أمامي يسار صبغ مع معجون': 'Front left fender painted with putty',
+        'باب خلفي يسار صبغ مع معجون': 'Rear left door painted with putty',
+        'صبغ من الهيكل داخل مع معجون': 'Interior body painted with putty',
+        'دبة خلفية صبغ مع معجون': 'Rear trunk painted with putty',
         'باب خلفي يسار صبغ مع معجون': 'Rear left door painted with putty',
         'باب مخامي يسار': 'Left front door',
-        'باب مخامي يسار صبغ مع معجون': 'Left front door painted with body filler',
+        'باب مخامي يسار صبغ مع معجون': 'Left front door painted with putty',
         'باب خلفي يسار صبغ مع معجون': 'Left rear door painted with body filler',
-        'صبغ من الهيكل داخل مع معجون': 'Interior body painted with body filler',
-        'دبة خلفية صبغ مع معجون': 'Rear trunk painted with body filler',
-        'بونيت صبغ مع معجون ويوجد دعمات خفيفة': 'Hood painted with body filler and has light supports',
+        'صبغ من الهيكل داخل مع معجون': 'Interior body painted with putty',
+        'دبة خلفية صبغ مع معجون': 'Rear trunk painted with putty',
+        'بونيت صبغ مع معجون ويوجد دعمات خفيفة': 'Hood painted with putty and has light supports',
         'باقي القطع صبغ تجميلي': 'Remaining parts cosmetic paint',
         'صبغ باب امامي يمين': 'Right front door painted',
         'صبغ باب خلفي يمين': 'Right rear door painted',
@@ -134,6 +184,15 @@ class UaeTranslationService:
         
         # Closing message
         'مع تحيات الفاحص ربيع شركة بلاك بويت نشكركم لحسن تعاونكم معنا نتمنى لكم خدمة افضل': 'With regards from inspector Rabie, Black Point Company. We thank you for your cooperation and wish you better service',
+        
+        # Fix burning issue
+        'يحترقات أمامي': 'Front engine issues',
+        'يحترقات امامي': 'Front engine issues',
+        'بيرنغات أمامي': 'Front bearings',
+        'بيرنغات امامي': 'Front bearings',
+        'صدر الأمامي مال المكينه فيها ليك': 'Engine front cover has a leak',
+        'يحترقات أمامي': 'Front bearings',
+        'بيرنغات امامي': 'Front bearings',
     }
     
     # English to Arabic translations (existing)
@@ -182,19 +241,29 @@ class UaeTranslationService:
     
     @classmethod
     def translate_static(cls, text: str) -> str:
-        """Translate using static dictionary - instant and accurate"""
+        """Translate using static dictionary - USE DICTIONARY FUNCTION FIRST!"""
         if not text or not text.strip():
             return text
+        
+        # 1. Use the dedicated dictionary translation function FIRST
+        from .uae_arabic_dictionary import translate_comment_to_arabic
+        
+        try:
+            translated = translate_comment_to_arabic(text)
+            if translated and translated != text and not translated.startswith('ملاحظة:'):
+                return translated
+        except Exception:
+            pass
             
-        # Check exact matches first
+        # 2. Check exact matches in static translations
         if text in cls.STATIC_TRANSLATIONS:
             return cls.STATIC_TRANSLATIONS[text]
             
-        # Check automotive phrases
+        # 3. Check automotive phrases
         if text in cls.AUTOMOTIVE_PHRASES:
             return cls.AUTOMOTIVE_PHRASES[text]
             
-        # Check case-insensitive
+        # 4. Check case-insensitive in static translations
         text_lower = text.lower()
         for key, value in cls.STATIC_TRANSLATIONS.items():
             if key.lower() == text_lower:
@@ -203,73 +272,131 @@ class UaeTranslationService:
         return text
     
     @classmethod
-    def translate_comment(cls, comment: str) -> str:
-        """Translate comments - Arabic to English or English to Arabic"""
+    def translate_comment(cls, comment: str, source_language: str = None) -> str:
+        """Translate comments based on explicit language selection"""
         if not comment or not comment.strip():
             return comment
             
         comment = comment.strip()
         
-        # If Arabic, translate to English
-        if cls.is_arabic(comment):
+        # Use explicit language if provided, otherwise auto-detect
+        if source_language == 'arabic':
             return cls._translate_arabic_to_english(comment)
-        else:
-            # If English, translate to Arabic
+        elif source_language == 'english':
             return cls._translate_english_to_arabic(comment)
+        else:
+            # Fallback to auto-detection for backward compatibility
+            if cls.is_arabic(comment):
+                return cls._translate_arabic_to_english(comment)
+            else:
+                return cls._translate_english_to_arabic(comment)
     
     @classmethod
     def _translate_arabic_to_english(cls, arabic_text: str) -> str:
-        """Translate Arabic text to English - NEVER modify original Arabic"""
-        # CRITICAL: Never modify the original Arabic text
-        # Only translate to English for English section
+        """Translate Arabic text to English"""
+        # Skip translation if text is already English
+        if not cls.is_arabic(arabic_text):
+            return arabic_text
         
-        print(f"DEBUG: Translating Arabic text: '{arabic_text}'")
-        print(f"DEBUG: Text length: {len(arabic_text)}")
-        print(f"DEBUG: Is Arabic detected: {cls.is_arabic(arabic_text)}")
+        # Handle multi-line text
+        if '\n' in arabic_text:
+            lines = arabic_text.split('\n')
+            translated_lines = []
+            for line in lines:
+                line = line.strip()
+                if line:
+                    translated_line = cls._translate_single_line_arabic(line)
+                    translated_lines.append(translated_line)
+                else:
+                    translated_lines.append('')
+            return '\n'.join(translated_lines)
+        else:
+            return cls._translate_single_line_arabic(arabic_text)
+    
+    @classmethod
+    def _translate_single_line_arabic(cls, arabic_text: str) -> str:
+        """Translate single line of Arabic text to English - DICTIONARY FIRST!"""
+        # Import the comprehensive dictionary
+        from .uae_arabic_dictionary import UAE_ARABIC_TERMS
         
-        # Try exact phrase match first
+        # 1. Try exact phrase match in comprehensive dictionary FIRST
+        # Create reverse lookup from Arabic to English
+        arabic_to_english_dict = {v: k for k, v in UAE_ARABIC_TERMS.items()}
+        
+        if arabic_text in arabic_to_english_dict:
+            result = arabic_to_english_dict[arabic_text]
+            return result
+        
+        # 2. Try trimmed version in comprehensive dictionary
+        trimmed = arabic_text.strip()
+        if trimmed in arabic_to_english_dict:
+            result = arabic_to_english_dict[trimmed]
+            return result
+        
+        # 3. Try word-by-word translation using comprehensive dictionary
+        words = arabic_text.split()
+        translated_words = []
+        all_words_translated = True
+        
+        for word in words:
+            word_clean = word.strip('.,!?')
+            if word_clean in arabic_to_english_dict:
+                translated_words.append(arabic_to_english_dict[word_clean])
+            else:
+                all_words_translated = False
+                break
+        
+        # Only return word-by-word translation if ALL words were translated
+        if all_words_translated and translated_words:
+            return ' '.join(translated_words)
+        
+        # 4. Try exact phrase match in old dictionary
         if arabic_text in cls.ARABIC_TO_ENGLISH:
             result = cls.ARABIC_TO_ENGLISH[arabic_text]
-            print(f"Found in dictionary: '{arabic_text}' -> '{result}'")
             return result
         
-        # Try trimmed version
-        trimmed = arabic_text.strip()
+        # 5. Try trimmed version in old dictionary
         if trimmed in cls.ARABIC_TO_ENGLISH:
             result = cls.ARABIC_TO_ENGLISH[trimmed]
-            print(f"Found trimmed in dictionary: '{trimmed}' -> '{result}'")
             return result
             
-        print(f"DEBUG: Not found in dictionary, trying online translation")
-        # Try Google Translate Arabic to English
+        # 6. Try Google Translate Arabic to English (LAST RESORT)
         try:
             result = cls._google_translate_ar_to_en(arabic_text)
-            print(f"Online translate result: '{arabic_text}' -> '{result}'")
             return result
         except Exception as e:
-            print(f"Translation failed: {e}")
             # Fallback: return with English prefix but keep Arabic readable
             return f"Note: {arabic_text}"
     
     @classmethod
     def _translate_english_to_arabic(cls, english_text: str) -> str:
-        """Translate English text to Arabic"""
-        # Try exact phrase match first
+        """Translate English text to Arabic - USE DICTIONARY FUNCTION FIRST!"""
+        # 1. Use the dedicated dictionary translation function FIRST
+        from .uae_arabic_dictionary import translate_comment_to_arabic
+        
+        try:
+            translated = translate_comment_to_arabic(english_text)
+            if translated and translated != english_text and not translated.startswith('ملاحظة:'):
+                return translated
+        except Exception:
+            pass
+        
+        # 2. Try exact phrase match in old automotive phrases
         if english_text in cls.AUTOMOTIVE_PHRASES:
             return cls.AUTOMOTIVE_PHRASES[english_text]
             
-        # Try case-insensitive phrase match
+        # 3. Try case-insensitive phrase match in old automotive phrases
         english_lower = english_text.lower()
         for phrase, translation in cls.AUTOMOTIVE_PHRASES.items():
             if phrase.lower() == english_lower:
                 return translation
         
-        # Try pattern-based translation for common structures
+        # 4. Try pattern-based translation for common structures
         translated = cls._pattern_based_translation(english_text)
         if translated != english_text:
             return translated
                 
-        # Try Google Translate with UAE automotive context
+        # 5. Try Google Translate with UAE automotive context (LAST RESORT)
         try:
             return cls._google_translate_with_context(english_text)
         except Exception:
@@ -313,68 +440,60 @@ class UaeTranslationService:
     @classmethod
     def _google_translate_ar_to_en(cls, arabic_text: str) -> str:
         """Use multiple translation services for better Arabic to English translation"""
-        # Try DeepL first (better quality)
+        # Skip DeepL as it requires API key and often fails
+        # Try Microsoft Translator first
         try:
-            encoded_text = urllib.parse.quote(arabic_text)
-            url = f'https://api-free.deepl.com/v2/translate?auth_key=free&text={encoded_text}&source_lang=AR&target_lang=EN'
-            
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-            }
-            
-            response = requests.get(url, headers=headers, timeout=10)
-            if response.status_code == 200:
-                result = response.json()
-                if result.get('translations') and len(result['translations']) > 0:
-                    translated = result['translations'][0]['text']
-                    translated = cls._fix_ar_to_en_translation_issues(translated)
-                    print(f"DeepL translate: '{arabic_text}' -> '{translated}'")
-                    return translated
-        except Exception as e:
-            print(f"DeepL failed: {e}")
-        
-        # Try Microsoft Translator (backup)
-        try:
-            encoded_text = urllib.parse.quote(arabic_text)
-            url = f'https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&from=ar&to=en'
+            import json
+            url = 'https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&from=ar&to=en'
             
             headers = {
                 'Content-Type': 'application/json',
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
             }
             
-            data = [{'text': arabic_text}]
-            response = requests.post(url, json=data, headers=headers, timeout=10)
+            data = json.dumps([{'text': arabic_text}])
+            response = requests.post(url, data=data, headers=headers, timeout=10)
             
             if response.status_code == 200:
                 result = response.json()
                 if result and len(result) > 0 and 'translations' in result[0]:
                     translated = result[0]['translations'][0]['text']
                     translated = cls._fix_ar_to_en_translation_issues(translated)
-                    print(f"Microsoft translate: '{arabic_text}' -> '{translated}'")
                     return translated
         except Exception as e:
-            print(f"Microsoft failed: {e}")
+            pass
         
-        # Fallback to Google Translate
+        # Fallback to Google Translate with better parameters
         try:
             encoded_text = urllib.parse.quote(arabic_text)
-            url = f'https://translate.googleapis.com/translate_a/single?client=gtx&sl=ar&tl=en&dt=t&q={encoded_text}'
+            # Use multiple parameters for better translation quality
+            url = f'https://translate.googleapis.com/translate_a/single?client=gtx&sl=ar&tl=en&dt=t&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&q={encoded_text}'
             
             headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.5',
+                'Accept-Encoding': 'gzip, deflate',
+                'Connection': 'keep-alive',
+                'Upgrade-Insecure-Requests': '1'
             }
             
-            response = requests.get(url, headers=headers, timeout=10)
+            response = requests.get(url, headers=headers, timeout=15)
             if response.status_code == 200:
                 result = response.json()
                 if result and result[0] and result[0][0]:
                     translated = result[0][0][0]
+                    # Clean up common issues
+                    translated = translated.replace('Biringat', 'Bearings')
+                    translated = translated.replace('biringat', 'bearings')
+                    translated = translated.replace('burning', 'bearings')
+                    translated = translated.replace('Burning', 'Bearings')
+                    translated = translated.replace('chest', 'cover')
+                    translated = translated.replace('money', 'part')
                     translated = cls._fix_ar_to_en_translation_issues(translated)
-                    print(f"Google translate: '{arabic_text}' -> '{translated}'")
                     return translated
         except Exception as e:
-            print(f"Google failed: {e}")
+            pass
             
         return arabic_text
     
@@ -459,6 +578,14 @@ class UaeTranslationService:
             'leak': 'leak',  # ليك -> leak
             'sound': 'noise',  # صوت -> noise
             'bearing': 'bearing',  # بيزنغ -> bearing
+            'burning': 'bearings',  # Common mistranslation
+            'Burning': 'Bearings',
+            'biringat': 'bearings',
+            'Biringat': 'Bearings',
+            'chest': 'cover',  # صدر -> cover not chest
+            'money': 'part',  # مال -> part not money
+            'front chest': 'front cover',
+            'the money of the engine': 'the engine part',
         }
         
         for wrong, correct in fixes.items():

@@ -62,6 +62,7 @@ def generate_certificate_pdf(report_id):
             status = getattr(main_inspection, f'{item_key}_status', None)
             comment = getattr(main_inspection, f'{item_key}_comment', None)
             comment_arabic = getattr(main_inspection, f'{item_key}_comment_arabic', None)
+            comment_language = getattr(main_inspection, 'comment_language', 'arabic')
             
             # Include items with Pass/Fail status OR items with None status but have comments
             has_comment = comment and comment.strip() and comment.strip().lower() not in ['none', 'null', '']
@@ -76,21 +77,19 @@ def generate_certificate_pdf(report_id):
                 
                 # Process comments to preserve line breaks
                 processed_comment = comment.replace('\r\n', '\n').replace('\r', '\n') if comment else ''
-                # Handle bidirectional translation
-                if processed_comment:
-                    if UaeTranslationService.is_arabic(processed_comment):
-                        # Arabic input: keep original Arabic, translate to English
-                        processed_comment_arabic = processed_comment  # ORIGINAL ARABIC
-                        processed_comment_english = UaeTranslationService._translate_arabic_to_english(processed_comment)
-                        print(f"Arabic input: '{processed_comment}' -> English: '{processed_comment_english}'")
-                    else:
-                        # English input: keep original English, translate to Arabic
-                        processed_comment_english = processed_comment  # ORIGINAL ENGLISH
-                        processed_comment_arabic = UaeTranslationService._translate_english_to_arabic(processed_comment)
-                        print(f"English input: '{processed_comment}' -> Arabic: '{processed_comment_arabic}'")
+                # Handle translations based on what language was actually written
+                processed_comment = comment.replace('\r\n', '\n').replace('\r', '\n') if comment else ''
+                
+                if UaeTranslationService.is_arabic(processed_comment):
+                    # Arabic was written: Arabic on Arabic side, English translation on English side
+                    processed_comment_arabic = processed_comment
+                    processed_comment_english = comment_arabic or ''  # English translation stored in _arabic field
                 else:
-                    processed_comment_english = ''
-                    processed_comment_arabic = ''
+                    # English was written: English on English side, Arabic translation on Arabic side
+                    processed_comment_english = processed_comment
+                    processed_comment_arabic = comment_arabic or ''  # Arabic translation stored in _arabic field
+                
+                print(f"PDF Debug - {item_name}: comment='{processed_comment}', english='{processed_comment_english}', arabic='{processed_comment_arabic}', lang={comment_language}")
                 
                 combined_report = type('CombinedReport', (), {
                     'expertise_type_name': item_name,

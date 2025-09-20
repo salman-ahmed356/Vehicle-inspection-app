@@ -83,6 +83,9 @@ class MainInspection(db.Model):
     exhaust_comment = db.Column(db.Text, nullable=True)
     exhaust_comment_arabic = db.Column(db.Text, nullable=True)
     
+    # Language preference
+    comment_language = db.Column(db.String(10), default='arabic')
+    
     # Relationship
     report = db.relationship('Report', backref='main_inspection', lazy=True)
     

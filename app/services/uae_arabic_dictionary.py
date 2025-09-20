@@ -151,6 +151,35 @@ UAE_ARABIC_TERMS = {
     'bad': 'مو زين',
     'ok': 'تمام',
     'fine': 'تمام',
+    
+    # New Arabic terms from user
+    'يوجد صبغ في المركبة كاملة': 'Whole vehicle has been painted',
+    'دفريشن خلفي مبطل': 'Rear differential disabled',
+    'نصف ماكينة من تحت مبطل': 'Lower half of engine disabled',
+    'تهريب زيت من تحت بايب الدفريشن الامامي': 'Oil leak from under front differential pipe',
+    'يوجد صوت في البوستر بريك': 'There is noise in brake booster',
+    'يوجد صدى في هيكل المركبه من تحت': 'There is rust in vehicle chassis from below',
+    
+    # English to Arabic - new terms
+    'whole vehicle has been painted': 'يوجد صبغ في المركبة كاملة',
+    'rear differential disabled': 'دفريشن خلفي مبطل',
+    'lower half of engine disabled': 'نصف ماكينة من تحت مبطل',
+    'oil leak from under front differential pipe': 'تهريب زيت من تحت بايب الدفريشن الامامي',
+    'there is noise in brake booster': 'يوجد صوت في البوستر بريك',
+    'there is rust in vehicle chassis from below': 'يوجد صدى في هيكل المركبه من تحت',
+    'brake booster': 'البوستر بريك',
+    'differential pipe': 'بايب الدفريشن',
+    'disabled': 'مبطل',
+    'booster': 'بوستر',
+    'noise': 'صوت',
+    'echo': 'صدى',
+    'pipe': 'بايب',
+    'from below': 'من تحت',
+    'from under': 'من تحت',
+    'half': 'نصف',
+    'lower': 'من تحت',
+    'entire': 'كاملة',
+    'whole': 'كاملة',
 }
 
 def get_uae_arabic_translation(english_text):
