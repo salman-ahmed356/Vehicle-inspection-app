@@ -130,7 +130,8 @@
     .expertise-comment {
       font-size: 8pt;
       color: #000;
-      margin-top: 0px;
+      margin: 0px;
+      padding: 0px;
       white-space: pre-line;
       font-weight: normal !important;
     }
@@ -138,7 +139,8 @@
     .arabic-comment {
       font-size: 10pt;
       color: #000;
-      margin-top: 0px;
+      margin: 0px;
+      padding: 0px;
       white-space: pre-line;
       direction: rtl;
       text-align: right;
@@ -261,7 +263,7 @@
                 <div class="expertise-status">{{ pckg_report.pass_fail|upper }}</div>
               {% endif %}
               {% if has_comment %}
-                <div class="expertise-comment" style="{% if not pckg_report.pass_fail %}margin-top: 0px;{% endif %}">
+                <div class="expertise-comment">
                   {% if pckg_report.comment_english and pckg_report.comment_english != pckg_report.comment %}
                     <!-- Arabic input: show English translation -->
                     {{ pckg_report.comment_english }}
@@ -284,7 +286,7 @@
                 </div>
               {% endif %}
               {% if has_comment or has_arabic_comment %}
-                <div class="arabic-comment" style="{% if not pckg_report.pass_fail %}margin-top: 0px;{% endif %}">
+                <div class="arabic-comment">
                   {% if pckg_report.comment_english and pckg_report.comment_english != pckg_report.comment %}
                     <!-- Arabic input: show original Arabic -->
                     {{ pckg_report.comment|replace('\n', '<br>')|safe }}
