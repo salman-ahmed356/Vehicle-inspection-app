@@ -1121,9 +1121,18 @@
             <span class="arabic" style="font-weight: bold;">التعليقات:</span>
           </div>
           <div class="comments-text" style="font-weight: normal;">
-            {{ pckg_report.comment }}
-            {% if pckg_report.comment_arabic %}
-              <div class="arabic" style="margin-top: 5px; font-weight: normal;">{{ pckg_report.comment_arabic }}</div>
+            {% if pckg_report.comment_english and pckg_report.comment_english != pckg_report.comment %}
+              <!-- Arabic input: show English translation -->
+              {{ pckg_report.comment_english }}
+              <!-- Show original Arabic in Arabic section -->
+              <div class="arabic" style="margin-top: 5px; font-weight: normal;">{{ pckg_report.comment }}</div>
+            {% else %}
+              <!-- English input: show original English -->
+              {{ pckg_report.comment }}
+              <!-- Show Arabic translation in Arabic section -->
+              {% if pckg_report.comment_arabic %}
+                <div class="arabic" style="margin-top: 5px; font-weight: normal;">{{ pckg_report.comment_arabic }}</div>
+              {% endif %}
             {% endif %}
           </div>
         </div>
