@@ -89,21 +89,30 @@ def generate_certificate_pdf(report_id):
                     processed_comment_english = processed_comment
                     processed_comment_arabic = comment_arabic or UaeTranslationService.translate_comment(processed_comment, 'english')
                 
-                # Force translation if Arabic side is empty or same as English
+                # FORCE translation if Arabic side is empty or same as English
                 if not processed_comment_arabic or processed_comment_arabic == processed_comment_english:
                     if processed_comment_english and not UaeTranslationService.is_arabic(processed_comment_english):
-                        # Try main translation service first
-                        processed_comment_arabic = UaeTranslationService.translate_comment(processed_comment_english, 'english')
+                        print(f"  FORCING TRANSLATION for: '{processed_comment_english}'")
                         
-                        # If still not translated properly, try dictionary function directly
+                        # Try dictionary function directly FIRST
+                        processed_comment_arabic = translate_comment_to_arabic(processed_comment_english)
+                        print(f"  Dictionary result: '{processed_comment_arabic}'")
+                        
+                        # If dictionary failed, try main service
                         if not processed_comment_arabic or processed_comment_arabic.startswith('ملاحظة:') or processed_comment_arabic == processed_comment_english:
-                            processed_comment_arabic = translate_comment_to_arabic(processed_comment_english)
+                            processed_comment_arabic = UaeTranslationService.translate_comment(processed_comment_english, 'english')
+                            print(f"  Main service result: '{processed_comment_arabic}'")
                             
                         # Final fallback - at least show with Arabic prefix
                         if not processed_comment_arabic or processed_comment_arabic == processed_comment_english:
                             processed_comment_arabic = f"ملاحظة: {processed_comment_english}"
+                            print(f"  Final fallback: '{processed_comment_arabic}'")
                 
-                print(f"PDF Debug - {item_name}: original='{processed_comment}', english='{processed_comment_english}', arabic='{processed_comment_arabic}'")
+                print(f"PDF DEBUG - {item_name}:")
+                print(f"  Original comment: '{processed_comment}'")
+                print(f"  English side: '{processed_comment_english}'")
+                print(f"  Arabic side: '{processed_comment_arabic}'")
+                print(f"  Is Arabic check: {UaeTranslationService.is_arabic(processed_comment)}")
                 
                 combined_report = type('CombinedReport', (), {
                     'expertise_type_name': item_name,
@@ -114,7 +123,13 @@ def generate_certificate_pdf(report_id):
                     'comment_arabic': processed_comment_arabic
                 })()
                 
-                print(f"Final PDF data - {item_name}: EN='{processed_comment_english}' | AR='{processed_comment_arabic}'")
+                # Test translation directly
+                if processed_comment_english and not UaeTranslationService.is_arabic(processed_comment_english):
+                    test_translation = translate_comment_to_arabic(processed_comment_english)
+                    print(f"  TEST TRANSLATION: '{processed_comment_english}' -> '{test_translation}'")
+                
+                print(f"FINAL PDF DATA - {item_name}: EN='{processed_comment_english}' | AR='{processed_comment_arabic}'")
+                print("---")
                 package_expertise_reports.append(combined_report)
     
     # Handle vehicle image

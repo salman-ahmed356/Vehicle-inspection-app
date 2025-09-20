@@ -109,7 +109,7 @@ UAE_ARABIC_TERMS = {
     'replace brake pads': 'تبديل سفايف الفرامل',
     
     # EXACT PHRASES FROM YOUR PDF
-    'Rear differential repainted': 'الدفريشن الخلفي مصبوغ',
+    'Rear differential repainted': 'الدفريشن الخلفي مطلي',
     'front differential have leak': 'الدفريشن الأمامي فيه تهريب',
     
     # Individual terms
@@ -200,13 +200,13 @@ UAE_ARABIC_TERMS = {
     'lower': 'من تحت',
     'entire': 'كاملة',
     'whole': 'كاملة',
-    'painted': 'مصبوغ',
-    'Painted': 'مصبوغ',
-    'PAINTED': 'مصبوغ',
+    'painted': 'مطلي',
+    'Painted': 'مطلي',
+    'PAINTED': 'مطلي',
     
     # EXACT differential phrases from PDF - PRIORITY
-    'Rear differential repainted': 'الدفريشن الخلفي مصبوغ',
-    'rear differential repainted': 'الدفريشن الخلفي مصبوغ',
+    'Rear differential repainted': 'الدفريشن الخلفي مطلي',
+    'rear differential repainted': 'الدفريشن الخلفي مطلي',
     'front differential have leak': 'الدفريشن الأمامي فيه تهريب',
     'Front differential have leak': 'الدفريشن الأمامي فيه تهريب',
 }
