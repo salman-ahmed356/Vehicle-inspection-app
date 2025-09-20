@@ -4,6 +4,12 @@ Based on local UAE inspection certificates
 """
 
 UAE_ARABIC_TERMS = {
+    # DIFFERENTIAL FIXES - ABSOLUTE PRIORITY (including typos)
+    'Rear differential repainted': 'الدفريشن الخلفي مطلي',
+    'front differential have leak': 'الدفريشن الأمامي فيه تهريب',
+    'Rear deferential repainted': 'الدفريشن الخلفي مطلي',
+    'front deferential have leak': 'الدفريشن الأمامي فيه تهريب',
+    
     # Main expertise types
     'Paint': 'صبغ',
     'Body': 'هيكل',
@@ -81,6 +87,10 @@ UAE_ARABIC_TERMS = {
     'there are scratches': 'يوجد خدوش',
     'scratches': 'خدوش',
     'rust': 'صدأ',
+    'rusty': 'صدي',
+    'under the vehicle': 'تحت المركبة',
+    'there is rust': 'يوجد صدأ',
+    'there is': 'يوجد',
     'vehicle': 'المركبة',
     'front': 'الأمامي',
     'rear': 'الخلفي',
@@ -108,7 +118,11 @@ UAE_ARABIC_TERMS = {
     'replace tires': 'تبديل الإطارات',
     'replace brake pads': 'تبديل سفايف الفرامل',
     
-    # EXACT PHRASES FROM YOUR PDF
+    # EXACT PHRASES FROM YOUR PDF - HIGHEST PRIORITY
+    'there is rust under the vehicle': 'يوجد صدأ تحت المركبة',
+    'There is rust under the vehicle': 'يوجد صدأ تحت المركبة',
+    'chassis rusty': 'الهيكل صدي',
+    'Chassis rusty': 'الهيكل صدي',
     'Rear differential repainted': 'الدفريشن الخلفي مطلي',
     'front differential have leak': 'الدفريشن الأمامي فيه تهريب',
     
@@ -440,6 +454,8 @@ def fix_uae_translation(arabic_text):
         'محمل': 'بيرنغ',  # bearing (UAE term)
         'مكسور': 'خربان',  # broken (UAE term)
         'صندوق التوجيه': 'بوكس ستيرنغ',  # steering box (UAE term)
+        'صدى': 'صدأ',  # echo -> rust (common translation error)
+        'يوجد صدى': 'يوجد صدأ',  # there is echo -> there is rust
     }
     
     for standard, uae in fixes.items():
