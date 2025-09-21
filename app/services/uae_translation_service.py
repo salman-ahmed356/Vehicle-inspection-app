@@ -285,6 +285,23 @@ class UaeTranslationService:
         'ميكانيك': 'mechanics',
         'دفريشن': 'differential',
         'واليمين وجود حادث وتم تصليحه في الشاصي و راس الشاصي تم تصليحه': 'and right side accident occurred and was repaired in chassis and chassis head was repaired',
+        
+        # Latest terms - BMW G30 inspection
+        'بيم G30 كحلي': 'BMW G30 black',
+        'موديل 2017': 'model 2017',
+        'صبغ بمبر امامي': 'front bumper painted',
+        'صبغ نصف مدكار خلفي مع معجون': 'half rear fender painted with putty',
+        'تسريب زيت من المحرك يجب فك الكفارات من تحت لمعرفة التسريب وغسيل من تحت': 'oil leak from engine must remove covers from below to identify leak and wash from below',
+        'تسريب زيت من طرف يسار الماكينة من فوق': 'oil leak from left side of engine from top',
+        'شحفات في الرنجات': 'scratches on rims',
+        'صبغ في سمكات التى تركب على أسقف': 'paint on roof rails that mount on roof',
+        'درمات تحتاج ترتيب': 'brake drums need adjustment',
+        'نصف مدكار': 'half fender',
+        'كفارات': 'covers',
+        'شحفات': 'scratches',
+        'سمكات': 'roof rails',
+        'ترتيب': 'adjustment',
+        'كحلي': 'black',
     }
     
     # English to Arabic translations (existing)
@@ -378,6 +395,23 @@ class UaeTranslationService:
         'mechanics': 'ميكانيك',
         'differential': 'دفريشن',
         'and right side accident occurred and was repaired in chassis and chassis head was repaired': 'واليمين وجود حادث وتم تصليحه في الشاصي و راس الشاصي تم تصليحه',
+        
+        # Latest English-to-Arabic - BMW G30 inspection
+        'BMW G30 black': 'بيم G30 كحلي',
+        'model 2017': 'موديل 2017',
+        'front bumper painted': 'صبغ بمبر امامي',
+        'half rear fender painted with putty': 'صبغ نصف مدكار خلفي مع معجون',
+        'oil leak from engine must remove covers from below to identify leak and wash from below': 'تسريب زيت من المحرك يجب فك الكفارات من تحت لمعرفة التسريب وغسيل من تحت',
+        'oil leak from left side of engine from top': 'تسريب زيت من طرف يسار الماكينة من فوق',
+        'scratches on rims': 'شحفات في الرنجات',
+        'paint on roof rails that mount on roof': 'صبغ في سمكات التى تركب على أسقف',
+        'brake drums need adjustment': 'درمات تحتاج ترتيب',
+        'half fender': 'نصف مدكار',
+        'covers': 'كفارات',
+        'scratches': 'شحفات',
+        'roof rails': 'سمكات',
+        'adjustment': 'ترتيب',
+        'black': 'كحلي',
     }
     
     @classmethod
