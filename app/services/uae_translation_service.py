@@ -284,6 +284,7 @@ class UaeTranslationService:
         'مولدنج': 'molding',
         'ميكانيك': 'mechanics',
         'دفريشن': 'differential',
+        'واليمين وجود حادث وتم تصليحه في الشاصي و راس الشاصي تم تصليحه': 'and right side accident occurred and was repaired in chassis and chassis head was repaired',
     }
     
     # English to Arabic translations (existing)
@@ -376,6 +377,7 @@ class UaeTranslationService:
         'molding': 'مولدنج',
         'mechanics': 'ميكانيك',
         'differential': 'دفريشن',
+        'and right side accident occurred and was repaired in chassis and chassis head was repaired': 'واليمين وجود حادث وتم تصليحه في الشاصي و راس الشاصي تم تصليحه',
     }
     
     @classmethod
