@@ -13,7 +13,7 @@ class UaeTranslationService:
     
     # Static translations - 100% accurate UAE automotive terms
     STATIC_TRANSLATIONS = {
-        # Section headers - your corrected translations
+        # Section headers - corrected translations
         'Additional to Body': 'إضافات إلى الهيكل',
         'LIGHTS': 'المصابيح',
         'BODY': 'الهيكل', 
@@ -21,10 +21,11 @@ class UaeTranslationService:
         'ROOF': 'السقف',
         'BONNET AND TRUNK': 'غطاء المحرك والصندوق',
         'FENDERS': 'الرفارف',
+        'FENDER': 'الرفارف',
         'DOORS': 'الأبواب',
         'BUMPER AND KIT': 'الصدامات والكيت',
         'ENGINE': 'المحرك',
-        'GEAR BOX': 'الجير بوكس',
+        'GEAR BOX': 'علبة التروس',
         'PAINT': 'الصبغ',
         'RIMS': 'الرنجات',
         'DIFFERENTIAL': 'الدفرنشن',
@@ -49,6 +50,10 @@ class UaeTranslationService:
         'Damaged': 'متضرر',
         'Good': 'جيد',
         'OK': 'جيد',
+        'Disbelief': 'عدم عمل',
+        'Dye backbone to the right paste': 'صبغ باب خلفي يمين معجون',
+        'Ravigor dye, right, paste': 'صبغ رفراف يمين معجون',
+        'Voice at the right of the right of Xial': 'صوت في طرف يمين شيال',
         
         # Vehicle parts
         'Headlights': 'المصابيح الأمامية',
