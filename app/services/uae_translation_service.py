@@ -234,6 +234,20 @@ class UaeTranslationService:
         'دبة خلفية': 'rear trunk',
         'تسريب زيت': 'oil leak',
         'من المحرك تحت': 'from engine below',
+        
+        # Latest terms - Kia K5 inspection
+        'كيا k5 رمادي': 'Kia K5 gray',
+        'رقم الشاصي': 'chassis number',
+        'صبغ باب خلفي يمين معجون': 'right rear door painted with putty',
+        'صبغ رفراف خلفي يمين معجون': 'right rear fender painted with putty',
+        'درامات امامية': 'front brake drums',
+        'يوجد صدى اسفل المركبة': 'there is rust under the vehicle',
+        'تواير تحتاج تبديل': 'tires need replacement',
+        'كفر تحت الماكينة مكسور': 'engine cover underneath broken',
+        'صوت في طرف يمين شيال': 'noise in right side bearing',
+        'طرف يمين شيال': 'right side bearing',
+        'كفر تحت الماكينة': 'engine cover underneath',
+        'صدى': 'rust',
     }
     
     # English to Arabic translations (existing)
@@ -282,6 +296,20 @@ class UaeTranslationService:
         'car shuts off automatically': 'يتم إطفاء السيارة تلقائيا',
         'rear trunk': 'دبة خلفية',
         'from engine below': 'من المحرك تحت',
+        
+        # Latest English-to-Arabic - Kia K5 inspection
+        'Kia K5 gray': 'كيا k5 رمادي',
+        'chassis number': 'رقم الشاصي',
+        'right rear door painted with putty': 'صبغ باب خلفي يمين معجون',
+        'right rear fender painted with putty': 'صبغ رفراف خلفي يمين معجون',
+        'front brake drums': 'درامات امامية',
+        'there is rust under the vehicle': 'يوجد صدى اسفل المركبة',
+        'tires need replacement': 'تواير تحتاج تبديل',
+        'engine cover underneath broken': 'كفر تحت الماكينة مكسور',
+        'noise in right side bearing': 'صوت في طرف يمين شيال',
+        'right side bearing': 'طرف يمين شيال',
+        'engine cover underneath': 'كفر تحت الماكينة',
+        'rust': 'صدى',
     }
     
     @classmethod
