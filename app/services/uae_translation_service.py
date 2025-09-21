@@ -302,6 +302,8 @@ class UaeTranslationService:
         'سمكات': 'roof rails',
         'ترتيب': 'adjustment',
         'كحلي': 'black',
+        'صوت ف التكيات': 'noise in air conditioning',
+        'تكيات': 'air conditioning',
     }
     
     # English to Arabic translations (existing)
@@ -412,6 +414,8 @@ class UaeTranslationService:
         'roof rails': 'سمكات',
         'adjustment': 'ترتيب',
         'black': 'كحلي',
+        'noise in air conditioning': 'صوت ف التكيات',
+        'air conditioning': 'تكيات',
     }
     
     @classmethod
