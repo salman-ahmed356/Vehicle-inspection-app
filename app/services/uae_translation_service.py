@@ -220,6 +220,20 @@ class UaeTranslationService:
         'يوجد صدى اسفل المركبة': 'there is rust under the vehicle',
         'جامبينات خلفية': 'rear shock absorbers',
         'جامبينات امامية': 'front shock absorbers',
+        
+        # Latest terms from user input - January 2025
+        'نيسان باترول 2014': 'Nissan Patrol 2014',
+        'اللون رصاصي': 'color gray',
+        'ممشاه 161376': 'mileage 161376',
+        'صبغ في الدبة الخلفية مع معجون': 'paint in rear trunk with putty',
+        'يوجد تسريب زيت من المحرك تحت': 'oil leak from engine below',
+        'الماكينة مبطلة': 'engine not working',
+        'يوجد عطل في الكهرباء عن التشغيل يتم إطفاء السيارة تلقائيا لوحدها': 'electrical fault during operation car shuts off automatically by itself',
+        'عطل في الكهرباء': 'electrical fault',
+        'يتم إطفاء السيارة تلقائيا': 'car shuts off automatically',
+        'دبة خلفية': 'rear trunk',
+        'تسريب زيت': 'oil leak',
+        'من المحرك تحت': 'from engine below',
     }
     
     # English to Arabic translations (existing)
@@ -254,6 +268,20 @@ class UaeTranslationService:
         'gearbox mount': 'قواعد الجير',
         'chassis is rusty': 'الهيكل صدي',
         'Chassis is rusty': 'الهيكل صدي',
+        
+        # Latest English-to-Arabic translations - January 2025
+        'Nissan Patrol 2014': 'نيسان باترول 2014',
+        'color gray': 'اللون رصاصي',
+        'mileage 161376': 'ممشاه 161376',
+        'paint in rear trunk with putty': 'صبغ في الدبة الخلفية مع معجون',
+        'oil leak from engine below': 'يوجد تسريب زيت من المحرك تحت',
+        'engine not working': 'الماكينة مبطلة',
+        'front bushings': 'بوشات امامية',
+        'electrical fault during operation car shuts off automatically by itself': 'يوجد عطل في الكهرباء عن التشغيل يتم إطفاء السيارة تلقائيا لوحدها',
+        'electrical fault': 'عطل في الكهرباء',
+        'car shuts off automatically': 'يتم إطفاء السيارة تلقائيا',
+        'rear trunk': 'دبة خلفية',
+        'from engine below': 'من المحرك تحت',
     }
     
     @classmethod
