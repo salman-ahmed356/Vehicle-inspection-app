@@ -304,6 +304,31 @@ class UaeTranslationService:
         'كحلي': 'black',
         'صوت ف التكيات': 'noise in air conditioning',
         'تكيات': 'air conditioning',
+        
+        # Latest terms - Mini Cooper 2019 inspection
+        'ميني كوبر رمادي': 'Mini Cooper gray',
+        '2019': '2019',
+        'صبغ بونيت امامي مع معجون': 'front hood painted with putty',
+        'صبغ سقف': 'roof painted',
+        'بمبر امامي': 'front bumper',
+        'مدكار امامي يمين صبغ مع معجون': 'right front fender painted with putty',
+        'بمبر امامي صبغ': 'front bumper painted',
+        'شحلات في المدكار خلفي يسار': 'scratches in left rear fender',
+        'شحلات في الرنجات': 'scratches on rims',
+        'بوشان امامية': 'front bushings',
+        'تسريب زيت من الماكينة': 'oil leak from engine',
+        'كفر خلفي مكسور': 'rear cover broken',
+        'راس شاصي طرف يسار مصلح': 'chassis head left side repaired',
+        'كراسي ماكينة': 'engine mounts',
+        'كراسي جير': 'gearbox mounts',
+        'دقة بسيطة في الجير': 'slight knock in gearbox',
+        'يجب تبديل التواير': 'tires must be replaced',
+        'شحلات': 'scratches',
+        'بوشان': 'bushings',
+        'راس شاصي': 'chassis head',
+        'مصلح': 'repaired',
+        'دقة بسيطة': 'slight knock',
+        'يجب تبديل': 'must be replaced',
     }
     
     # English to Arabic translations (existing)
@@ -416,6 +441,28 @@ class UaeTranslationService:
         'black': 'كحلي',
         'noise in air conditioning': 'صوت ف التكيات',
         'air conditioning': 'تكيات',
+        
+        # Latest English-to-Arabic - Mini Cooper 2019 inspection
+        'Mini Cooper gray': 'ميني كوبر رمادي',
+        'front hood painted with putty': 'صبغ بونيت امامي مع معجون',
+        'roof painted': 'صبغ سقف',
+        'front bumper': 'بمبر امامي',
+        'right front fender painted with putty': 'مدكار امامي يمين صبغ مع معجون',
+        'front bumper painted': 'بمبر امامي صبغ',
+        'scratches in left rear fender': 'شحلات في المدكار خلفي يسار',
+        'scratches on rims': 'شحلات في الرنجات',
+        'front bushings': 'بوشان امامية',
+        'oil leak from engine': 'تسريب زيت من الماكينة',
+        'rear cover broken': 'كفر خلفي مكسور',
+        'chassis head left side repaired': 'راس شاصي طرف يسار مصلح',
+        'engine mounts': 'كراسي ماكينة',
+        'gearbox mounts': 'كراسي جير',
+        'slight knock in gearbox': 'دقة بسيطة في الجير',
+        'tires must be replaced': 'يجب تبديل التواير',
+        'chassis head': 'راس شاصي',
+        'repaired': 'مصلح',
+        'slight knock': 'دقة بسيطة',
+        'must be replaced': 'يجب تبديل',
     }
     
     @classmethod
