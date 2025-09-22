@@ -859,7 +859,12 @@ class UaeTranslationService:
             'Front jambins': 'front shock absorbers',  # Fix jambins transliteration
             'front jambins': 'front shock absorbers',
             'jambins': 'shock absorbers',
-            'Jambins': 'shock absorbers'
+            'Jambins': 'shock absorbers',
+            'Backgrounds in the background left': 'scratches in left rear fender',  # Fix mistranslation
+            'backgrounds in the background left': 'scratches in left rear fender',
+            'background left': 'rear left',
+            'background': 'rear',
+            'backgrounds': 'scratches'
         }
         
         for wrong, correct in fixes.items():
