@@ -597,6 +597,11 @@ def delete_report(report_id):
         for agent in agents:
             db.session.delete(agent)
         
+        # Delete main inspection if exists
+        main_inspection = MainInspection.query.filter_by(report_id=report_id).first()
+        if main_inspection:
+            db.session.delete(main_inspection)
+        
         # Delete expertise features
         for er in report.expertise_reports:
             for feature in er.features:
