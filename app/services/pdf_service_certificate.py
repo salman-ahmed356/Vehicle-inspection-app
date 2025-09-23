@@ -64,72 +64,49 @@ def generate_certificate_pdf(report_id):
             comment_arabic = getattr(main_inspection, f'{item_key}_comment_arabic', None)
             comment_language = getattr(main_inspection, 'comment_language', 'arabic')
             
-            # Include items with Pass/Fail status OR items with None status but have comments
-            has_comment = comment and comment.strip() and comment.strip().lower() not in ['none', 'null', '']
-            has_arabic_comment = comment_arabic and comment_arabic.strip() and comment_arabic.strip().lower() not in ['none', 'null', '']
+            # Check if item should be included
+            has_english_comment = comment and comment.strip()
+            has_arabic_comment = comment_arabic and comment_arabic.strip()
             
-            if (status and status in ['Pass', 'Fail']) or (status == 'None' and (has_comment or has_arabic_comment)):
+            # Include if: status is Pass/Fail OR if there are any comments OR if status is not None
+            # Exclude only if: status is None/empty AND both comment boxes are empty
+            should_include = True
+            if (not status or status == 'None') and not has_english_comment and not has_arabic_comment:
+                should_include = False
+            
+            if should_include:
                 # Get Arabic translation for the item name
                 try:
                     arabic_name = get_uae_arabic_translation(item_name)
                 except:
                     arabic_name = item_name
                 
-                # Process comments to preserve line breaks
-                processed_comment = comment.replace('\r\n', '\n').replace('\r', '\n') if comment else ''
-                # Handle translations based on what language was actually written
-                processed_comment = comment.replace('\r\n', '\n').replace('\r', '\n') if comment else ''
+                # Use comments as-is without translation
+                processed_comment_english = comment.replace('\r\n', '\n').replace('\r', '\n') if comment else ''
+                processed_comment_arabic = comment_arabic.replace('\r\n', '\n').replace('\r', '\n') if comment_arabic else ''
                 
-                if UaeTranslationService.is_arabic(processed_comment):
-                    # Arabic was written: Arabic on Arabic side, English translation on English side
-                    processed_comment_arabic = processed_comment
-                    processed_comment_english = comment_arabic or UaeTranslationService.translate_comment(processed_comment, 'arabic')
-                else:
-                    # English was written: English on English side, Arabic translation on Arabic side
-                    processed_comment_english = processed_comment
-                    processed_comment_arabic = comment_arabic or UaeTranslationService.translate_comment(processed_comment, 'english')
-                
-                # FORCE translation if Arabic side is empty or same as English
-                if not processed_comment_arabic or processed_comment_arabic == processed_comment_english:
-                    if processed_comment_english and not UaeTranslationService.is_arabic(processed_comment_english):
-                        print(f"  FORCING TRANSLATION for: '{processed_comment_english}'")
-                        
-                        # Try dictionary function directly FIRST
-                        processed_comment_arabic = translate_comment_to_arabic(processed_comment_english)
-                        print(f"  Dictionary result: '{processed_comment_arabic}'")
-                        
-                        # If dictionary failed, try main service
-                        if not processed_comment_arabic or processed_comment_arabic.startswith('ملاحظة:') or processed_comment_arabic == processed_comment_english:
-                            processed_comment_arabic = UaeTranslationService.translate_comment(processed_comment_english, 'english')
-                            print(f"  Main service result: '{processed_comment_arabic}'")
-                            
-                        # Final fallback - at least show with Arabic prefix
-                        if not processed_comment_arabic or processed_comment_arabic == processed_comment_english:
-                            processed_comment_arabic = f"ملاحظة: {processed_comment_english}"
-                            print(f"  Final fallback: '{processed_comment_arabic}'")
-                
-                print(f"PDF DEBUG - {item_name}:")
-                print(f"  Original comment: '{processed_comment}'")
-                print(f"  English side: '{processed_comment_english}'")
-                print(f"  Arabic side: '{processed_comment_arabic}'")
-                print(f"  Is Arabic check: {UaeTranslationService.is_arabic(processed_comment)}")
+                # Debug output with safe encoding
+                try:
+                    print(f"PDF DEBUG - {item_name}: Status={status}")
+                    print(f"  English: {len(processed_comment_english)} chars")
+                    print(f"  Arabic: {len(processed_comment_arabic)} chars")
+                except UnicodeEncodeError:
+                    print(f"PDF DEBUG - {item_name}: Status={status} (encoding issue)")
                 
                 combined_report = type('CombinedReport', (), {
                     'expertise_type_name': item_name,
                     'arabic_name': arabic_name,
                     'pass_fail': status if status in ['Pass', 'Fail'] else None,  # Don't show None status
-                    'comment': processed_comment,
+                    'comment': processed_comment_english,  # Use English comment as main comment
                     'comment_english': processed_comment_english,
                     'comment_arabic': processed_comment_arabic
                 })()
                 
-                # Test translation directly
-                if processed_comment_english and not UaeTranslationService.is_arabic(processed_comment_english):
-                    test_translation = translate_comment_to_arabic(processed_comment_english)
-                    print(f"  TEST TRANSLATION: '{processed_comment_english}' -> '{test_translation}'")
-                
-                print(f"FINAL PDF DATA - {item_name}: EN='{processed_comment_english}' | AR='{processed_comment_arabic}'")
-                print("---")
+                # Safe debug output
+                try:
+                    print(f"FINAL PDF DATA - {item_name}: EN={len(processed_comment_english)} chars | AR={len(processed_comment_arabic)} chars")
+                except UnicodeEncodeError:
+                    print(f"FINAL PDF DATA - {item_name}: (encoding issue)")
                 package_expertise_reports.append(combined_report)
     
     # Handle vehicle image

@@ -2,50 +2,8 @@
 <div class="bg-white shadow-md rounded-lg p-6">
   <h2 class="text-xl font-semibold mb-6 text-center">Main Vehicle Inspection</h2>
   
-  <!-- Language Selector -->
-  <div class="mb-6 text-center">
-    <label class="block text-sm font-medium text-gray-700 mb-2">Comment Language:</label>
-    <div class="flex justify-center space-x-4">
-      <label class="flex items-center">
-        <input type="radio" name="comment_language" value="arabic" {% if saved_language == 'arabic' %}checked{% endif %} class="mr-2 text-blue-600" onclick="document.getElementById('comment_language_input').value='arabic'; document.querySelectorAll('textarea[name*=\'_comment\']').forEach(t => {t.style.direction='rtl'; t.style.textAlign='right'})">
-        <span class="font-medium">العربية (Arabic)</span>
-      </label>
-      <label class="flex items-center">
-        <input type="radio" name="comment_language" value="english" {% if saved_language == 'english' %}checked{% endif %} class="mr-2 text-blue-600" onclick="document.getElementById('comment_language_input').value='english'; document.querySelectorAll('textarea[name*=\'_comment\']').forEach(t => {t.style.direction='ltr'; t.style.textAlign='left'})">
-        <span class="font-medium">English</span>
-      </label>
-    </div>
-  </div>
-  
-  <script>
-    // Set initial direction immediately for AJAX content
-    (function() {
-      const savedLang = '{{ saved_language|default("arabic") }}';
-      
-      setTimeout(function() {
-        const textareas = document.querySelectorAll('textarea[name*="_comment"]');
-        
-        textareas.forEach(textarea => {
-          if (savedLang === 'english') {
-            textarea.style.direction = 'ltr';
-            textarea.style.textAlign = 'left';
-          } else {
-            textarea.style.direction = 'rtl';
-            textarea.style.textAlign = 'right';
-          }
-        });
-        
-        const hiddenInput = document.getElementById('comment_language_input');
-        if (hiddenInput) {
-          hiddenInput.value = savedLang;
-        }
-      }, 50);
-    })();
-  </script>
-  
   <form id="mainInspectionForm" method="POST" action="{{ url_for('reports.save_main_inspection', report_id=report.id) }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <input type="hidden" name="comment_language" id="comment_language_input" value="arabic">
     
     {% set inspection_items = [
       ('lights', 'Lights', 'أضواء'),
@@ -101,13 +59,22 @@
             </div>
           </div>
           
-          <!-- Comment Box -->
+          <!-- English Comment Box -->
+          <div class="mb-3">
+            <label class="block text-sm font-medium text-gray-700 mb-2">English Comment:</label>
+            <textarea name="{{ item_key }}_comment" rows="2" 
+                      class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      style="direction: ltr; text-align: left;"
+                      placeholder="Enter English comments...">{% if main_inspection %}{{ main_inspection[item_key + '_comment'] or '' }}{% endif %}</textarea>
+          </div>
+          
+          <!-- Arabic Comment Box -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Comment:</label>
-            <textarea name="{{ item_key }}_comment" rows="3" 
-                      class="comment-textarea w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      style="{% if saved_language == 'english' %}direction: ltr; text-align: left;{% else %}direction: rtl; text-align: right;{% endif %}"
-                      placeholder="أدخل التعليقات...">{% if main_inspection %}{{ main_inspection[item_key + '_comment'] or '' }}{% endif %}</textarea>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Arabic Comment:</label>
+            <textarea name="{{ item_key }}_comment_arabic" rows="2" 
+                      class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      style="direction: rtl; text-align: right;"
+                      placeholder="أدخل التعليقات العربية...">{% if main_inspection %}{{ main_inspection[item_key + '_comment_arabic'] or '' }}{% endif %}</textarea>
           </div>
         </div>
       {% endfor %}

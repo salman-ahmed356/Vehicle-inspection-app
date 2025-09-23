@@ -1258,14 +1258,10 @@ def main_inspection_ajax():
             if not attr.startswith('_') and attr not in ['id', 'report_id', 'report']:
                 main_inspection_data[attr] = getattr(main_inspection, attr)
     
-    # Get saved language preference
-    saved_language = getattr(main_inspection, 'comment_language', 'arabic') or 'arabic'
-    
     return render_template(
         'report_sections/main_inspection.html',
         report=report,
-        main_inspection=main_inspection_data,
-        saved_language=saved_language
+        main_inspection=main_inspection_data
     )
 
 
@@ -1281,10 +1277,6 @@ def save_main_inspection(report_id):
             main_inspection = MainInspection(report_id=report_id)
             db.session.add(main_inspection)
         
-        # Get language selection and save it
-        comment_language = request.form.get('comment_language', 'arabic')
-        main_inspection.comment_language = comment_language
-        
         # Update all fields
         inspection_items = [
             'lights', 'body', 'chassis', 'paint', 'roof', 'bonnet_trunk',
@@ -1299,73 +1291,20 @@ def save_main_inspection(report_id):
             status_value = request.form.get(status_field)
             setattr(main_inspection, status_field, status_value)
             
-            # Update comment
+            # Update English comment
             comment_field = f'{item}_comment'
             comment_value = request.form.get(comment_field, '').strip()
-            old_comment = getattr(main_inspection, comment_field, '')
+            setattr(main_inspection, comment_field, comment_value)
             
-            # Only translate if comment actually changed
-            if comment_value != old_comment:
-                setattr(main_inspection, comment_field, comment_value)
-                
-                # Use new translation service with explicit language
-                if comment_value:
-                    try:
-                        from ..services.uae_translation_service import UaeTranslationService
-                        
-                        # Store original comment
-                        setattr(main_inspection, comment_field, comment_value)
-                        
-                        # Auto-translate for PDF generation if translation is available
-                        if comment_value.strip() and TRANSLATION_AVAILABLE:
-                            try:
-                                # Try to detect if it's Arabic (contains Arabic characters)
-                                import re
-                                arabic_pattern = re.compile(r'[\u0600-\u06FF]')
-                                has_arabic = bool(arabic_pattern.search(comment_value))
-                                
-                                if has_arabic:  # Arabic comment - use working translation service
-                                    try:
-                                        from ..services.uae_translation_service import UaeTranslationService
-                                        translated_english = UaeTranslationService.translate_comment(comment_value, 'arabic')
-                                        setattr(main_inspection, f'{comment_field}_arabic', translated_english)  # Store English translation in _arabic field
-                                        print(f"Arabic->English: Used UaeTranslationService")
-                                    except Exception as e:
-                                        print(f"Arabic translation failed: {e}")
-                                        setattr(main_inspection, f'{comment_field}_arabic', comment_value)  # Keep original as fallback
-                                else:  # English comment - use working translation service
-                                    try:
-                                        from ..services.uae_translation_service import UaeTranslationService
-                                        translated_arabic = UaeTranslationService.translate_comment(comment_value, 'english')
-                                        setattr(main_inspection, f'{comment_field}_arabic', translated_arabic)
-                                        print(f"English->Arabic: Used UaeTranslationService")
-                                    except Exception as e:
-                                        print(f"English translation failed: {e}")
-                                        setattr(main_inspection, f'{comment_field}_arabic', comment_value)  # Keep original as fallback
-                            except Exception as e:
-                                print(f"Translation error: {e}")
-                                # If translation fails, just store the original comment
-                        
-                        db.session.add(main_inspection)  # Explicitly mark as modified
-                            
-                    except Exception as e:
-                        print(f"Translation error: {e}")
-                elif not comment_value:
-                    # Clear translations if comment is empty
-                    setattr(main_inspection, f'{comment_field}_arabic', '')
+            # Update Arabic comment
+            comment_arabic_field = f'{item}_comment_arabic'
+            comment_arabic_value = request.form.get(comment_arabic_field, '').strip()
+            setattr(main_inspection, comment_arabic_field, comment_arabic_value)
         
         db.session.commit()
-        print(f"Saved language: {comment_language} for report {report_id}")
+        print(f"Saved main inspection for report {report_id}")
         
-        # Debug: Print what was actually saved
-        for item in inspection_items:
-            comment_field = f'{item}_comment'
-            comment_value = getattr(main_inspection, comment_field, '')
-            comment_arabic = getattr(main_inspection, f'{comment_field}_arabic', '')
-            if comment_value or comment_arabic:
-                print(f"{item}: main='{comment_value}', arabic='{comment_arabic}', lang={comment_language}")
-        
-        return jsonify({'success': True, 'language': comment_language})
+        return jsonify({'success': True})
         
     except Exception as e:
         db.session.rollback()
