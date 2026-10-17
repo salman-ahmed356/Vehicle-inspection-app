@@ -126,8 +126,11 @@
         })();
     </script>
 
-    <script src="../static/js/report.js"></script>
-    <script src="../static/js/appointment.js"></script>
+    {# report.js restores the last submitted form from localStorage - add page only, never over an existing report #}
+    {% if not edit_mode %}
+    <script src="{{ url_for('static', filename='js/report.js') }}"></script>
+    {% endif %}
+    <script src="{{ url_for('static', filename='js/appointment.js') }}"></script>
     
     <script>
         // Enhanced image handling for both create and edit modes

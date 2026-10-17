@@ -249,7 +249,7 @@
     </div>
 </div>
 
-<script src="../../static/js/appointment.js"></script>
+<script src="{{ url_for('static', filename='js/appointment.js') }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('vehicleSearch');
