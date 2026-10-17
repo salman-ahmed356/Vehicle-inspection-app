@@ -3,6 +3,7 @@ from app import create_app
 from app.auth import login_required
 from app.license_check import check_license
 import logging
+import os
 import base64
 
 logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -29,5 +30,6 @@ def b64encode(data):
 
 if __name__ == '__main__':
     check_license()  # Display license notice
-    app.run(host="0.0.0.0", port="5000", debug=True)
+    # FLASK_DEBUG defaults to on for local `python run.py`; docker-compose sets it to 0
+    app.run(host="0.0.0.0", port=5000, debug=os.environ.get("FLASK_DEBUG", "1") == "1")
 

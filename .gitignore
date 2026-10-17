@@ -59,3 +59,4 @@ update_*.py
 test_*.py
 *.bat
 *.sql
+!.env.example

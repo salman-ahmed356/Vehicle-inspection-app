@@ -2,6 +2,7 @@ import os
 from flask import Flask, request, session, redirect, url_for
 from flask_babel import Babel
 from flask_migrate import Migrate
+from werkzeug.middleware.proxy_fix import ProxyFix
 from datetime import timedelta
 
 from .database import db
@@ -41,6 +42,8 @@ babel = Babel()
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
+    # Trust X-Forwarded-For/-Proto from nginx so request.is_secure is correct behind HTTPS
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
     
     # Redirect to login if not authenticated
     @app.route('/')
@@ -51,7 +54,7 @@ def create_app(test_config=None):
     
     # Load configuration
     app.config.from_mapping(
-        SECRET_KEY='dev',
+        SECRET_KEY=os.environ.get('SECRET_KEY', 'dev-only-insecure-key'),
         SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL', 'sqlite:///data.db'),
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         BABEL_DEFAULT_LOCALE='en',

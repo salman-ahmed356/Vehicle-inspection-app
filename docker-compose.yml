@@ -1,27 +1,30 @@
-version: '3.8'
-
+# Secrets and settings come from .env (not in Git) - copy .env.example to .env
 services:
   app:
     build: .
+    restart: unless-stopped
     ports:
-      - "5000:5000"
+      - "127.0.0.1:5000:5000"
     volumes:
       - .:/app  
     depends_on:
       - db
     environment:
-      - DATABASE_URL=mysql+pymysql://dbms:dbms123@db:3306/flask_app
-      - SQLALCHEMY_DATABASE_URI=mysql+pymysql://dbms:dbms123@db:3306/flask_app
+      - DATABASE_URL=mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD:?set MYSQL_PASSWORD in .env}@db:3306/${MYSQL_DATABASE}
+      - SQLALCHEMY_DATABASE_URI=mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}
+      - SECRET_KEY=${SECRET_KEY:?set SECRET_KEY in .env}
+      - FLASK_DEBUG=${FLASK_DEBUG:-0}
 
   db:
     image: mysql:8.0
+    restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: 123
-      MYSQL_DATABASE: flask_app
-      MYSQL_USER: dbms
-      MYSQL_PASSWORD: dbms123
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set MYSQL_ROOT_PASSWORD in .env}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - "3307:3306"
+      - "127.0.0.1:3307:3306"
     volumes:
       - db_data:/var/lib/mysql
 
